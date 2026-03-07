@@ -61,7 +61,8 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          if [[ -n $(git status --porcelain reports/ infographic/) ]]; then
+          changes=$(git status --porcelain reports/ infographic/ 2>/dev/null || true)
+          if [[ -n "$changes" ]]; then
             echo "has_changes=true" >> $GITHUB_OUTPUT
           else
             echo "has_changes=false" >> $GITHUB_OUTPUT
@@ -72,10 +73,11 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add reports/ infographic/
-          git commit -m "docs(reports): add reports for $(date +%Y-%m-%d)"
+          git add reports/ 2>/dev/null || true
+          git add infographic/ 2>/dev/null || true
+          git commit -m "docs(reports): add reports for $(date +%Y-%m-%d)" || true
           git pull --rebase origin main || true
-          git push
+          git push || true
 
   deploy-pages:
     needs: generate-reports
