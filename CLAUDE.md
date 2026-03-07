@@ -176,9 +176,9 @@ Use Mermaid unless Draw.io is explicitly requested.
 ```mermaid
 subgraph Models["🤖 Claude Models"]
     direction LR
-    Opus["Opus 4.6"]
-    Sonnet["Sonnet 4.6"]
-    Haiku["Haiku 4.5"]
+    Opus["⭐ Opus 4.6"]
+    Sonnet["🎵 Sonnet 4.6"]
+    Haiku["🐦 Haiku 4.5"]
     Opus ~~~ Sonnet ~~~ Haiku
 end
 ```
@@ -205,14 +205,18 @@ end
 
 ```mermaid
 flowchart TD
-    subgraph Anthropic["🏢 Anthropic"]
-        subgraph API["🔌 Claude API"]
-            Messages["Messages API"]
-            Tools["Tool Use"]
+    subgraph Anthropic["🏢 Anthropic Platform"]
+        subgraph API["🔌 API Layer"]
+            Messages["📨 Messages API"]
+            Tools["🔧 Tool Use"]
         end
-        subgraph Models["🤖 Models"]
-            Opus["Opus 4.6"]
-            Sonnet["Sonnet 4.6"]
+        subgraph Models["🤖 Model Layer"]
+            Opus["⭐ Opus 4.6"]
+            Sonnet["🎵 Sonnet 4.6"]
+        end
+        subgraph Storage["🗄️ Data Layer"]
+            Files[("📁 Files API")]
+            Memory[("🧠 Memory")]
         end
     end
 
@@ -220,15 +224,25 @@ flowchart TD
     Messages --> Opus
     Messages --> Sonnet
     Opus --> Tools
+    Tools --> Files
+    Tools --> Memory
 
-    classDef company fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
     classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
     classDef model fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
     classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
 
-    class Anthropic company
-    class API,Messages,Tools api
-    class Models,Opus,Sonnet model
+    class Anthropic platform
+    class API,Models,Storage layer
+    class Messages,Tools api
+    class Opus,Sonnet model
+    class Files,Memory storage
     class User user
 ```
 
@@ -274,11 +288,11 @@ Use `sequenceDiagram` for interaction flows between participants.
 ```mermaid
 sequenceDiagram
     participant U as 👤 User
-    participant A as 🔌 API
+    participant A as 🔌 Claude API
     participant M as 🤖 Model
 
-    U->>A: Request
-    A->>M: Process
+    U->>A: Messages API Request
+    A->>M: Process with Tools
     alt Success
         M-->>A: Response
         A-->>U: Result
