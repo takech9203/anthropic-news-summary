@@ -1,39 +1,105 @@
-name: Deploy to GitHub Pages
+name: Anthropic News Summary
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'reports/**'
-      - 'infographic/**'
+  schedule:
+    # Run daily at 00:00 UTC (09:00 JST)
+    - cron: '0 0 * * *'
   workflow_dispatch:
+    inputs:
+      days:
+        description: 'Number of days to look back (default: 3)'
+        required: false
+        default: '3'
 
 permissions:
-  contents: read
-  pages: write
   id-token: write
+  contents: write
+  pages: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+env:
+  PYTHON_VERSION: '3.12'
 
 jobs:
-  build:
+  generate-reports:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - name: Run Anthropic News Summary
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+          VERBOSE: '1'
+          INFOGRAPHIC_BASE_URL: ${{ vars.INFOGRAPHIC_BASE_URL }}
+        run: |
+          python run.py --days ${{ github.event.inputs.days || '7' }}
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if [[ -n $(git status --porcelain reports/ infographic/) ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "takech9203@gmail.com"
+          git config --local user.name "Takechika Kunimasa"
+          git add reports/ infographic/
+          git commit -m "docs(reports): add reports for $(date +%Y-%m-%d)"
+          git push
+
+  deploy-pages:
+    needs: generate-reports
+    runs-on: ubuntu-latest
+    if: always() && needs.generate-reports.result == 'success'
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Pull latest changes
+        run: git pull origin main
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Generate index page
+      - name: Prepare public directory
         run: |
-          mkdir -p _site
+          mkdir -p public
 
           # Generate main index.html
-          cat > _site/index.html << 'HTMLEOF'
+          cat > public/index.html << 'HTMLEOF'
           <!DOCTYPE html>
           <html lang="ja">
           <head>
@@ -171,7 +237,7 @@ jobs:
           HTMLEOF
 
           # Generate reports.json
-          echo "[" > _site/reports.json
+          echo "[" > public/reports.json
           first=true
           for file in $(ls -r reports/2*/*.md 2>/dev/null); do
             filename=$(basename "$file")
@@ -187,27 +253,22 @@ jobs:
             if [ "$first" = true ]; then
               first=false
             else
-              echo "," >> _site/reports.json
+              echo "," >> public/reports.json
             fi
 
-            echo "{\"date\":\"$date\",\"file\":\"$filename\",\"title\":\"$title\",\"infographic\":\"$has_infographic\"}" >> _site/reports.json
+            echo "{\"date\":\"$date\",\"file\":\"$filename\",\"title\":\"$title\",\"infographic\":\"$has_infographic\"}" >> public/reports.json
           done
-          echo "]" >> _site/reports.json
+          echo "]" >> public/reports.json
 
           # Copy reports and infographic directories
-          cp -r reports _site/
-          cp -r infographic _site/
+          cp -r reports public/
+          cp -r infographic public/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
