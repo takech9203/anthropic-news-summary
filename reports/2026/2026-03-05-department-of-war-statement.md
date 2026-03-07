@@ -87,11 +87,33 @@ flowchart TD
     class Actions action
 ```
 
+## 記事全文 (日本語訳)
+
+以下は Dario Amodei による声明の日本語訳です。
+
+---
+
+先日、私たちは Department of War から、Anthropic をアメリカの国家安全保障に対するサプライチェーンリスクとして指定する旨の書簡を受け取りました。私たちはこの指定が法的に妥当ではないと考えており、法廷で争う予定です。
+
+このサプライチェーンリスクの指定は範囲が狭く、主に Department of War との直接契約に影響を与えるものです。私たちは作戦上の軍事的意思決定に関与することを望んでいません。
+
+私たちの最も重要な優先事項は現在、私たちの戦闘員や国家安全保障の専門家が重要なツールを奪われないようにすることです。私たちは許可される限り、スムーズな移行を確保するために彼らをサポートし続けます。また、Department of War と国家安全保障コミュニティに対して、名目上のコストでモデルを提供し続けます。
+
+報道機関に流出した内部投稿について謝罪いたします。その投稿は困難な日に書かれた古い評価であり、私の慎重に検討された見解を反映していません。
+
+Anthropic は Department of War と違いよりも共通点の方がはるかに多いのです。私たちは両者とも米国の国家安全保障の推進とアメリカ国民の防衛にコミットしています。
+
+---
+
 ## CEO からのメッセージ
 
 Dario Amodei は声明の中で以下の点を強調しています。
 
 ### 共通の目標
+
+> "Our most important priority right now is making sure that our warfighters and national security experts are not deprived of important tools."
+>
+> (私たちの最も重要な優先事項は現在、私たちの戦闘員や国家安全保障の専門家が重要なツールを奪われないようにすることです)
 
 > "Anthropic has much more in common with the Department of War than we have differences. We both are committed to advancing US national security and defending the American people."
 >
@@ -99,7 +121,7 @@ Dario Amodei は声明の中で以下の点を強調しています。
 
 ### 謝罪
 
-Amodei は、流出した内部投稿について謝罪し、それが「困難な日に書かれた古い評価」であったと説明しました。
+Amodei は、流出した内部投稿について謝罪し、それが「困難な日に書かれた古い評価」であり、彼の「慎重に検討された見解を反映していない」と説明しました。
 
 ## 今後の展望
 
