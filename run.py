@@ -49,7 +49,8 @@ DEFAULT_DAYS = 7
 DEFAULT_PROMPT_TEMPLATE = (
     "Report Anthropic news from the past {days} days. "
     "Fetch news from Anthropic News page, Claude API release notes, and Claude Code changelog. "
-    "Check for duplicates, and delegate report creation to subagents."
+    "Check for duplicates, delegate report creation to subagents, "
+    "then generate infographics for each new report."
 )
 
 # モデル設定
@@ -400,7 +401,7 @@ async def run_skill(prompt: str | None = None, days: int = DEFAULT_DAYS) -> list
 
     prompt_with_context = f"""Current date and time: {current_time.strftime('%Y-%m-%d %H:%M:%S %Z')} (JST)
 
-You are the orchestrator for Anthropic news report generation.
+You are the orchestrator for Anthropic news report and infographic generation.
 
 1. Invoke the Skill tool with skill='anthropic-news-summary' to get the workflow
 2. Follow the skill workflow to fetch and parse news from all sources
@@ -410,6 +411,11 @@ You are the orchestrator for Anthropic news report generation.
    - Add 3-second delay between each task creation within a batch
    - TaskOutput timeout: 600000 (10 minutes)
    - CRITICAL: When you receive TaskOutput, respond with ONLY a one-line confirmation per task.
+4. AFTER all reports are generated, generate infographics:
+   - For each new report, invoke the Skill tool with skill='creating-infographic'
+   - Follow the anthropic-news theme to create HTML infographics
+   - Save to infographic/YYYY-MM-DD-<slug>.html
+   - Use 'infographic-generator' subagent via Task tool
 
 User's request: {prompt}"""
 
