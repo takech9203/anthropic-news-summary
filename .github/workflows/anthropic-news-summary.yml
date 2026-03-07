@@ -102,139 +102,113 @@ jobs:
         run: |
           mkdir -p public
 
-          # Generate main index.html
+          # Generate index.html with card grid layout
           cat > public/index.html << 'HTMLEOF'
-          <!DOCTYPE html>
-          <html lang="ja">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Anthropic News Summary</title>
-              <link rel="preconnect" href="https://fonts.googleapis.com">
-              <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-              <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
-              <style>
-                  * { margin: 0; padding: 0; box-sizing: border-box; }
-                  body {
-                      font-family: 'Zen Maru Gothic', sans-serif;
-                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                      min-height: 100vh;
-                      padding: 40px 20px;
-                  }
-                  .container {
-                      max-width: 1000px;
-                      margin: 0 auto;
-                  }
-                  header {
-                      text-align: center;
-                      color: white;
-                      margin-bottom: 40px;
-                  }
-                  header h1 {
-                      font-size: 2.5rem;
-                      margin-bottom: 10px;
-                  }
-                  header p {
-                      opacity: 0.9;
-                  }
-                  .section {
-                      background: white;
-                      border-radius: 20px;
-                      padding: 30px;
-                      margin-bottom: 30px;
-                      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-                  }
-                  .section h2 {
-                      color: #764ba2;
-                      margin-bottom: 20px;
-                      padding-bottom: 10px;
-                      border-bottom: 3px solid #667eea;
-                  }
-                  .report-list {
-                      list-style: none;
-                  }
-                  .report-list li {
-                      padding: 15px;
-                      border-bottom: 1px solid #eee;
-                      display: flex;
-                      align-items: center;
-                      gap: 15px;
-                  }
-                  .report-list li:last-child {
-                      border-bottom: none;
-                  }
-                  .report-list .date {
-                      background: #667eea;
-                      color: white;
-                      padding: 5px 12px;
-                      border-radius: 15px;
-                      font-size: 0.85rem;
-                      min-width: 100px;
-                      text-align: center;
-                  }
-                  .report-list a {
-                      color: #333;
-                      text-decoration: none;
-                      flex: 1;
-                  }
-                  .report-list a:hover {
-                      color: #764ba2;
-                  }
-                  .report-list .links {
-                      display: flex;
-                      gap: 10px;
-                  }
-                  .report-list .links a {
-                      background: #f0f0f0;
-                      padding: 5px 12px;
-                      border-radius: 10px;
-                      font-size: 0.85rem;
-                  }
-                  .report-list .links a:hover {
-                      background: #667eea;
-                      color: white;
-                  }
-                  footer {
-                      text-align: center;
-                      color: white;
-                      opacity: 0.8;
-                      margin-top: 20px;
-                  }
-              </style>
-          </head>
-          <body>
-              <div class="container">
-                  <header>
-                      <h1>Anthropic News Summary</h1>
-                      <p>Anthropic の最新ニュースを日本語でまとめています</p>
-                  </header>
-                  <div class="section">
-                      <h2>Infographics</h2>
-                      <ul class="report-list" id="report-list">
-                      </ul>
-                  </div>
-                  <footer>
-                      <p>Updated daily via GitHub Actions</p>
-                  </footer>
-              </div>
-              <script>
-                  fetch('reports.json')
-                      .then(r => r.json())
-                      .then(reports => {
-                          const list = document.getElementById('report-list');
-                          reports.filter(r => r.infographic).forEach(r => {
-                              const li = document.createElement('li');
-                              li.innerHTML = `
-                                  <span class="date">${r.date}</span>
-                                  <span style="flex:1">${r.title}</span>
-                                  <a href="${r.infographic}" class="links" style="background:#667eea;color:white;padding:5px 12px;border-radius:10px;font-size:0.85rem;text-decoration:none;">Infographic</a>
-                              `;
-                              list.appendChild(li);
-                          });
-                      });
-              </script>
-          </body>
-          </html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anthropic News Infographic Gallery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #FFF8F0, #F5EDE4);
+      font-family: 'Zen Kurenaido', sans-serif;
+      color: #1a1a2e;
+      min-height: 100vh;
+      padding: 32px 24px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { font-size: 32px; margin-bottom: 8px; color: #D4A574; }
+    .subtitle { color: #666; margin-bottom: 32px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: rgba(255,255,255,0.9);
+      border-radius: 12px;
+      border-left: 4px solid #D4A574;
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-4px); }
+    .card a {
+      display: block;
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .card-date {
+      font-size: 12px;
+      color: #D4A574;
+      margin-bottom: 4px;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .card-file {
+      font-size: 11px;
+      color: #888;
+      font-family: monospace;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      border-top: 2px dashed #D4A574;
+      padding-top: 20px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+      grid-column: 1 / -1;
+    }
+    .empty-state p { margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Anthropic News Infographic Gallery</h1>
+    <p class="subtitle">Anthropic ニュースレポートのインフォグラフィック一覧</p>
+    <div class="grid" id="grid"></div>
+    <footer>
+      <p>Updated daily via GitHub Actions</p>
+    </footer>
+  </div>
+  <script>
+    const colors = ['#D4A574', '#C49A6C', '#B89064'];
+    fetch('reports.json')
+      .then(r => r.json())
+      .then(reports => {
+        const grid = document.getElementById('grid');
+        if (reports.length === 0) {
+          grid.innerHTML = '<div class="empty-state"><p>まだインフォグラフィックがありません</p></div>';
+          return;
+        }
+        reports.forEach((r, i) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.style.borderLeftColor = colors[i % 3];
+          card.innerHTML = '<a href="' + r.infographic + '">' +
+            '<div class="card-date">' + r.date + '</div>' +
+            '<div class="card-title">' + r.title + '</div>' +
+            '<div class="card-file">' + r.infographic + '</div>' +
+            '</a>';
+          grid.appendChild(card);
+        });
+      });
+  </script>
+</body>
+</html>
           HTMLEOF
 
           # Generate reports.json (infographics only)
@@ -243,15 +217,18 @@ jobs:
           for file in $(ls -r infographic/*.html 2>/dev/null | grep -v index.html); do
             filename=$(basename "$file")
             date=$(echo "$filename" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}')
-            # Get title from corresponding report if exists
-            report_file="reports/2*/${filename%.html}.md"
-            title=""
-            for rf in $report_file; do
-              if [ -f "$rf" ]; then
-                title=$(head -1 "$rf" | sed 's/^# //')
-                break
-              fi
-            done
+            # Get title from HTML title tag
+            title=$(grep -oP '(?<=<title>)[^<]+' "$file" 2>/dev/null | head -1)
+            if [ -z "$title" ]; then
+              # Fallback: get from report file
+              report_file="reports/2*/${filename%.html}.md"
+              for rf in $report_file; do
+                if [ -f "$rf" ]; then
+                  title=$(head -1 "$rf" | sed 's/^# //')
+                  break
+                fi
+              done
+            fi
             if [ -z "$title" ]; then
               title=$(echo "$filename" | sed 's/^[0-9-]*-//' | sed 's/\.html$//' | tr '-' ' ')
             fi
