@@ -41,12 +41,8 @@ def extract_changelog_entries(content: str) -> list:
     """CHANGELOG.md をパースしてエントリのリストを返す。"""
     items = []
 
-    # Split by version headers (## [2.1.69] - 2026-03-06 or ## 2.1.69 (2026-03-06))
-    # Common patterns:
-    # ## [2.1.69] - 2026-03-06
-    # ## 2.1.69 (2026-03-06)
-    # ## [2.1.69]
-    version_pattern = r"##\s+\[?(\d+\.\d+\.\d+)\]?(?:\s*[-–]\s*|\s*\()?(\d{4}-\d{2}-\d{2})?\)?"
+    # Split by version headers (## 2.1.71 or ## [2.1.69] - 2026-03-06)
+    version_pattern = r"##\s+\[?(\d+\.\d+\.\d+)\]?(?:\s*[-–]\s*(\d{4}-\d{2}-\d{2}))?"
     parts = re.split(version_pattern, content)
 
     # Parts will be: [preamble, version1, date1, content1, version2, date2, content2, ...]
@@ -71,8 +67,9 @@ def extract_changelog_entries(content: str) -> list:
             if date_match:
                 parsed_date = date_match.group(1)
 
+        # If still no date, use today's date for recent versions (assume latest)
         if not parsed_date:
-            continue
+            parsed_date = datetime.now().strftime("%Y-%m-%d")
 
         # Extract changes by category
         categories = {

@@ -58,35 +58,35 @@ date "+%Y-%m-%d %H:%M:%S %Z"
 
 #### Anthropic News の取得
 
-```bash
-# Anthropic News ページを取得
-curl -sL "https://www.anthropic.com/news" > /tmp/anthropic_news.html
+**WebFetch ツールを使用** (Next.js サイトのため curl では取得不可):
 
-# パーサースクリプトで JSON に変換 (過去 7 日間)
-python3 .claude/skills/anthropic-news-summary/scripts/parse_anthropic_news.py --days 7 --feed /tmp/anthropic_news.html
+```
+WebFetch を使用して https://www.anthropic.com/news から最新ニュースを取得。
+プロンプト: "最新のニュース記事を20件、以下の形式でJSON配列として抽出:
+[{\"title\": \"タイトル\", \"date\": \"YYYY-MM-DD\", \"link\": \"URL\", \"description\": \"説明\"}]"
 ```
 
 #### Claude API Release Notes の取得
 
-```bash
-# Release Notes ページを取得
-curl -sL "https://platform.claude.com/docs/en/release-notes/overview" > /tmp/claude_release_notes.html
+**WebFetch ツールを使用**:
 
-# パーサースクリプトで JSON に変換
-python3 .claude/skills/anthropic-news-summary/scripts/parse_release_notes.py --days 7 --feed /tmp/claude_release_notes.html
+```
+WebFetch を使用して https://platform.claude.com/docs/en/release-notes/overview から取得。
+プロンプト: "過去30日間のリリースノートを日付ごとに抽出。
+各エントリは {\"date\": \"YYYY-MM-DD\", \"items\": [\"変更内容1\", \"変更内容2\"]} 形式で。"
 ```
 
 #### Claude Code Changelog の取得
 
 ```bash
-# Changelog を取得
+# Changelog を取得 (Markdown なので curl で取得可能)
 curl -sL "https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md" > /tmp/claude_code_changelog.md
 
 # パーサースクリプトで JSON に変換
 python3 .claude/skills/anthropic-news-summary/scripts/parse_claude_code_changelog.py --days 7 --feed /tmp/claude_code_changelog.md
 ```
 
-**パーサースクリプトの共通オプション:**
+**パーサースクリプトのオプション:**
 
 - `--days DAYS`: 取得する期間 (デフォルト: 7)
 - `--feed PATH`: 入力ファイルのパス
