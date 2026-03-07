@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.70-v2.1.71 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.25);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(212, 165, 116, 0.3);
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card .detail-list {
+            margin-top: 10px;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .feature-card .detail-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .feature-card .detail-list li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Before/After */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 6px 0;
+            color: var(--text-secondary);
+        }
+
+        /* Bug Fix List */
+        .fix-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .fix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            border-left: 3px solid var(--success);
+        }
+
+        .fix-item .fix-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .fix-item .fix-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .fix-item .fix-text strong {
+            color: var(--text-primary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Hand-drawn decorative elements */
+        .sketch-divider {
+            text-align: center;
+            margin: 8px 0;
+            opacity: 0.3;
+            font-size: 20px;
+            letter-spacing: 8px;
+            color: var(--anthropic-coral);
+        }
+
+        .hand-note {
+            display: inline-block;
+            background: #FFFDE7;
+            border: 2px dashed #E8C9A8;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            transform: rotate(-0.5deg);
+            margin: 8px 0;
+        }
+
+        /* Version tag */
+        .version-tag {
+            display: inline-block;
+            background: var(--anthropic-cream);
+            color: var(--anthropic-coral);
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(212, 165, 116, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .links-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 12px;
+        }
+
+        .footer .links-list li {
+            padding: 4px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">TOOL UPDATE</span>
+                <h1>Claude Code v2.1.70-v2.1.71 リリース:<br>ループコマンドと大規模な安定性改善</h1>
+                <p class="date">2026-03-06</p>
+                <div class="version-badges">
+                    <span class="version-badge">v2.1.70</span>
+                    <span class="version-badge">v2.1.71</span>
+                    <span class="version-badge">57 件の変更</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points / Overview -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>/loop コマンドで定期実行を自動化</h3>
+                        <p>プロンプトやスラッシュコマンドを一定間隔で繰り返し実行する新機能を追加。デプロイ監視やテスト実行の定期タスクをセッション内で自動化できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>安定性の大幅改善: 36 件のバグ修正</h3>
+                        <p>stdin フリーズ、音声モードの起動遅延、OAuth 再接続の失敗など、日常的な使用体験に直結する問題が多数修正されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>パフォーマンスの数値的改善</h3>
+                        <p>再レンダリング 74% 削減、メモリ 426KB 削減、ポーリング負荷 300 倍低減など、具体的な数値で示される改善を実現。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💻</div>
+                    <div class="key-point-content">
+                        <h3>VS Code 拡張機能の大幅強化</h3>
+                        <p>セッションリスト、プランビュー、MCP サーバー管理ダイアログの 3 つの新機能で IDE 統合の利便性が向上。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る改善</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">57</div>
+                    <div class="stat-label">変更件数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">74%</div>
+                    <div class="stat-label">再レンダリング削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">300x</div>
+                    <div class="stat-label">ポーリング負荷低減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">426KB</div>
+                    <div class="stat-label">メモリ削減</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features v2.1.71 -->
+        <section class="section">
+            <h2 class="section-title">新機能 <span class="version-tag">v2.1.71</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔄 /loop コマンド</h3>
+                    <p>プロンプトやスラッシュコマンドを一定間隔で繰り返し実行する機能。</p>
+                    <ul class="detail-list">
+                        <li>例: /loop 5m check the deploy</li>
+                        <li>セッション内で定期タスクを自動化</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>⏰ cron スケジューリング</h3>
+                    <p>セッション内で定期実行プロンプトをスケジュール可能に。より柔軟なタスク自動化を実現します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎤 音声キーバインド</h3>
+                    <p>音声モードのアクティベーションキーを keybindings.json でカスタマイズ可能に。デフォルトはスペースキー。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ Bash 自動承認リスト拡張</h3>
+                    <p>fmt、comm、cmp、numfmt、expr、test、printf、getconf、seq、tsort、pr を追加。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VS Code Features v2.1.70 -->
+        <section class="section">
+            <h2 class="section-title">VS Code 強化 <span class="version-tag">v2.1.70</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📋 セッションリスト</h3>
+                    <p>アクティビティバーにスパークアイコンを追加し、全 Claude Code セッションを一覧表示。セッション管理が直感的に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📄 プランビュー</h3>
+                    <p>プランのフルマークダウン表示とコメント追加機能。作業計画の確認と共有が容易に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔌 MCP 管理ダイアログ</h3>
+                    <p>/mcp コマンドでサーバーの有効化・無効化、再接続、OAuth 認証管理がネイティブダイアログで可能に。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>長時間セッションで stdin がフリーズ</li>
+                        <li>音声モード有効時に 5-8 秒の起動遅延</li>
+                        <li>OAuth トークンリフレッシュで UI フリーズ</li>
+                        <li>スリープ復帰後の再接続に最大 10 分</li>
+                        <li>CJK 文字がクリップボードで文字化け</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>stdin フリーズを完全に解消</li>
+                        <li>CoreAudio 初期化を非同期化し遅延なし</li>
+                        <li>OAuth トークンリフレッシュを直列化</li>
+                        <li>ブリッジ再接続が数秒に短縮</li>
+                        <li>PowerShell Set-Clipboard で正常動作</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Major Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">主要な修正</h2>
+
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">v2.1.71 で 17 件、v2.1.70 で 19 件の修正が含まれています。</p>
+
+            <div class="fix-list">
+                <div class="fix-item">
+                    <span class="fix-icon">⌨️</span>
+                    <span class="fix-text"><strong>stdin フリーズ</strong>: 長時間セッションでキーストロークが処理されなくなる問題を解消</span>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🔊</span>
+                    <span class="fix-text"><strong>起動時フリーズ</strong>: 音声モード有効時の CoreAudio 初期化がメインスレッドをブロックする問題を解消</span>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🔑</span>
+                    <span class="fix-text"><strong>OAuth 再接続</strong>: claude.ai コネクタが OAuth トークンリフレッシュ後に再接続できない問題を修正</span>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🍴</span>
+                    <span class="fix-text"><strong>フォーク会話</strong>: /fork で分岐した会話が同じプランファイルを共有し、編集が上書きされる問題を修正</span>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🖼️</span>
+                    <span class="fix-text"><strong>Read ツール画像処理</strong>: 画像処理失敗時にオーバーサイズの画像がコンテキストに挿入される問題を修正</span>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🔌</span>
+                    <span class="fix-text"><strong>プラグインインストール消失</strong>: 複数の Claude Code インスタンスを同時実行した際にプラグインが失われる問題を修正</span>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🌐</span>
+                    <span class="fix-text"><strong>API 400 エラー</strong>: ANTHROPIC_BASE_URL でサードパーティゲートウェイ使用時のツール検索エラーを解消</span>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">📋</span>
+                    <span class="fix-text"><strong>Windows/WSL クリップボード</strong>: CJK 文字や絵文字が文字化けする問題を PowerShell Set-Clipboard で修正</span>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">💾</span>
+                    <span class="fix-text"><strong>プロンプトキャッシュ無効化</strong>: MCP サーバーの instructions 接続時にキャッシュが破棄される問題を修正</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Improvements -->
+        <section class="section">
+            <h2 class="section-title">パフォーマンス改善</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🖥️ 再レンダリング削減</h3>
+                    <p>ターン中のプロンプト入力の再レンダリングを約 74% 削減。入力中のちらつきが大幅に軽減されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💾 起動メモリ削減</h3>
+                    <p>カスタム CA 証明書未使用ユーザーのメモリを約 426KB 削減。ネイティブ画像プロセッサの読み込みを初回使用時まで遅延。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📡 ポーリング最適化</h3>
+                    <p>Remote Control の /poll レートを接続中は 10 分に 1 回に削減し、サーバー負荷を約 300 倍低減。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🗜️ コンパクション改善</h3>
+                    <p>画像を保持してプロンプトキャッシュの再利用を可能に。長いセッションでのコスト効率が向上。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>CoreAudio 初期化の非同期化</h3>
+                        <p>macOS でのシステムウェイク後の音声モード初期化をメインスレッドから分離し、起動時のブロッキングを解消。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>OAuth トークンリフレッシュの直列化</h3>
+                        <p>多数のコネクタが同時にリフレッシュする際の競合を防止。UI フリーズの根本原因を解消。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>画像処理のフォールバック改善</h3>
+                        <p>画像処理失敗時にオーバーサイズのデータがコンテキストに流入しないようガードを追加。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📡</div>
+                    <div class="key-point-content">
+                        <h3>ポーリング戦略の最適化</h3>
+                        <p>接続中のポーリング頻度を大幅に削減しつつ、接続断時には即座に高速ポーリングに切り替え。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph NewFeatures["&#x1F195; 新機能 v2.1.71"]
+        direction LR
+        Loop["&#x1F504; /loop コマンド&lt;br/&gt;定期実行"]
+        Cron["&#x23F0; cron スケジューリング&lt;br/&gt;セッション内"]
+        Voice["&#x1F3A4; 音声キーバインド&lt;br/&gt;カスタマイズ"]
+        Loop ~~~ Cron ~~~ Voice
+    end
+
+    subgraph Performance["&#x26A1; パフォーマンス改善"]
+        direction LR
+        Startup["&#x1F680; 起動時間短縮&lt;br/&gt;画像プロセッサ遅延読込"]
+        Memory["&#x1F4BE; メモリ削減&lt;br/&gt;426KB 削減"]
+        Render["&#x1F5A5;&#xFE0F; 再レンダリング&lt;br/&gt;74% 削減"]
+        Startup ~~~ Memory ~~~ Render
+    end
+
+    subgraph Stability["&#x1F527; 安定性修正"]
+        direction LR
+        Stdin["&#x2328;&#xFE0F; stdin フリーズ&lt;br/&gt;長時間セッション"]
+        OAuth["&#x1F511; OAuth 再接続&lt;br/&gt;トークンリフレッシュ"]
+        Bridge["&#x1F309; ブリッジ再接続&lt;br/&gt;スリープ復帰"]
+        Stdin ~~~ OAuth ~~~ Bridge
+    end
+
+    subgraph VSCode["&#x1F4BB; VS Code 強化 v2.1.70"]
+        direction LR
+        Sessions["&#x1F4CB; セッションリスト&lt;br/&gt;スパークアイコン"]
+        Plans["&#x1F4C4; プランビュー&lt;br/&gt;マークダウン表示"]
+        MCP["&#x1F50C; MCP 管理&lt;br/&gt;ネイティブダイアログ"]
+        Sessions ~~~ Plans ~~~ MCP
+    end
+
+    NewFeatures --> Performance
+    Performance --> Stability
+    Stability --> VSCode
+
+    classDef newFeature fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef performance fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef stability fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef vscode fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class NewFeatures newFeature
+    class Performance performance
+    class Stability stability
+    class VSCode vscode
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデートコマンド</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/loop コマンドの使用例</span>
+                </div>
+                <pre><code class="language-bash"># /loop コマンドによるデプロイ監視
+/loop 5m check the deploy status
+
+# /loop コマンドによる定期的なテスト実行
+/loop 10m run the test suite and report failures</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース / 影響</h2>
+
+            <div class="use-case">
+                <h4>CLI ヘビーユーザー</h4>
+                <p>Claude Code CLI を日常的に利用している開発者は、stdin フリーズの修正とパフォーマンス改善により、長時間セッションでの作業体験が大幅に向上します。/loop コマンドで定期タスクの自動化も可能になりました。</p>
+            </div>
+            <div class="use-case">
+                <h4>VS Code ユーザー</h4>
+                <p>VS Code で Claude Code 拡張機能を使用しているユーザーは、セッションリスト、プランビュー、MCP 管理ダイアログの 3 つの新機能で、IDE 内での開発体験が一段と充実します。</p>
+            </div>
+            <div class="use-case">
+                <h4>チーム / エンタープライズ利用</h4>
+                <p>カスタム Bedrock エンドポイントやサードパーティゲートウェイを利用しているチームは、API 400 エラーや effort パラメータエラーの修正により、より安定した運用が可能になります。プラグインの消失問題も解消されました。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8;">
+                Claude Code v2.1.70-v2.1.71 は、合計 57 件の変更を含む大規模なリリースです。v2.1.71 で追加された <strong>/loop コマンド</strong>により、デプロイ監視やテスト実行などの定期タスクをセッション内で自動化できるようになりました。安定性の面では、長時間セッションでの stdin フリーズ、音声モードの起動遅延、OAuth 再接続の失敗など、日常的な使用体験に直結する問題が多数修正されています。VS Code 拡張機能もセッション管理、プランビュー、MCP サーバー管理の 3 つの新機能で大幅に強化されており、全ての Claude Code ユーザーに早期のアップデートを推奨します。
+            </p>
+            <div class="hand-note" style="margin-top: 16px;">
+                全てのユーザーに早期アップデートを推奨します: <code style="background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px;">npm update -g @anthropic-ai/claude-code</code>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <ul class="links-list">
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></li>
+                <li><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code</a></li>
+                <li><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">https://docs.anthropic.com/en/docs/claude-code</a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

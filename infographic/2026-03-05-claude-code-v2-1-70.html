@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.70: 安定性とパフォーマンスの大幅改善 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-tag {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding-left: 18px;
+            margin-top: 8px;
+        }
+
+        .feature-card ul li {
+            margin-bottom: 4px;
+        }
+
+        /* Bug fix list */
+        .bugfix-group {
+            margin-bottom: 20px;
+        }
+
+        .bugfix-group-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+        }
+
+        .bugfix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bugfix-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 10px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--anthropic-coral);
+            line-height: 1.6;
+        }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            font-size: 14px;
+            padding-left: 18px;
+            line-height: 1.8;
+        }
+
+        /* Tech detail */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .tech-detail h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Improvements list */
+        .improvements-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .improvements-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 12px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            line-height: 1.6;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .improvements-list li .icon {
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        /* Action items */
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+            border: 1px solid #C7D2FE;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .action-item .step {
+            width: 32px;
+            height: 32px;
+            background: var(--info);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .action-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .links-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 8px;
+        }
+
+        .footer .links-list li {
+            margin-bottom: 6px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code アップデート</span>
+                <h1>Claude Code v2.1.70: 安定性とパフォーマンスの大幅改善</h1>
+                <p class="date">2026-03-05</p>
+                <span class="version-tag">v2.1.69 → v2.1.70 / 合計 25 件の変更</span>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🐛</div>
+                    <div class="key-point-content">
+                        <h3>14 件のバグ修正</h3>
+                        <p>API 互換性、Windows/WSL 環境、入力 / UI、プラグイン / コマンドの 4 カテゴリにわたる修正。サードパーティゲートウェイでの API 400 エラーや CJK クリップボード破損を解消</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚀</div>
+                    <div class="key-point-content">
+                        <h3>パフォーマンス大幅改善</h3>
+                        <p>プロンプト入力のレンダリング 74% 削減、Remote Control サーバー負荷 300 倍削減、起動時メモリ 426KB 削減</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💻</div>
+                    <div class="key-point-content">
+                        <h3>VS Code 拡張機能 3 つの新機能</h3>
+                        <p>セッション一覧のアクティビティバー表示、プランのフル Markdown ビュー、ネイティブ MCP サーバー管理ダイアログ</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🪟</div>
+                    <div class="key-point-content">
+                        <h3>Windows/WSL 環境の安定化</h3>
+                        <p>CJK テキストのクリップボード破損修正、VS Code ウィンドウの不要な起動修正、音声モードのネイティブモジュールエラー修正</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>品質と効率に重点</h3>
+                        <p>v2.1.69 の大型アップデートに続くフォローアップリリース。報告された問題の修正と日常的な開発体験の改善に焦点</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る改善</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">25</div>
+                    <div class="stat-label">変更件数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">74%</div>
+                    <div class="stat-label">再レンダリング削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">300x</div>
+                    <div class="stat-label">サーバー負荷削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">426KB</div>
+                    <div class="stat-label">メモリ削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">600</div>
+                    <div class="stat-label">トークン節約 / resume</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 (14 件)</h2>
+
+            <div class="bugfix-group">
+                <h3 class="bugfix-group-title">🔌 API 互換性 (4 件)</h3>
+                <ul class="bugfix-list">
+                    <li><code>ANTHROPIC_BASE_URL</code> でサードパーティゲートウェイ使用時の API 400 エラーを修正。<code>tool_reference</code> ブロックを無効化するように変更</li>
+                    <li>カスタム Bedrock 推論プロファイルや非標準モデル識別子での <code>effort</code> パラメータ未対応エラーを修正</li>
+                    <li><code>ToolSearch</code> 直後にモデルの応答が空になる問題を修正。サーバーがシステムプロンプト形式のタグでモデルに早期停止を誤認させていた</li>
+                    <li><code>instructions</code> を持つ MCP サーバーが最初のターン後に接続した際のプロンプトキャッシュ破棄を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-group">
+                <h3 class="bugfix-group-title">🪟 Windows/WSL (3 件)</h3>
+                <ul class="bugfix-list">
+                    <li>クリップボードが非 ASCII テキスト (CJK、絵文字) を破損する問題を修正。PowerShell の <code>Set-Clipboard</code> を使用するように変更</li>
+                    <li>VS Code 統合ターミナルから実行した際に余分な VS Code ウィンドウが起動時に開く問題を修正</li>
+                    <li>Windows ネイティブバイナリで音声モードが "native audio module could not be loaded" エラーで失敗する問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-group">
+                <h3 class="bugfix-group-title">🖥️ 入力 / UI (4 件)</h3>
+                <ul class="bugfix-list">
+                    <li>低速な SSH 接続でタイピング中に Enter キーが送信ではなく改行を挿入する問題を修正</li>
+                    <li><code>voiceEnabled: true</code> 設定時にセッション開始時にプッシュトゥトークが有効化されない問題を修正</li>
+                    <li><code>#NNN</code> 参照を含む Markdown リンクが現在のリポジトリを誤って指す問題を修正</li>
+                    <li><code>AskUserQuestion</code> プレビューダイアログでキーストロークごとに Markdown レンダリングが再実行されるパフォーマンス劣化を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-group">
+                <h3 class="bugfix-group-title">🔧 プラグイン / コマンド (3 件)</h3>
+                <ul class="bugfix-list">
+                    <li><code>/plugin</code> でプラグインが不正確にインストール済みと表示される問題を修正</li>
+                    <li>プラグインの初回起動時 "not found in marketplace" エラーを修正。マーケットプレースインストール後に自動更新</li>
+                    <li><code>/security-review</code> コマンドが古い Git バージョンで失敗する問題と、<code>/color</code> コマンドでデフォルトカラーに戻す方法がなかった問題を修正</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Performance -->
+        <section class="section">
+            <h2 class="section-title">パフォーマンス改善 (5 件)</h2>
+
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>プロンプト入力の頻繁な再レンダリング</li>
+                        <li>Remote Control: 1-2 秒間隔のポーリング</li>
+                        <li>カスタム CA 証明書なしでもメモリ消費</li>
+                        <li>フィーチャーフラグのキャッシュが更新されない</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>再レンダリング約 74% 削減</li>
+                        <li>Remote Control: 10 分間隔 (300 倍削減)</li>
+                        <li>起動時メモリ約 426KB 削減</li>
+                        <li>フィーチャーフラグのディスクキャッシュ更新を修正</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- VS Code Features -->
+        <section class="section">
+            <h2 class="section-title">VS Code 拡張機能の新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>✨ セッション一覧</h3>
+                    <p>VS Code アクティビティバーにスパークアイコンが追加され、すべての Claude Code セッションを一覧表示可能に。セッションはフルエディタとして開ける</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 プランビュー</h3>
+                    <p>プランのフル Markdown ドキュメントビューが追加された。コメントを追加してフィードバックを提供する機能もサポート</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔗 MCP サーバー管理</h3>
+                    <p>ネイティブ MCP サーバー管理ダイアログが追加。チャットパネルで <code>/mcp</code> を使用してサーバーの有効化 / 無効化、再接続、OAuth 認証管理が可能に</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Other Improvements -->
+        <section class="section">
+            <h2 class="section-title">その他の改善</h2>
+            <ul class="improvements-list">
+                <li><span class="icon">📦</span><span>コンパクション処理が要約リクエストで画像を保持するようになり、プロンプトキャッシュの再利用が可能に。コンパクションがより高速かつ低コストに</span></li>
+                <li><span class="icon">✏️</span><span><code>/rename</code> がモデル処理中でも動作するように改善 (従来はサイレントにキューイング)</span></li>
+                <li><span class="icon">🎙️</span><span>マイクが無音をキャプチャした際のエラーメッセージが改善され、"no speech detected" との区別が可能に</span></li>
+                <li><span class="icon">💾</span><span><code>--resume</code> 時にスキルリストの再注入を抑制し、再開ごとに約 600 トークンを節約</span></li>
+                <li><span class="icon">🔒</span><span><code>permissions.defaultMode</code> の無効な値が Claude Code Remote 環境で適用されないよう変更</span></li>
+                <li><span class="icon">🔔</span><span><code>.claude/settings.json</code> にレガシーの Opus モデル文字列が固定されている場合の通知繰り返し問題を修正</span></li>
+                <li><span class="icon">🔮</span><span>VS Code テレポートセッションでテレポートマーカーがレンダリングされない問題を修正</span></li>
+            </ul>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <div class="tech-detail">
+                <h4>ToolSearch のプロンプト互換性修正</h4>
+                <p><code>ToolSearch</code> 機能ではサーバー側がツールスキーマをシステムプロンプト形式のタグとしてプロンプト末尾にレンダリングする。これがモデルに「応答終了」と誤認させ、空の応答を返す原因となっていた。v2.1.70 ではこのレンダリング方式が改善された。</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>Remote Control ポーリング最適化</h4>
+                <p>Remote Control の <code>/poll</code> エンドポイントへのリクエスト頻度が、接続中は 1-2 秒間隔から 10 分間隔に変更された。これによりサーバー負荷が約 300 倍削減される。トランスポートロス (WebSocket 切断など) の場合は即座に高速ポーリングに切り替わるため、再接続性能には影響しない。</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>プロンプト入力レンダリングの最適化</h4>
+                <p>ターン中のプロンプト入力再レンダリングが約 74% 削減された。これは React のレンダリングサイクルの最適化によるもので、特に長いセッションでの UI 応答性が向上する。</p>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph BugFixes["14 件のバグ修正"]
+        direction LR
+        API["🔌 API 互換性&lt;br/&gt;4 件"]
+        Windows["🪟 Windows/WSL&lt;br/&gt;3 件"]
+        UIUX["🖥️ 入力 / UI&lt;br/&gt;4 件"]
+        PluginFix["🔧 プラグイン&lt;br/&gt;3 件"]
+        API ~~~ Windows ~~~ UIUX ~~~ PluginFix
+    end
+
+    subgraph Performance["🚀 パフォーマンス改善"]
+        direction LR
+        Render["📉 再レンダリング&lt;br/&gt;-74%"]
+        Memory["🧠 起動メモリ&lt;br/&gt;-426KB"]
+        Poll["📡 ポーリング負荷&lt;br/&gt;-300x"]
+        Render ~~~ Memory ~~~ Poll
+    end
+
+    subgraph VSCode["VS Code 拡張機能"]
+        direction LR
+        Sessions["✨ セッション一覧&lt;br/&gt;アクティビティバー"]
+        Plans["📋 プランビュー&lt;br/&gt;コメント機能"]
+        MCP["🔗 MCP 管理&lt;br/&gt;ダイアログ"]
+        Sessions ~~~ Plans ~~~ MCP
+    end
+
+    subgraph Other["その他の改善"]
+        direction LR
+        Compact["📦 コンパクション&lt;br/&gt;キャッシュ改善"]
+        Resume["💾 --resume&lt;br/&gt;-600 トークン"]
+        Rename["✏️ /rename&lt;br/&gt;処理中も動作"]
+        Compact ~~~ Resume ~~~ Rename
+    end
+
+    User(["👤 開発者"]) --> BugFixes
+    User --> Performance
+    User --> VSCode
+    User --> Other
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef fix fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef perf fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef vscode fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef other fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class BugFixes,Performance,VSCode,Other platform
+    class API,Windows,UIUX,PluginFix fix
+    class Render,Memory,Poll perf
+    class Sessions,Plans,MCP vscode
+    class Compact,Resume,Rename other
+    class User user
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases / Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響とユースケース</h2>
+
+            <div class="use-case">
+                <h4>🔌 サードパーティ API ゲートウェイ利用者</h4>
+                <p><code>ANTHROPIC_BASE_URL</code> でサードパーティゲートウェイを使用している場合、API 400 エラーが解消。カスタム Bedrock 推論プロファイルや非標準モデル識別子を使用した設定も正常に動作するようになった</p>
+            </div>
+
+            <div class="use-case">
+                <h4>🪟 Windows/WSL 環境の開発者</h4>
+                <p>CJK テキストのクリップボード操作が正常化。VS Code 統合ターミナルからの余分なウィンドウ起動も修正され、日本語 / 中国語 / 韓国語環境での開発体験が大幅に向上</p>
+            </div>
+
+            <div class="use-case">
+                <h4>💻 VS Code ユーザー</h4>
+                <p>セッション一覧、プランビュー、MCP サーバー管理の 3 つの新機能で IDE 統合がさらに強化。ターミナルに切り替えることなく MCP サーバーを管理可能に</p>
+            </div>
+
+            <div class="use-case">
+                <h4>🏗️ Claude Code Remote 管理者</h4>
+                <p>Remote Control のポーリング間隔が大幅に最適化され、サーバー負荷が約 300 倍削減。再接続動作には影響しないため、レート制限設定を見直す際は新しい 10 分間隔を考慮</p>
+            </div>
+        </section>
+
+        <!-- Required Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+
+            <div class="action-item">
+                <div class="step">1</div>
+                <p>Claude Code を v2.1.70 に更新する</p>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデートコマンド</span>
+                </div>
+                <pre><code class="language-bash">npm install -g @anthropic-ai/claude-code@latest</code></pre>
+            </div>
+
+            <div class="action-item">
+                <div class="step">2</div>
+                <p><code>ANTHROPIC_BASE_URL</code> でサードパーティゲートウェイを使用している場合、API 400 エラーが解消されていることを確認する</p>
+            </div>
+
+            <div class="action-item">
+                <div class="step">3</div>
+                <p>Windows/WSL 環境で CJK テキストのクリップボード操作を使用している場合、文字化けが解消されていることを確認する</p>
+            </div>
+
+            <div class="action-item">
+                <div class="step">4</div>
+                <p>VS Code ユーザーは拡張機能を更新し、新しいセッション一覧機能と MCP 管理ダイアログを試す</p>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+
+            <div class="tech-detail">
+                <h4>Remote Control 利用者</h4>
+                <p>ポーリング間隔が大幅に変更されたが、再接続動作には影響しない。サーバー側のレート制限設定を見直す場合は、新しい 10 分間隔を考慮する</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>カスタム Bedrock プロファイル利用者</h4>
+                <p><code>effort</code> パラメータのエラーが解消されたため、カスタムモデル識別子を使用した設定が正常に動作するようになった</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>/color コマンド利用者</h4>
+                <p>デフォルトカラーへのリセットが <code>/color default</code> または <code>/color reset</code> で可能になった</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <ul class="links-list">
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code CHANGELOG.md</a></li>
+                <li><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+            </ul>
+            <p style="margin-top: 12px; font-size: 11px; color: #999;">Generated by Anthropic News Summary</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
