@@ -209,7 +209,7 @@ jobs:
                       <p>Anthropic の最新ニュースを日本語でまとめています</p>
                   </header>
                   <div class="section">
-                      <h2>Latest Reports</h2>
+                      <h2>Infographics</h2>
                       <ul class="report-list" id="report-list">
                       </ul>
                   </div>
@@ -222,15 +222,12 @@ jobs:
                       .then(r => r.json())
                       .then(reports => {
                           const list = document.getElementById('report-list');
-                          reports.forEach(r => {
+                          reports.filter(r => r.infographic).forEach(r => {
                               const li = document.createElement('li');
                               li.innerHTML = `
                                   <span class="date">${r.date}</span>
-                                  <a href="reports/${r.file}">${r.title}</a>
-                                  <div class="links">
-                                      <a href="reports/${r.file}">Report</a>
-                                      ${r.infographic ? `<a href="infographic/${r.infographic}">Infographic</a>` : ''}
-                                  </div>
+                                  <span style="flex:1">${r.title}</span>
+                                  <a href="${r.infographic}" class="links" style="background:#667eea;color:white;padding:5px 12px;border-radius:10px;font-size:0.85rem;text-decoration:none;">Infographic</a>
                               `;
                               list.appendChild(li);
                           });
@@ -240,18 +237,23 @@ jobs:
           </html>
           HTMLEOF
 
-          # Generate reports.json
+          # Generate reports.json (infographics only)
           echo "[" > public/reports.json
           first=true
-          for file in $(ls -r reports/2*/*.md 2>/dev/null); do
+          for file in $(ls -r infographic/*.html 2>/dev/null | grep -v index.html); do
             filename=$(basename "$file")
             date=$(echo "$filename" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}')
-            slug=$(echo "$filename" | sed 's/^[0-9-]*-//' | sed 's/\.md$//')
-            title=$(head -1 "$file" | sed 's/^# //')
-            infographic_file="${filename%.md}.html"
-            has_infographic=""
-            if [ -f "infographic/$infographic_file" ]; then
-              has_infographic="$infographic_file"
+            # Get title from corresponding report if exists
+            report_file="reports/2*/${filename%.html}.md"
+            title=""
+            for rf in $report_file; do
+              if [ -f "$rf" ]; then
+                title=$(head -1 "$rf" | sed 's/^# //')
+                break
+              fi
+            done
+            if [ -z "$title" ]; then
+              title=$(echo "$filename" | sed 's/^[0-9-]*-//' | sed 's/\.html$//' | tr '-' ' ')
             fi
 
             if [ "$first" = true ]; then
@@ -260,13 +262,12 @@ jobs:
               echo "," >> public/reports.json
             fi
 
-            echo "{\"date\":\"$date\",\"file\":\"$filename\",\"title\":\"$title\",\"infographic\":\"$has_infographic\"}" >> public/reports.json
+            echo "{\"date\":\"$date\",\"title\":\"$title\",\"infographic\":\"$filename\"}" >> public/reports.json
           done
           echo "]" >> public/reports.json
 
-          # Copy reports and infographic directories
-          cp -r reports public/
-          cp -r infographic public/
+          # Copy infographic files only
+          cp infographic/*.html public/ 2>/dev/null || true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
