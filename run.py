@@ -373,7 +373,6 @@ User's request: {prompt}"""
                     elif isinstance(message, ResultMessage):
                         print()
                         logger.log_verbose(f"Received ResultMessage at {logger.elapsed()}")
-                        break
 
                 print()
                 print()
