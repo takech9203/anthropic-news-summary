@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.72 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.25);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(212, 165, 116, 0.3);
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Before/After */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 6px 0;
+            color: var(--text-secondary);
+        }
+
+        /* Bug Fix Categories */
+        .fix-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .fix-category {
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 3px solid var(--success);
+        }
+
+        .fix-category h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fix-category .fix-count {
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .fix-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .fix-category ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .fix-category ul li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Hand-drawn decorative elements */
+        .hand-note {
+            display: inline-block;
+            background: #FFFDE7;
+            border: 2px dashed #E8C9A8;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            transform: rotate(-0.5deg);
+            margin: 8px 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .links-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 12px;
+        }
+
+        .footer .links-list li {
+            padding: 4px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .fix-categories {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code アップデート</span>
+                <h1>Claude Code v2.1.72 リリース:<br>トークンコスト最大 12 倍削減とバンドルサイズ 510KB 縮小</h1>
+                <p class="date">2026-03-09</p>
+                <div class="version-badges">
+                    <span class="version-badge">v2.1.72</span>
+                    <span class="version-badge">新機能 8 件</span>
+                    <span class="version-badge">バグ修正 24+ 件</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points / Overview -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4B0;</div>
+                    <div class="key-point-content">
+                        <h3>プロンプトキャッシュ修正で入力トークンコスト最大 12 倍削減</h3>
+                        <p>SDK の query() 呼び出しにおけるキャッシュ無効化を修正。キャッシュヒット率が大幅に向上し、特に大規模プロジェクトでの運用コストが劇的に低減されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x26A1;</div>
+                    <div class="key-point-content">
+                        <h3>Bash パーサーのネイティブモジュール化でメモリリーク解消</h3>
+                        <p>JavaScript ベースの Bash コマンドパーサーをネイティブモジュールに置き換え。メモリリークが解消され、初期化速度も向上しています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4E6;</div>
+                    <div class="key-point-content">
+                        <h3>バンドルサイズ約 510KB 縮小</h3>
+                        <p>不要な依存関係の削除と最適化により、パッケージサイズが約 510KB 削減されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F195;</div>
+                    <div class="key-point-content">
+                        <h3>新機能 8 件追加</h3>
+                        <p>/copy w キー、/plan 説明引数、ExitWorktree ツール、エフォート簡素化、Bash 自動承認拡張、Agent model パラメータなど。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F527;</div>
+                    <div class="key-point-content">
+                        <h3>バグ修正 24 件以上</h3>
+                        <p>音声モード、プラグイン、権限ルール、並列ツール呼び出し、VS Code 統合など幅広い領域の安定性が改善されています。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る改善</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">12x</div>
+                    <div class="stat-label">トークンコスト削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">510KB</div>
+                    <div class="stat-label">バンドルサイズ削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24+</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>SDK query() でプロンプトキャッシュが毎回無効化</li>
+                        <li>高い入力トークンコスト</li>
+                        <li>JavaScript ベースのパーサーでメモリリーク発生</li>
+                        <li>長時間セッションで CPU 使用率が増大</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>キャッシュ正常動作でヒット率大幅向上</li>
+                        <li>入力トークンコスト最大 12 倍削減</li>
+                        <li>ネイティブモジュールでメモリリーク解消</li>
+                        <li>CPU 消費の最適化で安定動作</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主要新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x1F4CB; /copy w キー</h3>
+                    <p>フォーカス中の選択範囲をクリップボードを介さずファイルに直接書き出し。SSH 環境で特に有用です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4DD; /plan 説明引数</h3>
+                    <p><code style="background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px;">/plan fix the auth bug</code> のように、プラン作成時に説明を直接指定可能に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F500; ExitWorktree ツール</h3>
+                    <p>EnterWorktree セッションから離脱するための専用ツールを追加。ワークツリー管理がより柔軟に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F3AF; エフォート簡素化</h3>
+                    <p>max を廃止し、低 &#x25CB; / 中 &#x25D0; / 高 &#x25CF; の 3 段階に整理。直感的なレベル指定が可能に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F527; Bash 自動承認拡張</h3>
+                    <p>lsof、pgrep、tput、ss、fd、fdfind を自動承認リストに追加。確認プロンプトなしで実行可能に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F916; Agent model パラメータ</h3>
+                    <p>呼び出しごとのモデルオーバーライドが再度可能に。タスクに応じた最適なモデル選択ができます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes Section -->
+        <section class="section">
+            <h2 class="section-title">バグ修正カテゴリ</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">24 件以上のバグ修正が以下のカテゴリに分類されます。</p>
+            <div class="fix-categories">
+                <div class="fix-category">
+                    <h4>&#x1F3A4; 音声モード <span class="fix-count">3 件</span></h4>
+                    <ul>
+                        <li>入力遅延の修正</li>
+                        <li>"No speech detected" の誤検知を解消</li>
+                        <li>古いトランスクリプトの残存を修正</li>
+                    </ul>
+                </div>
+                <div class="fix-category">
+                    <h4>&#x1F50C; プラグイン <span class="fix-count">4 件</span></h4>
+                    <ul>
+                        <li>Windows/OneDrive での EEXIST エラー</li>
+                        <li>マーケットプレイスのユーザースコープブロック</li>
+                        <li>リテラル ~ ディレクトリの問題</li>
+                        <li>.git サフィックスなしの URL サポート</li>
+                    </ul>
+                </div>
+                <div class="fix-category">
+                    <h4>&#x1F512; 権限・セキュリティ <span class="fix-count">3 件</span></h4>
+                    <ul>
+                        <li>ワイルドカードルールマッチング</li>
+                        <li>heredoc のパース問題</li>
+                        <li>サンドボックス権限問題</li>
+                    </ul>
+                </div>
+                <div class="fix-category">
+                    <h4>&#x1F333; ワークツリー・セッション <span class="fix-count">3 件</span></h4>
+                    <ul>
+                        <li>ワークツリー間の分離不完全</li>
+                        <li>--continue の動作修正</li>
+                        <li>/clear のスコープ修正</li>
+                    </ul>
+                </div>
+                <div class="fix-category">
+                    <h4>&#x1F4BB; VS Code <span class="fix-count">4 件</span></h4>
+                    <ul>
+                        <li>統合ターミナルのスクロール速度</li>
+                        <li>Shift+Enter が送信になる問題</li>
+                        <li>エフォートレベルインジケーター追加</li>
+                        <li>URI ハンドラー追加</li>
+                    </ul>
+                </div>
+                <div class="fix-category">
+                    <h4>&#x1F504; その他 <span class="fix-count">7+ 件</span></h4>
+                    <ul>
+                        <li>終了の遅延修正</li>
+                        <li>Agent タスク進捗の停止</li>
+                        <li>スキルフックの二重発火</li>
+                        <li>並列ツール呼び出しの耐障害性</li>
+                        <li>U+2028/U+2029 によるクラッシュ</li>
+                        <li>Ctrl+B トランスクリプト消失</li>
+                        <li>フィードバック調査の頻度</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデートと新機能の使用例</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# /plan に説明を直接渡してプラン作成
+/plan fix the auth bug
+
+# エフォートレベルの指定
+claude --effort high</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph CostOpt["&#x1F4B0; コスト最適化"]
+        direction LR
+        Cache["&#x1F5C3;&#xFE0F; プロンプトキャッシュ修正&lt;br/&gt;入力トークン最大 12x 削減"]
+        Bundle["&#x1F4E6; バンドルサイズ&lt;br/&gt;510KB 縮小"]
+        Cache ~~~ Bundle
+    end
+
+    subgraph PerfOpt["&#x26A1; パフォーマンス最適化"]
+        direction LR
+        NativeParser["&#x1F527; ネイティブ Bash パーサー&lt;br/&gt;メモリリーク解消"]
+        CPU["&#x1F5A5;&#xFE0F; CPU 使用率改善&lt;br/&gt;長時間セッション"]
+        NativeParser ~~~ CPU
+    end
+
+    subgraph NewFeatures["&#x1F195; 新機能"]
+        direction LR
+        CopyW["&#x1F4CB; /copy w キー&lt;br/&gt;SSH 向けファイル書出"]
+        PlanDesc["&#x1F4DD; /plan 説明引数&lt;br/&gt;直接指定"]
+        Effort["&#x1F3AF; エフォート簡素化&lt;br/&gt;3 段階"]
+        CopyW ~~~ PlanDesc ~~~ Effort
+    end
+
+    subgraph BugFixes["&#x1F527; 安定性修正"]
+        direction LR
+        Parallel["&#x1F500; 並列ツール呼出&lt;br/&gt;耐障害性向上"]
+        Voice["&#x1F3A4; 音声モード&lt;br/&gt;複数修正"]
+        Plugin["&#x1F50C; プラグイン&lt;br/&gt;Windows/OneDrive"]
+        Parallel ~~~ Voice ~~~ Plugin
+    end
+
+    CostOpt --> PerfOpt
+    PerfOpt --> NewFeatures
+    NewFeatures --> BugFixes
+
+    classDef cost fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef perf fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef fix fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class CostOpt cost
+    class PerfOpt perf
+    class NewFeatures feature
+    class BugFixes fix
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+
+            <div class="use-case">
+                <h4>&#x1F4BB; SSH / リモート開発</h4>
+                <p>/copy w キーでクリップボードを介さずファイルに直接書き出し。SSH 環境でのコピー操作が不要になり、リモート開発のワークフローが大幅に改善されます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4B0; コスト最適化</h4>
+                <p>プロンプトキャッシュ修正により API コストが大幅に削減されます。特に大規模プロジェクトや頻繁に API を呼び出すワークフローで、運用コストの劇的な低減が期待できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x23F0; 長時間開発セッション</h4>
+                <p>CPU 使用率の最適化と Bash パーサーのメモリリーク解消により、長時間セッションでも安定した動作を維持できます。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8;">
+                Claude Code v2.1.72 は、コスト効率とパフォーマンスの両面で大きな改善を実現したリリースです。最も注目すべきは、プロンプトキャッシュ無効化の修正による<strong>入力トークンコスト最大 12 倍の削減</strong>で、特に大規模なプロジェクトや頻繁に API を呼び出すワークフローにおいて、運用コストの大幅な低減が期待できます。Bash パーサーのネイティブモジュール化により、メモリリークの解消と初期化速度の向上が実現されたほか、バンドルサイズも <strong>510KB 縮小</strong>されています。新機能 <strong>8 件</strong>とバグ修正 <strong>24 件以上</strong>により、全体的な安定性と利便性が大幅に向上しています。
+            </p>
+            <div class="hand-note" style="margin-top: 16px;">
+                全てのユーザーに早期アップデートを推奨します: <code style="background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px;">npm update -g @anthropic-ai/claude-code</code>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <ul class="links-list">
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-03-09](2026/2026-03-09-claude-code-v2-1-72.md) - Claude Code v2.1.72 リリース: トークンコスト最大 12 倍削減とバンドルサイズ 510KB 縮小
 - [2026-03-06](2026/2026-03-06-mozilla-firefox-security.md) - Anthropic と Mozilla の提携: Firefox セキュリティ強化に向けた AI 活用
 - [2026-03-06](2026/2026-03-06-claude-code-v2-1-71.md) - Claude Code v2.1.70-v2.1.71 リリース: ループコマンドと大規模な安定性改善
 - [2026-03-05](2026/2026-03-05-department-of-war-statement.md) - Anthropic CEO Dario Amodei による Department of War との関係についての声明
