@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.73 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Bug fix list */
+        .bugfix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bugfix-list li {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .bugfix-list li:last-child {
+            border-bottom: none;
+        }
+
+        .bugfix-list li::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 8px;
+        }
+
+        .bugfix-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Improvement list */
+        .improvement-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .improvement-list li {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .improvement-list li:last-child {
+            border-bottom: none;
+        }
+
+        .improvement-list li::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--info);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 8px;
+        }
+
+        .improvement-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Technical detail */
+        .tech-detail {
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .tech-detail:last-child {
+            margin-bottom: 0;
+        }
+
+        .tech-detail h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .summary-text p {
+            margin-bottom: 12px;
+        }
+
+        .summary-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .links {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code アップデート</span>
+                <h1>Claude Code v2.1.73 リリース: CPU フリーズ修正、Opus 4.6 デフォルト化、modelOverrides 設定の追加</h1>
+                <p class="date">2026-03-11</p>
+                <span class="version-badge">v2.1.73</span>
+            </div>
+        </header>
+
+        <!-- Overview / Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p style="font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.8;">
+                Claude Code v2.1.73 が 2026 年 3 月 11 日にリリースされました。権限プロンプト表示時の 100% CPU ループ修正、多数のスキルファイル変更時のデッドロック解消など、安定性に関する重要な修正が多数含まれています。新機能として <code style="background: var(--anthropic-cream); padding: 2px 6px; border-radius: 4px;">modelOverrides</code> 設定が追加され、デフォルト Opus モデルが Opus 4.6 に更新されています。
+            </p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>安定性の大幅改善</h3>
+                        <p>CPU 100% ループ、デッドロック、Bash 出力消失、セッション破損など深刻なバグを複数修正。日常的な開発ワークフローの体感品質が向上します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏢</div>
+                    <div class="key-point-content">
+                        <h3>エンタープライズ対応の強化</h3>
+                        <p><code style="background: rgba(212, 165, 116, 0.15); padding: 2px 6px; border-radius: 4px;">modelOverrides</code> 設定でカスタムプロバイダーモデル ID へのマッピングが可能に。SSL 証明書エラー時のガイダンスも強化されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🐧</div>
+                    <div class="key-point-content">
+                        <h3>プラットフォーム修正</h3>
+                        <p>Linux サンドボックスの起動失敗修正、Amazon Linux 2 (glibc 2.26) 対応、VS Code HTTP 400 エラー修正など、クロスプラットフォームの安定性が向上。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">✨</div>
+                    <div class="key-point-content">
+                        <h3>UX の改善</h3>
+                        <p>中断後の上矢印キー改善、IDE 検出速度の向上、クリップボード画像貼り付けの高速化、<code style="background: rgba(212, 165, 116, 0.15); padding: 2px 6px; border-radius: 4px;">/effort</code> のリアルタイム変更対応など。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.73</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">16</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">改善・変更</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⚙️ modelOverrides 設定</h3>
+                    <p>モデルピッカーのエントリをカスタムプロバイダーモデル ID (Bedrock 推論プロファイル ARN など) にマッピング可能に。エンタープライズ環境でのカスタムモデル構成が容易になります。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔐 SSL 証明書ガイダンス強化</h3>
+                    <p>OAuth ログインや接続チェックが SSL 証明書エラーで失敗した際に、具体的な対処方法 (企業プロキシ、<code style="font-size: 12px;">NODE_EXTRA_CA_CERTS</code> の設定) を提示するよう改善。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes (16) -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 (16 件)</h2>
+            <ul class="bugfix-list">
+                <li><strong>CPU 100% ループの修正:</strong> 複雑な Bash コマンドに対する権限プロンプト表示時にフリーズおよび 100% CPU ループが発生する問題を修正</li>
+                <li><strong>デッドロックの修正:</strong> 多数のスキルファイルが同時に変更された場合 (<code>git pull</code> 時に大規模な <code>.claude/skills/</code> ディレクトリがある場合など) に Claude Code がフリーズするデッドロックを修正</li>
+                <li><strong>Bash ツール出力の消失修正:</strong> 同一プロジェクトディレクトリで複数の Claude Code セッションを実行した際に、Bash ツールの出力が失われる問題を修正</li>
+                <li><strong>サブエージェントのモデルダウングレード修正:</strong> <code>model: opus</code>/<code>sonnet</code>/<code>haiku</code> を指定したサブエージェントが、Bedrock、Vertex、Microsoft Foundry で古いモデルバージョンにサイレントダウングレードされる問題を修正</li>
+                <li><strong>バックグラウンド Bash プロセスのクリーンアップ:</strong> サブエージェントが生成したバックグラウンド Bash プロセスが、エージェント終了時にクリーンアップされない問題を修正</li>
+                <li><strong>/resume の修正:</strong> セッションピッカーに現在のセッションが表示される問題を修正</li>
+                <li><strong>/ide のクラッシュ修正:</strong> 拡張機能の自動インストール時に <code>onInstall is not defined</code> エラーでクラッシュする問題を修正</li>
+                <li><strong>/loop の利用制限解除:</strong> Bedrock/Vertex/Foundry 環境およびテレメトリ無効時に <code>/loop</code> が利用できなかった問題を修正</li>
+                <li><strong>SessionStart フックの二重発火修正:</strong> <code>--resume</code> または <code>--continue</code> でセッション再開時に SessionStart フックが 2 回発火する問題を修正</li>
+                <li><strong>JSON 出力フックの修正:</strong> JSON 出力フックが毎ターン no-op の system-reminder メッセージをモデルのコンテキストに注入する問題を修正</li>
+                <li><strong>音声モードのセッション破損修正:</strong> 低速接続で新しい録音と重なった場合にセッションが破損する問題を修正</li>
+                <li><strong>Linux サンドボックスの起動失敗修正:</strong> ネイティブビルドで "ripgrep (rg) not found" エラーが発生する問題を修正</li>
+                <li><strong>Linux ネイティブモジュールの互換性修正:</strong> Amazon Linux 2 およびその他の glibc 2.26 システムでネイティブモジュールが読み込めない問題を修正</li>
+                <li><strong>Remote Control の画像受信エラー修正:</strong> <code>media_type: Field required</code> API エラーを修正</li>
+                <li><strong>/heapdump の Windows 修正:</strong> Desktop フォルダが既に存在する場合の <code>EEXIST</code> エラーを修正</li>
+                <li><strong>VS Code: HTTP 400 エラー修正:</strong> プロキシ環境下または Bedrock/Vertex で Claude 4.5 モデル使用時の HTTP 400 エラーを修正</li>
+            </ul>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <h2 class="section-title">改善・変更</h2>
+            <ul class="improvement-list">
+                <li><strong>中断後の上矢印キー改善:</strong> Claude の応答を中断した後、上矢印キーで中断されたプロンプトの復元と会話の巻き戻しを 1 ステップで実行可能に</li>
+                <li><strong>IDE 検出速度の向上:</strong> 起動時の IDE 検出速度を改善</li>
+                <li><strong>クリップボード画像貼り付けの高速化:</strong> macOS でのクリップボード画像貼り付けパフォーマンスを改善</li>
+                <li><strong>/effort のリアルタイム変更対応:</strong> Claude の応答中でも <code>/effort</code> が動作するよう改善 (<code>/model</code> と同様の挙動に統一)</li>
+                <li><strong>音声モードの自動リトライ:</strong> 高速な push-to-talk 再押下時の一時的な接続障害を自動リトライするよう改善</li>
+                <li><strong>Remote Control スポーンモード選択の改善:</strong> より適切なコンテキストを提示するよう改善</li>
+                <li><strong>デフォルト Opus モデルの更新:</strong> Bedrock、Vertex、Microsoft Foundry でのデフォルト Opus モデルを Opus 4.6 に変更 (以前は Opus 4.1)</li>
+                <li><strong>/output-style コマンドの非推奨化:</strong> <code>/config</code> の使用を推奨。出力スタイルはセッション開始時に固定され、プロンプトキャッシュの効率が向上</li>
+            </ul>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+            <div class="tech-detail">
+                <h4>🖥️ CPU フリーズの根本修正</h4>
+                <p>複雑な Bash コマンド (パイプチェーン、ヒアドキュメントなど) の権限確認時にパーサーが無限ループに陥る問題が修正されました。これにより、複雑なコマンドを日常的に使用する開発者のワークフローが大幅に安定化します。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>🔒 デッドロック解消</h4>
+                <p>ファイル監視システムが多数のスキルファイル変更を検知した際に発生するロック競合が修正されました。大規模なスキルディレクトリを持つリポジトリで <code>git pull</code> や <code>git checkout</code> を行う際の安定性が向上しています。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>⚙️ modelOverrides の仕組み</h4>
+                <p>モデルピッカーの論理名 (例: <code>opus</code>、<code>sonnet</code>) をカスタムプロバイダー固有の ID にマッピングする設定です。Bedrock の推論プロファイル ARN や、Vertex のカスタムエンドポイントを使用する場合に特に有用です。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>🤖 サブエージェントのモデル解決修正</h4>
+                <p>サブエージェントに <code>model: opus</code> 等を指定した際、Bedrock/Vertex/Foundry 環境ではモデル解決ロジックが正しく最新バージョンを参照するよう修正されました。これにより、サブエージェントでも確実に Opus 4.6 等の最新モデルが使用されます。</p>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">modelOverrides の設定例 (claude_config.json)</span>
+                </div>
+                <pre><code class="language-json">{
+  "modelOverrides": {
+    "opus": "arn:aws:bedrock:us-east-1:123456789:inference-profile/my-opus-profile"
+  }
+}</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">SSL 証明書エラーが発生する場合の対処</span>
+                </div>
+                <pre><code class="language-bash">export NODE_EXTRA_CA_CERTS=/path/to/corporate-ca-cert.pem</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデート方法</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Stability["🔧 安定性修正"]
+        direction LR
+        CPU["🖥️ CPU 100% ループ修正&lt;br/&gt;権限プロンプト"]
+        Deadlock["🔒 デッドロック修正&lt;br/&gt;スキルファイル監視"]
+        BashOutput["📤 Bash 出力消失修正&lt;br/&gt;マルチセッション"]
+        CPU ~~~ Deadlock ~~~ BashOutput
+    end
+
+    subgraph Enterprise["🏢 エンタープライズ対応"]
+        direction LR
+        ModelOverrides["⚙️ modelOverrides&lt;br/&gt;カスタムモデル ID マッピング"]
+        SSL["🔐 SSL 証明書&lt;br/&gt;エラーガイダンス"]
+        OpusDefault["⭐ Opus 4.6 デフォルト化&lt;br/&gt;Bedrock/Vertex/Foundry"]
+        ModelOverrides ~~~ SSL ~~~ OpusDefault
+    end
+
+    subgraph Platform["🐧 プラットフォーム修正"]
+        direction LR
+        Linux["🐧 Linux サンドボックス&lt;br/&gt;ripgrep 検出修正"]
+        AmazonLinux["📦 Amazon Linux 2&lt;br/&gt;glibc 2.26 対応"]
+        VSCode["💻 VS Code&lt;br/&gt;HTTP 400 修正"]
+        Linux ~~~ AmazonLinux ~~~ VSCode
+    end
+
+    subgraph UX["✨ UX 改善"]
+        direction LR
+        UpArrow["⬆️ 上矢印キー改善&lt;br/&gt;中断プロンプト復元"]
+        Voice["🎤 音声モード&lt;br/&gt;自動リトライ"]
+        Effort["🎯 /effort 改善&lt;br/&gt;応答中に変更可能"]
+        UpArrow ~~~ Voice ~~~ Effort
+    end
+
+    Stability --> Enterprise
+    Enterprise --> Platform
+    Platform --> UX
+
+    classDef stability fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef enterprise fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef platform fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef ux fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Stability stability
+    class Enterprise enterprise
+    class Platform platform
+    class UX ux
+                </pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact / Use Cases -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="use-case">
+                <h4>👨‍💻 Claude Code CLI を日常利用している全ての開発者</h4>
+                <p>CPU フリーズ、デッドロック、Bash 出力消失の修正により、日常的な開発ワークフローの安定性が大幅に向上します。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏢 エンタープライズユーザー (Bedrock/Vertex/Foundry)</h4>
+                <p><code>modelOverrides</code> 設定でカスタム推論プロファイルを簡単にマッピング可能に。サブエージェントのモデルダウングレード問題も修正され、確実に Opus 4.6 等の最新モデルが使用されます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔐 企業プロキシ環境のユーザー</h4>
+                <p>SSL 証明書エラー時の具体的なガイダンス (<code>NODE_EXTRA_CA_CERTS</code> の設定方法) が表示されるようになり、接続問題の解決が容易になります。</p>
+            </div>
+            <div class="use-case">
+                <h4>🐧 Linux 環境 (特に Amazon Linux 2) のユーザー</h4>
+                <p>サンドボックスの起動失敗修正と glibc 2.26 対応により、クラウド環境での Claude Code 運用がより安定します。</p>
+            </div>
+            <div class="use-case">
+                <h4>🎤 音声モードユーザー</h4>
+                <p>低速接続でのセッション破損修正と、push-to-talk の自動リトライ機能により、音声操作の信頼性が向上します。</p>
+            </div>
+            <div class="use-case">
+                <h4>💻 VS Code 拡張機能ユーザー</h4>
+                <p>プロキシ環境下での HTTP 400 エラーが修正され、VS Code 内での Claude Code 利用がよりスムーズになります。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-text">
+                <p>Claude Code v2.1.73 は、安定性とエンタープライズ対応の両面で重要な改善を実現したリリースです。最も注目すべきは、複雑な Bash コマンドの権限確認時に発生していた 100% CPU ループの修正と、大規模スキルディレクトリでのデッドロック解消です。これらは日常的な開発ワークフローに直接影響する問題であり、多くのユーザーにとって体感品質が向上するでしょう。</p>
+                <p>エンタープライズ向けには、<code style="background: var(--anthropic-cream); padding: 2px 6px; border-radius: 4px;">modelOverrides</code> 設定によるカスタムモデル ID マッピングが追加され、Bedrock 推論プロファイルや Vertex カスタムエンドポイントの利用が容易になりました。また、Bedrock、Vertex、Microsoft Foundry でのデフォルト Opus モデルが Opus 4.6 に更新され、サブエージェントのモデルダウングレード問題も修正されています。</p>
+                <p>16 件のバグ修正に加え、上矢印キーによるプロンプト復元の改善、音声モードの自動リトライ、<code style="background: var(--anthropic-cream); padding: 2px 6px; border-radius: 4px;">/effort</code> のリアルタイム変更対応など、UX の改善も含まれています。特に Linux 環境 (Amazon Linux 2 を含む) での互換性修正は、クラウド環境で Claude Code を運用しているユーザーにとって重要です。全ての Claude Code ユーザーに早期のアップデートを推奨します。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <div class="links">
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a>
+                <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

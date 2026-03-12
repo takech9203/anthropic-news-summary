@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.74 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-top: 12px;
+            line-height: 1.7;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card .tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .tag-security {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .tag-performance {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .tag-mcp {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .tag-platform {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .tag-feature {
+            background: #F3E5F5;
+            color: #6A1B9A;
+        }
+
+        .tag-agent {
+            background: #E0F7FA;
+            color: #00695C;
+        }
+
+        .tag-hook {
+            background: #FFF8E1;
+            color: #F57F17;
+        }
+
+        .tag-other {
+            background: #ECEFF1;
+            color: #37474F;
+        }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 4px 0;
+            line-height: 1.6;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '✗ ';
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '✓ ';
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Technical Detail */
+        .tech-detail {
+            padding: 16px 20px;
+            background: #F8F9FA;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border-left: 3px solid var(--info);
+        }
+
+        .tech-detail:last-child {
+            margin-bottom: 0;
+        }
+
+        .tech-detail h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Summary */
+        .summary-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .summary-text p {
+            margin-bottom: 12px;
+        }
+
+        .summary-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Action box */
+        .action-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            margin-top: 20px;
+        }
+
+        .action-box h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--anthropic-coral);
+        }
+
+        .action-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .action-box ul li {
+            font-size: 14px;
+            padding: 4px 0;
+            opacity: 0.9;
+        }
+
+        .action-box ul li::before {
+            content: '>> ';
+            color: var(--anthropic-coral);
+            font-weight: 700;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 6px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code Update</span>
+                <h1>Claude Code v2.1.74 リリース:<br>メモリリーク修正、セキュリティ強化、RTL 言語対応</h1>
+                <p class="date">2026-03-11</p>
+                <p class="subtitle">セキュリティ、安定性、プラットフォーム対応の 3 つの柱で重要な改善を実現したリリース。メモリリーク修正、マネージドポリシーのバイパス修正、RTL テキストレンダリング対応など多数の変更を含みます。</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 - キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F6E1;</div>
+                    <div class="key-point-content">
+                        <h3>セキュリティ修正</h3>
+                        <p>マネージドポリシーの <code>ask</code> ルールがユーザーの <code>allow</code> ルールやスキルの <code>allowed-tools</code> によってバイパスされる問題を修正。エンタープライズ環境でのポリシー管理の信頼性が向上。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F9E0;</div>
+                    <div class="key-point-content">
+                        <h3>メモリリーク修正</h3>
+                        <p>ストリーミング API レスポンスバッファが解放されず RSS メモリが無制限に増加する問題を修正。Node.js/npm コードパスの安定性が大幅に改善。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F511;</div>
+                    <div class="key-point-content">
+                        <h3>MCP OAuth 修正</h3>
+                        <p>コールバックポート競合によるハングと、HTTP 200 でエラーを返す OAuth サーバー (Slack など) でのリフレッシュトークン期限切れ処理の 2 つの問題を修正。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F310;</div>
+                    <div class="key-point-content">
+                        <h3>プラットフォーム対応</h3>
+                        <p>RTL テキストレンダリング (ヘブライ語・アラビア語)、Windows LSP サーバー、macOS 音声モードの権限プロンプトなど多様な環境での利用体験を改善。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x2728;</div>
+                    <div class="key-point-content">
+                        <h3>新機能</h3>
+                        <p><code>/context</code> コマンドの最適化提案機能と <code>autoMemoryDirectory</code> 設定を追加。コンテキスト負荷の特定や自動メモリの保存先カスタマイズが可能に。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.74</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">セキュリティ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">MCP OAuth 修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">プラットフォーム修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4+</div>
+                    <div class="stat-label">フック・プラグイン修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.73 以前)</h4>
+                    <ul>
+                        <li>ストリーミングバッファ未解放で RSS メモリが無制限に増加</li>
+                        <li>マネージドポリシーの <code>ask</code> ルールがバイパス可能</li>
+                        <li>MCP OAuth がポート競合時にハング</li>
+                        <li>RTL テキストが正しく表示されない</li>
+                        <li>SessionEnd フックが 1.5 秒で強制終了</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.74)</h4>
+                    <ul>
+                        <li>ジェネレータ終了時にバッファを適切に解放</li>
+                        <li>管理者ポリシーが確実に適用される</li>
+                        <li>ポート競合時のフォールバック処理を実装</li>
+                        <li>Windows Terminal / VS Code で RTL 正常表示</li>
+                        <li>環境変数でタイムアウトをカスタマイズ可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="tag tag-feature">New Feature</span>
+                    <h3>&#x1F4CA; /context 最適化提案</h3>
+                    <p>コンテキスト負荷の高いツール、メモリの肥大化、キャパシティ警告を特定し、具体的な最適化のヒントを提示する機能を追加。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-feature">New Feature</span>
+                    <h3>&#x1F5C2; autoMemoryDirectory</h3>
+                    <p>自動メモリのストレージディレクトリをカスタム指定可能に。チームやプロジェクトごとのメモリ管理が柔軟に。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-security">Security</span>
+                    <h3>&#x1F6E1; マネージドポリシー修正</h3>
+                    <p>マネージドポリシーの <code>ask</code> ルールがユーザーの <code>allow</code> やスキルの <code>allowed-tools</code> でバイパスされる脆弱性を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-performance">Performance</span>
+                    <h3>&#x1F9E0; メモリリーク修正</h3>
+                    <p>ストリーミング API レスポンスバッファのメモリリークを修正。長時間セッションでの RSS メモリ無制限増加を解消。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-mcp">MCP</span>
+                    <h3>&#x1F511; OAuth 認証ハング修正</h3>
+                    <p>コールバックポートが既に使用中の場合に MCP OAuth 認証がハングする問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-mcp">MCP</span>
+                    <h3>&#x1F504; OAuth リフレッシュ修正</h3>
+                    <p>HTTP 200 でエラーを返す OAuth サーバー (Slack など) でリフレッシュトークン期限切れ後に再認証プロンプトが表示されない問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-platform">Platform</span>
+                    <h3>&#x1F4DD; RTL テキスト対応</h3>
+                    <p>ヘブライ語、アラビア語などの RTL テキストが Windows Terminal、conhost、VS Code 統合ターミナルで正しくレンダリングされるように修正。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-platform">Platform</span>
+                    <h3>&#x1FA9F; Windows LSP 修正</h3>
+                    <p>不正なファイル URI により Windows 上で LSP サーバーが動作しない問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-platform">Platform</span>
+                    <h3>&#x1F3A4; macOS 音声モード修正</h3>
+                    <p>ネイティブバイナリでマイク権限が未付与のターミナルで音声モードがサイレントに失敗する問題を修正。<code>audio-input</code> エンタイトルメント追加で権限プロンプトを表示。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-agent">Agent</span>
+                    <h3>&#x1F916; フルモデル ID 対応</h3>
+                    <p>エージェントフロントマターの <code>model:</code> フィールドおよび <code>--agents</code> JSON 設定でフルモデル ID がサイレントに無視される問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-hook">Hooks</span>
+                    <h3>&#x1FA9D; SessionEnd タイムアウト</h3>
+                    <p>終了時に <code>hook.timeout</code> 設定に関わらず 1.5 秒で強制終了される問題を修正。環境変数で設定可能に。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-hook">Hooks</span>
+                    <h3>&#x1F50C; プラグイン修正</h3>
+                    <p>REPL 内でのマーケットプレイスプラグインのインストール失敗、サブモジュール同期、不明コマンドの入力保持など複数の修正。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="tag tag-other">Other</span>
+                    <h3>&#x2699; その他の改善</h3>
+                    <p><code>--plugin-dir</code> の優先順位変更、VS Code セッション削除ボタン修正、統合ターミナルのスクロール操作改善。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+            <div class="tech-detail">
+                <h4>&#x1F9E0; ストリーミングバッファのメモリリーク</h4>
+                <p>Node.js/npm コードパスにおいて、ストリーミング API レスポンスのジェネレータが早期終了 (例: ユーザーによるキャンセル) した際、レスポンスバッファが解放されずにメモリが蓄積し続ける問題がありました。長時間のセッションや頻繁な API 呼び出しのキャンセルが発生する環境で RSS メモリが無制限に増加する原因となっていました。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>&#x1F6E1; マネージドポリシーのセキュリティ強化</h4>
+                <p>管理者が <code>ask</code> ルールとして設定したポリシーが、ユーザーレベルの <code>allow</code> ルールやスキルの <code>allowed-tools</code> 設定によって迂回される脆弱性が修正されました。エンタープライズ環境でのポリシー管理において重要な修正です。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>&#x1F511; MCP OAuth のエッジケース対応</h4>
+                <p>OAuth フローにおける 2 つの異なる問題が修正されました。1 つ目はコールバックポート競合によるハング、2 つ目は HTTP 200 ステータスでエラーを返す OAuth サーバー (Slack が該当) でのリフレッシュトークン期限切れ処理です。</p>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">新機能の活用例</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/context コマンドで最適化提案を確認</span>
+                </div>
+                <pre><code class="language-bash"># /context コマンドで最適化提案を確認
+/context</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">autoMemoryDirectory 設定</span>
+                </div>
+                <pre><code class="language-json">// settings.json で以下を設定
+{
+  "autoMemoryDirectory": "/path/to/custom/memory"
+}</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">SessionEnd フックのタイムアウト設定</span>
+                </div>
+                <pre><code class="language-bash"># SessionEnd フックのタイムアウトをカスタマイズ
+export CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS=10000</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデートとプラグイン読み込み</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# 現在のバージョン確認
+claude --version
+
+# ローカル開発中のプラグインを優先して読み込む
+claude --plugin-dir ./my-plugin</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Security["&#x1F512; セキュリティ強化"]
+        direction LR
+        Policy["&#x1F6E1;&#xFE0F; マネージドポリシー&lt;br/&gt;ask ルールのバイパス修正"]
+        OAuth["&#x1F511; MCP OAuth&lt;br/&gt;認証ハング・リフレッシュ修正"]
+        Policy ~~~ OAuth
+    end
+
+    subgraph Stability["&#x26A1; 安定性改善"]
+        direction LR
+        MemLeak["&#x1F9E0; メモリリーク修正&lt;br/&gt;ストリーミングバッファ解放"]
+        Hooks["&#x1FA9D; SessionEnd フック&lt;br/&gt;タイムアウト設定可能に"]
+        MemLeak ~~~ Hooks
+    end
+
+    subgraph Platform["&#x1F310; プラットフォーム対応"]
+        direction LR
+        RTL["&#x1F4DD; RTL テキスト&lt;br/&gt;ヘブライ語・アラビア語"]
+        WinLSP["&#x1FA9F; Windows LSP&lt;br/&gt;ファイル URI 修正"]
+        Voice["&#x1F3A4; macOS 音声モード&lt;br/&gt;マイク権限プロンプト"]
+        RTL ~~~ WinLSP ~~~ Voice
+    end
+
+    subgraph Features["&#x1F195; 新機能"]
+        direction LR
+        Context["&#x1F4CA; /context 最適化提案&lt;br/&gt;具体的な改善ヒント"]
+        Memory["&#x1F5C2;&#xFE0F; autoMemoryDirectory&lt;br/&gt;カスタムディレクトリ"]
+        Context ~~~ Memory
+    end
+
+    Security --> Stability
+    Stability --> Platform
+    Platform --> Features
+
+    classDef security fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef stability fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef platform fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Security security
+    class Stability stability
+    class Platform platform
+    class Features feature
+                </pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="use-case">
+                <h4>&#x1F4BB; Claude Code CLI ユーザー</h4>
+                <p>日常的に Claude Code を利用している開発者全般。メモリリーク修正により長時間セッションの安定性が向上し、<code>/context</code> コマンドの最適化提案で効率的な開発が可能に。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F3E2; エンタープライズチーム</h4>
+                <p>マネージドポリシーを運用しているチーム。<code>ask</code> ルールのバイパス修正により、管理者が設定したセキュリティポリシーが確実に適用されるようになりました。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F517; MCP 連携ユーザー</h4>
+                <p>MCP 連携で OAuth 認証を利用しているユーザー。特に Slack 連携でリフレッシュトークンの問題が発生していた場合に直接的な恩恵があります。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1FA9F; Windows / RTL 言語ユーザー</h4>
+                <p>Windows 環境で Claude Code を使用している開発者や、ヘブライ語・アラビア語などの RTL 言語圏のユーザー。LSP サーバーの動作改善と RTL テキスト表示の修正を含みます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F3A4; macOS 音声モードユーザー</h4>
+                <p>macOS ネイティブバイナリで音声モードを使用しているユーザー。<code>audio-input</code> エンタイトルメント追加により、macOS が正しく権限プロンプトを表示するようになりました。</p>
+            </div>
+
+            <div class="action-box">
+                <h4>早急なアップデートを推奨するケース</h4>
+                <ul>
+                    <li>長時間セッションでメモリ使用量の増加が観察されている場合</li>
+                    <li>マネージドポリシーでセキュリティルールを設定している環境</li>
+                    <li>MCP OAuth 連携 (特に Slack) で認証の問題が発生している場合</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-text">
+                <p>Claude Code v2.1.74 は、セキュリティ、安定性、プラットフォーム対応の 3 つの柱で重要な改善を実現したリリースです。最も注目すべきは、マネージドポリシーの <code>ask</code> ルールがバイパスされるセキュリティ問題の修正で、エンタープライズ環境でのポリシー管理の信頼性が向上しています。</p>
+                <p>ストリーミング API レスポンスバッファのメモリリーク修正により、長時間セッションでの RSS メモリ無制限増加が解消され、Node.js/npm コードパスの安定性が大幅に改善されました。MCP OAuth 認証に関する 2 つの修正も、Slack などの外部サービスとの連携信頼性を向上させています。</p>
+                <p>プラットフォーム対応としては、RTL テキストレンダリング、Windows LSP サーバー、macOS 音声モードの権限プロンプトなど、多様な環境での利用体験が改善されています。全ての Claude Code ユーザーに早期のアップデートを推奨します。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連リンク:</strong> <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub</a> | <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/json.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
