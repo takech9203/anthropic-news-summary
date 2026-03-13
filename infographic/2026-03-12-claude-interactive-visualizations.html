@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude インタラクティブビジュアライゼーション - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.5;
+        }
+
+        .comparison-card ul li .icon {
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Note box */
+        .note-box {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border: 2px solid rgba(255, 152, 0, 0.3);
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .note-box .note-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .note-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Comparison table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .comparison-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .comparison-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        .comparison-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        .comparison-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            color: var(--text-secondary);
+        }
+
+        .comparison-table tr:last-child td:first-child {
+            border-radius: 0 0 0 8px;
+        }
+
+        .comparison-table tr:last-child td:last-child {
+            border-radius: 0 0 8px 0;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: var(--anthropic-cream);
+        }
+
+        .badge-yes {
+            display: inline-block;
+            background: #D1FAE5;
+            color: #059669;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge-no {
+            display: inline-block;
+            background: #FEE2E2;
+            color: #DC2626;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge-panel {
+            display: inline-block;
+            background: #E8F1FF;
+            color: #4A90E2;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Summary */
+        .summary-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 2;
+        }
+
+        /* Related Links */
+        .related-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .related-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 24px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .related-link:hover {
+            background: var(--anthropic-coral);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">&#x2728; &#x65B0;&#x6A5F;&#x80FD;</span>
+                <h1>Claude &#x304C;&#x30A4;&#x30F3;&#x30BF;&#x30E9;&#x30AF;&#x30C6;&#x30A3;&#x30D6;&#x306A;&#x30C1;&#x30E3;&#x30FC;&#x30C8;&#x3001;&#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;&#x3001;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30E9;&#x30A4;&#x30BC;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3092;&#x4F5C;&#x6210;&#x53EF;&#x80FD;&#x306B;</h1>
+                <p class="date">2026-03-12</p>
+            </div>
+        </header>
+
+        <!-- Overview -->
+        <section class="section">
+            <h2 class="section-title">&#x6982;&#x8981;</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                Anthropic &#x306F; 2026 &#x5E74; 3 &#x6708; 12 &#x65E5;&#x3001;Claude.ai &#x306B;&#x304A;&#x3044;&#x3066;&#x30A4;&#x30F3;&#x30BF;&#x30E9;&#x30AF;&#x30C6;&#x30A3;&#x30D6;&#x306A;&#x30C1;&#x30E3;&#x30FC;&#x30C8;&#x3001;&#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;&#x3001;&#x304A;&#x3088;&#x3073;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30E9;&#x30A4;&#x30BC;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3092;&#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3; (&#x4F1A;&#x8A71;&#x5185;) &#x3067;&#x4F5C;&#x6210;&#x3067;&#x304D;&#x308B;&#x65B0;&#x6A5F;&#x80FD;&#x3092;&#x767A;&#x8868;&#x3057;&#x307E;&#x3057;&#x305F;&#x3002;&#x5F93;&#x6765;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x30D9;&#x30FC;&#x30B9;&#x306E;&#x5FDC;&#x7B54;&#x306B;&#x52A0;&#x3048;&#x3001;&#x4F1A;&#x8A71;&#x306E;&#x4E2D;&#x3067;&#x76F4;&#x63A5;&#x30AB;&#x30B9;&#x30BF;&#x30E0;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x30B3;&#x30F3;&#x30C6;&#x30F3;&#x30C4;&#x3092;&#x751F;&#x6210;&#x3067;&#x304D;&#x308B;&#x3088;&#x3046;&#x306B;&#x306A;&#x308A;&#x307E;&#x3057;&#x305F;&#x3002;Artifacts &#x3068;&#x306F;&#x7570;&#x306A;&#x308A;&#x3001;&#x5FDC;&#x7B54;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x306E;&#x4E2D;&#x306B;&#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x3067;&#x8996;&#x89BA;&#x7684;&#x306A;&#x30B3;&#x30F3;&#x30C6;&#x30F3;&#x30C4;&#x304C;&#x57CB;&#x3081;&#x8FBC;&#x307E;&#x308C;&#x308B;&#x5F62;&#x5F0F;&#x3067;&#x3059;&#x3002;
+            </p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4CA;</div>
+                    <div class="key-point-content">
+                        <h3>&#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x751F;&#x6210;</h3>
+                        <p>Claude &#x306E;&#x5FDC;&#x7B54;&#x5185;&#x306B;&#x76F4;&#x63A5;&#x30C1;&#x30E3;&#x30FC;&#x30C8;&#x3001;&#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;&#x3001;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30E9;&#x30A4;&#x30BC;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3092;&#x57CB;&#x3081;&#x8FBC;&#x307F;&#x53EF;&#x80FD;&#x306B;</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F3A8;</div>
+                    <div class="key-point-content">
+                        <h3>&#x30AB;&#x30B9;&#x30BF;&#x30E0;&#x30C1;&#x30E3;&#x30FC;&#x30C8;</h3>
+                        <p>&#x30E6;&#x30FC;&#x30B6;&#x30FC;&#x306E;&#x30EA;&#x30AF;&#x30A8;&#x30B9;&#x30C8;&#x306B;&#x5FDC;&#x3058;&#x305F;&#x30AB;&#x30B9;&#x30BF;&#x30E0;&#x30C1;&#x30E3;&#x30FC;&#x30C8;&#x3084;&#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;&#x3092;&#x751F;&#x6210;</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F579;</div>
+                    <div class="key-point-content">
+                        <h3>&#x30A4;&#x30F3;&#x30BF;&#x30E9;&#x30AF;&#x30C6;&#x30A3;&#x30D6;&#x5BFE;&#x5FDC;</h3>
+                        <p>&#x9759;&#x7684;&#x306A;&#x753B;&#x50CF;&#x3067;&#x306F;&#x306A;&#x304F;&#x3001;&#x30A4;&#x30F3;&#x30BF;&#x30E9;&#x30AF;&#x30C6;&#x30A3;&#x30D6;&#x306B;&#x64CD;&#x4F5C;&#x53EF;&#x80FD;&#x306A;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x3092;&#x63D0;&#x4F9B;</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4AC;</div>
+                    <div class="key-point-content">
+                        <h3>&#x4F1A;&#x8A71;&#x5185;&#x7D71;&#x5408;</h3>
+                        <p>Artifacts &#x3068;&#x306F;&#x5225;&#x306B;&#x3001;&#x4F1A;&#x8A71;&#x306E;&#x30D5;&#x30ED;&#x30FC;&#x5185;&#x3067;&#x30B7;&#x30FC;&#x30E0;&#x30EC;&#x30B9;&#x306B;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x3092;&#x8868;&#x793A;</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After Comparison -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>&#x274C; Before</h4>
+                    <ul>
+                        <li><span class="icon">&#x1F4DD;</span><span>&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x30D9;&#x30FC;&#x30B9;&#x306E;&#x5FDC;&#x7B54;&#x306E;&#x307F;</span></li>
+                        <li><span class="icon">&#x1F4E6;</span><span>Artifacts &#x306F;&#x5225;&#x30D1;&#x30CD;&#x30EB;&#x306B;&#x8868;&#x793A;</span></li>
+                        <li><span class="icon">&#x1F6AB;</span><span>&#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30C1;&#x30E3;&#x30FC;&#x30C8;&#x975E;&#x5BFE;&#x5FDC;</span></li>
+                        <li><span class="icon">&#x1F6AB;</span><span>&#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;&#x975E;&#x5BFE;&#x5FDC;</span></li>
+                        <li><span class="icon">&#x1F6AB;</span><span>&#x30A4;&#x30F3;&#x30BF;&#x30E9;&#x30AF;&#x30C6;&#x30A3;&#x30D6;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x975E;&#x5BFE;&#x5FDC;</span></li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>&#x2705; After</h4>
+                    <ul>
+                        <li><span class="icon">&#x1F4DD;</span><span>&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x5FDC;&#x7B54; + &#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;</span></li>
+                        <li><span class="icon">&#x1F4E6;</span><span>Artifacts &#x306F;&#x5F15;&#x304D;&#x7D9A;&#x304D;&#x5225;&#x30D1;&#x30CD;&#x30EB;&#x5BFE;&#x5FDC;</span></li>
+                        <li><span class="icon">&#x2705;</span><span>&#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30C1;&#x30E3;&#x30FC;&#x30C8;&#x5BFE;&#x5FDC;</span></li>
+                        <li><span class="icon">&#x2705;</span><span>&#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;&#x5BFE;&#x5FDC;</span></li>
+                        <li><span class="icon">&#x2705;</span><span>&#x30A4;&#x30F3;&#x30BF;&#x30E9;&#x30AF;&#x30C6;&#x30A3;&#x30D6;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x5BFE;&#x5FDC;</span></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Detailed Comparison Table -->
+            <table class="comparison-table" style="margin-top: 24px;">
+                <thead>
+                    <tr>
+                        <th>&#x6A5F;&#x80FD;</th>
+                        <th>&#x5F93;&#x6765;</th>
+                        <th>&#x672C;&#x30A2;&#x30C3;&#x30D7;&#x30C7;&#x30FC;&#x30C8;&#x5F8C;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x5FDC;&#x7B54;</td>
+                        <td><span class="badge-yes">&#x5BFE;&#x5FDC;</span></td>
+                        <td><span class="badge-yes">&#x5BFE;&#x5FDC;</span></td>
+                    </tr>
+                    <tr>
+                        <td>&#x30B3;&#x30FC;&#x30C9;&#x30D6;&#x30ED;&#x30C3;&#x30AF;</td>
+                        <td><span class="badge-yes">&#x5BFE;&#x5FDC;</span></td>
+                        <td><span class="badge-yes">&#x5BFE;&#x5FDC;</span></td>
+                    </tr>
+                    <tr>
+                        <td>Artifacts</td>
+                        <td><span class="badge-panel">&#x5225;&#x30D1;&#x30CD;&#x30EB;</span></td>
+                        <td><span class="badge-panel">&#x5225;&#x30D1;&#x30CD;&#x30EB;</span></td>
+                    </tr>
+                    <tr>
+                        <td>&#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30C1;&#x30E3;&#x30FC;&#x30C8;</td>
+                        <td><span class="badge-no">&#x975E;&#x5BFE;&#x5FDC;</span></td>
+                        <td><span class="badge-yes">&#x5BFE;&#x5FDC;</span></td>
+                    </tr>
+                    <tr>
+                        <td>&#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;</td>
+                        <td><span class="badge-no">&#x975E;&#x5BFE;&#x5FDC;</span></td>
+                        <td><span class="badge-yes">&#x5BFE;&#x5FDC;</span></td>
+                    </tr>
+                    <tr>
+                        <td>&#x30A4;&#x30F3;&#x30BF;&#x30E9;&#x30AF;&#x30C6;&#x30A3;&#x30D6;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;</td>
+                        <td><span class="badge-no">&#x975E;&#x5BFE;&#x5FDC;</span></td>
+                        <td><span class="badge-yes">&#x5BFE;&#x5FDC;</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Main Features -->
+        <section class="section">
+            <h2 class="section-title">&#x5BFE;&#x5FDC;&#x3059;&#x308B;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x306E;&#x7A2E;&#x985E;</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x1F4C8; &#x30C1;&#x30E3;&#x30FC;&#x30C8;</h3>
+                    <p>&#x30C7;&#x30FC;&#x30BF;&#x306E;&#x53EF;&#x8996;&#x5316;&#x3002;&#x68D2;&#x30B0;&#x30E9;&#x30D5;&#x3001;&#x6298;&#x308C;&#x7DDA;&#x30B0;&#x30E9;&#x30D5;&#x3001;&#x5186;&#x30B0;&#x30E9;&#x30D5;&#x306A;&#x3069;&#x3001;&#x30C7;&#x30FC;&#x30BF;&#x5206;&#x6790;&#x306B;&#x6700;&#x9069;&#x306A;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x3092;&#x751F;&#x6210;</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F500; &#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;</h3>
+                    <p>&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x69CB;&#x6210;&#x56F3;&#x3001;&#x30D5;&#x30ED;&#x30FC;&#x30C1;&#x30E3;&#x30FC;&#x30C8;&#x3001;&#x95A2;&#x4FC2;&#x56F3;&#x306A;&#x3069;&#x3001;&#x8907;&#x96D1;&#x306A;&#x69CB;&#x9020;&#x3092;&#x8996;&#x89BA;&#x7684;&#x306B;&#x8868;&#x73FE;</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F5BC; &#x30AB;&#x30B9;&#x30BF;&#x30E0;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;</h3>
+                    <p>&#x30AB;&#x30B9;&#x30BF;&#x30E0;&#x30EC;&#x30A4;&#x30A2;&#x30A6;&#x30C8;&#x3084;&#x56F3;&#x89E3;&#x306A;&#x3069;&#x3001;&#x30E6;&#x30FC;&#x30B6;&#x30FC;&#x306E;&#x30CB;&#x30FC;&#x30BA;&#x306B;&#x5408;&#x308F;&#x305B;&#x305F;&#x81EA;&#x7531;&#x306A;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30E9;&#x30A4;&#x30BC;&#x30FC;&#x30B7;&#x30E7;&#x30F3;</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30E9;&#x30A4;&#x30BC;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x6A5F;&#x80FD;&#x306E;&#x30A2;&#x30FC;&#x30AD;&#x30C6;&#x30AF;&#x30C1;&#x30E3;</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph User["&#x1F464; &#x30E6;&#x30FC;&#x30B6;&#x30FC;"]
+        Request(["&#x1F4DD; &#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x751F;&#x6210;&#x30EA;&#x30AF;&#x30A8;&#x30B9;&#x30C8;"])
+    end
+
+    subgraph ClaudeAI["&#x1F916; Claude.ai"]
+        direction TB
+        subgraph Processing["&#x2699; &#x51E6;&#x7406;"]
+            Parse["&#x1F4C4; &#x30EA;&#x30AF;&#x30A8;&#x30B9;&#x30C8;&#x89E3;&#x6790;"]
+            Generate["&#x1F3A8; &#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x751F;&#x6210;"]
+        end
+
+        subgraph Output["&#x1F4CA; &#x51FA;&#x529B;&#x5F62;&#x5F0F;"]
+            direction LR
+            Chart["&#x1F4C8; &#x30C1;&#x30E3;&#x30FC;&#x30C8;"]
+            Diagram["&#x1F500; &#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;"]
+            Custom["&#x1F5BC; &#x30AB;&#x30B9;&#x30BF;&#x30E0;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;"]
+            Chart ~~~ Diagram ~~~ Custom
+        end
+    end
+
+    subgraph Response["&#x1F4AC; &#x4F1A;&#x8A71;&#x30EC;&#x30B9;&#x30DD;&#x30F3;&#x30B9;"]
+        direction LR
+        Text["&#x1F4DD; &#x30C6;&#x30AD;&#x30B9;&#x30C8;"]
+        Inline["&#x1F4CA; &#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;"]
+        Text ~~~ Inline
+    end
+
+    Request --> Parse
+    Parse --> Generate
+    Generate --> Chart
+    Generate --> Diagram
+    Generate --> Custom
+    Output --> Response
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef process fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef output fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef response fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class User user
+    class Processing process
+    class Output output
+    class Response response
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">&#x60F3;&#x5B9A;&#x3055;&#x308C;&#x308B;&#x30E6;&#x30FC;&#x30B9;&#x30B1;&#x30FC;&#x30B9;</h2>
+            <div class="use-case">
+                <h4>&#x1F4CA; &#x30C7;&#x30FC;&#x30BF;&#x5206;&#x6790;</h4>
+                <p>CSV &#x30C7;&#x30FC;&#x30BF;&#x3084;&#x30C6;&#x30FC;&#x30D6;&#x30EB;&#x30C7;&#x30FC;&#x30BF;&#x304B;&#x3089;&#x30A4;&#x30F3;&#x30BF;&#x30E9;&#x30AF;&#x30C6;&#x30A3;&#x30D6;&#x306A;&#x30B0;&#x30E9;&#x30D5;&#x3092;&#x751F;&#x6210;&#x3002;&#x30C7;&#x30FC;&#x30BF;&#x306E;&#x50BE;&#x5411;&#x3084;&#x30D1;&#x30BF;&#x30FC;&#x30F3;&#x3092;&#x8996;&#x899A;&#x7684;&#x306B;&#x628A;&#x63E1;</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F3D7; &#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x8A2D;&#x8A08;</h4>
+                <p>&#x30A2;&#x30FC;&#x30AD;&#x30C6;&#x30AF;&#x30C1;&#x30E3;&#x56F3;&#x3084;&#x30D5;&#x30ED;&#x30FC;&#x30C1;&#x30E3;&#x30FC;&#x30C8;&#x3092;&#x4F1A;&#x8A71;&#x5185;&#x3067;&#x4F5C;&#x6210;&#x3002;&#x8907;&#x96D1;&#x306A;&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x69CB;&#x6210;&#x3092;&#x305D;&#x306E;&#x5834;&#x3067;&#x53EF;&#x8996;&#x5316;</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4DD; &#x30D7;&#x30EC;&#x30BC;&#x30F3;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x6E96;&#x5099;</h4>
+                <p>&#x8AAC;&#x660E;&#x7528;&#x306E;&#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;&#x3084;&#x56F3;&#x89E3;&#x3092;&#x8FC5;&#x901F;&#x306B;&#x4F5C;&#x6210;&#x3002;&#x30D7;&#x30EC;&#x30BC;&#x30F3;&#x8CC7;&#x6599;&#x306E;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x3092;&#x30B9;&#x30D4;&#x30FC;&#x30C7;&#x30A3;&#x30FC;&#x306B;&#x6E96;&#x5099;</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F393; &#x6559;&#x80B2;</h4>
+                <p>&#x6982;&#x5FF5;&#x306E;&#x8996;&#x899A;&#x7684;&#x306A;&#x8AAC;&#x660E;&#x3084;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x30D5;&#x30ED;&#x30FC;&#x306E;&#x56F3;&#x793A;&#x3002;&#x5B66;&#x7FD2;&#x5185;&#x5BB9;&#x3092;&#x3088;&#x308A;&#x76F4;&#x611F;&#x7684;&#x306B;&#x7406;&#x89E3;</p>
+            </div>
+        </section>
+
+        <!-- Target Users -->
+        <section class="section">
+            <h2 class="section-title">&#x5BFE;&#x8C61;&#x30E6;&#x30FC;&#x30B6;&#x30FC;</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F465;</div>
+                    <div class="key-point-content">
+                        <h3>&#x3059;&#x3079;&#x3066;&#x306E; Claude.ai &#x30E6;&#x30FC;&#x30B6;&#x30FC;</h3>
+                        <p>&#x73FE;&#x6642;&#x70B9;&#x3067;&#x7279;&#x5225;&#x306A;&#x30A2;&#x30AF;&#x30B7;&#x30E7;&#x30F3;&#x306F;&#x4E0D;&#x8981;&#x3002;&#x4F1A;&#x8A71;&#x5185;&#x3067;&#x30C1;&#x30E3;&#x30FC;&#x30C8;&#x3084;&#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;&#x306E;&#x4F5C;&#x6210;&#x3092;&#x30EA;&#x30AF;&#x30A8;&#x30B9;&#x30C8;&#x3059;&#x308B;&#x3060;&#x3051;&#x3067;&#x5229;&#x7528;&#x53EF;&#x80FD;</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4CA;</div>
+                    <div class="key-point-content">
+                        <h3>&#x30C7;&#x30FC;&#x30BF;&#x5206;&#x6790;&#x30E6;&#x30FC;&#x30B6;&#x30FC;</h3>
+                        <p>&#x30C7;&#x30FC;&#x30BF;&#x5206;&#x6790;&#x3084;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30E9;&#x30A4;&#x30BC;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3092;&#x983B;&#x7E41;&#x306B;&#x884C;&#x3046;&#x30E6;&#x30FC;&#x30B6;&#x30FC;&#x306B;&#x7279;&#x306B;&#x4FBF;&#x5229;</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4BB;</div>
+                    <div class="key-point-content">
+                        <h3>&#x6280;&#x8853;&#x30C9;&#x30AD;&#x30E5;&#x30E1;&#x30F3;&#x30C8;&#x4F5C;&#x6210;&#x8005;</h3>
+                        <p>&#x6280;&#x8853;&#x7684;&#x306A;&#x8AAC;&#x660E;&#x3084;&#x30C9;&#x30AD;&#x30E5;&#x30E1;&#x30F3;&#x30C8;&#x4F5C;&#x6210;&#x306B; Claude &#x3092;&#x6D3B;&#x7528;&#x3057;&#x3066;&#x3044;&#x308B;&#x30E6;&#x30FC;&#x30B6;&#x30FC;</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Note -->
+        <section class="section">
+            <h2 class="section-title">&#x6CE8;&#x8A18;</h2>
+            <div class="note-box">
+                <span class="note-icon">&#x26A0;</span>
+                <p>&#x672C;&#x6A5F;&#x80FD;&#x306E;&#x8A73;&#x7D30;&#x306A;&#x4ED5;&#x69D8;&#x3084;&#x30B5;&#x30DD;&#x30FC;&#x30C8;&#x3055;&#x308C;&#x308B;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30EB;&#x306E;&#x7A2E;&#x985E;&#x306B;&#x3064;&#x3044;&#x3066;&#x306F;&#x3001;&#x8A73;&#x7D30;&#x30DA;&#x30FC;&#x30B8;&#x304C;&#x672A;&#x516C;&#x958B;&#x306E;&#x305F;&#x3081;&#x3001;&#x516C;&#x958B;&#x5F8C;&#x306B;&#x8FFD;&#x52A0;&#x60C5;&#x5831;&#x3092;&#x78BA;&#x8A8D;&#x3059;&#x308B;&#x3053;&#x3068;&#x3092;&#x63A8;&#x5968;&#x3057;&#x307E;&#x3059;&#x3002;</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">&#x307E;&#x3068;&#x3081;</h2>
+            <p class="summary-text">
+                Claude.ai &#x306B;&#x30A4;&#x30F3;&#x30BF;&#x30E9;&#x30AF;&#x30C6;&#x30A3;&#x30D6;&#x306A;&#x30C1;&#x30E3;&#x30FC;&#x30C8;&#x3001;&#x30C0;&#x30A4;&#x30A2;&#x30B0;&#x30E9;&#x30E0;&#x3001;&#x30D3;&#x30B8;&#x30E5;&#x30A2;&#x30E9;&#x30A4;&#x30BC;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x306E;&#x30A4;&#x30F3;&#x30E9;&#x30A4;&#x30F3;&#x751F;&#x6210;&#x6A5F;&#x80FD;&#x304C;&#x8FFD;&#x52A0;&#x3055;&#x308C;&#x307E;&#x3057;&#x305F;&#x3002;&#x5F93;&#x6765;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x30D9;&#x30FC;&#x30B9;&#x306E;&#x5FDC;&#x7B54;&#x306B;&#x52A0;&#x3048;&#x3001;&#x4F1A;&#x8A71;&#x306E;&#x6D41;&#x308C;&#x306E;&#x4E2D;&#x3067;&#x76F4;&#x63A5;&#x8996;&#x89BA;&#x7684;&#x306A;&#x30B3;&#x30F3;&#x30C6;&#x30F3;&#x30C4;&#x3092;&#x8868;&#x793A;&#x3067;&#x304D;&#x308B;&#x3088;&#x3046;&#x306B;&#x306A;&#x3063;&#x305F;&#x3053;&#x3068;&#x3067;&#x3001;&#x30C7;&#x30FC;&#x30BF;&#x5206;&#x6790;&#x3084;&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x8A2D;&#x8A08;&#x306E;&#x8AAC;&#x660E;&#x306A;&#x3069;&#x3001;&#x5E45;&#x5E83;&#x3044;&#x30E6;&#x30FC;&#x30B9;&#x30B1;&#x30FC;&#x30B9;&#x3067;&#x306E;&#x6D3B;&#x7528;&#x304C;&#x671F;&#x5F85;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;
+            </p>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">&#x95A2;&#x9023;&#x30EA;&#x30F3;&#x30AF;</h2>
+            <div class="related-links">
+                <a href="https://support.claude.com/en/articles/12138966-release-notes" target="_blank" rel="noopener noreferrer" class="related-link">&#x1F4C4; Claude Apps Release Notes</a>
+                <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" class="related-link">&#x1F916; Claude.ai</a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>&#x51FA;&#x5178;:</strong> <a href="https://support.claude.com/en/articles/12138966-release-notes" target="_blank" rel="noopener noreferrer">https://support.claude.com/en/articles/12138966-release-notes</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

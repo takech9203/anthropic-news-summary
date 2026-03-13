@@ -5,7 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-03-12](2026/2026-03-12-claude-partner-network.md) - Anthropic が Claude Partner Network を発表: パートナーエコシステムに 1 億ドルを投資
+- [2026-03-12](2026/2026-03-12-claude-interactive-visualizations.md) - Claude がインタラクティブなチャート、ダイアグラム、ビジュアライゼーションを作成可能に
 - [2026-03-11](2026/2026-03-11-the-anthropic-institute.md) - The Anthropic Institute: 強力な AI がもたらす社会的課題に取り組む新組織を設立
+- [2026-03-11](2026/2026-03-11-claude-excel-powerpoint-integration.md) - Claude for Excel と Claude for PowerPoint の連携強化: アプリケーション間でのコンテキスト共有
 - [2026-03-11](2026/2026-03-11-claude-code-v2-1-74.md) - Claude Code v2.1.74 リリース: メモリリーク修正、セキュリティ強化、RTL 言語対応
 - [2026-03-11](2026/2026-03-11-claude-code-v2-1-73.md) - Claude Code v2.1.73 リリース: CPU フリーズ修正、Opus 4.6 デフォルト化、modelOverrides 設定の追加
 - [2026-03-10](2026/2026-03-10-sydney-fourth-office-asia-pacific.md) - Anthropic がシドニーにオフィスを開設: アジア太平洋地域 4 番目の拠点

@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude for Excel / PowerPoint 連携強化 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 8px;
+        }
+
+        .feature-card ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding: 4px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .feature-card ul li::before {
+            content: '>';
+            color: var(--anthropic-coral);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.5;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Note box */
+        .note-box {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border: 2px solid rgba(255, 152, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .note-box .note-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .note-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Target list */
+        .target-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .target-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .target-list li:last-child {
+            border-bottom: none;
+        }
+
+        .target-list li .li-icon {
+            flex-shrink: 0;
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        /* Action items */
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px dashed rgba(212, 165, 116, 0.3);
+        }
+
+        .action-item:last-child {
+            border-bottom: none;
+        }
+
+        .action-item .action-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .action-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Summary */
+        .summary-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 2;
+        }
+
+        /* Related Links */
+        .related-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .related-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 24px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .related-link:hover {
+            background: var(--anthropic-coral);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">&#x2728; &#x65B0;&#x6A5F;&#x80FD;&#x30FB;&#x88FD;&#x54C1;&#x30A2;&#x30C3;&#x30D7;&#x30C7;&#x30FC;&#x30C8;</span>
+                <h1>Claude for Excel / PowerPoint 連携強化: アプリケーション間でのコンテキスト共有</h1>
+                <p class="date">2026-03-11</p>
+            </div>
+        </header>
+
+        <!-- Overview / Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                Anthropic は 2026 年 3 月 11 日、Claude for Excel と Claude for PowerPoint のアドインにおける連携機能の強化を発表しました。両アドイン間で会話の完全なコンテキストを共有できるようになり、一方のアプリケーションでの操作がもう一方のアプリケーションにも反映されるようになります。
+            </p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F504;</div>
+                    <div class="key-point-content">
+                        <h3>クロスアプリケーションコンテキスト共有</h3>
+                        <p>Excel と PowerPoint のアドイン間で会話の完全なコンテキストを共有。一方でのアクションがもう一方に反映されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x26A1;</div>
+                    <div class="key-point-content">
+                        <h3>スキルサポート</h3>
+                        <p>アドインでスキル機能が利用可能に。特定のタスクに特化した操作をアドイン内で実行できるようになります。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F310;</div>
+                    <div class="key-point-content">
+                        <h3>LLM ゲートウェイ接続</h3>
+                        <p>Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry を通じた接続をサポート。エンタープライズ環境での導入が容易に。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before / After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>&#x274C; Before</h4>
+                    <ul>
+                        <li>&#x1F4C4; Excel と PowerPoint のアドインが個別に動作</li>
+                        <li>&#x1F6AB; アプリ間でコンテキストが共有されない</li>
+                        <li>&#x1F501; Excel の分析結果を PowerPoint で手動入力</li>
+                        <li>&#x1F512; クラウドゲートウェイ経由の接続未対応</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>&#x2705; After</h4>
+                    <ul>
+                        <li>&#x1F504; アドイン間で完全なコンテキスト共有</li>
+                        <li>&#x1F4AC; 一方の操作がもう一方に自動反映</li>
+                        <li>&#x26A1; Excel の分析から PowerPoint を自動生成</li>
+                        <li>&#x2601; Bedrock / Vertex AI / Foundry 対応</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Features -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x1F504; コンテキスト共有</h3>
+                    <p>Excel と PowerPoint のアドイン間で会話履歴とアクション結果を完全に共有。データ分析からプレゼン作成まで一貫したワークフローを実現。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x26A1; スキルサポート</h3>
+                    <p>特定のタスクに特化したスキル機能をアドイン内で実行可能。業務に応じた高度な操作が可能に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x2601; LLM ゲートウェイ接続</h3>
+                    <p>エンタープライズ向けクラウド接続をサポート。</p>
+                    <ul>
+                        <li>Amazon Bedrock</li>
+                        <li>Google Cloud Vertex AI</li>
+                        <li>Microsoft Foundry</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Office["&#x1F4CA; Microsoft Office"]
+        direction LR
+        subgraph ExcelApp["&#x1F4D7; Excel"]
+            ExcelAddin["&#x1F916; Claude for Excel&lt;br/&gt;Add-in"]
+        end
+        subgraph PPTApp["&#x1F4D9; PowerPoint"]
+            PPTAddin["&#x1F916; Claude for PowerPoint&lt;br/&gt;Add-in"]
+        end
+        ExcelAddin ~~~ PPTAddin
+    end
+
+    subgraph Context["&#x1F504; Context Sharing Layer"]
+        SharedContext["&#x1F9E0; Shared Context&lt;br/&gt;Conversation / Actions"]
+        Skills["&#x26A1; Skills"]
+        SharedContext ~~~ Skills
+    end
+
+    subgraph Gateway["&#x1F310; LLM Gateway"]
+        direction LR
+        Bedrock["&#x2601; Amazon Bedrock"]
+        Vertex["&#x2601; Google Cloud&lt;br/&gt;Vertex AI"]
+        Foundry["&#x2601; Microsoft Foundry"]
+        Bedrock ~~~ Vertex ~~~ Foundry
+    end
+
+    subgraph Claude["&#x1F916; Claude API"]
+        MessagesAPI["&#x1F4E8; Messages API"]
+    end
+
+    ExcelAddin --> SharedContext
+    PPTAddin --> SharedContext
+    ExcelAddin --> Skills
+    PPTAddin --> Skills
+    SharedContext --> MessagesAPI
+    Bedrock --> MessagesAPI
+    Vertex --> MessagesAPI
+    Foundry --> MessagesAPI
+
+    classDef office fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef context fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef gateway fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef claude fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class ExcelApp,PPTApp office
+    class SharedContext,Skills context
+    class Bedrock,Vertex,Foundry gateway
+    class MessagesAPI claude
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>&#x1F4CA; データ分析からプレゼンテーション作成</h4>
+                <p>Excel でデータ分析を行い、その結果とコンテキストを保持したまま PowerPoint でプレゼンテーションを自動生成</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4DD; レポート作成の効率化</h4>
+                <p>Excel のスプレッドシートデータに基づいて、PowerPoint でグラフやサマリースライドを作成</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F3E2; エンタープライズ統合</h4>
+                <p>既存のクラウドインフラ (Bedrock、Vertex AI、Foundry) を通じて、セキュリティポリシーを維持しながらアドインを利用</p>
+            </div>
+        </section>
+
+        <!-- Target / Actions -->
+        <section class="section">
+            <h2 class="section-title">対象と必要なアクション</h2>
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">&#x1F3AF; 対象ユーザー</h3>
+            <ul class="target-list" style="margin-bottom: 24px;">
+                <li>
+                    <span class="li-icon">&#x1F4BB;</span>
+                    <span>Microsoft Office アドインを利用しているエンドユーザー</span>
+                </li>
+                <li>
+                    <span class="li-icon">&#x2601;</span>
+                    <span>Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry を利用しているエンタープライズユーザー</span>
+                </li>
+                <li>
+                    <span class="li-icon">&#x1F3E2;</span>
+                    <span>Claude を業務ワークフローに統合している組織</span>
+                </li>
+            </ul>
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">&#x1F6E0; 必要なアクション</h3>
+            <div class="action-item">
+                <span class="action-icon">&#x1F504;</span>
+                <p>Claude for Excel および Claude for PowerPoint のアドインを最新バージョンに更新</p>
+            </div>
+            <div class="action-item">
+                <span class="action-icon">&#x2699;</span>
+                <p>LLM ゲートウェイ接続を利用する場合は、各クラウドプロバイダーでの設定が必要</p>
+            </div>
+        </section>
+
+        <!-- Note -->
+        <section class="section">
+            <h2 class="section-title">注記</h2>
+            <div class="note-box">
+                <span class="note-icon">&#x26A0;</span>
+                <p>詳細ページ未公開のため、公開後に更新が必要です。スキルサポートの詳細仕様や LLM ゲートウェイの設定手順などは、公式ドキュメントの更新をお待ちください。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p class="summary-text">
+                Claude for Excel と Claude for PowerPoint のアドイン連携強化は、Microsoft Office 環境での AI 活用をより実用的なものにする重要なアップデートです。クロスアプリケーションのコンテキスト共有により、Excel でのデータ分析から PowerPoint でのプレゼンテーション作成まで、一貫した AI アシスタンスを受けられるようになります。
+            </p>
+            <p class="summary-text" style="margin-top: 16px;">
+                また、Amazon Bedrock、Google Cloud Vertex AI、Microsoft Foundry を通じた LLM ゲートウェイ接続のサポートにより、エンタープライズ環境での導入障壁が大幅に下がることが期待されます。スキルサポートの追加とあわせて、業務効率化の可能性がさらに広がるアップデートと言えます。
+            </p>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <div class="related-links">
+                <a href="https://support.claude.com/en/articles/12138966-release-notes" target="_blank" rel="noopener noreferrer" class="related-link">&#x1F4C4; Claude Apps Release Notes</a>
+                <a href="https://www.anthropic.com/news" target="_blank" rel="noopener noreferrer" class="related-link">&#x1F4F0; Anthropic News</a>
+                <a href="https://www.anthropic.com/api" target="_blank" rel="noopener noreferrer" class="related-link">&#x1F517; Claude API</a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://support.claude.com/en/articles/12138966-release-notes" target="_blank" rel="noopener noreferrer">https://support.claude.com/en/articles/12138966-release-notes</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
