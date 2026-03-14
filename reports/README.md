@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-03-14](2026/2026-03-14-claude-code-v2-1-76.md) - Claude Code v2.1.76 リリース: MCP Elicitation サポート、セッション命名、ワークツリー高速化
+- [2026-03-13](2026/2026-03-13-claude-code-v2-1-75.md) - Claude Code v2.1.75 リリース: Opus 4.6 の 1M コンテキストウィンドウ対応とトークン推定修正
+- [2026-03-13](2026/2026-03-13-1m-context-window-ga.md) - Claude Opus 4.6 / Sonnet 4.6 の 1M トークンコンテキストウィンドウが GA に
 - [2026-03-12](2026/2026-03-12-claude-partner-network.md) - Anthropic が Claude Partner Network を発表: パートナーエコシステムに 1 億ドルを投資
 - [2026-03-12](2026/2026-03-12-claude-interactive-visualizations.md) - Claude がインタラクティブなチャート、ダイアグラム、ビジュアライゼーションを作成可能に
 - [2026-03-11](2026/2026-03-11-the-anthropic-institute.md) - The Anthropic Institute: 強力な AI がもたらす社会的課題に取り組む新組織を設立
