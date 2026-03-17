@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extended Thinking の新しい display フィールド - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .comparison-card code {
+            background: rgba(0,0,0,0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        .comparison-card .mini-code {
+            background: rgba(0,0,0,0.06);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .info-table th,
+        .info-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .info-table td {
+            color: var(--text-secondary);
+        }
+
+        .info-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .info-table code {
+            background: rgba(212, 165, 116, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        /* Migration */
+        .migration-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--anthropic-coral);
+            margin: 16px 0;
+        }
+
+        /* Highlight */
+        .highlight-text {
+            background: linear-gradient(transparent 60%, rgba(212, 165, 116, 0.3) 60%);
+            padding: 0 2px;
+            font-weight: 700;
+        }
+
+        .summary-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .summary-text strong {
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .code-block code {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <h1>Extended Thinking の新しい <code style="background: rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 6px; font-family: 'JetBrains Mono', monospace;">display</code> フィールドで思考内容の表示制御が可能に</h1>
+                <p class="date">2026-03-16 | Claude Developer Platform Release Notes</p>
+            </div>
+        </header>
+
+        <!-- 概要 Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="summary-text" style="margin-bottom: 20px;">
+                Anthropic は 2026 年 3 月 16 日、Claude API の Extended Thinking 機能に新しい <code style="background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-family: monospace;">display</code> フィールドを追加しました。<code style="background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-family: monospace;">thinking.display</code> パラメータを <code style="background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-family: monospace;">"omitted"</code> に設定することで、レスポンスから思考内容を省略し、<strong>ストリーミングの高速化</strong>と<strong>帯域幅の削減</strong>を実現できます。
+            </p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x26A1;</div>
+                    <div class="key-point-content">
+                        <h3>思考内容の省略</h3>
+                        <p><code style="background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">thinking.display: "omitted"</code> を設定すると、レスポンスの thinking ブロックから思考テキストが省略され、空文字列になります。ストリーミング時のデータ転送量を大幅に削減できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F511;</div>
+                    <div class="key-point-content">
+                        <h3>signature の保持</h3>
+                        <p>思考内容が省略されても、マルチターン会話の継続に必要な <code style="background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">signature</code> フィールドは保持されます。後続のターンで思考の文脈を維持できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4B0;</div>
+                    <div class="key-point-content">
+                        <h3>料金の変更なし</h3>
+                        <p><code style="background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">display</code> フィールドの設定に関わらず、課金は従来と同じです。思考トークンは引き続き生成・課金されますが、レスポンスでの転送量が削減されます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 背景 -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p class="summary-text">
+                Extended Thinking は、Claude が複雑なタスクに対してステップバイステップで思考を行い、より正確な回答を生成する機能です。従来、Extended Thinking を有効にすると、レスポンスに思考プロセスの全文が含まれていました。
+            </p>
+            <p class="summary-text" style="margin-top: 12px;">
+                しかし、多くのユースケースでは思考内容自体を表示する必要がなく、最終的な回答のみが重要です。思考内容はトークン数が多くなることがあり、ストリーミング時のレイテンシや帯域幅に影響を与えていました。
+            </p>
+        </section>
+
+        <!-- Before/After Comparison -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before - デフォルト</h4>
+                    <p><code>display</code> 未指定の場合、thinking フィールドに<strong>思考テキスト全文</strong>が含まれます。</p>
+                    <div class="mini-code">{
+  "type": "thinking",
+  "thinking": "ユーザーの質問を分析
+すると...(長い思考)...",
+  "signature": "EuYBCkQ..."
+}</div>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After - display: "omitted"</h4>
+                    <p>thinking フィールドが<strong>空文字列</strong>に。<code>signature</code> は保持されます。</p>
+                    <div class="mini-code">{
+  "type": "thinking",
+  "thinking": "",
+  "signature": "EuYBCkQ..."
+}</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技術詳細テーブル -->
+        <section class="section">
+            <h2 class="section-title">display フィールドの設定値</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>設定値</th>
+                        <th>動作</th>
+                        <th>thinking フィールド</th>
+                        <th>signature</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>未指定 (デフォルト)</td>
+                        <td>思考内容を含む</td>
+                        <td>思考テキスト全文</td>
+                        <td>あり</td>
+                    </tr>
+                    <tr>
+                        <td><code>"omitted"</code></td>
+                        <td>思考内容を省略</td>
+                        <td>空文字列</td>
+                        <td>あり</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るポイント</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">料金変更なし</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="font-size: 2rem;">&#x2B07;</div>
+                    <div class="stat-label">帯域幅の削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="font-size: 2rem;">&#x26A1;</div>
+                    <div class="stat-label">ストリーミング高速化</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">後方互換性</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 主な機能 -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x1F4DD; display フィールドの追加</h3>
+                    <p><code style="font-size: 12px;">thinking</code> パラメータ内に新しい <code style="font-size: 12px;">display</code> フィールドが追加されました。<code style="font-size: 12px;">"omitted"</code> に設定すると、レスポンスの思考ブロックから思考テキストが省略されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F517; signature の保持</h3>
+                    <p>思考内容が省略されても、マルチターン会話の継続に必要な <code style="font-size: 12px;">signature</code> フィールドは保持されます。後続のターンで思考の文脈を維持できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4B3; 料金の変更なし</h3>
+                    <p><code style="font-size: 12px;">display</code> フィールドの設定に関わらず、課金は従来と同じです。思考トークンは引き続き生成・課金されますが、転送量が削減されます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Request["&#x1F4E8; API リクエスト"]
+        direction LR
+        Default["&#x1F4DD; デフォルト&lt;br/&gt;display 未指定"]
+        Omitted["&#x26A1; display: omitted&lt;br/&gt;思考省略モード"]
+        Default ~~~ Omitted
+    end
+
+    subgraph Processing["&#x1F916; Claude 処理"]
+        Think["&#x1F9E0; Extended Thinking&lt;br/&gt;思考プロセス実行"]
+        Generate["&#x1F4AC; 回答生成"]
+    end
+
+    subgraph ResponseDefault["&#x1F4E4; レスポンス - デフォルト"]
+        direction LR
+        ThinkFull["&#x1F9E0; thinking&lt;br/&gt;思考テキスト全文"]
+        SigFull["&#x1F511; signature&lt;br/&gt;署名あり"]
+        TextFull["&#x1F4AC; text&lt;br/&gt;回答テキスト"]
+        ThinkFull ~~~ SigFull ~~~ TextFull
+    end
+
+    subgraph ResponseOmitted["&#x1F4E4; レスポンス - 省略モード"]
+        direction LR
+        ThinkEmpty["&#x1F9E0; thinking&lt;br/&gt;空文字列"]
+        SigKept["&#x1F511; signature&lt;br/&gt;署名あり"]
+        TextKept["&#x1F4AC; text&lt;br/&gt;回答テキスト"]
+        ThinkEmpty ~~~ SigKept ~~~ TextKept
+    end
+
+    subgraph MultiTurn["&#x1F504; マルチターン継続"]
+        NextReq["&#x1F4E8; 次のリクエスト&lt;br/&gt;signature を含めて送信"]
+    end
+
+    Default --> Think
+    Omitted --> Think
+    Think --> Generate
+    Generate --> ResponseDefault
+    Generate --> ResponseOmitted
+    ResponseDefault --> MultiTurn
+    ResponseOmitted --> MultiTurn
+
+    classDef request fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef processing fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef responseDefault fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef responseOmitted fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef multiTurn fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+
+    class Request request
+    class Processing processing
+    class ResponseDefault responseDefault
+    class ResponseOmitted responseOmitted
+    class MultiTurn multiTurn
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Sample 1: Basic Usage -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">思考内容を省略してリクエスト</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+message = client.messages.create(
+    model="claude-opus-4-6-20260205",
+    max_tokens=16384,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 10000,
+        "display": "omitted"  # 思考内容を省略
+    },
+    messages=[
+        {
+            "role": "user",
+            "content": "量子コンピューティングの現状と課題を説明してください。"
+        }
+    ]
+)
+
+# thinking ブロックは存在するが、thinking フィールドは空
+for block in message.content:
+    if block.type == "thinking":
+        print(f"Thinking: '{block.thinking}'")  # 空文字列
+        print(f"Signature: {block.signature}")   # 署名は保持
+    elif block.type == "text":
+        print(f"Response: {block.text}")</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">マルチターン会話での利用</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+# 1 ターン目
+first_response = client.messages.create(
+    model="claude-opus-4-6-20260205",
+    max_tokens=16384,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 10000,
+        "display": "omitted"
+    },
+    messages=[
+        {
+            "role": "user",
+            "content": "Python でウェブスクレイパーを設計してください。"
+        }
+    ]
+)
+
+# レスポンスのコンテンツブロックをそのまま次のターンに含める
+# signature が保持されているため、思考の文脈が継続される
+response_content = [
+    block.model_dump() for block in first_response.content
+]
+
+# 2 ターン目
+second_response = client.messages.create(
+    model="claude-opus-4-6-20260205",
+    max_tokens=16384,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 10000,
+        "display": "omitted"
+    },
+    messages=[
+        {
+            "role": "user",
+            "content": "Python でウェブスクレイパーを設計してください。"
+        },
+        {
+            "role": "assistant",
+            "content": response_content  # 1 ターン目の応答を含める
+        },
+        {
+            "role": "user",
+            "content": "エラーハンドリングを追加してください。"
+        }
+    ]
+)
+
+print(second_response.content[-1].text)</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">ストリーミングでの利用</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+with client.messages.stream(
+    model="claude-opus-4-6-20260205",
+    max_tokens=16384,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 10000,
+        "display": "omitted"  # ストリーミング時の帯域幅を削減
+    },
+    messages=[
+        {
+            "role": "user",
+            "content": "機械学習モデルの評価手法を比較してください。"
+        }
+    ]
+) as stream:
+    for event in stream:
+        # 思考ブロックのストリーミングデータが省略されるため
+        # 回答テキストの配信がより高速になる
+        if hasattr(event, "type") and event.type == "content_block_delta":
+            if hasattr(event.delta, "text"):
+                print(event.delta.text, end="", flush=True)</code></pre>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+            <p class="summary-text" style="margin-bottom: 20px;">
+                既存の Extended Thinking 実装に <code style="background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-family: monospace;">display</code> フィールドを追加するだけで利用可能です。既存のコードとの後方互換性があり、<code style="background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-family: monospace;">display</code> を指定しない場合は従来と同じ動作をします。
+            </p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">変更前 (従来の実装)</span>
+                </div>
+                <pre><code class="language-python">message = client.messages.create(
+    model="claude-opus-4-6-20260205",
+    max_tokens=16384,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 10000
+    },
+    messages=[...]
+)</code></pre>
+            </div>
+
+            <div class="migration-arrow">&#x2B07;&#xFE0F; 1 行追加するだけ</div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">変更後 (思考内容を省略)</span>
+                </div>
+                <pre><code class="language-python">message = client.messages.create(
+    model="claude-opus-4-6-20260205",
+    max_tokens=16384,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 10000,
+        "display": "omitted"  # この 1 行を追加
+    },
+    messages=[...]
+)</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケースと対象</h2>
+            <div class="use-case">
+                <h4>&#x1F3ED; プロダクション環境のアプリケーション</h4>
+                <p>エンドユーザーに思考プロセスを表示する必要がないケースで、不要なデータ転送を削減できます。最終的な回答のみが重要なアプリケーションに最適です。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x26A1; ストリーミングパフォーマンスの最適化</h4>
+                <p>ストリーミングレスポンスのパフォーマンスを最適化したい開発者向け。思考ブロックのストリーミングデータが省略されるため、回答テキストの配信がより高速になります。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F504; マルチターン会話の継続</h4>
+                <p><code style="font-size: 13px; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">display: "omitted"</code> を使用しても、<code style="font-size: 13px; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">signature</code> は保持されるため、既存のマルチターン実装に影響はありません。レスポンスの thinking ブロックをそのまま次のリクエストに含めることで、会話の継続が可能です。</p>
+            </div>
+        </section>
+
+        <!-- 開発者への影響 -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響と必要なアクション</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x2705;</div>
+                    <div class="key-point-content">
+                        <h3>思考内容が不要な場合</h3>
+                        <p><code style="font-size: 12px; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">thinking</code> パラメータに <code style="font-size: 12px; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">display: "omitted"</code> を追加することで、レスポンスの転送量を削減できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F504;</div>
+                    <div class="key-point-content">
+                        <h3>マルチターン会話を利用している場合</h3>
+                        <p><code style="font-size: 12px; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">display: "omitted"</code> を使用しても、<code style="font-size: 12px; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">signature</code> は保持されるため、既存のマルチターン実装に影響はありません。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4B0;</div>
+                    <div class="key-point-content">
+                        <h3>料金の確認</h3>
+                        <p>思考トークンの課金は従来と変わりません。<code style="font-size: 12px; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">display</code> 設定は転送量のみに影響し、トークン使用量や料金には影響しません。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- まとめ -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p class="summary-text">
+                Extended Thinking の新しい <code style="background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-family: monospace;">display</code> フィールドは、思考内容の転送を制御するシンプルかつ効果的な機能です。<code style="background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-family: monospace;">thinking.display: "omitted"</code> を設定するだけで、レスポンスから思考テキストを省略でき、ストリーミングの高速化と帯域幅の削減を実現できます。
+            </p>
+            <p class="summary-text" style="margin-top: 12px;">
+                特にプロダクション環境では、エンドユーザーに思考プロセスを表示する必要がないケースが多く、この機能により不要なデータ転送を削減できます。マルチターン会話の継続に必要な <code style="background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-family: monospace;">signature</code> は保持されるため、既存の実装への影響は最小限です。料金体系にも変更はなく、思考トークンは引き続き同じ料金で課金されます。
+            </p>
+            <p class="summary-text" style="margin-top: 12px;">
+                <code style="background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-family: monospace;">display</code> フィールドを指定しない場合は従来と同じ動作のため、後方互換性も完全に確保されています。
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <p><a href="https://platform.claude.com/docs/en/build-with-claude/extended-thinking#controlling-thinking-display" target="_blank" rel="noopener noreferrer">Extended Thinking - Controlling Thinking Display</a></p>
+            <p><a href="https://platform.claude.com/docs/en/build-with-claude/extended-thinking" target="_blank" rel="noopener noreferrer">Extended Thinking 概要</a></p>
+            <p><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude Developer Platform Release Notes</a></p>
+            <p><a href="https://platform.claude.com/docs/en/api/messages" target="_blank" rel="noopener noreferrer">Messages API リファレンス</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
