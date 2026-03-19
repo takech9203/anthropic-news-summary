@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Models API にモデル機能フィールドが追加 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .comparison-card code {
+            background: rgba(0,0,0,0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .info-table th,
+        .info-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .info-table td {
+            color: var(--text-secondary);
+        }
+
+        .info-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .info-table code {
+            background: rgba(212, 165, 116, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        /* Capability badge */
+        .cap-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .cap-badge.supported {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .cap-badge.bool {
+            background: #E8F1FF;
+            color: #3B82F6;
+        }
+
+        .cap-badge.nested {
+            background: #F3E5F5;
+            color: #7B61FF;
+        }
+
+        /* Migration */
+        .migration-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--anthropic-coral);
+            margin: 16px 0;
+        }
+
+        /* Summary text */
+        .summary-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .summary-text strong {
+            color: var(--text-primary);
+        }
+
+        .inline-code {
+            background: rgba(212,165,116,0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .code-block code {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API UPDATE</span>
+                <h1>Models API にモデル機能フィールドが追加</h1>
+                <p class="date">2026-03-18 | Claude Developer Platform Release Notes</p>
+            </div>
+        </header>
+
+        <!-- 概要 Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="summary-text" style="margin-bottom: 20px;">
+                Anthropic は 2026 年 3 月 18 日、Models API にモデル機能フィールドを追加しました。<code class="inline-code">GET /v1/models</code> および <code class="inline-code">GET /v1/models/{model_id}</code> のレスポンスに <code class="inline-code">max_input_tokens</code>、<code class="inline-code">max_tokens</code>、および <code class="inline-code">capabilities</code> オブジェクトが含まれるようになりました。これにより、各モデルがサポートする機能をプログラムから動的に確認でき、モデル選択やアプリケーション設定の自動化が可能になります。
+            </p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4E5;</div>
+                    <div class="key-point-content">
+                        <h3>max_input_tokens フィールド</h3>
+                        <p>モデルの最大入力コンテキストウィンドウサイズ (トークン数) を返します。ハードコーディングなしでコンテキスト制限を動的に取得できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4E4;</div>
+                    <div class="key-point-content">
+                        <h3>max_tokens フィールド</h3>
+                        <p><code class="inline-code">max_tokens</code> パラメータに指定可能な最大値を返します。モデルごとの出力制限を API から直接確認できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x2699;</div>
+                    <div class="key-point-content">
+                        <h3>capabilities オブジェクト</h3>
+                        <p>モデルがサポートする各機能 (Batch API、引用、コード実行、画像入力、PDF 入力、構造化出力、Extended Thinking、reasoning_effort、コンテキスト管理) の対応状況を構造化されたオブジェクトで返します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 背景 -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p class="summary-text">
+                従来、Claude API で利用可能なモデルの機能や制限値を把握するには、ドキュメントを参照する必要がありました。モデルごとの最大入力トークン数、最大出力トークン数、サポートする機能 (Extended Thinking、画像入力、PDF 入力など) はドキュメントに記載されていましたが、API から直接取得する手段がありませんでした。
+            </p>
+            <p class="summary-text" style="margin-top: 12px;">
+                新しいモデルがリリースされるたびに、開発者はドキュメントを確認してアプリケーションの設定を手動で更新する必要があり、運用面での負担となっていました。
+            </p>
+        </section>
+
+        <!-- Before/After Comparison -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p>モデルの機能や制限値は<strong>ドキュメントを手動で参照</strong>する必要がありました。新モデルのリリースごとにコードの設定を手動更新していました。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p><code>capabilities</code> オブジェクトで<strong>プログラムから動的に取得</strong>可能に。モデル選択やアプリケーション設定を自動化できます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 主な変更点 -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x1F4E5; max_input_tokens</h3>
+                    <p>モデルの最大入力コンテキストウィンドウサイズ (トークン数) を返します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4E4; max_tokens</h3>
+                    <p><code style="font-size: 12px;">max_tokens</code> パラメータに指定可能な最大値を返します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x2699; capabilities オブジェクト</h3>
+                    <p>モデルがサポートする各機能の対応状況を構造化されたオブジェクトで返します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- capabilities オブジェクトの構造 -->
+        <section class="section">
+            <h2 class="section-title">capabilities オブジェクトの構造</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>フィールド</th>
+                        <th>型</th>
+                        <th>説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>batch</code></td>
+                        <td><span class="cap-badge bool">CapabilitySupport</span></td>
+                        <td>Batch API のサポート状況</td>
+                    </tr>
+                    <tr>
+                        <td><code>citations</code></td>
+                        <td><span class="cap-badge bool">CapabilitySupport</span></td>
+                        <td>引用生成のサポート状況</td>
+                    </tr>
+                    <tr>
+                        <td><code>code_execution</code></td>
+                        <td><span class="cap-badge bool">CapabilitySupport</span></td>
+                        <td>コード実行ツールのサポート状況</td>
+                    </tr>
+                    <tr>
+                        <td><code>context_management</code></td>
+                        <td><span class="cap-badge nested">ContextManagementCapability</span></td>
+                        <td>コンテキスト管理のサポート状況と利用可能な戦略</td>
+                    </tr>
+                    <tr>
+                        <td><code>effort</code></td>
+                        <td><span class="cap-badge nested">EffortCapability</span></td>
+                        <td>reasoning_effort のサポート状況とレベル</td>
+                    </tr>
+                    <tr>
+                        <td><code>image_input</code></td>
+                        <td><span class="cap-badge bool">CapabilitySupport</span></td>
+                        <td>画像入力のサポート状況</td>
+                    </tr>
+                    <tr>
+                        <td><code>pdf_input</code></td>
+                        <td><span class="cap-badge bool">CapabilitySupport</span></td>
+                        <td>PDF 入力のサポート状況</td>
+                    </tr>
+                    <tr>
+                        <td><code>structured_outputs</code></td>
+                        <td><span class="cap-badge bool">CapabilitySupport</span></td>
+                        <td>構造化出力 / JSON モードのサポート状況</td>
+                    </tr>
+                    <tr>
+                        <td><code>thinking</code></td>
+                        <td><span class="cap-badge nested">ThinkingCapability</span></td>
+                        <td>Extended Thinking のサポート状況と設定タイプ</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="summary-text" style="margin-top: 16px;">
+                各 <code class="inline-code">CapabilitySupport</code> オブジェクトは <code class="inline-code">supported: boolean</code> フィールドを持ち、そのモデルが該当機能をサポートしているかを示します。
+            </p>
+        </section>
+
+        <!-- thinking と effort の詳細 -->
+        <section class="section">
+            <h2 class="section-title">thinking と effort の詳細構造</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x1F9E0; thinking</h3>
+                    <p>Extended Thinking のサポート状況に加え、<code style="font-size: 12px;">types</code> オブジェクトで <code style="font-size: 12px;">enabled</code> (明示的有効化) と <code style="font-size: 12px;">adaptive</code> (自動判定) の対応を示します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x26A1; effort</h3>
+                    <p><code style="font-size: 12px;">reasoning_effort</code> パラメータのサポート状況に加え、<code style="font-size: 12px;">low</code>、<code style="font-size: 12px;">medium</code>、<code style="font-size: 12px;">high</code>、<code style="font-size: 12px;">max</code> の各レベルの対応を示します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- レスポンス例 -->
+        <section class="section">
+            <h2 class="section-title">API レスポンス構造</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">レスポンス例</span>
+                </div>
+                <pre><code class="language-json">{
+  "type": "model",
+  "id": "claude-opus-4-6-20260205",
+  "display_name": "Claude Opus 4.6",
+  "created_at": "2026-02-05T00:00:00Z",
+  "max_input_tokens": 200000,
+  "max_tokens": 32768,
+  "capabilities": {
+    "batch": { "supported": true },
+    "citations": { "supported": true },
+    "code_execution": { "supported": true },
+    "image_input": { "supported": true },
+    "pdf_input": { "supported": true },
+    "structured_outputs": { "supported": true },
+    "thinking": {
+      "supported": true,
+      "types": {
+        "enabled": { "supported": true },
+        "adaptive": { "supported": true }
+      }
+    },
+    "effort": {
+      "supported": true,
+      "low": { "supported": true },
+      "medium": { "supported": true },
+      "high": { "supported": true },
+      "max": { "supported": true }
+    },
+    "context_management": {
+      "supported": true,
+      "compact_20260112": { "supported": true },
+      "clear_thinking_20251015": { "supported": true },
+      "clear_tool_uses_20250919": { "supported": true }
+    }
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るポイント</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">capabilities フィールド数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">新規エンドポイント対応</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">後方互換性</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">破壊的変更なし</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Request["&#x1F4E8; Models API リクエスト"]
+        direction LR
+        ListAPI["&#x1F4CB; GET /v1/models&lt;br/&gt;モデル一覧取得"]
+        GetAPI["&#x1F50D; GET /v1/models/model_id&lt;br/&gt;個別モデル取得"]
+        ListAPI ~~~ GetAPI
+    end
+
+    subgraph Response["&#x1F4E4; レスポンス ModelInfo"]
+        direction LR
+        subgraph Basic["&#x1F4DD; 基本情報"]
+            ID["&#x1F3F7; id&lt;br/&gt;モデル ID"]
+            DisplayName["&#x1F4DB; display_name&lt;br/&gt;表示名"]
+            CreatedAt["&#x1F4C5; created_at&lt;br/&gt;リリース日"]
+        end
+        subgraph Tokens["&#x1F522; トークン制限"]
+            MaxInput["&#x1F4E5; max_input_tokens&lt;br/&gt;最大入力トークン"]
+            MaxOutput["&#x1F4E4; max_tokens&lt;br/&gt;最大出力トークン"]
+        end
+        subgraph Capabilities["&#x2699; capabilities"]
+            direction LR
+            Batch["&#x1F4E6; batch"]
+            Citations["&#x1F4CE; citations"]
+            CodeExec["&#x1F4BB; code_execution"]
+            ImageInput["&#x1F5BC; image_input"]
+            PdfInput["&#x1F4C4; pdf_input"]
+            Thinking["&#x1F9E0; thinking"]
+            Effort["&#x26A1; effort"]
+        end
+    end
+
+    subgraph Usage["&#x1F6E0; 活用例"]
+        direction LR
+        ModelSelect["&#x1F3AF; モデル自動選択"]
+        ConfigAuto["&#x2699; 設定の自動化"]
+        FeatureGate["&#x1F6A6; 機能ゲーティング"]
+        ModelSelect ~~~ ConfigAuto ~~~ FeatureGate
+    end
+
+    ListAPI --> Response
+    GetAPI --> Response
+    Response --> Usage
+
+    classDef request fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef response fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef basic fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef tokens fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef capabilities fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef usage fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+
+    class Request request
+    class Response response
+    class Basic basic
+    class Tokens tokens
+    class Capabilities capabilities
+    class Usage usage
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Sample 1: モデル一覧の取得 -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">モデル一覧の取得</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+# モデル一覧を取得
+models = client.models.list()
+
+for model in models.data:
+    print(f"Model: {model.id}")
+    print(f"  Display Name: {model.display_name}")
+    print(f"  Max Input Tokens: {model.max_input_tokens}")
+    print(f"  Max Tokens: {model.max_tokens}")
+    print(f"  Thinking: {model.capabilities.thinking.supported}")
+    print(f"  Image Input: {model.capabilities.image_input.supported}")
+    print()</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">個別モデルの機能確認</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+# 特定のモデル情報を取得
+model = client.models.retrieve("claude-opus-4-6-20260205")
+
+print(f"Model: {model.display_name}")
+print(f"Max Input Tokens: {model.max_input_tokens}")
+print(f"Max Output Tokens: {model.max_tokens}")
+
+# capabilities オブジェクトで機能の対応状況を確認
+caps = model.capabilities
+print(f"Batch API: {caps.batch.supported}")
+print(f"Citations: {caps.citations.supported}")
+print(f"Code Execution: {caps.code_execution.supported}")
+print(f"Image Input: {caps.image_input.supported}")
+print(f"PDF Input: {caps.pdf_input.supported}")
+print(f"Structured Outputs: {caps.structured_outputs.supported}")
+print(f"Extended Thinking: {caps.thinking.supported}")
+print(f"Reasoning Effort: {caps.effort.supported}")</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">curl - API の直接呼び出し</span>
+                </div>
+                <pre><code class="language-bash"># モデル一覧の取得
+curl https://api.anthropic.com/v1/models \
+    -H 'anthropic-version: 2023-06-01' \
+    -H "X-Api-Key: $ANTHROPIC_API_KEY"
+
+# 特定モデルの情報取得
+curl https://api.anthropic.com/v1/models/claude-opus-4-6-20260205 \
+    -H 'anthropic-version: 2023-06-01' \
+    -H "X-Api-Key: $ANTHROPIC_API_KEY"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">動的モデル選択の実装例</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+
+def select_model(
+    needs_thinking: bool = False,
+    needs_image: bool = False,
+    needs_pdf: bool = False,
+    min_input_tokens: int = 0,
+) -&gt; str:
+    """要件に基づいて最適なモデルを自動選択する"""
+    models = client.models.list()
+
+    for model in models.data:
+        caps = model.capabilities
+
+        # 要件を満たすか確認
+        if needs_thinking and not caps.thinking.supported:
+            continue
+        if needs_image and not caps.image_input.supported:
+            continue
+        if needs_pdf and not caps.pdf_input.supported:
+            continue
+        if model.max_input_tokens &lt; min_input_tokens:
+            continue
+
+        return model.id
+
+    raise ValueError("要件を満たすモデルが見つかりませんでした。")
+
+
+# Extended Thinking と画像入力をサポートするモデルを選択
+model_id = select_model(needs_thinking=True, needs_image=True)
+print(f"Selected model: {model_id}")</code></pre>
+            </div>
+        </section>
+
+        <!-- 移行ガイド -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+            <p class="summary-text" style="margin-bottom: 20px;">
+                既存の Models API 呼び出しはそのまま動作します。新しいフィールドはレスポンスに追加されたもので、破壊的な変更はありません。
+            </p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">変更前: ハードコーディング</span>
+                </div>
+                <pre><code class="language-python"># 変更前: ハードコーディング
+MAX_INPUT_TOKENS = 200000
+SUPPORTS_THINKING = True</code></pre>
+            </div>
+
+            <div class="migration-arrow">&#x2B07;&#xFE0F; API から動的に取得</div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">変更後: API から動的に取得</span>
+                </div>
+                <pre><code class="language-python"># 変更後: API から動的に取得
+model = client.models.retrieve("claude-opus-4-6-20260205")
+max_input_tokens = model.max_input_tokens
+supports_thinking = model.capabilities.thinking.supported</code></pre>
+            </div>
+        </section>
+
+        <!-- 開発者への影響 -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F465;</div>
+                    <div class="key-point-content">
+                        <h3>対象</h3>
+                        <p>Claude API を利用しているすべての開発者、複数のモデルを動的に切り替えるアプリケーションを構築している開発者、モデルの機能に基づいて UI や機能を制御するプラットフォーム開発者が対象です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x2705;</div>
+                    <div class="key-point-content">
+                        <h3>既存実装への影響なし</h3>
+                        <p>レスポンスにフィールドが追加されたのみで、既存の API 呼び出しに破壊的な変更はありません。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F504;</div>
+                    <div class="key-point-content">
+                        <h3>モデル選択の自動化</h3>
+                        <p><code class="inline-code">capabilities</code> オブジェクトを活用することで、新しいモデルがリリースされた際にアプリケーションコードを変更せずに対応できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ユースケース -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>&#x1F3AF; モデルの自動選択</h4>
+                <p><code class="inline-code">capabilities</code> オブジェクトを活用して、要件に基づいたモデルの自動選択を実装できます。Extended Thinking や画像入力など、必要な機能をサポートするモデルをプログラムから動的に選択できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x2699; アプリケーション設定の自動化</h4>
+                <p><code class="inline-code">max_input_tokens</code> や <code class="inline-code">max_tokens</code> を API から取得することで、ハードコーディングされたモデル設定を動的な取得に置き換えることができます。新しいモデルがリリースされてもコード変更が不要です。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F6A6; 機能ゲーティング</h4>
+                <p>モデルの機能に基づいて UI の表示や利用可能な機能を動的に制御できます。例えば、PDF 入力をサポートするモデルの場合のみファイルアップロード UI を表示するといった実装が可能です。</p>
+            </div>
+        </section>
+
+        <!-- まとめ -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p class="summary-text">
+                Models API に追加された <code class="inline-code">max_input_tokens</code>、<code class="inline-code">max_tokens</code>、および <code class="inline-code">capabilities</code> フィールドにより、各モデルのトークン制限と機能サポート状況を API から直接取得できるようになりました。
+            </p>
+            <p class="summary-text" style="margin-top: 12px;">
+                <code class="inline-code">capabilities</code> オブジェクトは、Batch API、引用、コード実行、画像入力、PDF 入力、構造化出力、Extended Thinking、reasoning_effort、コンテキスト管理といった幅広い機能の対応状況を網羅しています。これにより、モデルの機能をプログラムから動的に確認し、最適なモデルの自動選択やアプリケーション設定の自動化が実現できます。
+            </p>
+            <p class="summary-text" style="margin-top: 12px;">
+                既存の API 呼び出しとの後方互換性は完全に維持されており、レスポンスに新しいフィールドが追加されただけのため、既存の実装に影響はありません。
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <p><a href="https://platform.claude.com/docs/en/api/models/list" target="_blank" rel="noopener noreferrer">Models API - List Models</a></p>
+            <p><a href="https://platform.claude.com/docs/en/api/models/get" target="_blank" rel="noopener noreferrer">Models API - Get Model</a></p>
+            <p><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude Developer Platform Release Notes</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/json.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/bash.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

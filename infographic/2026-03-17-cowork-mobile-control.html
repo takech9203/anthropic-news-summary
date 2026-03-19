@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cowork モバイルコントロール - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p, .comparison-card ul {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .comparison-card ul {
+            padding-left: 20px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Plan Badge */
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .plan-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .plan-card .plan-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .plan-card .plan-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .plan-card .plan-detail {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        /* Preview Badge */
+        .preview-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+            color: #78350F;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFF3E0 100%);
+            border: 2px solid rgba(245, 158, 11, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .info-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #B45309;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Action Steps */
+        .action-steps {
+            counter-reset: step;
+        }
+
+        .action-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .action-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .action-step-number {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            color: var(--anthropic-dark);
+        }
+
+        .action-step-content h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .action-step-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .related-links {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(106, 106, 122, 0.3);
+        }
+
+        .footer .related-links p {
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .plan-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE APPS</span>
+                <h1>Cowork モバイルコントロール: スマートフォンから永続スレッドでタスク管理が可能に</h1>
+                <p class="date">2026-03-17</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📱</div>
+                    <div class="key-point-content">
+                        <h3>モバイルコントロール追加</h3>
+                        <p>Cowork 機能にモバイルコントロールが追加され、Pro および Max プランのユーザーは Claude Desktop または Claude for iOS/Android から永続的なエージェントスレッドにアクセスし、タスクを管理できるようになりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔗</div>
+                    <div class="key-point-content">
+                        <h3>永続スレッドによるデバイス間同期</h3>
+                        <p>永続スレッドの仕組みにより、デスクで開始したタスクを外出先からモバイルデバイスで監視・制御することが可能に。デバイスをまたいだシームレスなタスク管理を実現しています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧪</div>
+                    <div class="key-point-content">
+                        <h3>リサーチプレビューとして提供</h3>
+                        <p>本機能はリサーチプレビューとして提供されます。Max プランから先行展開が開始され、Pro プランには 2 日以内に順次展開されます。フィードバックに基づいて機能が改善される予定です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>Cowork のタスク管理はデスクトップ環境に限定</li>
+                        <li>外出先からタスクの進捗確認ができない</li>
+                        <li>モバイルからエージェントへの指示送信が不可</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>iOS/Android アプリから Cowork のタスクを管理可能</li>
+                        <li>永続スレッドでデバイス間の状態を自動同期</li>
+                        <li>モバイルからリアルタイムで追加指示を送信可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">対応プラットフォーム</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">対応プラットフォーム</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">対象プラン</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2 日</div>
+                    <div class="stat-label">全対象ユーザーへの展開期間</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔗 永続的なエージェントスレッド</h3>
+                    <p>Cowork のタスクに対して永続的なスレッドが作成され、デバイス間で同期されます。Claude Desktop で開始したタスクの状態を iOS や Android アプリからリアルタイムで確認できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📱 マルチデバイスアクセス</h3>
+                    <p>Claude Desktop、Claude for iOS、Claude for Android のいずれからでも同一のスレッドにアクセス可能。デバイスを切り替えてもタスクの文脈が維持されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ エージェントタスクの遠隔管理</h3>
+                    <p>スマートフォンからタスクの進捗確認、追加指示の送信、タスクの管理操作が可能。Cowork 上で実行中のエージェントに対してモバイルからリアルタイムで介入できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>☁️ クラウド上の永続化</h3>
+                    <p>エージェントスレッドがクラウド上で永続化され、複数のクライアントから同一のスレッドにアクセスできる仕組みにより、デバイス間でのタスク状態の同期が実現されています。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rollout Timeline -->
+        <section class="section">
+            <h2 class="section-title">展開スケジュール</h2>
+            <div class="plan-grid">
+                <div class="plan-card">
+                    <div class="plan-icon">⭐</div>
+                    <div class="plan-name">Max プラン</div>
+                    <div class="plan-detail">2026 年 3 月 17 日より展開開始</div>
+                </div>
+                <div class="plan-card">
+                    <div class="plan-icon">🎵</div>
+                    <div class="plan-name">Pro プラン</div>
+                    <div class="plan-detail">2026 年 3 月 17 日から 2 日以内に順次展開</div>
+                </div>
+                <div class="plan-card" style="background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%); color: #333;">
+                    <div class="plan-icon">🧪</div>
+                    <div class="plan-name" style="color: #333;">リサーチプレビュー</div>
+                    <div class="plan-detail" style="color: #555;">機能仕様は今後変更される可能性あり</div>
+                </div>
+            </div>
+            <div class="mermaid-container" style="margin-top: 20px;">
+                <h3>展開スケジュール</h3>
+                <pre class="mermaid">
+flowchart LR
+    Start(["🚀 2026-03-17<br/>展開開始"]) --> Max["⭐ Max プラン<br/>即日利用可能"]
+    Max --> Pro["🎵 Pro プラン<br/>2 日以内に順次展開"]
+    Pro --> GA["🎯 全対象ユーザー<br/>リサーチプレビュー"]
+
+    classDef start fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef phase fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef goal fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class Start start
+    class Max,Pro phase
+    class GA goal
+                </pre>
+            </div>
+        </section>
+
+        <!-- Research Preview Notes -->
+        <section class="section">
+            <h2 class="section-title">リサーチプレビューの留意点</h2>
+            <div class="info-card">
+                <h3>⚠️ 仕様変更の可能性</h3>
+                <p>本機能はリサーチプレビューとして提供されており、機能の仕様は今後変更される可能性があります。</p>
+            </div>
+            <div class="info-card">
+                <h3>💬 フィードバック活用</h3>
+                <p>ユーザーからのフィードバックが機能改善に活用されます。対象プランのユーザーは積極的に試用し、フィードバックを提供することが推奨されます。</p>
+            </div>
+            <div class="info-card">
+                <h3>🚫 Free プラン非対応</h3>
+                <p>Free プランのユーザーは現時点では本機能を利用できません。</p>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <div class="mermaid-container">
+                <h3>Cowork モバイルコントロールの全体像</h3>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Devices["📱 クライアントデバイス"]
+        direction LR
+        Desktop["🖥️ Claude Desktop<br/>macOS / Windows"]
+        iOS["📱 Claude for iOS"]
+        Android["📱 Claude for Android"]
+        Desktop ~~~ iOS ~~~ Android
+    end
+
+    subgraph Cloud["☁️ Anthropic Cloud"]
+        direction LR
+        PThread["🔗 永続スレッド<br/>Persistent Thread"]
+        Sync["🔄 状態同期<br/>リアルタイム"]
+        PThread ~~~ Sync
+    end
+
+    subgraph Cowork["🤖 Cowork エージェント環境"]
+        direction LR
+        Agent["⚡ エージェント<br/>タスク実行"]
+        Tasks["📋 タスク管理<br/>進捗・状態"]
+        Agent ~~~ Tasks
+    end
+
+    Desktop --> PThread
+    iOS --> PThread
+    Android --> PThread
+    PThread --> Agent
+    Sync --> Tasks
+    Tasks -.-> Sync
+    Sync -.-> Desktop
+    Sync -.-> iOS
+    Sync -.-> Android
+
+    classDef devices fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef cloud fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef cowork fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Devices devices
+    class Cloud cloud
+    class Cowork cowork
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>モバイルからのタスク管理フロー</h3>
+                <pre class="mermaid">
+sequenceDiagram
+    participant D as 🖥️ Claude Desktop
+    participant C as ☁️ Anthropic Cloud
+    participant A as 🤖 Cowork Agent
+    participant M as 📱 Mobile App
+
+    D->>C: Cowork タスク作成
+    C->>A: エージェント起動
+    Note over C: 永続スレッド作成
+
+    A-->>C: 進捗更新
+    C-->>D: 状態同期
+
+    Note over M: 外出先からアクセス
+    M->>C: スレッドに接続
+    C-->>M: 現在の進捗を表示
+
+    M->>C: 追加指示を送信
+    C->>A: 指示を転送
+    A-->>C: タスク完了
+    C-->>M: 完了通知
+    C-->>D: 完了通知
+                </pre>
+            </div>
+        </section>
+
+        <!-- Required Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <div class="action-steps">
+                <div class="action-step">
+                    <div class="action-step-number">1</div>
+                    <div class="action-step-content">
+                        <h4>アプリの更新</h4>
+                        <p>Claude Desktop および Claude for iOS/Android を最新バージョンに更新してください。</p>
+                    </div>
+                </div>
+                <div class="action-step">
+                    <div class="action-step-number">2</div>
+                    <div class="action-step-content">
+                        <h4>プランの確認</h4>
+                        <p>Pro または Max プランに加入していることを確認してください。</p>
+                    </div>
+                </div>
+                <div class="action-step">
+                    <div class="action-step-number">3</div>
+                    <div class="action-step-content">
+                        <h4>Cowork でタスクを作成</h4>
+                        <p>Claude Desktop またはモバイルアプリから Cowork でタスクを作成し、永続スレッドを通じてデバイス間でタスクを管理できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Target Users -->
+        <section class="section">
+            <h2 class="section-title">対象ユーザー</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⭐ Pro / Max プラン</h3>
+                    <p>Claude Pro プランおよび Max プランのユーザーが対象です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 Cowork ユーザー</h3>
+                    <p>Cowork を日常的に利用しているユーザーにとって大きな改善です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏃 外出先での管理</h3>
+                    <p>外出先からもタスク管理を行いたいユーザーに最適な機能です。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">利用シナリオ</h2>
+            <div class="use-case">
+                <h4>📊 外出先での進捗確認</h4>
+                <p>デスクで開始した長時間タスクの進捗を、移動中にスマートフォンから確認できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>💬 リモートからの指示追加</h4>
+                <p>タスク実行中の Claude エージェントに対して、モバイルから追加の指示やフィードバックを送信できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔄 マルチデバイスワークフロー</h4>
+                <p>デスクトップとモバイルを行き来しながら、途切れることなくタスクを管理できます。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">✨</div>
+                    <div class="key-point-content">
+                        <p>Claude Apps の Cowork にモバイルコントロール機能が追加されたことで、ユーザーはデスクトップだけでなくスマートフォンからもエージェントタスクを管理できるようになりました。永続スレッドの導入により、Claude Desktop で開始したタスクの進捗を外出先から iOS/Android アプリで確認し、追加の指示を送信することが可能です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚀</div>
+                    <div class="key-point-content">
+                        <p>本機能はリサーチプレビューとして Pro および Max プランのユーザーに提供されます。Max プランは 2026 年 3 月 17 日から、Pro プランは 2 日以内に順次展開される予定です。モバイルとデスクトップをシームレスに行き来できるワークフローにより、Cowork の活用範囲が大幅に拡大します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💬</div>
+                    <div class="key-point-content">
+                        <p>今後のフィードバックに基づいて機能が改善されていくことが期待されるため、対象プランのユーザーは積極的に試用し、フィードバックを提供することが推奨されます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://support.claude.com/en/articles/12138966-release-notes" target="_blank" rel="noopener noreferrer">https://support.claude.com/en/articles/12138966-release-notes</a></p>
+            <div class="related-links">
+                <p><strong>関連リンク:</strong></p>
+                <p><a href="https://support.claude.com/en/articles/33755498-assign-tasks-to-claude-from-anywhere-in-cowork" target="_blank" rel="noopener noreferrer">Cowork の詳細</a></p>
+                <p><a href="https://apps.apple.com/app/claude-by-anthropic/id6473753684" target="_blank" rel="noopener noreferrer">Claude for iOS</a></p>
+                <p><a href="https://play.google.com/store/apps/details?id=com.anthropic.claude" target="_blank" rel="noopener noreferrer">Claude for Android</a></p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

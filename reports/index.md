@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-03-18](2026/2026-03-18-models-api-capability-fields.md) - Models API にモデル機能フィールドが追加
+- [2026-03-18](2026/2026-03-18-claude-code-v2-1-79.md) - Claude Code v2.1.79 リリース: メモリ使用量 18MB 削減、VSCode リモートコントロール、認証・安定性の改善
+- [2026-03-17](2026/2026-03-17-cowork-mobile-control.md) - Claude Apps Cowork モバイルコントロール: スマートフォンから永続スレッドでタスク管理が可能に
 - [2026-03-17](2026/2026-03-17-claude-code-v2-1-78.md) - Claude Code v2.1.78 リリース: プラグインエコシステム強化、セキュリティ修正、ストリーミング改善
 - [2026-03-17](2026/2026-03-17-claude-code-v2-1-77.md) - Claude Code v2.1.77 リリース: Opus 4.6 出力トークン 64k 拡張、セキュリティ修正、大規模パフォーマンス改善
 - [2026-03-16](2026/2026-03-16-extended-thinking-display-field.md) - Extended Thinking の新しい `display` フィールドで思考内容の表示制御が可能に

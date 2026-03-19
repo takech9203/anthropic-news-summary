@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.79 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p, .comparison-card ul {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .comparison-card ul {
+            padding-left: 20px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-block:first-of-type {
+            margin-top: 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Bug Fix Cards */
+        .bugfix-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .bugfix-category {
+            margin-bottom: 8px;
+        }
+
+        .bugfix-category h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bugfix-item {
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFF3E0 100%);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+        }
+
+        .bugfix-item h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #B45309;
+            margin-bottom: 6px;
+        }
+
+        .bugfix-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Guide */
+        .migration-item {
+            margin-bottom: 20px;
+        }
+
+        .migration-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .migration-item h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid-container:first-of-type {
+            margin-top: 0;
+        }
+
+        .mermaid-container h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE</span>
+                <h1>Claude Code v2.1.79 リリース</h1>
+                <p class="subtitle">メモリ使用量 18MB 削減、VSCode リモートコントロール、認証・安定性の改善</p>
+                <p class="date">2026-03-18</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">💾</div>
+                    <div class="key-point-content">
+                        <h3>メモリ使用量 18MB 削減</h3>
+                        <p>全てのシナリオで起動時のメモリ使用量が約 18MB 削減されました。コンテナ環境やメモリ制約のあるサーバーで特に効果を発揮します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>--console フラグによる認証</h3>
+                        <p><code>claude auth login --console</code> で Anthropic Console (API 課金) による認証が簡単に行えるようになりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📱</div>
+                    <div class="key-point-content">
+                        <h3>VSCode リモートコントロール</h3>
+                        <p><code>/remote-control</code> コマンドにより、VSCode のセッションを claude.ai/code にブリッジし、ブラウザやスマートフォンから継続操作が可能になりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>10 件のバグ修正</h3>
+                        <p><code>claude -p</code> のサブプロセスハング、ボイスモードの起動不具合、エンタープライズのレート制限リトライなど、幅広い環境での安定性が向上しました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">-18MB</div>
+                    <div class="stat-label">メモリ使用量削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2 分</div>
+                    <div class="stat-label">API タイムアウト</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li><code>claude -p</code> がサブプロセスとして起動時にハング</li>
+                        <li>非ストリーミング API フォールバックにタイムアウトなし</li>
+                        <li>エンタープライズユーザーが 429 エラー時にリトライ不可</li>
+                        <li>ボイスモードが起動時にアクティブ化されない</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>stdin なしのサブプロセス起動でもハングせず動作</li>
+                        <li>1 回の試行あたり 2 分のタイムアウトを導入</li>
+                        <li>レート制限エラー時のリトライが正常に動作</li>
+                        <li><code>voiceEnabled: true</code> で正しくアクティブ化</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔑 --console フラグ</h3>
+                    <p><code>claude auth login --console</code> で Anthropic Console (API 課金) による認証が可能に。従来の OAuth 認証に加え、API キーベースの認証フローを簡単に選択できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏱️ ターン所要時間表示</h3>
+                    <p><code>/config</code> メニューに "Show turn duration" トグルが追加。各ターンの処理時間を確認でき、パフォーマンスモニタリングに活用できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📱 /remote-control</h3>
+                    <p>VSCode のセッションを claude.ai/code にブリッジし、ブラウザやスマートフォンから継続操作が可能に。デスクから離れてもセッションを監視・操作できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 AI セッションタイトル</h3>
+                    <p>VSCode のセッションタブに、最初のメッセージに基づいた AI 生成タイトルが表示されるようになりました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Improvements -->
+        <section class="section">
+            <h2 class="section-title">パフォーマンス改善</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">💾</div>
+                    <div class="key-point-content">
+                        <h3>起動時メモリ使用量の削減</h3>
+                        <p>全てのシナリオで起動時のメモリ使用量が約 18MB 削減されました。起動時の初期化プロセスの最適化によるもので、特にコンテナ環境やメモリ制約のあるサーバーで効果を発揮します。多数のセッションを並行実行する環境では、累積的なメモリ節約が期待できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⏳</div>
+                    <div class="key-point-content">
+                        <h3>非ストリーミング API フォールバック</h3>
+                        <p>ストリーミングが利用できない場合のフォールバック処理に、1 回の試行あたり 2 分のタイムアウトが導入されました。従来はタイムアウトが設定されておらず、ネットワーク障害時にセッションが無期限にハングする可能性がありました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Plugin Improvements -->
+        <section class="section">
+            <h2 class="section-title">プラグイン改善</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>CLAUDE_CODE_PLUGIN_SEED_DIR の複数ディレクトリ対応</h3>
+                        <p>プラットフォームのパス区切り文字 (Unix では <code>:</code>、Windows では <code>;</code>) で区切ることで、複数のシードディレクトリを指定できるようになりました。組織全体の共有プラグインディレクトリとチーム固有のプラグインディレクトリを同時に指定するなど、柔軟なプラグイン管理が実現します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正</h2>
+            <div class="bugfix-grid">
+                <div class="bugfix-category">
+                    <h3>🖥️ CLI 関連</h3>
+                    <div class="bugfix-item">
+                        <h4>claude -p のサブプロセスハング修正</h4>
+                        <p>明示的な stdin なしでサブプロセスとして起動された場合 (例: Python の <code>subprocess.run</code>) に <code>claude -p</code> がハングする問題を修正。CI/CD パイプラインや自動化スクリプトでの利用が安定します。</p>
+                    </div>
+                    <div class="bugfix-item">
+                        <h4>claude -p の Ctrl+C 修正</h4>
+                        <p>print モードで Ctrl+C が動作しない問題を修正しました。</p>
+                    </div>
+                    <div class="bugfix-item">
+                        <h4>/btw コマンドの修正</h4>
+                        <p>ストリーミング中に <code>/btw</code> を実行した際、サイド質問への回答ではなくメインエージェントの出力が返される問題を修正しました。</p>
+                    </div>
+                </div>
+
+                <div class="bugfix-category">
+                    <h3>🎨 UI・操作関連</h3>
+                    <div class="bugfix-item">
+                        <h4>ボイスモード起動の修正</h4>
+                        <p><code>voiceEnabled: true</code> が設定されている場合に、起動時にボイスモードが正しくアクティブ化されない問題を修正しました。</p>
+                    </div>
+                    <div class="bugfix-item">
+                        <h4>/permissions のタブナビゲーション修正</h4>
+                        <p>左右矢印キーによるタブナビゲーションが正しく動作するようになりました。</p>
+                    </div>
+                    <div class="bugfix-item">
+                        <h4>ターミナルタイトル制御の修正</h4>
+                        <p><code>CLAUDE_CODE_DISABLE_TERMINAL_TITLE</code> が起動時のターミナルタイトル設定を防止しない問題を修正しました。</p>
+                    </div>
+                    <div class="bugfix-item">
+                        <h4>カスタムステータスライン修正</h4>
+                        <p>ワークスペーストラストがブロックしている場合にカスタムステータスラインが何も表示しない問題を修正しました。</p>
+                    </div>
+                </div>
+
+                <div class="bugfix-category">
+                    <h3>🏢 エンタープライズ・セッション関連</h3>
+                    <div class="bugfix-item">
+                        <h4>エンタープライズユーザーのレート制限リトライ修正</h4>
+                        <p>エンタープライズユーザーがレート制限 (429) エラー時にリトライできない問題を修正しました。</p>
+                    </div>
+                    <div class="bugfix-item">
+                        <h4>SessionEnd フック修正</h4>
+                        <p>インタラクティブな <code>/resume</code> でセッションを切り替えた際に <code>SessionEnd</code> フックが発火しない問題を修正しました。</p>
+                    </div>
+                </div>
+
+                <div class="bugfix-category">
+                    <h3>💻 VSCode 関連</h3>
+                    <div class="bugfix-item">
+                        <h4>thinking pill の表示修正</h4>
+                        <p>レスポンス完了後に "Thinking" と表示される問題を修正し、"Thought for Ns" と正しい所要時間が表示されるようになりました。</p>
+                    </div>
+                    <div class="bugfix-item">
+                        <h4>セッション diff ボタン修正</h4>
+                        <p>左サイドバーからセッションを開いた際にセッション diff ボタンが表示されない問題を修正しました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">--console フラグによる認証</span>
+                </div>
+                <pre><code class="language-bash"># Anthropic Console (API 課金) で認証
+claude auth login --console
+
+# 従来の OAuth 認証 (変更なし)
+claude auth login</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">claude -p をサブプロセスとして使用</span>
+                </div>
+                <pre><code class="language-bash"># Anthropic Console 認証で claude -p をサブプロセスとして使用
+claude auth login --console
+
+# Python からの呼び出し (v2.1.79 でハング問題が修正)
+python3 -c "
+import subprocess
+result = subprocess.run(
+    ['claude', '-p', 'Hello, Claude!'],
+    capture_output=True,
+    text=True
+)
+print(result.stdout)
+"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">複数プラグインシードディレクトリの設定</span>
+                </div>
+                <pre><code class="language-bash"># Unix 環境: コロンで区切る
+export CLAUDE_CODE_PLUGIN_SEED_DIR="/org/shared/plugins:/team/plugins:/user/plugins"
+
+# Windows 環境: セミコロンで区切る
+set CLAUDE_CODE_PLUGIN_SEED_DIR="C:\org\plugins;C:\team\plugins"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/remote-control の使用</span>
+                </div>
+                <pre><code class="language-bash"># VSCode 内の Claude Code で実行
+/remote-control
+
+# 表示されるリンクをブラウザまたはモバイルデバイスで開く
+# claude.ai/code からセッションを継続操作</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデート方法</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <div class="mermaid-container">
+                <h3>リリース全体像</h3>
+                <pre class="mermaid">
+flowchart TD
+    subgraph NewFeatures["🆕 新機能"]
+        direction LR
+        ConsoleAuth["🔑 --console フラグ<br/>API 課金認証"]
+        TurnDuration["⏱️ ターン所要時間表示<br/>/config トグル"]
+        RemoteCtrl["📱 /remote-control<br/>VSCode ブリッジ"]
+        SessionTitle["📝 AI セッションタイトル<br/>VSCode タブ"]
+        ConsoleAuth ~~~ TurnDuration ~~~ RemoteCtrl ~~~ SessionTitle
+    end
+
+    subgraph Performance["⚡ パフォーマンス改善"]
+        direction LR
+        Memory["💾 メモリ削減<br/>起動時 -18MB"]
+        Timeout["⏳ API タイムアウト<br/>2 分 / 試行"]
+        Memory ~~~ Timeout
+    end
+
+    subgraph BugFixes["🔧 バグ修正"]
+        direction LR
+        SubProcess["🖥️ claude -p 修正<br/>サブプロセスハング解消"]
+        Voice["🎤 ボイスモード<br/>起動時の不具合修正"]
+        Enterprise["🏢 エンタープライズ<br/>429 リトライ修正"]
+        SessionEnd["🔄 SessionEnd フック<br/>/resume 切替時の発火"]
+        SubProcess ~~~ Voice ~~~ Enterprise ~~~ SessionEnd
+    end
+
+    subgraph VSCodeFixes["💻 VSCode 修正"]
+        direction LR
+        ThinkingPill["💭 thinking pill<br/>所要時間の正しい表示"]
+        DiffButton["📊 diff ボタン<br/>サイドバーからの表示"]
+        ThinkingPill ~~~ DiffButton
+    end
+
+    NewFeatures --> Performance
+    Performance --> BugFixes
+    BugFixes --> VSCodeFixes
+
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef perf fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef vscode fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class NewFeatures feature
+    class Performance perf
+    class BugFixes fix
+    class VSCodeFixes vscode
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>VSCode リモートコントロールフロー</h3>
+                <pre class="mermaid">
+sequenceDiagram
+    participant U as 👤 ユーザー
+    participant VS as 💻 VSCode
+    participant CC as 🖥️ Claude Code
+    participant Web as 🌐 claude.ai/code
+
+    U->>VS: /remote-control を実行
+    VS->>CC: ブリッジセッション開始
+    CC-->>VS: ブリッジ URL を生成
+    VS-->>U: URL を表示
+    U->>Web: ブラウザ / スマートフォンで URL を開く
+    Web->>CC: セッションに接続
+    Note over U,Web: デスクから離れても<br/>セッションを継続操作
+    Web->>CC: コマンド送信
+    CC-->>Web: レスポンス返却
+                </pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact / Use Cases -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="use-case">
+                <h4>🤖 自動化環境のユーザー</h4>
+                <p><code>claude -p</code> のサブプロセスハング問題と Ctrl+C の修正により、CI/CD パイプラインや Python の <code>subprocess.run</code> からの呼び出しが安定しました。自動化ワークフローで Claude Code を活用しているユーザーは早急なアップデートを推奨します。</p>
+            </div>
+            <div class="use-case">
+                <h4>💻 VSCode ユーザー</h4>
+                <p><code>/remote-control</code> によるブラウザ・モバイルからのセッション継続、AI 生成セッションタイトル、thinking pill の正しい表示、diff ボタンの修正など、VSCode 拡張の利便性が大幅に向上しました。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏢 エンタープライズ管理者</h4>
+                <p>レート制限 (429) エラー時のリトライが正常に動作するようになりました。大規模チームでの運用安定性が向上しています。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔌 プラグイン開発者</h4>
+                <p><code>CLAUDE_CODE_PLUGIN_SEED_DIR</code> で複数ディレクトリの指定が可能になり、組織共有とチーム固有のプラグインディレクトリを同時に管理できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🎤 ボイスモードユーザー</h4>
+                <p><code>voiceEnabled: true</code> を設定しているユーザーは、起動時のアクティブ化が正しく動作するようになりました。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔄 フック活用ユーザー</h4>
+                <p><code>SessionEnd</code> フックがインタラクティブな <code>/resume</code> によるセッション切り替え時にも正しく発火するようになりました。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>パフォーマンス最適化</h3>
+                        <p>起動時メモリ使用量が約 18MB 削減され、非ストリーミング API フォールバックに 2 分のタイムアウトが導入されました。リソース制約のある環境でのメモリ効率とネットワーク障害時のセッション安定性が向上しています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🆕</div>
+                    <div class="key-point-content">
+                        <h3>新しい認証・操作機能</h3>
+                        <p><code>--console</code> フラグによる Anthropic Console 認証、<code>/config</code> のターン所要時間表示トグル、VSCode の <code>/remote-control</code> コマンドと AI 生成セッションタイトルが追加されました。特に <code>/remote-control</code> は、デスクから離れた際にブラウザやスマートフォンからセッションを継続できる実用的な機能です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>広範な安定性修正</h3>
+                        <p><code>claude -p</code> のサブプロセスハング問題とエンタープライズユーザーのレート制限リトライの修正が特に重要です。CI/CD パイプラインや自動化環境で <code>claude -p</code> を活用しているユーザーは、早急なアップデートを推奨します。全ての Claude Code ユーザーにアップデートを推奨します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong>
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub</a> |
+                <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
