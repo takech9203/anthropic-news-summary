@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-03-20](2026/2026-03-20-claude-code-v2-1-80.md) - Claude Code v2.1.80 リリース: MCP チャンネル、レートリミット表示、大規模リポジトリでのメモリ 80MB 削減
+- [2026-03-18](2026/2026-03-18-what-81000-people-want-from-ai.md) - 81,000 人が AI に求めるもの -- Anthropic 大規模インタビュー調査
 - [2026-03-18](2026/2026-03-18-models-api-capability-fields.md) - Models API にモデル機能フィールドが追加
 - [2026-03-18](2026/2026-03-18-claude-code-v2-1-79.md) - Claude Code v2.1.79 リリース: メモリ使用量 18MB 削減、VSCode リモートコントロール、認証・安定性の改善
 - [2026-03-17](2026/2026-03-17-cowork-mobile-control.md) - Claude Apps Cowork モバイルコントロール: スマートフォンから永続スレッドでタスク管理が可能に
