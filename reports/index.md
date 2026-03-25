@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-03-24](2026/2026-03-24-claude-code-auto-mode.md) - Claude Code に Auto Mode が登場 (リサーチプレビュー)
+- [2026-03-23](2026/2026-03-23-computer-use-cowork-dispatch.md) - Computer Use が Cowork と Claude Code で利用可能に + Dispatch の改善
 - [2026-03-21](2026/2026-03-21-claude-code-v2-1-81.md) - Claude Code v2.1.81 リリース: --bare フラグによるスクリプト最適化、パーミッション転送チャンネル、27 件の修正と改善
 - [2026-03-20](2026/2026-03-20-claude-code-v2-1-80.md) - Claude Code v2.1.80 リリース: MCP チャンネル、レートリミット表示、大規模リポジトリでのメモリ 80MB 削減
 - [2026-03-18](2026/2026-03-18-what-81000-people-want-from-ai.md) - 81,000 人が AI に求めるもの -- Anthropic 大規模インタビュー調査

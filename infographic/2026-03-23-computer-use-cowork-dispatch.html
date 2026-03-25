@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Use が Cowork と Claude Code で利用可能に + Dispatch の改善 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p, .comparison-card ul {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .comparison-card ul {
+            padding-left: 20px;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Safety Card */
+        .safety-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .safety-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFF3E0 100%);
+            border: 2px solid rgba(245, 158, 11, 0.2);
+            border-radius: 12px;
+        }
+
+        .safety-item .safety-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .safety-item h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #B45309;
+        }
+
+        .safety-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Action Steps */
+        .action-steps {
+            counter-reset: step;
+        }
+
+        .action-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .action-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .action-step-number {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            color: var(--anthropic-dark);
+        }
+
+        .action-step-content h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .action-step-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Info Card */
+        .info-card {
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFF3E0 100%);
+            border: 2px solid rgba(245, 158, 11, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .info-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #B45309;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Hierarchy Visual */
+        .hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            align-items: center;
+        }
+
+        .hierarchy-level {
+            width: 100%;
+            padding: 20px 24px;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hierarchy-level.level-1 {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+            z-index: 3;
+        }
+
+        .hierarchy-level.level-2 {
+            background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+            border: 2px solid #60A5FA;
+            margin-top: -4px;
+            z-index: 2;
+        }
+
+        .hierarchy-level.level-3 {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border: 2px solid #FFB74D;
+            margin-top: -4px;
+            z-index: 1;
+        }
+
+        .hierarchy-level h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .hierarchy-level p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .hierarchy-arrow {
+            font-size: 20px;
+            color: var(--text-muted);
+            margin: 4px 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .related-links {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(106, 106, 122, 0.3);
+        }
+
+        .footer .related-links p {
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">製品アップデート</span>
+                <h1>Computer Use が Cowork と Claude Code で利用可能に + Dispatch の改善</h1>
+                <p class="date">2026-03-23</p>
+            </div>
+        </header>
+
+        <!-- 概要 -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🖥️</div>
+                    <div class="key-point-content">
+                        <h3>Computer Use が Cowork で利用可能に</h3>
+                        <p>Claude がユーザーのコンピュータ画面を直接操作できる Computer Use 機能が Cowork および Claude Code で利用可能になりました。macOS の Claude Desktop アプリにおいて、Pro および Max プランのユーザーが研究プレビューとして利用できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔀</div>
+                    <div class="key-point-content">
+                        <h3>ツール選択の階層構造</h3>
+                        <p>Cowork はコネクタ、ブラウザ、画面操作の 3 層構造で最適なツールを自動選択します。直接統合が最も高速かつ正確であり、Computer Use はフォールバックとして位置づけられています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚀</div>
+                    <div class="key-point-content">
+                        <h3>Dispatch の改善</h3>
+                        <p>スマートフォンからタスクを割り当て、ユーザーが離席中でも Claude がコンピュータを操作してタスクを実行できるようになりました。デバイス間で 1 つの継続的な会話を維持できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>安全対策</h3>
+                        <p>各アプリケーションへのアクセス前にユーザー許可を要求し、プロンプトインジェクション検出の自動スキャンを実施。株式取引や機密データ入力の回避などのセーフガードが実装されています。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>コネクタやブラウザ操作のみ利用可能</li>
+                        <li>コネクタが存在しないアプリは操作不可</li>
+                        <li>Computer Use は API 経由のみ</li>
+                        <li>Dispatch からの画面操作に非対応</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>コネクタ + ブラウザ + Computer Use の 3 層構造</li>
+                        <li>任意のデスクトップアプリを操作可能</li>
+                        <li>Cowork / Claude Code から直接利用</li>
+                        <li>Dispatch 経由でリモートから画面操作</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">主要スペック</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">ツール選択階層</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">対象プラン</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">macOS</div>
+                    <div class="stat-label">対応 OS</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🖥️ Computer Use</h3>
+                    <p>Claude がデスクトップ画面上でクリック、タイピング、ナビゲーションを実行。スクリーンショットベースで画面の状態を把握し、任意のアプリケーションを操作できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔀 ツール自動選択</h3>
+                    <p>コネクタ、ブラウザ、画面操作の 3 層から最も精度の高いツールを自動選択。直接統合を優先し、Computer Use はフォールバックとして効率を最適化します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚀 Dispatch 改善</h3>
+                    <p>スマートフォンからタスクを割り当て、デスクトップ上で Claude が自動実行。デバイス間で 1 つの継続的な会話を維持できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 パーミッションモデル</h3>
+                    <p>各アプリケーションへのアクセス前にユーザー許可を要求。一部のアプリはデフォルトでアクセス制限されます。</p>
+                    <ul>
+                        <li>株式取引の回避</li>
+                        <li>機密データ入力の回避</li>
+                        <li>顔画像収集の回避</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ 安全対策</h3>
+                    <p>プロンプトインジェクション検出の自動スキャンを実施。画面上のテキストや画像による意図しない動作誘導を防止します。ユーザーはいつでも操作を停止可能です。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tool Hierarchy Visual -->
+        <section class="section">
+            <h2 class="section-title">ツール選択の階層構造</h2>
+            <div class="hierarchy">
+                <div class="hierarchy-level level-1">
+                    <h4>🔌 1. コネクタ (最優先)</h4>
+                    <p>Gmail、Google Drive、Slack などの専用コネクタ。最も高速かつ正確</p>
+                </div>
+                <div class="hierarchy-arrow">▼</div>
+                <div class="hierarchy-level level-2">
+                    <h4>🌐 2. ブラウザ操作</h4>
+                    <p>Claude in Chrome 経由でブラウザを操作。コネクタが利用できない場合</p>
+                </div>
+                <div class="hierarchy-arrow">▼</div>
+                <div class="hierarchy-level level-3">
+                    <h4>🖥️ 3. Computer Use (フォールバック)</h4>
+                    <p>デスクトップ上でクリック、タイピング、ナビゲーション。汎用性が高いが低速</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <div class="mermaid-container">
+                <h3>Cowork のツール選択階層</h3>
+                <pre class="mermaid">
+flowchart TD
+    User(["👤 ユーザー"]) --> Cowork["🤝 Cowork"]
+
+    Cowork --> Decision{"🔀 最適なツールを選択"}
+
+    Decision -->|"コネクタあり"| Connectors
+    Decision -->|"コネクタなし<br/>Web アクセス可能"| Browser
+    Decision -->|"フォールバック"| ComputerUse
+
+    subgraph Connectors["🔌 コネクタ"]
+        direction LR
+        Gmail["📧 Gmail"]
+        Drive["📁 Google Drive"]
+        Slack["💬 Slack"]
+        Gmail ~~~ Drive ~~~ Slack
+    end
+
+    subgraph Browser["🌐 ブラウザ"]
+        Chrome["🔍 Claude in Chrome"]
+    end
+
+    subgraph ComputerUse["🖥️ Computer Use"]
+        direction LR
+        Click["🖱️ クリック"]
+        Type["⌨️ タイピング"]
+        Navigate["🧭 ナビゲーション"]
+        Click ~~~ Type ~~~ Navigate
+    end
+
+    Connectors --> Result["✅ タスク完了"]
+    Browser --> Result
+    ComputerUse --> Result
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef cowork fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef connector fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef browser fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef computer fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef result fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class User user
+    class Cowork cowork
+    class Decision decision
+    class Gmail,Drive,Slack connector
+    class Chrome browser
+    class Click,Type,Navigate computer
+    class Result result
+    class Connectors,Browser,ComputerUse layer
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>Dispatch + Computer Use のフロー</h3>
+                <pre class="mermaid">
+sequenceDiagram
+    participant Ph as 📱 スマートフォン
+    participant D as 🚀 Dispatch
+    participant CD as 🖥️ Claude Desktop
+    participant App as 📋 デスクトップアプリ
+
+    Ph->>D: タスクを割り当て
+    D->>CD: タスクを転送
+    CD->>CD: 最適なツールを選択
+
+    alt コネクタ利用可能
+        CD->>App: コネクタ経由でアクセス
+    else ブラウザで対応可能
+        CD->>App: Chrome 経由でアクセス
+    else Computer Use
+        CD->>App: スクリーンショット取得
+        App-->>CD: 画面の状態
+        CD->>App: クリック・タイピング操作
+    end
+
+    CD->>CD: プロンプトインジェクション検出スキャン
+    App-->>CD: タスク結果
+    CD-->>D: 完了報告
+    D-->>Ph: 結果を通知
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">利用シナリオ</h2>
+            <div class="use-case">
+                <h4>🏢 社内ツールの操作</h4>
+                <p>コネクタが存在しない社内ダッシュボードやデスクトップアプリケーションを Claude が直接操作。API 連携がなくても、画面操作で業務を自動化できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>📱 UX テストの実施</h4>
+                <p>電話シミュレータを開いて UX テストを実施。Claude が画面を操作してユーザーフローを検証し、結果をまとめます。</p>
+            </div>
+            <div class="use-case">
+                <h4>📊 複数ソースからのデータ収集</h4>
+                <p>複数のアプリケーションやウェブサイトから情報を集め、スプレッドシートにデータを入力。競合分析や市場調査を効率化します。</p>
+            </div>
+            <div class="use-case">
+                <h4>📱 Dispatch でリモート作業</h4>
+                <p>外出先からスマートフォンで「デスクトップのメールアプリで未読メールの要約を作成して」と指示。Claude が自動で実行し、結果を通知します。</p>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--text-secondary);">対象ユーザー</h3>
+            <div class="feature-grid" style="margin-bottom: 24px;">
+                <div class="feature-card">
+                    <h3>⭐ Pro / Max プラン</h3>
+                    <p>macOS の Claude Desktop アプリを利用しているユーザーが対象です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 Cowork ユーザー</h3>
+                    <p>Cowork 機能を活用して業務効率化を図っているユーザーに大きな改善です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏢 社内ツール連携</h3>
+                    <p>コネクタが存在しない社内ツールやデスクトップアプリを Claude と連携させたいユーザーに最適です。</p>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--text-secondary);">必要なアクション</h3>
+            <div class="action-steps">
+                <div class="action-step">
+                    <div class="action-step-number">1</div>
+                    <div class="action-step-content">
+                        <h4>アプリの更新</h4>
+                        <p>macOS の Claude Desktop アプリを最新バージョンに更新してください。</p>
+                    </div>
+                </div>
+                <div class="action-step">
+                    <div class="action-step-number">2</div>
+                    <div class="action-step-content">
+                        <h4>プランの確認</h4>
+                        <p>Pro または Max プランに加入していることを確認してください。</p>
+                    </div>
+                </div>
+                <div class="action-step">
+                    <div class="action-step-number">3</div>
+                    <div class="action-step-content">
+                        <h4>Cowork でタスクを依頼</h4>
+                        <p>Cowork モードで Claude にタスクを依頼すると、必要に応じて Computer Use が自動的に使用されます。</p>
+                    </div>
+                </div>
+                <div class="action-step">
+                    <div class="action-step-number">4</div>
+                    <div class="action-step-content">
+                        <h4>アクセス許可の管理</h4>
+                        <p>各アプリケーションへのアクセス許可を求められた場合は、内容を確認して承認または拒否してください。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notes -->
+        <section class="section">
+            <h2 class="section-title">留意事項</h2>
+            <div class="info-card">
+                <h3>🧪 研究プレビュー</h3>
+                <p>本機能は研究プレビューとして提供されています。機能の仕様は今後変更される可能性があります。</p>
+            </div>
+            <div class="info-card">
+                <h3>⚠️ 画面操作は低速</h3>
+                <p>画面操作は直接統合と比較して低速であり、複雑なタスクではリトライが必要になる場合があります。コネクタやブラウザ操作で対応可能なタスクはそれらが優先されます。</p>
+            </div>
+            <div class="info-card">
+                <h3>💻 macOS 限定</h3>
+                <p>現時点では macOS のみの対応です。Windows 対応は近日公開予定です。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <p><a href="https://claude.com/blog/dispatch-and-computer-use" target="_blank" rel="noopener noreferrer">https://claude.com/blog/dispatch-and-computer-use</a></p>
+            <div class="related-links">
+                <p><strong>関連リンク:</strong></p>
+                <p><a href="https://support.claude.com/en/articles/14128542-let-claude-use-your-computer-in-cowork" target="_blank" rel="noopener noreferrer">Let Claude Use Your Computer in Cowork - Support</a></p>
+                <p><a href="https://www.anthropic.com/news" target="_blank" rel="noopener noreferrer">Anthropic News</a></p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
