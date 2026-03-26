@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.83 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            opacity: 0.85;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .badge-new {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-security {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        /* Bug fix categories */
+        .bugfix-category {
+            margin-bottom: 20px;
+        }
+
+        .bugfix-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .bugfix-category-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .bugfix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .bugfix-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .bugfix-item-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .bugfix-item-content h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .bugfix-item-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Improvement cards */
+        .improvement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .improvement-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, #EEF2FF 100%);
+            border: 2px solid rgba(59, 130, 246, 0.15);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .improvement-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.1);
+        }
+
+        .improvement-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .improvement-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-block:first-of-type {
+            margin-top: 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid,
+            .improvement-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Tool Update / CLI</span>
+                <h1>Claude Code v2.1.83</h1>
+                <p class="subtitle">マネージド設定のドロップインディレクトリ、30 件超のバグ修正、セキュリティとパフォーマンスの大幅改善</p>
+                <p class="date">2026-03-24</p>
+            </div>
+        </header>
+
+        <!-- Overview / Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🏢</div>
+                    <div class="key-point-content">
+                        <h3>エンタープライズポリシー管理</h3>
+                        <p><code>managed-settings.d/</code> ドロップインディレクトリにより、セキュリティチーム、インフラチーム、プロジェクトチームがそれぞれ独立したポリシーファイルを管理できるようになりました。アルファベット順にマージされるため、数字プレフィックスで優先順位を制御できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔐</div>
+                    <div class="key-point-content">
+                        <h3>セキュリティ強化</h3>
+                        <p><code>CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1</code> でサブプロセスへの認証情報漏洩を防止。<code>sandbox.failIfUnavailable</code> でサンドボックスなし実行を禁止。<code>--mcp-config</code> のポリシーバイパスも修正されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>30 件超のバグ修正</h3>
+                        <p>macOS 終了時ハング、起動時 UI フリーズ、大規模ファイル diff ハング、サンドボックスでのパイプコマンド問題、バックグラウンドエージェント不可視化、MCP SSE 接続断時のハングなど、広範な領域をカバーしています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>パフォーマンス改善</h3>
+                        <p><code>--bare -p</code> の 14% 高速化、非ストリーミングフォールバックのトークン上限 3 倍拡張 (21k -> 64k)、Bedrock SDK コールドスタート改善、プラグインのディスクキャッシュ化など、起動速度と処理能力が全般的に向上しています。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">13</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">30+</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">25+</div>
+                    <div class="stat-label">改善・変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">14%</div>
+                    <div class="stat-label">--bare -p 高速化</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📁 managed-settings.d/</h3>
+                    <p>ドロップインディレクトリから複数のポリシーフラグメントをアルファベット順にマージ。<code>00-security.json</code>、<code>10-infra.json</code>、<code>20-project.json</code> のようにチーム別の独立管理が可能になりました。</p>
+                    <span class="badge badge-new">New</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🔐 ENV_SCRUB</h3>
+                    <p><code>CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1</code> で Bash ツール、hooks、MCP stdio サーバーなどのサブプロセス環境から Anthropic およびクラウドプロバイダーの認証情報を自動除去します。</p>
+                    <span class="badge badge-security">Security</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🔔 CwdChanged / FileChanged</h3>
+                    <p>ワーキングディレクトリの変更やファイルの変更を検知する hook イベント。direnv のようなリアクティブな環境管理ツールとの連携が可能になりました。</p>
+                    <span class="badge badge-new">New</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 トランスクリプト検索</h3>
+                    <p>トランスクリプトモード (<code>Ctrl+O</code>) で <code>/</code> を押して検索し、<code>n</code> / <code>N</code> で結果を移動できるようになりました。</p>
+                    <span class="badge badge-new">New</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ sandbox.failIfUnavailable</h3>
+                    <p>サンドボックスが起動できない場合、サンドボックスなしで実行する代わりにエラーで終了。セキュリティポリシーの厳格な適用が可能です。</p>
+                    <span class="badge badge-security">Security</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🔌 プラグインオプション</h3>
+                    <p><code>manifest.userConfig</code> が外部から利用可能に。<code>sensitive: true</code> の値は macOS ではキーチェーン、その他ではセキュアファイルに保存されます。</p>
+                    <span class="badge badge-new">New</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details - Mermaid Diagrams -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <div class="mermaid-label">v2.1.83 の主要変更カテゴリ</div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Enterprise["🏢 エンタープライズ・ポリシー"]
+        direction LR
+        DropIn["📁 managed-settings.d/&lt;br/&gt;ドロップインディレクトリ&lt;br/&gt;チーム別ポリシー管理"]
+        SandboxFail["🛡️ sandbox.failIfUnavailable&lt;br/&gt;サンドボックス強制"]
+        EnvScrub["🔐 ENV_SCRUB&lt;br/&gt;認証情報の自動除去"]
+        DropIn ~~~ SandboxFail ~~~ EnvScrub
+    end
+
+    subgraph HooksEvents["🔔 Hook イベント・自動化"]
+        direction LR
+        CwdChanged["📂 CwdChanged&lt;br/&gt;ディレクトリ変更検知"]
+        FileChanged["📄 FileChanged&lt;br/&gt;ファイル変更検知"]
+        InitPrompt["🤖 initialPrompt&lt;br/&gt;エージェント自動開始"]
+        CwdChanged ~~~ FileChanged ~~~ InitPrompt
+    end
+
+    subgraph Performance["⚡ パフォーマンス"]
+        direction LR
+        BareFast["🚀 --bare -p&lt;br/&gt;14% 高速化"]
+        Fallback["📦 非ストリーミング&lt;br/&gt;21k-&gt;64k トークン&lt;br/&gt;120s-&gt;300s"]
+        PluginCache["💾 プラグイン&lt;br/&gt;ディスクキャッシュ"]
+        BareFast ~~~ Fallback ~~~ PluginCache
+    end
+
+    subgraph BugFixes["🔧 主要バグ修正 30+ 件"]
+        direction LR
+        MacHang["🍎 macOS 終了&lt;br/&gt;ハング修正"]
+        SandboxPipe["🐧 サンドボックス&lt;br/&gt;パイプ修正"]
+        BgAgent["👻 エージェント&lt;br/&gt;不可視化修正"]
+        MCPHang["🔌 MCP SSE&lt;br/&gt;ハング修正"]
+        MacHang ~~~ SandboxPipe ~~~ BgAgent ~~~ MCPHang
+    end
+
+    Enterprise --> HooksEvents
+    HooksEvents --> Performance
+    Performance --> BugFixes
+
+    classDef enterprise fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef hooks fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef perf fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef fix fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+
+    class Enterprise enterprise
+    class HooksEvents hooks
+    class Performance perf
+    class BugFixes fix
+                </pre>
+            </div>
+
+            <div class="mermaid-label" style="margin-top: 24px;">managed-settings.d/ のマージフロー</div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph DropInDir["📁 managed-settings.d/"]
+        direction TB
+        F1["00-security.json&lt;br/&gt;サンドボックス強制&lt;br/&gt;MCP サーバー制限"]
+        F2["10-infra.json&lt;br/&gt;ディープリンク無効&lt;br/&gt;認証情報除去"]
+        F3["20-project.json&lt;br/&gt;プロジェクト固有設定"]
+        F1 --> F2 --> F3
+    end
+
+    Legacy["📄 managed-settings.json&lt;br/&gt;既存の単一設定"]
+
+    Merge(["🔀 アルファベット順マージ"])
+
+    DropInDir --> Merge
+    Legacy --> Merge
+
+    Final["⚙️ 最終設定&lt;br/&gt;全ポリシーが統合"]
+    Merge --> Final
+
+    CC(["🖥️ Claude Code"])
+    Final --> CC
+
+    classDef dir fill:none,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef file fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef merge fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef final fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class DropInDir dir
+    class F1,F2,F3,Legacy file
+    class Merge merge
+    class Final,CC final
+                </pre>
+            </div>
+
+            <div class="mermaid-label" style="margin-top: 24px;">サブプロセス認証情報除去のフロー</div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant U as 👤 ユーザー
+    participant CC as 🖥️ Claude Code
+    participant Sub as 🔧 サブプロセス
+
+    U->>CC: CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1 で起動
+    Note over CC: ANTHROPIC_API_KEY、AWS 認証情報を保持
+
+    CC->>Sub: Bash ツール / hooks / MCP サーバー起動
+    Note over CC: サブプロセス環境から認証情報を除去
+    Note over Sub: ANTHROPIC_API_KEY = 未設定
+    Note over Sub: AWS_SECRET_ACCESS_KEY = 未設定
+    Sub-->>CC: 結果を返却
+    Note over CC: 認証情報は親プロセスのみ保持
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">managed-settings.d/ の設定例</span>
+                </div>
+                <pre><code class="language-bash"># ドロップインディレクトリの作成
+mkdir -p ~/.claude/managed-settings.d/
+
+# セキュリティポリシー
+cat > ~/.claude/managed-settings.d/00-security.json << 'EOF'
+{
+  "sandbox.failIfUnavailable": true,
+  "allowedMcpServers": ["approved-server-1", "approved-server-2"]
+}
+EOF
+
+# インフラチーム設定
+cat > ~/.claude/managed-settings.d/10-infra.json << 'EOF'
+{
+  "disableDeepLinkRegistration": true
+}
+EOF</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ENV_SCRUB の使用例</span>
+                </div>
+                <pre><code class="language-bash"># 環境変数を設定してサブプロセスの認証情報を除去
+export CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1
+claude
+
+# CI/CD での使用例
+CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1 ANTHROPIC_API_KEY=sk-ant-xxx \
+  claude -p --bare "コードをレビューしてください"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">CwdChanged / FileChanged hook の設定</span>
+                </div>
+                <pre><code class="language-json">// .claude/settings.json
+{
+  "hooks": {
+    "CwdChanged": [
+      {
+        "command": "direnv allow && direnv export json > /tmp/direnv-env.json"
+      }
+    ],
+    "FileChanged": [
+      {
+        "command": "echo 'File changed: $CLAUDE_FILE_PATH'"
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Bug Fixes Summary -->
+        <section class="section">
+            <h2 class="section-title">主要バグ修正</h2>
+
+            <div class="bugfix-category">
+                <div class="bugfix-category-title">🍎 起動・終了関連</div>
+                <div class="bugfix-item">
+                    <span class="bugfix-item-icon">🔄</span>
+                    <div class="bugfix-item-content">
+                        <h4>macOS での終了時ハング修正</h4>
+                        <p>Claude Code が macOS で終了時にハングする問題と、<code>caffeinate</code> プロセスが適切に終了しない問題を修正しました。</p>
+                    </div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-item-icon">⏱️</span>
+                    <div class="bugfix-item-content">
+                        <h4>起動時 UI フリーズ修正</h4>
+                        <p>ボイス入力有効時のオーディオモジュール先行読み込みによる 1 - 8 秒の UI フリーズ、claude.ai MCP 設定取得の約 3 秒遅延を修正しました。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bugfix-category">
+                <div class="bugfix-category-title">🖥️ UI・操作関連</div>
+                <div class="bugfix-item">
+                    <span class="bugfix-item-icon">📄</span>
+                    <div class="bugfix-item-content">
+                        <h4>大規模ファイル diff のハング修正</h4>
+                        <p>共通行の少ない大規模ファイルの diff でハングする問題を修正。5 秒のタイムアウトとフォールバック機構を導入しました。</p>
+                    </div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-item-icon">📜</span>
+                    <div class="bugfix-item-content">
+                        <h4>スクロールバック・UI 修正</h4>
+                        <p>画面フラッシュ、スクロールバックジャンプ、キューコマンドのフリッカー、ゴーストキャラクターなど多数の UI 問題を修正しました。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bugfix-category">
+                <div class="bugfix-category-title">👻 バックグラウンドエージェント・サンドボックス</div>
+                <div class="bugfix-item">
+                    <span class="bugfix-item-icon">🔍</span>
+                    <div class="bugfix-item-content">
+                        <h4>エージェント不可視化修正</h4>
+                        <p>コンテキスト圧縮後にバックグラウンドサブエージェントが不可視になり、重複エージェントがスポーンされる問題を修正しました。</p>
+                    </div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-item-icon">🐧</span>
+                    <div class="bugfix-item-content">
+                        <h4>サンドボックスパイプコマンド修正</h4>
+                        <p>Linux のサンドボックスモードで <code>rg ... | wc -l</code> などのパイプコマンドがハングして <code>0</code> を返す問題を修正しました。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bugfix-category">
+                <div class="bugfix-category-title">🔌 MCP・Remote Control 関連</div>
+                <div class="bugfix-item">
+                    <span class="bugfix-item-icon">📡</span>
+                    <div class="bugfix-item-content">
+                        <h4>MCP SSE 接続断のハング修正</h4>
+                        <p>SSE 接続がコール途中でドロップした際に MCP ツールコールが無期限にハングする問題を修正しました。</p>
+                    </div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-item-icon">💾</span>
+                    <div class="bugfix-item-content">
+                        <h4>Remote Control メモリリーク修正</h4>
+                        <p>リモートセッションでツール使用 ID が無制限に蓄積するメモリリーク、コンテナ再起動後の履歴消失を修正しました。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bugfix-category">
+                <div class="bugfix-category-title">🎤 ボイスモード関連</div>
+                <div class="bugfix-item">
+                    <span class="bugfix-item-icon">🔊</span>
+                    <div class="bugfix-item-content">
+                        <h4>ALSA エラー・SoX 検出・CJK IME 修正</h4>
+                        <p>オーディオハードウェアのない Linux での ALSA エラー、Termux/Android での SoX 検出、CJK IME 全角スペースでのホールドトゥトーク問題を修正しました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <h2 class="section-title">改善・変更</h2>
+            <div class="improvement-grid">
+                <div class="improvement-card">
+                    <h3>🚀 --bare -p 14% 高速化</h3>
+                    <p>SDK パターンでの API リクエストまでの時間が 14% 短縮。<code>claude -p</code> 起動も未認証 MCP サーバーで約 600ms 短縮されました。</p>
+                </div>
+                <div class="improvement-card">
+                    <h3>📦 非ストリーミング拡張</h3>
+                    <p>トークン上限が 21k から 64k に (約 3 倍)、タイムアウトが 120 秒から 300 秒に延長。ネットワーク不安定な環境での信頼性が向上しました。</p>
+                </div>
+                <div class="improvement-card">
+                    <h3>💾 プラグイン起動改善</h3>
+                    <p>コマンド、スキル、エージェントがディスクキャッシュから再フェッチなしでロード。Bedrock SDK のコールドスタートレイテンシも改善されました。</p>
+                </div>
+                <div class="improvement-card">
+                    <h3>🌐 WebFetch User-Agent 更新</h3>
+                    <p><code>Claude-User</code> として識別され、サイト運営者が <code>robots.txt</code> で Claude Code トラフィックを認識・許可リストに追加できます。</p>
+                </div>
+                <div class="improvement-card">
+                    <h3>⌨️ キーバインド変更</h3>
+                    <p>バックグラウンドエージェント停止が <code>Ctrl+F</code> から <code>Ctrl+X Ctrl+K</code> に変更。<code>Ctrl+L</code> は画面クリアと完全な再描画を強制するようになりました。</p>
+                </div>
+                <div class="improvement-card">
+                    <h3>📝 MEMORY.md 制限強化</h3>
+                    <p>200 行に加えて 25KB でもトランケート。<code>TaskOutput</code> ツールは非推奨化され、<code>Read</code> での直接読み取りが推奨されます。</p>
+                </div>
+                <div class="improvement-card">
+                    <h3>🖥️ VSCode 拡張改善</h3>
+                    <p>60 秒応答なしで赤色「Not responding」表示、Esc 2 回押しで巻き戻しピッカー、セッション履歴の修正が行われました。</p>
+                </div>
+                <div class="improvement-card">
+                    <h3>👁️ bash ゴーストテキスト</h3>
+                    <p>直前に送信したコマンドが即座にゴーストテキスト提案に含まれるように。<code>/status</code> は Claude の応答中でも即座に実行されます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+
+            <div class="use-case">
+                <h4>エンタープライズポリシー管理</h4>
+                <p><code>managed-settings.d/</code> ドロップインディレクトリにより、セキュリティチーム (<code>00-security.json</code>)、インフラチーム (<code>10-infra.json</code>)、プロジェクトチーム (<code>20-project.json</code>) がそれぞれ独立したポリシーファイルを管理できます。単一ファイルでのコンフリクトを回避し、組織内の設定管理を大幅に簡素化します。<code>sandbox.failIfUnavailable</code> と組み合わせることで、セキュリティポリシーの厳格な適用が可能です。</p>
+            </div>
+            <div class="use-case">
+                <h4>セキュリティ強化</h4>
+                <p><code>CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1</code> により、Bash ツール、hooks、MCP stdio サーバーなどのサブプロセスから <code>ANTHROPIC_API_KEY</code> や AWS 認証情報を自動除去できます。悪意のある MCP サーバーやフック経由での認証情報窃取を防ぐ防御層として機能し、サプライチェーン攻撃のリスクを低減します。</p>
+            </div>
+            <div class="use-case">
+                <h4>CI/CD パイプライン高速化</h4>
+                <p><code>--bare -p</code> の 14% 高速化と非ストリーミングフォールバックの大幅拡張により、CI/CD パイプラインでの Claude Code の利用がより効率的になりました。コードレビュー、テスト生成、ドキュメント自動生成などの自動化タスクで、起動オーバーヘッドの削減と大規模レスポンスの確実な受信が実現します。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong>
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub</a> |
+                <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a> |
+                <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer">MCP 仕様</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/json.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

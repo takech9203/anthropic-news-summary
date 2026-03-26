@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-03-25](2026/2026-03-25-claude-code-v2-1-84.md) - Claude Code v2.1.84 リリース: Windows PowerShell ツール、アイドル復帰プロンプト、IME 入力修正を含む 40 件超の改善
+- [2026-03-24](2026/2026-03-24-claude-code-v2-1-83.md) - Claude Code v2.1.83 リリース: マネージド設定のドロップインディレクトリ、30 件超のバグ修正、セキュリティとパフォーマンスの大幅改善
 - [2026-03-24](2026/2026-03-24-claude-code-auto-mode.md) - Claude Code に Auto Mode が登場 (リサーチプレビュー)
 - [2026-03-23](2026/2026-03-23-computer-use-cowork-dispatch.md) - Computer Use が Cowork と Claude Code で利用可能に + Dispatch の改善
 - [2026-03-21](2026/2026-03-21-claude-code-v2-1-81.md) - Claude Code v2.1.81 リリース: --bare フラグによるスクリプト最適化、パーミッション転送チャンネル、27 件の修正と改善

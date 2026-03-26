@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.84 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            opacity: 0.85;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .badge-new {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-preview {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        /* Limitation list */
+        .limitation-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 8px;
+        }
+
+        .limitation-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 3px 0;
+        }
+
+        .limitation-list li::before {
+            content: '!';
+            margin-right: 8px;
+            color: var(--warning);
+            font-weight: 700;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-block:first-of-type {
+            margin-top: 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Tool Update / CLI</span>
+                <h1>Claude Code v2.1.84</h1>
+                <p class="subtitle">Windows PowerShell ツール、3P モデルカスタマイズ、アイドル復帰プロンプト、IME 入力修正を含む 40 件超の改善</p>
+                <p class="date">2026-03-25</p>
+            </div>
+        </header>
+
+        <!-- Overview / Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#9889;</div>
+                    <div class="key-point-content">
+                        <h3>PowerShell ツール (Windows オプトインプレビュー)</h3>
+                        <p>Windows 環境で PowerShell コマンドをネイティブに実行できる新しいツールが追加されました。<code>pwsh.exe</code> (PowerShell 7 以上) を優先検出し、フォールバックとして <code>powershell.exe</code> (5.1) を使用します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#127899;&#65039;</div>
+                    <div class="key-point-content">
+                        <h3>3P モデル能力カスタマイズ環境変数</h3>
+                        <p>Bedrock、Vertex、Foundry 経由のモデルで effort/thinking 能力の自動検出を上書きできる <code>ANTHROPIC_DEFAULT_{OPUS,SONNET,HAIKU}_MODEL_SUPPORTS</code> 環境変数が追加されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#9200;</div>
+                    <div class="key-point-content">
+                        <h3>アイドル復帰プロンプト</h3>
+                        <p>75 分以上離席して戻ったユーザーに <code>/clear</code> を促すプロンプトが表示されるようになりました。古いセッションでの不要なトークン再キャッシュを削減します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#127471;&#127477;</div>
+                    <div class="key-point-content">
+                        <h3>IME 入力修正 (CJK インラインレンダリング)</h3>
+                        <p>ネイティブターミナルカーソルがテキスト入力キャレットを追跡するようになり、日本語、中国語、韓国語の入力がインラインで正しくレンダリングされます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">17</div>
+                    <div class="stat-label">改善・変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">16</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">30ms</div>
+                    <div class="stat-label">起動高速化</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">16x</div>
+                    <div class="stat-label">スクリーンショット高速化</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Features -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#9889; PowerShell ツール</h3>
+                    <p>Windows ネイティブの PowerShell コマンド実行が可能に。<code>pwsh.exe</code> (7+) を優先検出し、<code>powershell.exe</code> (5.1) にフォールバック。Bash ツールと併存し、既存ワークフローに影響なし。</p>
+                    <ul class="limitation-list">
+                        <li>オートモード非対応</li>
+                        <li>サンドボックス非対応</li>
+                        <li>WSL 非対応</li>
+                    </ul>
+                    <span class="badge badge-preview">Preview</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#127899;&#65039; 3P モデル能力カスタマイズ</h3>
+                    <p><code>_MODEL_SUPPORTS</code> で effort/thinking 能力検出を上書き。<code>_MODEL_NAME</code> と <code>_DESCRIPTION</code> で <code>/model</code> ピッカーのラベルもカスタマイズ可能。エンタープライズ環境でのモデル管理が大幅に改善されます。</p>
+                    <span class="badge badge-new">New</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#9200; アイドル復帰プロンプト</h3>
+                    <p>75 分以上のアイドル後にセッションに戻ると、古いキャッシュの無効化による再キャッシュコストを防ぐため <code>/clear</code> を促すプロンプトを表示。不要なトークン消費を削減します。</p>
+                    <span class="badge badge-new">New</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#129693; TaskCreated hook</h3>
+                    <p><code>TaskCreate</code> でタスクが作成された際に発火する新しい hook。ワークフロー自動化の柔軟性が向上します。<code>WorktreeCreate</code> hook も HTTP 対応し、レスポンス JSON でワークツリーパスを返せます。</p>
+                    <span class="badge badge-new">New</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#128274; allowedChannelPlugins</h3>
+                    <p>チームおよびエンタープライズ管理者がチャンネルプラグインの許可リストを定義可能に。組織のセキュリティポリシーに沿ったプラグイン管理を実現します。</p>
+                    <span class="badge badge-new">New</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details - Mermaid Diagrams -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <div class="mermaid-label">v2.1.84 の主要機能概要</div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph NewFeatures["&#127381; &#26032;&#27231;&#33021;"]
+        direction LR
+        PS["&#9889; PowerShell &#12484;&#12540;&#12523;&lt;br/&gt;Windows &#12493;&#12452;&#12486;&#12451;&#12502;&lt;br/&gt;&#12458;&#12503;&#12488;&#12452;&#12531;&#12503;&#12524;&#12499;&#12517;&#12540;"]
+        ModelEnv["&#127899;&#65039; 3P &#12514;&#12487;&#12523;&#33021;&#21147;&lt;br/&gt;&#12459;&#12473;&#12479;&#12510;&#12452;&#12474;&#29872;&#22659;&#22793;&#25968;"]
+        IdlePrompt["&#9200; &#12450;&#12452;&#12489;&#12523;&#24489;&#24112;&lt;br/&gt;&#12503;&#12525;&#12531;&#12503;&#12488;&lt;br/&gt;75 &#20998;&#36229;&#12391; /clear &#20419;&#36914;"]
+        Hooks["&#129693; TaskCreated hook&lt;br/&gt;WorktreeCreate HTTP"]
+        PS ~~~ ModelEnv ~~~ IdlePrompt ~~~ Hooks
+    end
+
+    subgraph Performance["&#9889; &#12497;&#12501;&#12457;&#12540;&#12510;&#12531;&#12473;&#25913;&#21892;"]
+        direction LR
+        Startup["&#128640; &#36215;&#21205; 30ms &#39640;&#36895;&#21270;&lt;br/&gt;setup &#20006;&#21015;&#23455;&#34892;"]
+        MCPRender["&#128225; MCP &#12469;&#12540;&#12496;&#12540;&lt;br/&gt;&#21363;&#26178;&#12524;&#12531;&#12480;&#12522;&#12531;&#12464;"]
+        Cache["&#128190; &#12503;&#12525;&#12531;&#12503;&#12488;&lt;br/&gt;&#12461;&#12515;&#12483;&#12471;&#12517;&#29575;&#25913;&#21892;"]
+        PartialClone["&#128230; &#37096;&#20998;&#12463;&#12525;&#12540;&#12531;&lt;br/&gt;&#36215;&#21205;&#20462;&#27491;"]
+        Startup ~~~ MCPRender ~~~ Cache ~~~ PartialClone
+    end
+
+    subgraph UXImprovements["&#127912; UX &#25913;&#21892;"]
+        direction LR
+        TokenDisplay["&#128202; &#12488;&#12540;&#12463;&#12531;&#34920;&#31034;&lt;br/&gt;&#12513;&#12460;&#21336;&#20301;&#21270; 1.5m"]
+        DeepLink["&#128279; &#12487;&#12451;&#12540;&#12503;&#12522;&#12531;&#12463;&lt;br/&gt;&#20778;&#20808;&#12479;&#12540;&#12511;&#12490;&#12523;"]
+        SlashCmd["&#128203; &#21033;&#29992;&#19981;&#21487;&lt;br/&gt;&#12467;&#12510;&#12531;&#12489;&#38750;&#34920;&#31034;"]
+        MCP2KB["&#128207; MCP &#35500;&#26126;&lt;br/&gt;2KB &#21046;&#38480;"]
+        TokenDisplay ~~~ DeepLink ~~~ SlashCmd ~~~ MCP2KB
+    end
+
+    subgraph CriticalFixes["&#128295; &#37325;&#35201;&#12394;&#20462;&#27491;"]
+        direction LR
+        IME["&#127471;&#127477; IME &#20837;&#21147;&#20462;&#27491;&lt;br/&gt;CJK &#12452;&#12531;&#12521;&#12452;&#12531;&lt;br/&gt;&#12524;&#12531;&#12480;&#12522;&#12531;&#12464;"]
+        Voice["&#127908; &#12508;&#12452;&#12473;&lt;br/&gt;push-to-talk &#20462;&#27491;"]
+        Workflow["&#128260; &#12527;&#12540;&#12463;&#12501;&#12525;&#12540;&lt;br/&gt;&#12469;&#12502;&#12456;&#12540;&#12472;&#12455;&#12531;&#12488;&lt;br/&gt;400 &#12456;&#12521;&#12540;&#20462;&#27491;"]
+        Keychain["&#128273; macOS &#12461;&#12540;&#12481;&#12455;&#12540;&#12531;&lt;br/&gt;&#12456;&#12521;&#12540;&#20462;&#27491;"]
+        IME ~~~ Voice ~~~ Workflow ~~~ Keychain
+    end
+
+    NewFeatures --> Performance
+    Performance --> UXImprovements
+    UXImprovements --> CriticalFixes
+
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef perf fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef ux fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class NewFeatures feature
+    class Performance perf
+    class UXImprovements ux
+    class CriticalFixes fix
+                </pre>
+            </div>
+
+            <div class="mermaid-label" style="margin-top: 24px;">PowerShell ツールの動作フロー</div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant U as &#128100; &#12518;&#12540;&#12470;&#12540;
+    participant CC as &#128421;&#65039; Claude Code
+    participant PS as &#128160; PowerShell
+    participant Bash as &#128026; Bash
+
+    Note over CC: CLAUDE_CODE_USE_POWERSHELL_TOOL=1
+
+    U->>CC: PowerShell &#12467;&#12510;&#12531;&#12489;&#12434;&#12522;&#12463;&#12456;&#12473;&#12488;
+    CC->>CC: pwsh.exe &#12434;&#26908;&#20986;
+    alt pwsh.exe &#12364;&#23384;&#22312;
+        CC->>PS: PowerShell 7+ &#12391;&#23455;&#34892;
+    else &#12501;&#12457;&#12540;&#12523;&#12496;&#12483;&#12463;
+        CC->>PS: powershell.exe 5.1 &#12391;&#23455;&#34892;
+    end
+    PS-->>CC: &#23455;&#34892;&#32080;&#26524;
+    CC-->>U: &#32080;&#26524;&#12434;&#34920;&#31034;
+
+    Note over CC: Bash &#12484;&#12540;&#12523;&#12418;&#24341;&#12365;&#32154;&#12365;&#21033;&#29992;&#21487;&#33021;
+    U->>CC: Bash &#12467;&#12510;&#12531;&#12489;&#12434;&#12522;&#12463;&#12456;&#12473;&#12488;
+    CC->>Bash: Bash &#12391;&#23455;&#34892;
+    Bash-->>CC: &#23455;&#34892;&#32080;&#26524;
+    CC-->>U: &#32080;&#26524;&#12434;&#34920;&#31034;
+                </pre>
+            </div>
+
+            <div class="mermaid-label" style="margin-top: 24px;">アイドル復帰プロンプトのフロー</div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant U as &#128100; &#12518;&#12540;&#12470;&#12540;
+    participant CC as &#128421;&#65039; Claude Code
+    participant API as &#128268; Claude API
+
+    U->>CC: &#12475;&#12483;&#12471;&#12519;&#12531;&#38283;&#22987;
+    CC->>API: &#12503;&#12525;&#12531;&#12503;&#12488;&#12461;&#12515;&#12483;&#12471;&#12517;&#30906;&#31435;
+    Note over U: 75 &#20998;&#20197;&#19978;&#38626;&#24109;
+
+    U->>CC: &#12475;&#12483;&#12471;&#12519;&#12531;&#12395;&#24489;&#24112;
+    CC->>CC: &#12450;&#12452;&#12489;&#12523;&#26178;&#38291;&#12434;&#26908;&#20986;
+    CC-->>U: /clear &#12434;&#20419;&#12377;&#12503;&#12525;&#12531;&#12503;&#12488;&#34920;&#31034;
+
+    alt /clear &#12434;&#23455;&#34892;
+        U->>CC: /clear
+        CC->>CC: &#12467;&#12531;&#12486;&#12461;&#12473;&#12488;&#12434;&#12463;&#12522;&#12450;
+        CC->>API: &#26032;&#12375;&#12356;&#12461;&#12515;&#12483;&#12471;&#12517;&#12391;&#21177;&#29575;&#30340;&#12395;&#38283;&#22987;
+    else &#32154;&#34892;&#12434;&#36984;&#25246;
+        U->>CC: &#12381;&#12398;&#12414;&#12414;&#32154;&#34892;
+        CC->>API: &#21476;&#12356;&#12461;&#12515;&#12483;&#12471;&#12517;&#12398;&#20877;&#12461;&#12515;&#12483;&#12471;&#12517;&#12467;&#12473;&#12488;&#30330;&#29983;
+    end
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">PowerShell ツールの有効化</span>
+                </div>
+                <pre><code class="language-bash"># 環境変数で有効化
+export CLAUDE_CODE_USE_POWERSHELL_TOOL=1
+claude
+
+# PowerShell ツールを有効にして起動 (Windows)
+CLAUDE_CODE_USE_POWERSHELL_TOOL=1 claude</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings.json での PowerShell 有効化</span>
+                </div>
+                <pre><code class="language-json">{
+  "env": {
+    "CLAUDE_CODE_USE_POWERSHELL_TOOL": "1"
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">3P モデル能力カスタマイズ</span>
+                </div>
+                <pre><code class="language-bash"># Bedrock の Opus モデルの能力を上書き
+export ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTS="effort,thinking"
+export ANTHROPIC_DEFAULT_OPUS_MODEL_NAME="Bedrock Opus"
+export ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION="Bedrock us-east-1 Opus"
+
+# Sonnet モデルの設定
+export ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTS="effort"
+export ANTHROPIC_DEFAULT_SONNET_MODEL_NAME="Custom Sonnet"
+
+claude</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">YAML</span>
+                    <span class="code-title">paths: YAML リスト形式</span>
+                </div>
+                <pre><code class="language-yaml"># スキルフロントマターで YAML リスト形式の paths を使用
+---
+paths:
+  - "src/**/*.ts"
+  - "tests/**/*.test.ts"
+shell: powershell
+---</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">allowedChannelPlugins の管理設定例</span>
+                </div>
+                <pre><code class="language-json">{
+  "allowedChannelPlugins": [
+    "plugin-a",
+    "plugin-b"
+  ]
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+
+            <div class="use-case">
+                <h4>Windows 開発者</h4>
+                <p>PowerShell ツールのオプトインプレビューにより、Windows ユーザーが PowerShell コマンドをネイティブに実行できるようになりました。Git Bash を介さない直接的な Windows 操作が可能になり、<code>pwsh.exe</code> (PowerShell 7 以上) を優先検出し <code>powershell.exe</code> (5.1) へのフォールバックも備えています。hooks やスキルのフロントマターで <code>shell: powershell</code> を指定することで、個別のコマンドを PowerShell で実行することも可能です。</p>
+            </div>
+            <div class="use-case">
+                <h4>Bedrock / Vertex / Foundry 利用組織</h4>
+                <p>3P プロバイダ経由でモデルを使用する場合、Claude Code の effort/thinking 能力の自動検出がプロバイダ側の制約により正しく動作しないケースがありました。<code>ANTHROPIC_DEFAULT_{OPUS,SONNET,HAIKU}_MODEL_SUPPORTS</code> 環境変数で自動検出を上書きし、<code>_MODEL_NAME</code> と <code>_DESCRIPTION</code> で <code>/model</code> ピッカーのラベルをカスタマイズすることで、組織内でのモデル識別と管理が容易になります。</p>
+            </div>
+            <div class="use-case">
+                <h4>CJK 入力ユーザー</h4>
+                <p>日本語、中国語、韓国語を入力するユーザーにとって、IME コンポジションのインラインレンダリング対応はターミナルでの入力体験を大幅に改善します。ネイティブターミナルカーソルがテキスト入力キャレットを追跡するようになり、IME コンポジションウィンドウが正しい位置に表示され、スクリーンリーダーも入力位置を追跡できるようになりました。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong>
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub</a> |
+                <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a> |
+                <a href="https://code.claude.com/docs/en/tools-reference#powershell-tool" target="_blank" rel="noopener noreferrer">PowerShell ツールリファレンス</a> |
+                <a href="https://code.claude.com/docs/en/env-vars" target="_blank" rel="noopener noreferrer">環境変数リファレンス</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/json.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/yaml.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
