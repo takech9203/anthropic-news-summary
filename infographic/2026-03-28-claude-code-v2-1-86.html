@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.86 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card { padding: 24px; border-radius: 16px; }
+        .comparison-card.before { background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); border: 2px solid #F87171; }
+        .comparison-card.after { background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border: 2px solid #34D399; }
+        .comparison-card h4 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+        .comparison-card ul { font-size: 14px; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--anthropic-coral); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre { margin: 0; padding: 0; }
+        .code-block code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; padding: 20px !important; }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid { display: flex; justify-content: center; }
+
+        .bug-fix-group { margin-bottom: 20px; }
+        .bug-fix-group h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; color: var(--anthropic-dark); display: flex; align-items: center; gap: 8px; }
+        .bug-fix-list { list-style: none; padding: 0; }
+        .bug-fix-list li {
+            padding: 10px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .bug-fix-list li::before { content: '🔧'; flex-shrink: 0; }
+
+        .improvement-list { list-style: none; padding: 0; }
+        .improvement-list li {
+            padding: 12px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a { color: var(--anthropic-coral); text-decoration: none; word-break: break-all; }
+        .footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .comparison { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Tool Update / CLI</span>
+                <h1>Claude Code v2.1.86 リリース: セッション ID ヘッダー、VCS ディレクトリ除外、16 件のバグ修正を含む 26 件の改善</h1>
+                <p class="date">2026-03-28</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.86</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">26</div>
+                    <div class="stat-label">変更件数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">16</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>セッション ID ヘッダー</h3>
+                        <p>API リクエストに <code>X-Claude-Code-Session-Id</code> ヘッダーが追加。プロキシサーバーがボディ解析不要でセッション単位の集約が可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📁</div>
+                    <div class="key-point-content">
+                        <h3>Jujutsu / Sapling VCS 除外</h3>
+                        <p><code>.jj</code> と <code>.sl</code> が VCS ディレクトリ除外リストに追加。Grep やオートコンプリートのパフォーマンスが向上</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎯</div>
+                    <div class="key-point-content">
+                        <h3>トークン使用量の最適化 4 件</h3>
+                        <p><code>@</code> メンション JSON エスケープ廃止、プロンプトキャッシュヒット率向上、スキル説明文 250 文字制限、Read ツールコンパクトフォーマット</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>重要なバグ修正 16 件</h3>
+                        <p><code>--resume</code> 互換性、Windows 設定ファイル破損、メモリリーク、VSCode Max プランモデルデフォルト問題など</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔑 Session-Id ヘッダー</h3>
+                    <p>API リクエストに <code>X-Claude-Code-Session-Id</code> ヘッダーが自動付与されます。プロキシサーバーがリクエストボディを解析せずにセッション単位でリクエストを集約でき、レートリミット、コスト配分、使用量モニタリングが容易になります。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📂 VCS ディレクトリ除外</h3>
+                    <p><code>.jj</code> (Jujutsu) と <code>.sl</code> (Sapling) が VCS ディレクトリ除外リストに追加されました。Grep やファイルオートコンプリートがこれらのメタデータディレクトリに降下しなくなり、検索パフォーマンスが向上します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After: Token Optimization -->
+        <section class="section">
+            <h2 class="section-title">Before / After: トークン最適化</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li><code>@</code> メンション: JSON エスケープ済み</li>
+                        <li>ツール説明文: 動的コンテンツ含む</li>
+                        <li>Read ツール: 冗長な行番号</li>
+                        <li>スキル説明文: 制限なし</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li><code>@</code> メンション: 生の文字列</li>
+                        <li>ツール説明文: 静的コンテンツのみ</li>
+                        <li>Read ツール: コンパクトフォーマット</li>
+                        <li>スキル説明文: 250 文字制限</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <h2 class="section-title">改善・変更 8 件</h2>
+
+            <h4 style="font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">🎯 トークン使用量の最適化</h4>
+            <ul class="improvement-list" style="margin-bottom: 20px;">
+                <li><span>📝</span> <code>@</code> メンション時のトークンオーバーヘッド削減 &#8212; ファイル内容が JSON エスケープされなくなり、生の文字列として渡されるように</li>
+                <li><span>💾</span> Bedrock / Vertex / Foundry ユーザー向けプロンプトキャッシュヒット率改善 &#8212; ツール説明文から動的コンテンツを除去</li>
+                <li><span>📏</span> スキル説明文の 250 文字制限 &#8212; <code>/skills</code> リスト内のコンテキスト使用量を削減</li>
+                <li><span>📖</span> Read ツールのコンパクト行番号フォーマット &#8212; 未変更ファイルの重複再読み込みも排除</li>
+            </ul>
+
+            <h4 style="font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">⚡ パフォーマンス / UX 改善</h4>
+            <ul class="improvement-list">
+                <li><span>🚀</span> 起動時のイベントループストール削減 &#8212; macOS キーチェーンキャッシュ有効期間を 5 秒から 30 秒に延長</li>
+                <li><span>🧠</span> メモリファイル名のインタラクティブ表示 &#8212; 「Saved N memories」通知内でホバーハイライト、クリックで開く</li>
+                <li><span>📋</span> <code>/skills</code> メニューのアルファベット順ソート</li>
+                <li><span>🤖</span> Auto モードのプラン制限メッセージ改善 &#8212; 「temporarily unavailable」→「unavailable for your plan」</li>
+            </ul>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 16 件</h2>
+
+            <div class="bug-fix-group">
+                <h4>🔄 セッション・コマンド関連</h4>
+                <ul class="bug-fix-list">
+                    <li>v2.1.85 以前のセッションで <code>--resume</code> が「tool_use ids were found without tool_result blocks」で失敗する問題</li>
+                    <li>条件付きスキル/ルール設定時に <code>~/.claude/CLAUDE.md</code> など外部ファイルの Write / Edit / Read が失敗する問題</li>
+                    <li><code>--bare</code> モードで MCP ツールがドロップされ、ターン途中のメッセージが黙って破棄される問題</li>
+                </ul>
+            </div>
+
+            <div class="bug-fix-group">
+                <h4>💽 設定・パフォーマンス関連</h4>
+                <ul class="bug-fix-list">
+                    <li>スキル呼び出しのたびに不要な設定ファイルのディスク書き込みが発生 &#8212; Windows での設定破損を引き起こす可能性</li>
+                    <li><code>/feedback</code> で非常に長いセッションの大きなトランスクリプトファイルによるメモリ不足クラッシュ</li>
+                    <li>Markdown / ハイライトレンダーキャッシュがコンテンツ文字列を保持し続けるメモリリーク</li>
+                </ul>
+            </div>
+
+            <div class="bug-fix-group">
+                <h4>🔐 認証・入力関連</h4>
+                <ul class="bug-fix-list">
+                    <li><code>c</code> ショートカットで OAuth ログイン URL が約 20 文字しかコピーされない問題</li>
+                    <li>マスク入力で狭いターミナルの複数行折り返し時にトークン先頭部分が漏洩する問題</li>
+                </ul>
+            </div>
+
+            <div class="bug-fix-group">
+                <h4>🧩 プラグイン・UI・VSCode</h4>
+                <ul class="bug-fix-list">
+                    <li>macOS / Linux で公式マーケットプレイスプラグインスクリプトが「Permission denied」&#8212; v2.1.83 からのリグレッション</li>
+                    <li>複数インスタンス実行時に別セッションのモデルがステータスラインに表示される問題</li>
+                    <li>長い会話でスクロール追従が停止する問題</li>
+                    <li><code>/plugin</code> アンインストールダイアログの動作修正</li>
+                    <li>クリック後 Enter 押下でトランスクリプトが空白になるリグレッション</li>
+                    <li><code>ultrathink</code> ヒントがキーワード削除後も残り続ける問題</li>
+                    <li>[VSCode] 長時間操作中に誤って「Not responding」が表示される問題</li>
+                    <li>[VSCode] Max プランユーザーが OAuth トークンリフレッシュ後に Sonnet にデフォルト変更される問題</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Architecture: Session ID Header Flow -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ: セッション ID ヘッダーの動作フロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant CC as Claude Code
+    participant Proxy as プロキシ
+    participant API as Claude API
+
+    CC->>Proxy: API リクエスト + X-Claude-Code-Session-Id: abc-123
+    Note over Proxy: ボディ解析不要で<br/>セッション ID を取得
+    Proxy->>Proxy: セッション単位で<br/>レートリミット / コスト記録
+    Proxy->>API: リクエスト転送
+    API-->>Proxy: レスポンス
+    Proxy-->>CC: レスポンス
+
+    CC->>Proxy: 次のリクエスト + X-Claude-Code-Session-Id: abc-123
+    Note over Proxy: 同一セッションとして集約
+    Proxy->>API: リクエスト転送
+    API-->>Proxy: レスポンス
+    Proxy-->>CC: レスポンス
+                </pre>
+            </div>
+        </section>
+
+        <!-- Architecture: Main Changes Categories -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ: 主要変更カテゴリ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph NewFeatures["🆕 新機能 2 件"]
+        direction LR
+        SessionHeader["🔑 Session-Id ヘッダー"]
+        VCSExclude["📁 VCS ディレクトリ除外"]
+        SessionHeader ~~~ VCSExclude
+    end
+
+    subgraph TokenOpt["🎯 トークン最適化 4 件"]
+        direction LR
+        AtMention["📝 @ メンション"]
+        CacheHit["💾 キャッシュヒット率"]
+        SkillCap["📏 スキル説明文"]
+        ReadTool["📖 Read ツール"]
+        AtMention ~~~ CacheHit ~~~ SkillCap ~~~ ReadTool
+    end
+
+    subgraph UXImprovements["✨ UX 改善 4 件"]
+        direction LR
+        MemoryFile["🧠 メモリファイル名"]
+        SkillSort["📋 /skills ソート"]
+        AutoMode["🤖 Auto モード"]
+        Startup["⚡ 起動高速化"]
+        MemoryFile ~~~ SkillSort ~~~ AutoMode ~~~ Startup
+    end
+
+    subgraph CriticalFixes["🔧 重要な修正 16 件"]
+        direction LR
+        Resume["🔄 --resume 互換性"]
+        ConfigWrite["💽 設定ファイル"]
+        MemLeak["🧹 メモリリーク"]
+        VSCodeMax["🔌 VSCode Max プラン"]
+        Resume ~~~ ConfigWrite ~~~ MemLeak ~~~ VSCodeMax
+    end
+
+    NewFeatures --> TokenOpt
+    TokenOpt --> UXImprovements
+    UXImprovements --> CriticalFixes
+
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef token fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef ux fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef fix fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class NewFeatures feature
+    class TokenOpt token
+    class UXImprovements ux
+    class CriticalFixes fix
+                </pre>
+            </div>
+        </section>
+
+        <!-- Architecture: Token Optimization Impact -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ: トークン最適化の影響範囲</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph Before["従来の動作"]
+        direction TB
+        B1["@ メンション<br/>JSON エスケープ済み"]
+        B2["ツール説明文<br/>動的コンテンツ含む"]
+        B3["Read ツール<br/>冗長な行番号"]
+        B4["スキル説明文<br/>制限なし"]
+    end
+
+    subgraph After["v2.1.86 の動作"]
+        direction TB
+        A1["@ メンション<br/>生の文字列"]
+        A2["ツール説明文<br/>静的コンテンツのみ"]
+        A3["Read ツール<br/>コンパクトフォーマット"]
+        A4["スキル説明文<br/>250 文字制限"]
+    end
+
+    B1 -->|"トークン削減"| A1
+    B2 -->|"キャッシュヒット率向上"| A2
+    B3 -->|"トークン削減"| A3
+    B4 -->|"コンテキスト節約"| A4
+
+    classDef before fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef after fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Before before
+    class After after
+    class B1,B2,B3,B4 before
+    class A1,A2,A3,A4 after
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデートとバージョン確認</span>
+                </div>
+                <pre><code class="language-bash"># v2.1.86 へのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# バージョン確認
+claude --version
+
+# v2.1.85 以前のセッションを安全に再開
+claude --resume</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Nginx</span>
+                    <span class="code-title">セッション単位のレートリミット設定</span>
+                </div>
+                <pre><code class="language-nginx"># nginx でのセッション単位のレートリミット例
+map $http_x_claude_code_session_id $session_limit_key {
+    default $http_x_claude_code_session_id;
+    ""      $binary_remote_addr;
+}
+
+limit_req_zone $session_limit_key zone=claude_session:10m rate=10r/s;</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">プロキシでのセッション単位コスト集約</span>
+                </div>
+                <pre><code class="language-python">from fastapi import Request
+
+@app.middleware("http")
+async def track_session_cost(request: Request, call_next):
+    session_id = request.headers.get(
+        "X-Claude-Code-Session-Id", "unknown"
+    )
+    response = await call_next(request)
+    # セッション単位でコストを記録
+    await record_cost(session_id, response)
+    return response</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+
+            <div class="use-case">
+                <h4>🏢 企業のインフラチーム: プロキシサーバーでのセッション追跡</h4>
+                <p><code>X-Claude-Code-Session-Id</code> ヘッダーにより、API プロキシサーバーでリクエストボディの解析なしにセッション単位のレートリミット、コスト配分、使用量モニタリングを実装できます。TLS 終端前でもヘッダーは参照可能です。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>⚡ Bedrock / Vertex / Foundry ユーザー: コスト削減</h4>
+                <p>ツール説明文から動的コンテンツが除去されたことで、プロンプトキャッシュのヒット率が向上。API コスト削減とレスポンス速度向上が期待できます。<code>@</code> メンションの JSON エスケープ廃止と Read ツールのコンパクトフォーマットも合わせて、トークン使用量が総合的に削減されます。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>🖥️ Windows / 長時間セッションユーザー: 安定性向上</h4>
+                <p>設定ファイルの不要なディスク書き込み排除で Windows での設定破損が解消。メモリリーク修正と <code>/feedback</code> クラッシュ修正で、長時間セッションの安定性が大幅に向上します。</p>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">アップデート推奨ケース</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🚨</div>
+                    <div class="key-point-content">
+                        <h3>早急なアップデートを推奨</h3>
+                        <p>
+                            &#8226; v2.1.85 以前のセッションを <code>--resume</code> で再開できない場合<br>
+                            &#8226; Windows で設定ファイルが破損する場合<br>
+                            &#8226; macOS / Linux でマーケットプレイスプラグインが Permission denied で失敗する場合<br>
+                            &#8226; VSCode 拡張で Max プランなのに Sonnet に戻される場合<br>
+                            &#8226; 長時間セッションでメモリ使用量が増加し続ける場合<br>
+                            &#8226; OAuth ログイン URL が正しくコピーされない場合
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong></p>
+            <ul style="list-style: none; padding: 0; margin-top: 4px;">
+                <li>&#8226; <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li>&#8226; <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li>&#8226; <a href="https://github.com/martinvonz/jj" target="_blank" rel="noopener noreferrer">Jujutsu VCS</a></li>
+                <li>&#8226; <a href="https://sapling-scm.com/" target="_blank" rel="noopener noreferrer">Sapling SCM</a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
