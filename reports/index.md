@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-03-29](2026/2026-03-29-claude-code-v2-1-87.md) - Claude Code v2.1.87 リリース: Cowork Dispatch のメッセージ配信バグを修正
 - [2026-03-28](2026/2026-03-28-claude-code-v2-1-86.md) - Claude Code v2.1.86 リリース: セッション ID ヘッダー、VCS ディレクトリ除外、16 件のバグ修正を含む 26 件の改善
 - [2026-03-26](2026/2026-03-26-claude-code-v2-1-85.md) - Claude Code v2.1.85 リリース: MCP OAuth RFC 9728 対応、hooks 条件フィルタ、17 件のバグ修正を含む 30 件超の改善
 - [2026-03-25](2026/2026-03-25-claude-code-v2-1-84.md) - Claude Code v2.1.84 リリース: Windows PowerShell ツール、アイドル復帰プロンプト、IME 入力修正を含む 40 件超の改善
