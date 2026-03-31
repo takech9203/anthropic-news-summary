@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch API の max_tokens 上限 300k 引き上げと 1M コンテキストベータの廃止予告 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card { padding: 24px; border-radius: 16px; }
+        .comparison-card.before { background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); border: 2px solid #F87171; }
+        .comparison-card.after { background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border: 2px solid #34D399; }
+        .comparison-card h4 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+        .comparison-card ul { font-size: 14px; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; }
+        .comparison-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.8; }
+        .comparison-card code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 12px; background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--anthropic-coral); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre { margin: 0; padding: 0; }
+        .code-block code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; padding: 20px !important; }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid { display: flex; justify-content: center; }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .detail-table th,
+        .detail-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .detail-table th {
+            background: var(--anthropic-cream);
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+            width: 30%;
+        }
+
+        .detail-table td {
+            color: var(--text-secondary);
+        }
+
+        .detail-table code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            background: rgba(212, 165, 116, 0.15);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: var(--anthropic-dark);
+        }
+
+        .table-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+
+        .table-label:first-child {
+            margin-top: 0;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a { color: var(--anthropic-coral); text-decoration: none; word-break: break-all; }
+        .footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .comparison { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-value { font-size: 2rem; }
+            .detail-table th { width: 35%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API アップデート</span>
+                <h1>Batch API の max_tokens 上限 300k 引き上げと 1M コンテキストベータの廃止予告</h1>
+                <p class="date">2026-03-30</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📈</div>
+                    <div class="key-point-content">
+                        <h3>Batch API の max_tokens を 300k に拡大</h3>
+                        <p>Message Batches API における max_tokens の上限が 300,000 トークンに引き上げられました。Claude Opus 4.6 および Sonnet 4.6 で利用可能で、<code style="font-family: 'JetBrains Mono', monospace; font-size: 12px; background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px;">output-300k-2026-03-24</code> ベータヘッダーの指定が必要です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚠️</div>
+                    <div class="key-point-content">
+                        <h3>1M コンテキストベータの廃止予告</h3>
+                        <p>Claude Sonnet 4.5 および Sonnet 4 向けの 1M トークンコンテキストウィンドウベータが 2026 年 4 月 30 日に廃止されます。以降は <code style="font-family: 'JetBrains Mono', monospace; font-size: 12px; background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px;">context-1m-2025-08-07</code> ベータヘッダーを含むリクエストが 400 エラーを返します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>移行先モデルではベータヘッダー不要</h3>
+                        <p>Claude Sonnet 4.6 および Opus 4.6 では 1M トークンコンテキストウィンドウが GA 済みのため、ベータヘッダーなしで標準 API から利用できます。API コールがシンプルになります。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After: 1M Context Migration -->
+        <section class="section">
+            <h2 class="section-title">Before / After: 1M コンテキストの移行</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before -- Sonnet 4.5 / Sonnet 4</h4>
+                    <ul>
+                        <li>ベータヘッダー <code>context-1m-2025-08-07</code> が必須</li>
+                        <li><code>client.beta.messages.create()</code> を使用</li>
+                        <li>2026 年 4 月 30 日以降は 400 エラー</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After -- Sonnet 4.6 / Opus 4.6</h4>
+                    <ul>
+                        <li>ベータヘッダー不要</li>
+                        <li><code>client.messages.create()</code> で OK</li>
+                        <li>1M トークンが標準機能として利用可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📦 Extended Output ベータ</h3>
+                    <p>Message Batches API でシングルターン出力の上限が 300k トークンに拡大。書籍レベルの長文生成や大規模コード生成に対応。バッチ処理の 50% 割引価格が適用されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚫 1M ベータ廃止予告</h3>
+                    <p>Claude Sonnet 4.5 / Sonnet 4 の 1M トークンコンテキストベータが 2026 年 4 月 30 日に廃止。Sonnet 4.6 または Opus 4.6 への移行が必要です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 対応モデル</h3>
+                    <p>Extended Output ベータは Claude Opus 4.6 と Sonnet 4.6 で利用可能。Claude API のみ対応で、Amazon Bedrock / Vertex AI / Microsoft Foundry は非対応です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏱️ 処理時間に注意</h3>
+                    <p>300k トークンの生成には 1 時間以上かかる場合があります。24 時間のバッチ処理ウィンドウを考慮したスケジューリングが推奨されます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">300k</div>
+                    <div class="stat-label">max_tokens 上限<br/>トークン</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">50%</div>
+                    <div class="stat-label">バッチ API<br/>コスト削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4/30</div>
+                    <div class="stat-label">1M ベータ<br/>廃止期限</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <p class="table-label">Extended Output ベータ</p>
+            <table class="detail-table">
+                <tr><th>ベータヘッダー</th><td><code>output-300k-2026-03-24</code></td></tr>
+                <tr><th>max_tokens 上限</th><td>300,000 トークン</td></tr>
+                <tr><th>対応モデル</th><td>Claude Opus 4.6、Claude Sonnet 4.6</td></tr>
+                <tr><th>対応 API</th><td>Message Batches API のみ (同期 Messages API は非対応)</td></tr>
+                <tr><th>プラットフォーム</th><td>Claude API のみ (Bedrock / Vertex AI / Foundry は非対応)</td></tr>
+                <tr><th>価格</th><td>標準バッチ価格 (標準 API 価格の 50%)</td></tr>
+                <tr><th>処理時間</th><td>1 回の 300k トークン生成に 1 時間以上かかる場合あり</td></tr>
+            </table>
+
+            <p class="table-label">1M コンテキストベータ廃止スケジュール</p>
+            <table class="detail-table">
+                <tr><th>廃止対象モデル</th><td>Claude Sonnet 4.5、Claude Sonnet 4</td></tr>
+                <tr><th>廃止対象ヘッダー</th><td><code>context-1m-2025-08-07</code></td></tr>
+                <tr><th>廃止日</th><td>2026 年 4 月 30 日</td></tr>
+                <tr><th>廃止後の動作</th><td>400 エラーを返す</td></tr>
+                <tr><th>移行先</th><td>Claude Sonnet 4.6 または Claude Opus 4.6</td></tr>
+            </table>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">Extended Output ベータを利用した Batch API リクエスト</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+from anthropic.types.beta.messages.batch_create_params import Request
+from anthropic.types.beta.message_create_params import MessageCreateParamsNonStreaming
+
+client = anthropic.Anthropic()
+
+# output-300k-2026-03-24 ベータヘッダーを指定して
+# 最大 300k トークンの出力を生成
+message_batch = client.beta.messages.batches.create(
+    betas=["output-300k-2026-03-24"],
+    requests=[
+        Request(
+            custom_id="long-form-request",
+            params=MessageCreateParamsNonStreaming(
+                model="claude-opus-4-6",
+                max_tokens=300000,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": "Python Web フレームワークの包括的なチュートリアルを"
+                                   "作成してください。基礎から応用まで、コード例を含めて"
+                                   "詳細に解説してください。",
+                    }
+                ],
+            ),
+        ),
+    ]
+)
+
+print(f"Batch ID: {message_batch.id}")
+print(f"Status: {message_batch.processing_status}")</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Extended Output ベータを利用した Batch API リクエスト (curl)</span>
+                </div>
+                <pre><code class="language-bash">curl https://api.anthropic.com/v1/messages/batches \
+     --header "x-api-key: $ANTHROPIC_API_KEY" \
+     --header "anthropic-version: 2023-06-01" \
+     --header "anthropic-beta: output-300k-2026-03-24" \
+     --header "content-type: application/json" \
+     --data \
+'{
+    "requests": [
+        {
+            "custom_id": "long-form-request",
+            "params": {
+                "model": "claude-opus-4-6",
+                "max_tokens": 300000,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "大規模なコードベースの包括的なドキュメントを生成してください。"
+                    }
+                ]
+            }
+        }
+    ]
+}'</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">1M コンテキスト移行: 変更前</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+# ベータヘッダーが必要
+message = client.beta.messages.create(
+    model="claude-sonnet-4-5-20250929",
+    betas=["context-1m-2025-08-07"],
+    max_tokens=16384,
+    messages=[
+        {
+            "role": "user",
+            "content": large_document_text
+        }
+    ]
+)</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">1M コンテキスト移行: 変更後</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+# ベータヘッダー不要、標準 API で 1M トークンまで対応
+message = client.messages.create(
+    model="claude-sonnet-4-6-20260226",
+    max_tokens=16384,
+    messages=[
+        {
+            "role": "user",
+            "content": large_document_text
+        }
+    ]
+)</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram 1 -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ: Extended Output ベータの処理フロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Client["🖥️ クライアント"]
+        SDK["📦 Anthropic SDK"]
+    end
+
+    subgraph BatchAPI["📨 Message Batches API"]
+        direction LR
+        Header["🏷️ ベータヘッダー<br/>output-300k-2026-03-24"]
+        Validate["✅ バリデーション<br/>max_tokens 300k 以下"]
+        Header ~~~ Validate
+    end
+
+    subgraph Models["🤖 対応モデル"]
+        direction LR
+        Opus["⭐ Claude Opus 4.6"]
+        Sonnet["🎵 Claude Sonnet 4.6"]
+        Opus ~~~ Sonnet
+    end
+
+    subgraph Output["📄 出力 最大 300k トークン"]
+        direction LR
+        LongForm["📖 長文コンテンツ"]
+        Code["💻 大規模コード生成"]
+        Data["📊 構造化データ抽出"]
+        LongForm ~~~ Code ~~~ Data
+    end
+
+    SDK --> BatchAPI
+    BatchAPI --> Models
+    Models --> Output
+
+    classDef client fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef model fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef output fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+
+    class Client client
+    class BatchAPI api
+    class Models model
+    class Output output
+                </pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram 2 -->
+        <section class="section">
+            <h2 class="section-title">タイムライン: 1M コンテキストベータ廃止</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph Past["📅 過去"]
+        Aug2025["2025-08<br/>1M ベータ開始<br/>Sonnet 4 / 4.5"]
+    end
+
+    subgraph Recent["📅 直近"]
+        Mar2026["2026-03-13<br/>1M GA 化<br/>Opus 4.6 / Sonnet 4.6"]
+    end
+
+    subgraph Now["📅 現在"]
+        Mar30["2026-03-30<br/>廃止予告"]
+    end
+
+    subgraph Future["📅 今後"]
+        Apr30["2026-04-30<br/>ベータ廃止<br/>Sonnet 4 / 4.5"]
+    end
+
+    Aug2025 --> Mar2026
+    Mar2026 --> Mar30
+    Mar30 --> Apr30
+
+    classDef past fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef recent fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef now fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef future fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+
+    class Past past
+    class Recent recent
+    class Now now
+    class Future future
+                </pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact / Use Cases -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響とユースケース</h2>
+
+            <div class="use-case">
+                <h4>📖 書籍レベルの長文ドラフト生成</h4>
+                <p>Extended Output ベータにより、技術ドキュメントや長文コンテンツのドラフトを一括生成できます。300k トークンの出力でバッチ処理の 50% 割引が適用されるため、大量のドキュメント生成をコスト効率よく実行できます。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>💻 大規模コードスキャフォールド</h4>
+                <p>プロジェクト全体のコードベースを一度に生成するユースケースに対応。最大 300k トークンの出力で、複数ファイルにまたがる大規模なコード生成が可能になりました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>📊 大規模構造化データの抽出</h4>
+                <p>大量のドキュメントからの構造化データ抽出を Batch API で効率的に処理。長い推論チェーンの実行も 300k トークンの出力上限により柔軟に対応できます。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>🔄 1M コンテキストベータからの移行</h4>
+                <p>Claude Sonnet 4.5 / Sonnet 4 で 1M トークンコンテキストを利用中の開発者は、2026 年 4 月 30 日までに Sonnet 4.6 または Opus 4.6 へ移行が必要です。移行先ではベータヘッダー不要で、標準価格で 1M トークンコンテキストが利用可能です。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong></p>
+            <ul style="list-style: none; padding: 0; margin-top: 4px;">
+                <li>&#8226; <a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing#extended-output-beta" target="_blank" rel="noopener noreferrer">Message Batches API - Extended Output</a></li>
+                <li>&#8226; <a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing" target="_blank" rel="noopener noreferrer">Message Batches API ドキュメント</a></li>
+                <li>&#8226; <a href="https://platform.claude.com/docs/en/about-claude/models/overview#latest-models-comparison" target="_blank" rel="noopener noreferrer">Claude Models Overview</a></li>
+                <li>&#8226; <a href="https://platform.claude.com/docs/en/api/beta-headers" target="_blank" rel="noopener noreferrer">Beta Headers</a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/bash.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

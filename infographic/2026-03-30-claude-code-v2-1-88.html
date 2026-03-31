@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.88 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .major-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            color: #6EE7B7;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--anthropic-coral); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre { margin: 0; padding: 0; }
+        .code-block code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; padding: 20px !important; }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid { display: flex; justify-content: center; }
+
+        .bug-category {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .bug-category h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bug-category ul {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+
+        .bug-category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .changes-list {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .changes-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .changes-list li:last-child {
+            border-bottom: none;
+        }
+
+        .migration-card {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border: 2px solid #FF9800;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .migration-card h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 8px;
+        }
+
+        .migration-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a { color: var(--anthropic-coral); text-decoration: none; word-break: break-all; }
+        .footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Tool Update / CLI</span>
+                <h1>Claude Code v2.1.88 リリース: 安定性とパフォーマンスの大規模改善、41 件の変更を含むメジャーアップデート</h1>
+                <p class="date">2026-03-30</p>
+                <span class="major-badge">MAJOR UPDATE -- 41 件の変更</span>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>安定性の大幅向上</h3>
+                        <p>メモリリーク修正、OOM クラッシュ防止、StructuredOutput の約 50% 失敗率を引き起こすスキーマキャッシュバグの解消など、長時間セッションの安定性が大幅に向上しました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">✨</div>
+                    <div class="key-point-content">
+                        <h3>新機能 4 件の追加</h3>
+                        <p>フリッカーフリーレンダリング、PermissionDenied フック、サブエージェントの @ メンション補完など、開発体験を向上させる新機能が追加されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>29 件のバグ修正</h3>
+                        <p>メモリ/安定性、クロスプラットフォーム互換性、UI/レンダリング、セッション/データの 4 カテゴリにわたる広範な修正が行われています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>8 件の改善</h3>
+                        <p>思考サマリーのデフォルト無効化、PowerShell 対応強化、オートモード通知改善など、既存機能の使い勝手が向上しています。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.88</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">41</div>
+                    <div class="stat-label">変更件数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">29</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">改善</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🖥️ フリッカーフリーレンダリング</h3>
+                    <p>環境変数 <code>CLAUDE_CODE_NO_FLICKER=1</code> を設定することで、代替スクリーンを使用したフリッカーフリーレンダリングと仮想スクロールバックが有効になります。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🪝 PermissionDenied フック</h3>
+                    <p>オートモードの分類器が拒否した後に発火するフック。<code>{retry: true}</code> を返すことでモデルにリトライを指示できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>@ サブエージェントメンション補完</h3>
+                    <p>名前付きサブエージェントが @ メンションのタイプアヘッド候補に表示されるようになりました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fix Categories -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 -- 29 件の内訳</h2>
+
+            <div class="bug-category">
+                <h4>🧠 メモリと安定性 <span class="bug-category-badge">6 件</span></h4>
+                <ul>
+                    <li>大きな JSON 入力が LRU キャッシュキーとして保持されるメモリリークを修正</li>
+                    <li>1 GiB 超のファイルに対する Edit ツール使用時の OOM クラッシュを修正</li>
+                    <li>50 MB 超のセッションファイルからメッセージを削除する際のクラッシュを修正</li>
+                    <li>ツールスキーマのバイト変更に起因するプロンプトキャッシュミスを修正</li>
+                    <li>ネストされた CLAUDE.md ファイルが長時間セッションで数十回再注入される問題を修正</li>
+                    <li>StructuredOutput のスキーマキャッシュバグにより約 50% の失敗率が発生する問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bug-category">
+                <h4>💻 クロスプラットフォーム互換性 <span class="bug-category-badge">5 件</span></h4>
+                <ul>
+                    <li>Windows で Edit/Write ツールが CRLF を二重化し、Markdown のハードラインブレイクを削除する問題を修正</li>
+                    <li>Windows Terminal Preview 1.25 で Shift+Enter が改行ではなく送信になる問題を修正</li>
+                    <li>Windows PowerShell 5.1 で git push などがエラーと誤報告される問題を修正</li>
+                    <li>macOS Apple Silicon で音声モードがマイク権限をリクエストしない問題を修正</li>
+                    <li>Windows の音声モードで "WebSocket upgrade rejected with HTTP 101" エラーが発生する問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bug-category">
+                <h4>🖥️ UI とレンダリング <span class="bug-category-badge">8 件</span></h4>
+                <ul>
+                    <li>長時間セッションでスクロールアップ時にスクロールバックが消える問題を修正</li>
+                    <li>折り畳まれた検索/読み取りグループのバッジが並列ツール使用時に重複する問題を修正</li>
+                    <li>/btw の長いレスポンスがクリップされスクロール不可だった問題を修正</li>
+                    <li>デーヴァナーガリー文字やその他の結合文字テキストが切り詰められる問題を修正</li>
+                    <li>メインスクリーンターミナルでのレイアウトシフト後のレンダリングアーティファクトを修正</li>
+                    <li>iTerm2 + tmux 環境でのストリーミング中の周期的な UI ジッターを修正</li>
+                    <li>送信後にバックグラウンドメッセージ到着時にプロンプトが一時的に消える問題を修正</li>
+                    <li>通知の invalidates が現在表示中の通知を即座にクリアしない問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bug-category">
+                <h4>📂 セッションとデータ <span class="bug-category-badge">10 件</span></h4>
+                <ul>
+                    <li>--resume で古い CLI バージョンや中断された書き込みからのツール結果があるとクラッシュする問題を修正</li>
+                    <li>"Rate limit reached" の誤表示を修正し、実際のエラーとアクションのヒントを表示するように改善</li>
+                    <li>LSP サーバーがクラッシュ後にゾンビ状態になる問題を修正し、自動再起動するように改善</li>
+                    <li>フック条件が複合コマンドや環境変数プレフィクス付きコマンドにマッチしない問題を修正</li>
+                    <li>CJK や絵文字を含むプロンプト履歴が 4 KB 境界で消失する問題を修正</li>
+                    <li>/stats が 30 日以上前の履歴データを失う問題を修正</li>
+                    <li>/stats がサブエージェント/フォークの使用量を除外してトークン数を過少カウントする問題を修正</li>
+                    <li>セッションを Ctrl+B でバックグラウンド化した際にタスク通知が失われる問題を修正</li>
+                    <li>SDK エラー結果メッセージの is_error: true 設定が正しく行われない問題を修正</li>
+                    <li>音声モードのプッシュトゥトーク機能が一部の修飾キーコンボバインドで動作しない問題を修正</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Improvements / Changes -->
+        <section class="section">
+            <h2 class="section-title">改善 -- 8 件</h2>
+            <ul class="changes-list" style="padding-left: 20px;">
+                <li>PowerShell ツールのプロンプトをバージョン別 (5.1 vs 7+) の構文ガイダンスで改善</li>
+                <li><strong>思考サマリーのデフォルト無効化</strong>: インタラクティブセッションで思考サマリーがデフォルトで生成されなくなりました</li>
+                <li>オートモードで拒否されたコマンドが通知表示され、/permissions の Recent タブに記録されるように変更</li>
+                <li>/env が PowerShell ツールのコマンドにも適用されるように変更</li>
+                <li>/usage で Pro および Enterprise プランの冗長な "Current week" バーを非表示に変更</li>
+                <li>折り畳みツールサマリーで ls/tree/du の場合に "Listed N directories" と表示するように変更</li>
+                <li>画像貼り付け時の末尾スペース挿入を削除</li>
+                <li>空のプロンプトに !command を貼り付けた際に Bash モードに入るように変更</li>
+            </ul>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <div class="tech-detail">
+                <h4>🧠 LRU キャッシュのメモリリーク修正</h4>
+                <p>大きな JSON 入力がキャッシュキーとして保持され続けることで、セッションが長くなるほどメモリ使用量が増大する問題が解消されました。長時間セッションの安定性に直接影響する重要な修正です。</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>📋 プロンプトキャッシュミスの解消</h4>
+                <p>ツールスキーマのバイト列がセッション中に変化することで、キャッシュが無効化されトークン使用量が増加する問題が修正されました。これによりトークン効率が改善されます。</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>📄 CLAUDE.md の再注入防止</h4>
+                <p>ネストされた CLAUDE.md ファイルが繰り返し注入されることで、コンテキストウィンドウが圧迫される問題が解決されました。長時間セッションでのコンテキスト効率が向上します。</p>
+            </div>
+        </section>
+
+        <!-- Mermaid: PermissionDenied Hook Flow -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ: PermissionDenied フックのフロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph AutoMode["🤖 オートモード実行フロー"]
+        Command["📝 コマンド実行要求"]
+        Classifier["🔍 分類器による判定"]
+        Decision{"⚖️ 許可判定"}
+        Execute["✅ コマンド実行"]
+        Deny["❌ 実行拒否"]
+    end
+
+    subgraph HookSystem["🔧 フックシステム"]
+        PDHook["🪝 PermissionDenied フック"]
+        UserLogic["📋 ユーザー定義ロジック"]
+        RetryCheck{"🔄 retry: true?"}
+    end
+
+    subgraph Notification["📢 通知システム"]
+        Notify["🔔 拒否通知を表示"]
+        PermTab["📑 /permissions Recent タブ"]
+    end
+
+    Command --> Classifier
+    Classifier --> Decision
+    Decision -->|許可| Execute
+    Decision -->|拒否| Deny
+    Deny --> PDHook
+    PDHook --> UserLogic
+    UserLogic --> RetryCheck
+    RetryCheck -->|Yes| Command
+    RetryCheck -->|No| Notify
+    Deny --> Notify
+    Notify --> PermTab
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+
+    class AutoMode,HookSystem,Notification platform
+    class Command,Execute,UserLogic,PermTab process
+    class Decision,RetryCheck decision
+    class PDHook,Notify input
+    class Deny error
+                </pre>
+            </div>
+        </section>
+
+        <!-- Mermaid: Change Distribution -->
+        <section class="section">
+            <h2 class="section-title">変更点の分布</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph Changes["📊 v2.1.88 変更点の分布 - 全 41 件"]
+        direction LR
+        Added["🆕 新機能<br/>4 件"]
+        Fixed["🔧 バグ修正<br/>29 件"]
+        Changed["🔄 改善<br/>8 件"]
+        Added ~~~ Fixed ~~~ Changed
+    end
+
+    subgraph FixCategories["🔧 バグ修正の内訳"]
+        direction LR
+        Memory["🧠 メモリ/安定性<br/>6 件"]
+        Platform["💻 クロスプラットフォーム<br/>5 件"]
+        UI["🖥️ UI/レンダリング<br/>8 件"]
+        Session["📂 セッション/データ<br/>10 件"]
+        Memory ~~~ Platform ~~~ UI ~~~ Session
+    end
+
+    Changes --> FixCategories
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class Changes,FixCategories platform
+    class Added input
+    class Fixed process
+    class Changed internal
+    class Memory,Platform,UI,Session warning
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">PermissionDenied フックの実装例</span>
+                </div>
+                <pre><code class="language-bash">#!/bin/bash
+# my-permission-handler.sh
+# PermissionDenied フックのサンプル実装
+
+# フックからの入力を読み取る
+input=$(cat)
+
+# コマンド情報を取得
+command=$(echo "$input" | jq -r '.command')
+
+# 特定のコマンドパターンを許可
+if echo "$command" | grep -q "^git push"; then
+  echo '{"retry": true}'
+else
+  echo '{"retry": false}'
+fi</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">PermissionDenied フックの設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "hooks": {
+    "PermissionDenied": [
+      {
+        "command": "my-permission-handler",
+        "description": "カスタム権限チェック"
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">フリッカーフリーレンダリングの設定</span>
+                </div>
+                <pre><code class="language-bash"># .bashrc または .zshrc に追加
+export CLAUDE_CODE_NO_FLICKER=1
+
+# 設定後に Claude Code を起動
+claude</code></pre>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+
+            <div class="migration-card">
+                <h4>⚠️ 思考サマリーのデフォルト変更</h4>
+                <p>v2.1.88 から、インタラクティブセッションで思考サマリーがデフォルトで生成されなくなりました。従来の動作を維持する場合は、設定に以下を追加してください。</p>
+                <div class="code-block" style="margin: 12px 0 0 0;">
+                    <div class="code-header">
+                        <span class="code-lang">JSON</span>
+                        <span class="code-title">思考サマリーの復元設定</span>
+                    </div>
+                    <pre><code class="language-json">{
+  "showThinkingSummaries": true
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデートコマンド</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact / Use Cases -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <div class="use-case">
+                <h4>🕐 長時間セッションユーザー: メモリリーク修正の恩恵</h4>
+                <p>LRU キャッシュのメモリリーク、CLAUDE.md の再注入、プロンプトキャッシュミスの修正により、長時間の開発セッションでも安定したパフォーマンスが期待できます。OOM クラッシュの防止も含め、セッション継続性が大幅に向上しています。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>💻 Windows ユーザー: クロスプラットフォーム互換性の向上</h4>
+                <p>CRLF 処理の修正、PowerShell 5.1 互換性の改善、Windows Terminal Preview での Shift+Enter 動作修正、音声モードの WebSocket エラー修正など、Windows 環境での使用体験が大幅に改善されています。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>🤖 オートモードユーザー: PermissionDenied フックによる柔軟な制御</h4>
+                <p>オートモードで拒否されたコマンドに対してカスタムロジックを実行し、条件付きでリトライを指示できるようになりました。拒否されたコマンドの通知と /permissions タブへの記録により、権限管理の可視性も向上しています。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>🔧 フックシステム利用者: 複合コマンド対応の改善</h4>
+                <p>フック条件が複合コマンドや環境変数プレフィクス付きコマンドに正しくマッチするようになり、PreToolUse/PostToolUse フックで file_path が絶対パスで提供されるようになりました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>🎤 音声モードユーザー: マルチプラットフォーム修正</h4>
+                <p>macOS Apple Silicon でのマイク権限リクエスト、Windows での WebSocket エラー、プッシュトゥトーク機能の修飾キー対応が修正されています。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong></p>
+            <ul style="list-style: none; padding: 0; margin-top: 4px;">
+                <li>&#8226; <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li>&#8226; <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
