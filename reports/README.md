@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-04-01](2026/2026-04-01-claude-code-v2-1-89.md) - Claude Code v2.1.89 リリース: Hooks 機能の大幅強化とエイプリルフールの隠し機能
+- [2026-03-31](2026/2026-03-31-australia-mou-ai-safety.md) - オーストラリア政府と Anthropic が AI 安全性・研究に関する覚書を締結
 - [2026-03-30](2026/2026-03-30-claude-code-v2-1-88.md) - Claude Code v2.1.88 リリース: 安定性とパフォーマンスの大規模改善、41 件の変更を含むメジャーアップデート
 - [2026-03-30](2026/2026-03-30-batch-api-300k-and-1m-context-retirement.md) - Batch API の max_tokens 上限 300k 引き上げと 1M コンテキストベータの廃止予告
 - [2026-03-29](2026/2026-03-29-claude-code-v2-1-87.md) - Claude Code v2.1.87 リリース: Cowork Dispatch のメッセージ配信バグを修正

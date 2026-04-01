@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.89 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212,165,116,0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .key-point:last-child {
+            margin-bottom: 0;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .key-point-content p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            line-height: 1.4;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, #F5EDE4 100%);
+            border: 2px solid rgba(212,165,116,0.2);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .feature-card .feature-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .improvement-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .improvement-list li {
+            padding: 12px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.6;
+        }
+
+        .improvement-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .improvement-list li .emoji {
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .bug-category {
+            margin-bottom: 20px;
+        }
+
+        .bug-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .bug-category-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bug-category-title .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .bug-category-title .dot.critical { background: #F44336; }
+        .bug-category-title .dot.hooks { background: #7B61FF; }
+        .bug-category-title .dot.windows { background: #3B82F6; }
+        .bug-category-title .dot.other { background: #6a6a7a; }
+
+        .bug-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-list li {
+            padding: 10px 16px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            border-left: 3px solid rgba(212,165,116,0.3);
+            margin-bottom: 8px;
+            margin-left: 8px;
+            line-height: 1.6;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        .comparison:last-child {
+            margin-bottom: 0;
+        }
+
+        .comparison-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card p {
+            font-size: 0.82rem;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .code-block pre {
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212,165,116,0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .config-item {
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .config-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .config-item h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .config-item p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .config-item code {
+            background: rgba(26,26,46,0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .easter-egg-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+            color: #78350F;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison { grid-template-columns: 1fr; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .header h1 { font-size: 1.5rem; }
+            .header { padding: 32px 24px; }
+            .section { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <span class="category-badge">TOOL UPDATE / CLI</span>
+                <h1>Claude Code v2.1.89 リリース</h1>
+                <p class="date">2026-04-01 | Hooks 機能の大幅強化とエイプリルフールの隠し機能</p>
+            </div>
+        </div>
+
+        <!-- 概要 -->
+        <div class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-point">
+                <div class="key-point-icon">🔧</div>
+                <div class="key-point-content">
+                    <h4>Hooks システム拡張</h4>
+                    <p><code>defer</code> パーミッション決定と <code>PermissionDenied</code> フックにより、ヘッドレスセッションでの承認フローや Auto モードでのリトライ制御が可能に</p>
+                </div>
+            </div>
+            <div class="key-point">
+                <div class="key-point-icon">🔨</div>
+                <div class="key-point-content">
+                    <h4>StructuredOutput 修正</h4>
+                    <p>複数スキーマ使用時に約 50% の失敗率を引き起こしていたキャッシュバグを修正。構造化出力ワークフローの信頼性が大幅に向上</p>
+                </div>
+            </div>
+            <div class="key-point">
+                <div class="key-point-icon">🧠</div>
+                <div class="key-point-content">
+                    <h4>メモリリーク修正</h4>
+                    <p>長時間セッションで大きな JSON 入力が LRU キャッシュキーとして保持され続ける問題を解消</p>
+                </div>
+            </div>
+            <div class="key-point">
+                <div class="key-point-icon">🔄</div>
+                <div class="key-point-content">
+                    <h4>Autocompact 改善</h4>
+                    <p>コンテキスト圧縮のスラッシュループを検出・防止。連続 3 回の圧縮後に自動停止し、不要な API 呼び出しを削減</p>
+                </div>
+            </div>
+            <div class="key-point">
+                <div class="key-point-icon">🌐</div>
+                <div class="key-point-content">
+                    <h4>MCP 接続改善</h4>
+                    <p><code>MCP_CONNECTION_NONBLOCKING=true</code> で接続待ちをスキップ可能に。5 秒タイムアウトにより遅いサーバーによるブロッキングも解消</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 統計情報 -->
+        <div class="section">
+            <h2 class="section-title">統計情報</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">26</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">~50%</div>
+                    <div class="stat-label">StructuredOutput<br>失敗率を解消</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新機能 (Added) -->
+        <div class="section">
+            <h2 class="section-title">新機能 (Added)</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⏸️</div>
+                    <h4>defer パーミッション決定</h4>
+                    <p><code>PreToolUse</code> フックに <code>"defer"</code> 決定を導入。ヘッドレスセッションでツール呼び出し時に一時停止し、<code>-p --resume</code> で再開してフックを再評価可能</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✨</div>
+                    <h4>フリッカーフリーレンダリング</h4>
+                    <p><code>CLAUDE_CODE_NO_FLICKER=1</code> 環境変数で仮想スクロールバックを使用したオルトスクリーンレンダリングに切り替え。画面のちらつきを抑制</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚫</div>
+                    <h4>PermissionDenied フック</h4>
+                    <p>Auto モードの分類器がツール実行を拒否した後に発火。<code>{retry: true}</code> を返すことでモデルにリトライを指示可能</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h4>名前付きサブエージェント</h4>
+                    <p><code>@</code> メンションのタイプアヘッド候補にサブエージェント名が表示されるようになり、サブエージェントへのアクセスが容易に</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔌</div>
+                    <h4>MCP 接続のノンブロッキング化</h4>
+                    <p><code>MCP_CONNECTION_NONBLOCKING=true</code> で接続待ちをスキップ。<code>--mcp-config</code> サーバー接続に 5 秒タイムアウトを設定</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 改善 (Changed) -->
+        <div class="section">
+            <h2 class="section-title">改善 (Changed)</h2>
+            <ul class="improvement-list">
+                <li><span class="emoji">🔔</span><span><strong>Auto モードの拒否通知改善</strong>: 拒否されたコマンドが通知として表示され、<code>/permissions</code> の Recent タブから <code>r</code> キーでリトライ可能に</span></li>
+                <li><span class="emoji">📂</span><span><strong>ツールサマリーの改善</strong>: <code>ls</code>/<code>tree</code>/<code>du</code> コマンドが "Listed N directories" と正確に表示されるように</span></li>
+                <li><span class="emoji">⚠️</span><span><strong>Bash ツールのファイル変更警告</strong>: フォーマッター/リンターがファイル変更した際に整合性に関する警告を表示</span></li>
+                <li><span class="emoji">🔍</span><span><strong>@ メンションのランキング改善</strong>: ソースファイルが同名の MCP リソースより上位に表示</span></li>
+                <li><span class="emoji">🖥️</span><span><strong>PowerShell の構文ガイダンス</strong>: PowerShell のバージョン (5.1 vs 7+) に応じた適切な構文ガイダンスを提供</span></li>
+                <li><span class="emoji">✏️</span><span><strong>Edit ツールの要件緩和</strong>: <code>Bash</code> で <code>sed -n</code> や <code>cat</code> を使用して表示したファイルに対して <code>Read</code> なしで <code>Edit</code> が使用可能に</span></li>
+                <li><span class="emoji">💾</span><span><strong>大容量フック出力のディスク保存</strong>: 50K 文字を超えるフック出力はディスクに保存され、ファイルパスとプレビューのみをコンテキストに挿入</span></li>
+                <li><span class="emoji">🛡️</span><span><strong>cleanupPeriodDays: 0 の拒否</strong>: settings.json で値 <code>0</code> を設定するとバリデーションエラーが発生するように</span></li>
+                <li><span class="emoji">💭</span><span><strong>思考サマリーのデフォルト無効化</strong>: インタラクティブセッションで思考サマリーがデフォルト非生成に。復元は <code>showThinkingSummaries: true</code></span></li>
+                <li><span class="emoji">📝</span><span><strong>TaskCreated フックイベント</strong>: <code>TaskCreated</code> フックイベントとそのブロッキング動作がドキュメント化</span></li>
+                <li><span class="emoji">🔙</span><span><strong>Ctrl+B でのタスク通知保持</strong>: バックグラウンド化した際にタスク通知が保持されるように</span></li>
+                <li><span class="emoji">🔒</span><span><strong>PowerShell のセキュリティ強化</strong>: 二重引用符と空白を含む外部コマンド引数がプロンプト確認されるように</span></li>
+                <li><span class="emoji">🌍</span><span><strong>/env の PowerShell 対応</strong>: <code>/env</code> コマンドが PowerShell ツールのコマンドにも適用</span></li>
+                <li><span class="emoji">📊</span><span><strong>/usage の表示最適化</strong>: Pro および Enterprise プランで冗長なバーが非表示に</span></li>
+                <li><span class="emoji">🖼️</span><span><strong>画像ペーストの改善</strong>: 画像ペースト時に末尾の空白が挿入されなくなった</span></li>
+                <li><span class="emoji">📋</span><span><strong>!command のペースト対応</strong>: 空のプロンプトに <code>!command</code> をペーストすると bash モードに入るように</span></li>
+                <li><span class="emoji">🐣</span><span><strong>/buddy コマンド</strong> <span class="easter-egg-badge">Easter Egg</span>: エイプリルフール限定でコーディング中に見守ってくれる小さなクリーチャーをハッチ</span></li>
+            </ul>
+        </div>
+
+        <!-- バグ修正 (Fixed) -->
+        <div class="section">
+            <h2 class="section-title">バグ修正 (Fixed)</h2>
+
+            <div class="bug-category">
+                <div class="bug-category-title"><span class="dot critical"></span>重大な修正</div>
+                <ul class="bug-list">
+                    <li><strong>StructuredOutput スキーマキャッシュバグ</strong>: 複数スキーマ使用時に約 50% の失敗率を引き起こしていたキャッシュバグを修正</li>
+                    <li><strong>メモリリーク</strong>: 長時間セッションで大きな JSON 入力が LRU キャッシュキーとして保持され続ける問題を修正</li>
+                    <li><strong>Autocompact スラッシュループ</strong>: コンテキスト圧縮後すぐに上限に達し連続 3 回圧縮を繰り返すループを検出・防止</li>
+                    <li><strong>大規模セッションファイルのクラッシュ</strong>: 50MB 超のセッションファイルからメッセージ削除時のクラッシュを修正</li>
+                    <li><strong>プロンプトキャッシュミス</strong>: 長時間セッション中にツールスキーマのバイトが変化することによるキャッシュミスを修正</li>
+                    <li><strong>ネストされた CLAUDE.md の重複注入</strong>: 多くのファイルを読み込む長時間セッションで CLAUDE.md が数十回再注入される問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bug-category">
+                <div class="bug-category-title"><span class="dot hooks"></span>Hooks 関連</div>
+                <ul class="bug-list">
+                    <li><strong>PreToolUse/PostToolUse フックのパス修正</strong>: Write/Edit/Read ツールの <code>file_path</code> が絶対パスとして渡されるように</li>
+                    <li><strong>フック if 条件のマッチング修正</strong>: 複合コマンドや環境変数プレフィックス付きコマンドが正しくマッチするように</li>
+                </ul>
+            </div>
+
+            <div class="bug-category">
+                <div class="bug-category-title"><span class="dot windows"></span>Windows / PowerShell 関連</div>
+                <ul class="bug-list">
+                    <li><strong>Edit/Write ツールの CRLF 問題</strong>: Windows で CRLF の二重化とハードラインブレイク削除の問題を修正</li>
+                    <li><strong>PowerShell のエラー報告</strong>: <code>git push</code> などが stderr に進捗を書き込んだ際に誤って失敗と報告される問題を修正</li>
+                    <li><strong>Shift+Enter の動作修正</strong>: Windows Terminal Preview 1.25 で改行ではなく送信になる問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bug-category">
+                <div class="bug-category-title"><span class="dot other"></span>その他の修正</div>
+                <ul class="bug-list">
+                    <li>Edit/Read のシンボリックリンク解決の修正</li>
+                    <li>音声モードの修正 (プッシュトゥトーク、macOS マイク権限、Windows WebSocket エラー)</li>
+                    <li>LSP サーバーのゾンビ状態を修正し自動再起動対応</li>
+                    <li>CJK/絵文字のプロンプト履歴が 4KB 境界で破棄される問題を修正</li>
+                    <li>/stats のサブエージェント使用量除外と 30 日超履歴データ消失の修正</li>
+                    <li>-p --resume のハング (64KB 超の遅延ツール入力) を修正</li>
+                    <li>macOS の claude-cli:// ディープリンクが開かない問題を修正</li>
+                    <li>MCP ツールエラーの切り捨て問題を修正</li>
+                    <li>SDK 経由の画像送信時のコンテキスト脱落を修正</li>
+                    <li>--resume クラッシュ (古い CLI バージョンのツール結果) を修正</li>
+                    <li>レートリミットメッセージの誤表示を修正</li>
+                    <li>折りたたみバッジの重複、通知の即時クリア、プロンプト消失の修正</li>
+                    <li>デーバナーガリー文字の切り捨て、レンダリングアーティファクトの修正</li>
+                    <li>iTerm2/tmux の UI ジッター、1 GiB 超ファイルの OOM クラッシュの修正</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Before/After 比較 -->
+        <div class="section">
+            <h2 class="section-title">Before / After 比較</h2>
+
+            <div class="comparison-label">StructuredOutput スキーマキャッシュ</div>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p>複数のスキーマを使用する際にキャッシュバグが発生し、約 50% の確率で構造化出力が失敗。ワークフローの信頼性に深刻な影響</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p>スキーマキャッシュバグが修正され、構造化出力が安定的に動作。複数スキーマの使用でも信頼性の高い出力を実現</p>
+                </div>
+            </div>
+
+            <div class="comparison-label" style="margin-top: 20px;">Autocompact スラッシュループ</div>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p>コンテキスト圧縮後すぐに上限に達し、圧縮と再充填の無限ループが発生。不要な API 呼び出しとトークン消費が継続</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p>連続 3 回の圧縮を検出すると自動的にループを停止。不必要な API 呼び出しとトークン消費を削減</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mermaid ダイアグラム -->
+        <div class="section">
+            <h2 class="section-title">Hooks システム拡張アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <div class="mermaid">
+flowchart TD
+    subgraph HooksSystem["🔧 Hooks システム v2.1.89"]
+        direction LR
+        PreTool["📋 PreToolUse"]
+        PostTool["📋 PostToolUse"]
+        PermDenied["🚫 PermissionDenied"]
+        TaskCreated["📝 TaskCreated"]
+        PreTool ~~~ PostTool ~~~ PermDenied ~~~ TaskCreated
+    end
+
+    subgraph Decisions["⚡ パーミッション決定"]
+        direction LR
+        Allow["✅ allow"]
+        Deny["❌ deny"]
+        Defer["⏸️ defer"]
+        Allow ~~~ Deny ~~~ Defer
+    end
+
+    subgraph Headless["🖥️ ヘッドレスワークフロー"]
+        Start(["🚀 -p モード開始"])
+        ToolCall["🔧 ツール呼び出し"]
+        Pause["⏸️ セッション一時停止"]
+        Resume["▶️ -p --resume で再開"]
+        ReEval["🔄 フック再評価"]
+    end
+
+    PreTool --> Defer
+    Defer --> Pause
+    Start --> ToolCall
+    ToolCall --> PreTool
+    Pause --> Resume
+    Resume --> ReEval
+
+    PermDenied -->|"{retry: true}"| ToolCall
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class HooksSystem,Headless platform
+    class Decisions platform
+    class PreTool,PostTool,PermDenied,TaskCreated process
+    class Allow,Deny input
+    class Defer decision
+    class Start,Resume input
+    class ToolCall,ReEval process
+    class Pause warning
+                </div>
+            </div>
+        </div>
+
+        <!-- アップデート方法 -->
+        <div class="section">
+            <h2 class="section-title">アップデート方法</h2>
+            <p style="margin-bottom: 16px; font-size: 0.9rem; color: var(--text-secondary);">以下のコマンドで最新バージョンに更新できます。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </div>
+
+        <!-- 設定変更の確認 -->
+        <div class="section">
+            <h2 class="section-title">設定変更の確認</h2>
+            <p style="margin-bottom: 16px; font-size: 0.9rem; color: var(--text-secondary);">本リリースで確認が必要な設定項目です。</p>
+
+            <div class="config-item">
+                <h4>思考サマリー (showThinkingSummaries)</h4>
+                <p>インタラクティブセッションでデフォルト無効化されました。復元するには settings.json に <code>"showThinkingSummaries": true</code> を追加してください</p>
+            </div>
+
+            <div class="config-item">
+                <h4>cleanupPeriodDays</h4>
+                <p>値が <code>0</code> に設定されている場合、バリデーションエラーが発生します。<code>1</code> 以上の値に変更してください</p>
+            </div>
+
+            <div class="config-item">
+                <h4>Hooks の file_path</h4>
+                <p>PreToolUse/PostToolUse フックが絶対パスを受け取るようになりました。相対パスに依存しているフック処理の見直しが必要な場合があります</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Source: <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog - GitHub</a></p>
+            <p style="margin-top: 8px;">Generated by Anthropic News Summary</p>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
