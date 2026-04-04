@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.92 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .header-content { position: relative; z-index: 1; }
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
+        .header .date { font-size: 14px; opacity: 0.8; }
+        .header .summary { font-size: 15px; opacity: 0.9; margin-top: 16px; line-height: 1.8; }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points { display: grid; gap: 16px; }
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--anthropic-coral); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        /* Before/After Comparison */
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .comparison-card { padding: 24px; border-radius: 16px; }
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+        .comparison-card h4 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+        .comparison-card ul { list-style: none; padding: 0; }
+        .comparison-card ul li { font-size: 14px; padding: 4px 0; color: var(--text-secondary); }
+        .comparison-card ul li::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+        .comparison-card.before ul li::before { background: #DC2626; }
+        .comparison-card.after ul li::before { background: #059669; }
+
+        /* Bug Fix List */
+        .bugfix-list { display: grid; gap: 12px; }
+        .bugfix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: #FFF8F0;
+            border-radius: 10px;
+            border-left: 3px solid var(--warning);
+        }
+        .bugfix-item .icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+        .bugfix-item .text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+        .bugfix-item .text strong { color: var(--text-primary); }
+
+        /* Code Block */
+        .code-block { background: #1a1a2e; border-radius: 12px; overflow: hidden; margin: 20px 0; }
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre { margin: 0; padding: 0; }
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+        .mermaid { display: flex; justify-content: center; }
+        .mermaid-label { font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; text-align: center; }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer a { color: var(--anthropic-coral); text-decoration: none; word-break: break-all; }
+        .footer a:hover { text-decoration: underline; }
+        .footer p { margin-bottom: 4px; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .comparison { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.92 リリース: Bedrock セットアップウィザード、リモート設定の強制リフレッシュ、コスト表示の詳細化</h1>
+                <p class="date">2026-04-04</p>
+                <p class="summary">新機能 6 件、バグ修正 11 件、改善 1 件、削除 2 件を含む大型アップデート。エンタープライズ向けセキュリティ強化と Bedrock オンボーディング改善が中心です。</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 - キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>forceRemoteSettingsRefresh ポリシー</h3>
+                        <p>CLI 起動時にリモートマネージド設定の最新取得を強制。取得失敗時は CLI を終了するフェイルクローズ方式で、企業のセキュリティポリシーを確実に適用します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧙</div>
+                    <div class="key-point-content">
+                        <h3>Bedrock インタラクティブセットアップウィザード</h3>
+                        <p>ログイン画面から AWS 認証、リージョン設定、クレデンシャル検証、モデルピニングを対話的にガイド。Bedrock 経由の利用開始が大幅に簡素化されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💰</div>
+                    <div class="key-point-content">
+                        <h3>/cost のモデル別・キャッシュヒット別内訳表示</h3>
+                        <p>サブスクリプションユーザー向けに、モデルごと・キャッシュヒットごとのコスト内訳が確認可能に。コスト管理の可視性が大幅に向上しました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>Write ツールの diff 計算 60% 高速化</h3>
+                        <p>大きなファイルに対する diff 計算が 60% 高速化。タブ文字、&amp;、$ を含むファイルで特に効果的です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.92</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">11</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">60%</div>
+                    <div class="stat-label">diff 計算高速化</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">コマンド削除</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">✨ 新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔒 forceRemoteSettingsRefresh</h3>
+                    <p>リモートマネージド設定のフェイルクローズ型強制取得。起動時に最新設定を取得するまでブロックし、失敗時は CLI を終了します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧙 Bedrock セットアップウィザード</h3>
+                    <p>ログイン画面で「3rd-party platform」選択時に起動。AWS 認証からモデルピニングまで 4 ステップで完了します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💰 /cost モデル別内訳</h3>
+                    <p>サブスクリプションユーザー向けに、モデル別・キャッシュヒット別のコスト内訳を表示します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 /release-notes ピッカー</h3>
+                    <p>/release-notes コマンドがバージョンを対話的に選択できるインタラクティブピッカーに変更されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏷️ セッション名プレフィックス</h3>
+                    <p>Remote Control のセッション名にホスト名がデフォルトプレフィックスとして使用されます。--remote-control-session-name-prefix で上書き可能。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 キャッシュ期限切れヒント</h3>
+                    <p>Pro ユーザーがキャッシュ期限切れ後にセッションに戻った際、次ターンの非キャッシュトークン数がフッターに表示されます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before v2.1.92</h4>
+                    <ul>
+                        <li>/tag コマンドが使用可能</li>
+                        <li>/vim コマンドで vim モード切り替え</li>
+                        <li>Bedrock の設定は手動で実施</li>
+                        <li>リモート設定は起動をブロックしない</li>
+                        <li>/cost は合計のみ表示</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After v2.1.92</h4>
+                    <ul>
+                        <li>/tag コマンド削除</li>
+                        <li>/config の Editor mode で vim 切り替え</li>
+                        <li>対話的ウィザードで Bedrock をセットアップ</li>
+                        <li>フェイルクローズ型リモート設定強制</li>
+                        <li>/cost でモデル別・キャッシュ別内訳</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">🐛 バグ修正 11 件</h2>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="icon">🔄</span>
+                    <div class="text"><strong>サブエージェント生成失敗</strong>: tmux ウィンドウが削除/リナンバリングされた後、「Could not determine pane count」で恒久的に失敗する問題を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">🪝</span>
+                    <div class="text"><strong>Stop フック誤動作</strong>: 小型高速モデルが ok:false を返した際のフック失敗と、preventContinuation:true セマンティクスを修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">📡</span>
+                    <div class="text"><strong>ストリーミングバリデーション</strong>: 配列/オブジェクトフィールドが JSON エンコード文字列として出力された際のバリデーション失敗を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">🧠</span>
+                    <div class="text"><strong>拡張思考 API 400 エラー</strong>: 空白のみのテキストブロックが実コンテンツと並んで生成された際の API 400 エラーを修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">📝</span>
+                    <div class="text"><strong>フィードバック誤送信</strong>: オートパイロットのキー操作や連続プロンプトの数字衝突による意図しない送信を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">🖥️</span>
+                    <div class="text"><strong>フルスクリーン表示</strong>: esc ヒントの重複表示、メッセージの二重表示、ctrl+e カーソル移動の問題を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">🍺</span>
+                    <div class="text"><strong>Homebrew 更新プロンプト</strong>: cask のリリースチャネルに合わせた正しい更新プロンプトに修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">💾</span>
+                    <div class="text"><strong>トークンヒント</strong>: /clear ヒントが累積セッショントークン数ではなく現在のコンテキストサイズを表示するように修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">🔌</span>
+                    <div class="text"><strong>プラグイン MCP 接続</strong>: 未認証の claude.ai コネクタと重複する MCP サーバーが「connecting」状態で停止する問題を修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <p class="mermaid-label">forceRemoteSettingsRefresh の起動フロー</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Startup["&#128421;&#65039; Claude Code 起動"]
+        Start(["&#9654;&#65039; CLI 開始"])
+        CheckPolicy{"&#128274; forceRemoteSettings&lt;br/&gt;Refresh 有効?"}
+    end
+
+    subgraph RemoteFetch["&#127760; リモート設定取得"]
+        Fetch["&#128225; 設定サーバーへ&lt;br/&gt;フェッチ"]
+        FetchResult{"&#9989; 取得&lt;br/&gt;成功?"}
+    end
+
+    subgraph Result["&#128228; 結果"]
+        Apply["&#9989; 最新設定を適用&lt;br/&gt;CLI 起動"]
+        UseCache["&#9889; キャッシュ設定で&lt;br/&gt;即座に起動"]
+        Exit["&#10060; CLI 終了&lt;br/&gt;フェイルクローズ"]
+    end
+
+    Start --> CheckPolicy
+    CheckPolicy --> |"有効"| Fetch
+    CheckPolicy --> |"無効"| UseCache
+    Fetch --> FetchResult
+    FetchResult --> |"成功"| Apply
+    FetchResult --> |"失敗"| Exit
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef success fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class Startup,RemoteFetch,Result layer
+    class Start user
+    class CheckPolicy,FetchResult decision
+    class Fetch process
+    class Apply,UseCache success
+    class Exit error
+                </pre>
+            </div>
+
+            <p class="mermaid-label">Bedrock セットアップウィザードフロー</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph Login["&#128274; ログイン画面"]
+        Select(["&#128100; 3rd-party platform&lt;br/&gt;を選択"])
+    end
+
+    subgraph Wizard["&#129497; Bedrock セットアップウィザード"]
+        Auth["&#128273; AWS 認証"]
+        Region["&#127757; リージョン設定"]
+        Verify["&#9989; クレデンシャル検証"]
+        Pin["&#128204; モデルピニング"]
+        Auth --> Region --> Verify --> Pin
+    end
+
+    subgraph Ready["&#128640; 利用開始"]
+        Bedrock["&#9729;&#65039; Amazon Bedrock&lt;br/&gt;経由で Claude 利用"]
+    end
+
+    Select --> Auth
+    Pin --> Bedrock
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef success fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class Login,Wizard,Ready layer
+    class Select user
+    class Auth,Region,Verify,Pin process
+    class Bedrock success
+                </pre>
+            </div>
+
+            <p class="mermaid-label">v2.1.92 変更点の全体像</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["&#128421;&#65039; Claude Code v2.1.92"]
+        subgraph NewFeatures["&#10024; 新機能"]
+            direction LR
+            RemoteSettings["&#128274; forceRemote&lt;br/&gt;SettingsRefresh"]
+            BedrockWizard["&#129497; Bedrock&lt;br/&gt;セットアップ"]
+            CostBreakdown["&#128176; コスト&lt;br/&gt;内訳表示"]
+            ReleaseNotes["&#128203; /release-notes&lt;br/&gt;バージョンピッカー"]
+            RemoteSettings ~~~ BedrockWizard ~~~ CostBreakdown ~~~ ReleaseNotes
+        end
+
+        subgraph BugFixes["&#128027; バグ修正 11 件"]
+            direction LR
+            Subagent["&#128260; サブエージェント&lt;br/&gt;生成修正"]
+            StopHook["&#129691; Stop フック&lt;br/&gt;誤動作修正"]
+            Streaming["&#128225; ストリーミング&lt;br/&gt;バリデーション修正"]
+            Thinking["&#129504; 拡張思考&lt;br/&gt;400 エラー修正"]
+            Subagent ~~~ StopHook ~~~ Streaming ~~~ Thinking
+        end
+
+        subgraph Changes["&#9889; 改善・削除"]
+            direction LR
+            WriteDiff["&#128221; Write diff&lt;br/&gt;60% 高速化"]
+            RemovedTag["&#128465;&#65039; /tag 削除"]
+            RemovedVim["&#128465;&#65039; /vim 削除"]
+            Sandbox["&#128039; Linux サンドボックス&lt;br/&gt;改善"]
+            WriteDiff ~~~ RemovedTag ~~~ RemovedVim ~~~ Sandbox
+        end
+    end
+
+    User(["&#128100; ユーザー"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef change fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class NewFeatures,BugFixes,Changes layer
+    class RemoteSettings,BedrockWizard,CostBreakdown,ReleaseNotes feature
+    class Subagent,StopHook,Streaming,Thinking fix
+    class WriteDiff,RemovedTag,RemovedVim,Sandbox change
+    class User user
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">forceRemoteSettingsRefresh ポリシー設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "forceRemoteSettingsRefresh": true
+}</code></pre>
+            </div>
+            <p style="font-size: 14px; color: var(--text-secondary); margin: -12px 0 24px 0;">この設定を有効にすると、CLI は起動時にリモート設定サーバーから最新の設定を取得するまでブロックされます。取得に失敗した場合は CLI が終了し、古い設定での動作を防止します。</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Remote Control セッション名のカスタマイズ</span>
+                </div>
+                <pre><code class="language-bash"># デフォルト: ホスト名がプレフィックスとして使用される
+# 例: myhost-graceful-unicorn
+claude --remote-control
+
+# カスタムプレフィックスを指定
+claude --remote-control --remote-control-session-name-prefix "dev-team"
+# 例: dev-team-graceful-unicorn</code></pre>
+            </div>
+        </section>
+
+        <!-- Improvements & Removals -->
+        <section class="section">
+            <h2 class="section-title">⚡ 改善・削除・その他</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📝 Write ツール高速化</h3>
+                    <p>大きなファイルに対する diff 計算が 60% 高速化。タブ、&amp;、$ を含むファイルで特にエスケープ処理のオーバーヘッドが削減されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🗑️ /tag コマンド削除</h3>
+                    <p>/tag コマンドは v2.1.92 で削除されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🗑️ /vim コマンド削除</h3>
+                    <p>vim モードの切り替えは /config の「Editor mode」セクションから行えます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🐧 Linux サンドボックス改善</h3>
+                    <p>apply-seccomp ヘルパーが npm ビルドとネイティブビルドの両方に同梱され、unix-socket ブロッキングが復元されました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース・開発者への影響</h2>
+            <div class="use-case">
+                <h4>🏢 エンタープライズセキュリティ管理者</h4>
+                <p>forceRemoteSettingsRefresh ポリシーを有効にすることで、リモートマネージド設定の適用をフェイルクローズ方式で強制できます。セキュリティポリシーの確実な適用が必要な環境で、古い設定や未取得状態での CLI 動作リスクを排除します。</p>
+            </div>
+            <div class="use-case">
+                <h4>☁️ Amazon Bedrock 新規ユーザー</h4>
+                <p>インタラクティブセットアップウィザードにより、AWS 認証からモデルピニングまで対話的に設定可能。手動設定のエラーを減らし、Bedrock 経由の Claude Code 利用をスムーズに開始できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>💳 サブスクリプションユーザー・Pro ユーザー</h4>
+                <p>/cost コマンドのモデル別・キャッシュヒット別内訳表示により、コスト最適化の意思決定が容易に。また、プロンプトキャッシュ期限切れ時のトークン数ヒントにより、不要なコスト発生を事前に把握できます。</p>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド・必要なアクション</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデート方法</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+            <div class="key-points" style="margin-top: 20px;">
+                <div class="key-point">
+                    <div class="key-point-icon">⚠️</div>
+                    <div class="key-point-content">
+                        <h3>/tag ユーザー</h3>
+                        <p>/tag コマンドは削除されました。代替手段を確認してください。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚠️</div>
+                    <div class="key-point-content">
+                        <h3>/vim ユーザー</h3>
+                        <p>/vim コマンドは削除されました。vim モードの切り替えは /config → Editor mode から行えます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連:</strong> <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a> | <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-claude.html" target="_blank" rel="noopener noreferrer">Amazon Bedrock Claude ドキュメント</a></p>
+            <p style="margin-top: 12px; font-size: 11px; opacity: 0.7;">Generated by Anthropic News Summary - 2026-04-04</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
