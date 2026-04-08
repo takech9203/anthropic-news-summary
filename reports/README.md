@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-04-07](2026/2026-04-07-messages-api-amazon-bedrock.md) - Messages API が Amazon Bedrock でリサーチプレビューとして利用可能に
+- [2026-04-07](2026/2026-04-07-claude-mythos-preview-glasswing.md) - Anthropic が Project Glasswing を発表 -- Claude Mythos Preview による防御的サイバーセキュリティの新時代
+- [2026-04-07](2026/2026-04-07-claude-code-v2-1-94.md) - Claude Code v2.1.94 リリース: Mantle 対応、デフォルトエフォートレベル引き上げ、CJK テキスト破損修正
 - [2026-04-06](2026/2026-04-06-google-broadcom-partnership-compute.md) - Anthropic が Google および Broadcom との提携を拡大し、数ギガワット規模の次世代コンピュートを確保
 - [2026-04-04](2026/2026-04-04-claude-code-v2-1-92.md) - Claude Code v2.1.92 リリース: Bedrock セットアップウィザード、リモート設定の強制リフレッシュ、コスト表示の詳細化
 - [2026-04-03](2026/2026-04-03-claude-code-v2-1-91.md) - Claude Code v2.1.91 リリース: MCP ツール結果の 500K 永続化オーバーライド、スキルのシェル実行無効化オプション追加

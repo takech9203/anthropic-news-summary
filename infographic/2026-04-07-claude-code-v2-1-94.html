@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.94 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .header-content { position: relative; z-index: 1; }
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
+        .header .date { font-size: 14px; opacity: 0.8; }
+        .header .summary { font-size: 15px; opacity: 0.9; margin-top: 16px; line-height: 1.8; }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points { display: grid; gap: 16px; }
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--anthropic-coral); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        /* Before/After Comparison */
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .comparison-card { padding: 24px; border-radius: 16px; }
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+        .comparison-card h4 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+        .comparison-card ul { list-style: none; padding: 0; }
+        .comparison-card ul li { font-size: 14px; padding: 4px 0; color: var(--text-secondary); }
+        .comparison-card ul li::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+        .comparison-card.before ul li::before { background: #DC2626; }
+        .comparison-card.after ul li::before { background: #059669; }
+
+        /* Bug Fix List */
+        .bugfix-list { display: grid; gap: 12px; }
+        .bugfix-group-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 16px 0 8px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--anthropic-cream);
+        }
+        .bugfix-group-title:first-child { margin-top: 0; }
+        .bugfix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: #FFF8F0;
+            border-radius: 10px;
+            border-left: 3px solid var(--warning);
+        }
+        .bugfix-item .icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+        .bugfix-item .text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+        .bugfix-item .text strong { color: var(--text-primary); }
+
+        /* Code Block */
+        .code-block { background: #1a1a2e; border-radius: 12px; overflow: hidden; margin: 20px 0; }
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre { margin: 0; padding: 0; }
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+        .mermaid { display: flex; justify-content: center; }
+        .mermaid-label { font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; text-align: center; }
+
+        /* Migration Guide */
+        .migration-item {
+            background: var(--anthropic-cream);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+        .migration-item h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .migration-item p { font-size: 14px; color: var(--text-secondary); margin-bottom: 4px; }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer a { color: var(--anthropic-coral); text-decoration: none; word-break: break-all; }
+        .footer a:hover { text-decoration: underline; }
+        .footer p { margin-bottom: 4px; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .comparison { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code / CLI ツール</span>
+                <h1>Claude Code v2.1.94 リリース</h1>
+                <p class="date">2026-04-07</p>
+                <p class="summary">Mantle 対応、デフォルトエフォートレベル引き上げ、CJK テキスト破損修正</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.94</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">17</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 - キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#9729;&#65039;</div>
+                    <div class="key-point-content">
+                        <h3>Bedrock Mantle 対応</h3>
+                        <p>環境変数 <code>CLAUDE_CODE_USE_MANTLE=1</code> を設定するだけで、Amazon Bedrock powered by Mantle 経由の接続が利用可能になりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#128200;</div>
+                    <div class="key-point-content">
+                        <h3>デフォルトエフォートレベル: medium から high へ</h3>
+                        <p>API キー、Bedrock/Vertex/Foundry、Team、Enterprise ユーザーのデフォルトエフォートレベルが medium から high に引き上げられ、より深い分析と高品質な応答が得られるようになりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#128268;</div>
+                    <div class="key-point-content">
+                        <h3>プラグインエコシステム安定化</h3>
+                        <p>フックの無視、パス解決エラー、スキル名の不安定性、CLAUDE_PLUGIN_ROOT 未設定時のエラーなど、プラグイン関連の 4 件の問題が修正されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#127471;&#127477;</div>
+                    <div class="key-point-content">
+                        <h3>CJK テキスト破損修正</h3>
+                        <p>stream-json のチャンク境界で UTF-8 マルチバイトシーケンスが分割された際に、日本語・中国語・韓国語テキストが U+FFFD に破損する問題が解消されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#9855;</div>
+                    <div class="key-point-content">
+                        <h3>アクセシビリティ改善</h3>
+                        <p>ダイアログ内のタブナビゲーションにネイティブターミナルカーソルが追従するようになり、スクリーンリーダーやマグニファイアでタブ切り替えを正確に追跡できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before v2.1.94</h4>
+                    <ul>
+                        <li>デフォルトエフォートレベル: medium</li>
+                        <li>${CLAUDE_PLUGIN_ROOT} がマーケットプレイスソースディレクトリに解決</li>
+                        <li>プラグインスキル名がディレクトリのベースネームに依存</li>
+                        <li>CJK テキストがストリーミング時に U+FFFD に破損</li>
+                        <li>429 レートリミット後にエージェントが固まる</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After v2.1.94</h4>
+                    <ul>
+                        <li>デフォルトエフォートレベル: high</li>
+                        <li>${CLAUDE_PLUGIN_ROOT} がインストールキャッシュディレクトリに正しく解決</li>
+                        <li>フロントマター name で安定したスキル名</li>
+                        <li>CJK テキストが正しく表示</li>
+                        <li>429 エラーが即座に表示される</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">&#10024; 新機能 5 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#9729;&#65039; Bedrock Mantle 対応</h3>
+                    <p>環境変数 <code>CLAUDE_CODE_USE_MANTLE=1</code> を設定することで、Amazon Bedrock powered by Mantle 経由の接続が利用可能に。新しいインフラストラクチャ統合オプションです。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#128172; Slack MCP コンパクトヘッダー</h3>
+                    <p>Slack MCP の send-message ツール呼び出し時に、クリック可能なチャンネルリンクを含むコンパクトな <code>Slacked #channel</code> ヘッダーが表示されるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#128221; keep-coding-instructions</h3>
+                    <p>プラグインの出力スタイルで <code>keep-coding-instructions</code> フロントマターフィールドがサポートされるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#127991;&#65039; sessionTitle フック</h3>
+                    <p><code>UserPromptSubmit</code> フックでセッションタイトルを設定できる <code>hookSpecificOutput.sessionTitle</code> が追加されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#9888;&#65039; VSCode パース警告バナー</h3>
+                    <p><code>settings.json</code> ファイルのパースに失敗した場合に警告バナーが表示され、パーミッションルールが適用されていないことを通知します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Changed Items -->
+        <section class="section">
+            <h2 class="section-title">&#9889; 改善 4 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#128200; デフォルトエフォートレベル引き上げ</h3>
+                    <p>API キー、Bedrock/Vertex/Foundry、Team、Enterprise ユーザーのデフォルトが medium から high に変更。<code>/effort</code> コマンドで個別に調整可能です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#128268; プラグインスキル名の安定化</h3>
+                    <p><code>"skills": ["./"]</code> で宣言されたスキルが、ディレクトリのベースネームではなくフロントマターの <code>name</code> を呼び出し名として使用するようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#128260; --resume の改善</h3>
+                    <p>同じリポジトリの他のワークツリーからのセッションを <code>cd</code> コマンドを表示する代わりに直接再開できるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#128640; VSCode コールドオープン高速化</h3>
+                    <p>セッション開始時のサブプロセス作業が削減され、起動パフォーマンスが向上しました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">&#128027; バグ修正 17 件</h2>
+
+            <h3 class="bugfix-group-title">&#128268; プラグイン修正 4 件</h3>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="icon">&#129691;</span>
+                    <div class="text"><strong>プラグインスキルフックの無視</strong>: YAML フロントマターで定義されたプラグインスキルフックがサイレントに無視される問題を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#128194;</span>
+                    <div class="text"><strong>プラグインフックの "No such file or directory"</strong>: <code>CLAUDE_PLUGIN_ROOT</code> が設定されていない場合にプラグインフックが失敗する問題を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#128193;</span>
+                    <div class="text"><strong>${CLAUDE_PLUGIN_ROOT} のパス解決</strong>: ローカルマーケットプレイスプラグインの起動時に、インストールキャッシュではなくマーケットプレイスソースディレクトリに解決される問題を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#128295;</span>
+                    <div class="text"><strong>Bedrock での Sonnet 3.5 v2 呼び出し</strong>: <code>us.</code> 推論プロファイル ID を使用することで Bedrock での Sonnet 3.5 v2 呼び出しを修正</div>
+                </div>
+            </div>
+
+            <h3 class="bugfix-group-title">&#128421;&#65039; UI/UX 修正 7 件</h3>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="icon">&#9200;</span>
+                    <div class="text"><strong>429 レートリミット応答後のエージェント停止</strong>: 長い Retry-After ヘッダーを含む 429 応答後にエージェントが固まる問題を修正。エラーが即座に表示されるようになりました</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#128196;</span>
+                    <div class="text"><strong>スクロールバックの diff 重複表示</strong>: 長時間セッションでスクロールバックに同じ diff が繰り返し表示され、空白ページが出現する問題を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#128221;</span>
+                    <div class="text"><strong>マルチラインプロンプトのインデント</strong>: トランスクリプトでマルチラインのユーザープロンプトの折り返し行が正しくインデントされるよう修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#9000;&#65039;</span>
+                    <div class="text"><strong>Shift+Space の入力</strong>: 検索入力で Shift+Space がリテラルの "space" を挿入する問題を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#128279;</span>
+                    <div class="text"><strong>tmux 内でのハイパーリンク</strong>: xterm.js ベースのターミナル内の tmux でハイパーリンクをクリックすると 2 つのブラウザタブが開く問題を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#128187;</span>
+                    <div class="text"><strong>オルトスクリーンのレンダリングバグ</strong>: スクロール中にコンテンツの高さが変更されるとゴーストラインが蓄積する問題を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#128279;</span>
+                    <div class="text"><strong>FORCE_HYPERLINK 環境変数の無視</strong>: <code>settings.json</code> の <code>env</code> で設定した <code>FORCE_HYPERLINK</code> が無視される問題を修正</div>
+                </div>
+            </div>
+
+            <h3 class="bugfix-group-title">&#128187; プラットフォーム修正 3 件</h3>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="icon">&#127822;</span>
+                    <div class="text"><strong>macOS でのコンソールログイン失敗</strong>: ログインキーチェーンがロックされている場合にサイレントに失敗する問題を修正。<code>claude doctor</code> が修正方法を診断します</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#128190;</span>
+                    <div class="text"><strong>SDK/print モードの中断時の応答保存</strong>: ストリーム中断時に部分的なアシスタント応答が会話履歴に保持されるよう修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#9855;</span>
+                    <div class="text"><strong>ネイティブターミナルカーソルのタブ追従</strong>: ダイアログで選択されたタブにネイティブターミナルカーソルが追従しない問題を修正。スクリーンリーダーが追跡可能に</div>
+                </div>
+            </div>
+
+            <h3 class="bugfix-group-title">&#128736;&#65039; VSCode 修正 2 件</h3>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="icon">&#128071;</span>
+                    <div class="text"><strong>ドロップダウンメニューの選択ミス</strong>: マウスがリスト上にある状態でタイピングや矢印キーを使用した際にドロップダウンメニューが誤った項目を選択する問題を修正</div>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">&#9888;&#65039;</span>
+                    <div class="text"><strong>settings.json パースエラー警告</strong>: パースに失敗した場合に警告バナーで通知する機能を追加</div>
+                </div>
+            </div>
+
+            <h3 class="bugfix-group-title">&#127471;&#127477; CJK 修正 1 件</h3>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="icon">&#128483;&#65039;</span>
+                    <div class="text"><strong>CJK テキストの破損</strong>: stream-json の入出力でチャンク境界が UTF-8 シーケンスを分割した際に CJK やその他のマルチバイトテキストが U+FFFD に破損する問題を修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <p class="mermaid-label">v2.1.94 変更点の全体像</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["&#128421;&#65039; Claude Code v2.1.94"]
+        subgraph NewFeatures["&#10024; 新機能 5 件"]
+            direction LR
+            Mantle["&#9729;&#65039; Bedrock&lt;br/&gt;Mantle 対応"]
+            SlackMCP["&#128172; Slack MCP&lt;br/&gt;コンパクトヘッダー"]
+            KeepCoding["&#128221; keep-coding-&lt;br/&gt;instructions"]
+            SessionTitle["&#127991;&#65039; sessionTitle&lt;br/&gt;フック"]
+            VSCodeWarn["&#9888;&#65039; VSCode&lt;br/&gt;パース警告"]
+            Mantle ~~~ SlackMCP ~~~ KeepCoding ~~~ SessionTitle ~~~ VSCodeWarn
+        end
+
+        subgraph Changes["&#9889; 改善 4 件"]
+            direction LR
+            Effort["&#128200; デフォルト&lt;br/&gt;effort: high"]
+            SkillName["&#128268; スキル名&lt;br/&gt;安定化"]
+            Resume["&#128260; --resume&lt;br/&gt;ワークツリー対応"]
+            ColdOpen["&#128640; VSCode&lt;br/&gt;起動高速化"]
+            Effort ~~~ SkillName ~~~ Resume ~~~ ColdOpen
+        end
+
+        subgraph BugFixes["&#128027; バグ修正 17 件"]
+            direction LR
+            RateLimit["&#9200; 429 レート&lt;br/&gt;リミット修正"]
+            PluginFix["&#128268; プラグイン&lt;br/&gt;修正 4 件"]
+            CJKFix["&#127471;&#127477; CJK テキスト&lt;br/&gt;破損修正"]
+            UIFix["&#128421;&#65039; UI/UX&lt;br/&gt;修正 7 件"]
+            RateLimit ~~~ PluginFix ~~~ CJKFix ~~~ UIFix
+        end
+    end
+
+    User(["&#128100; ユーザー"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef change fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class NewFeatures,BugFixes,Changes layer
+    class Mantle,SlackMCP,KeepCoding,SessionTitle,VSCodeWarn feature
+    class Effort,SkillName,Resume,ColdOpen change
+    class RateLimit,PluginFix,CJKFix,UIFix fix
+    class User user
+                </pre>
+            </div>
+
+            <p class="mermaid-label">プラグインパス解決の修正フロー</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph Before["&#10060; 修正前"]
+        PluginA["&#128268; プラグイン起動"] --> ResolveA["${CLAUDE_PLUGIN_ROOT}"]
+        ResolveA --> MarketplaceDir["&#128193; マーケットプレイス&lt;br/&gt;ソースディレクトリ"]
+    end
+
+    subgraph After["&#9989; 修正後"]
+        PluginB["&#128268; プラグイン起動"] --> ResolveB["${CLAUDE_PLUGIN_ROOT}"]
+        ResolveB --> CacheDir["&#128193; インストール&lt;br/&gt;キャッシュディレクトリ"]
+    end
+
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef success fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Before,After layer
+    class PluginA,PluginB,ResolveA,ResolveB process
+    class MarketplaceDir error
+    class CacheDir success
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Mantle 対応の有効化</span>
+                </div>
+                <pre><code class="language-bash"># 環境変数で Mantle を有効化
+export CLAUDE_CODE_USE_MANTLE=1
+
+# Claude Code を起動
+claude</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">エフォートレベルの調整</span>
+                </div>
+                <pre><code class="language-bash"># セッション内でエフォートレベルを確認・変更
+/effort        # 現在のレベルを表示
+/effort medium # 従来のデフォルトに戻す
+/effort high   # 新しいデフォルト - より深い分析
+/effort low    # 軽量モード</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">UserPromptSubmit フックでセッションタイトルを設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "command": "echo '{\"sessionTitle\": \"My Custom Title\"}'",
+        "type": "command"
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+
+            <div class="migration-item">
+                <h4>&#128200; デフォルトエフォートレベルの変更</h4>
+                <p><strong>対象</strong>: API キー、Bedrock/Vertex/Foundry、Team、Enterprise ユーザー</p>
+                <p><strong>変更内容</strong>: デフォルトエフォートレベルが medium から high に変更されました。デフォルトでより多くのトークンを消費する可能性があります。</p>
+                <p><strong>対応</strong>: 従来の動作を維持したい場合は <code>/effort medium</code> を実行するか、設定で固定してください。</p>
+            </div>
+
+            <div class="migration-item">
+                <h4>&#128268; プラグインスキル名の変更</h4>
+                <p><strong>対象</strong>: <code>"skills": ["./"]</code> でプラグインスキルを宣言しているプラグイン開発者</p>
+                <p><strong>変更内容</strong>: スキルの呼び出し名がディレクトリのベースネームからフロントマターの <code>name</code> フィールドに変更されました。</p>
+                <p><strong>対応</strong>: フロントマターの <code>name</code> フィールドが正しく設定されていることを確認してください。既存のスキル呼び出しが一致しなくなる可能性があります。</p>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデート方法</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連:</strong> <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a> | <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-claude.html" target="_blank" rel="noopener noreferrer">Amazon Bedrock Claude ドキュメント</a></p>
+            <p style="margin-top: 12px; font-size: 11px; opacity: 0.7;">Generated by Anthropic News Summary - 2026-04-07</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

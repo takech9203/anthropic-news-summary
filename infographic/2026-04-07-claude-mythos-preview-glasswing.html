@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Glasswing / Claude Mythos Preview - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 32px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: var(--anthropic-coral);
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        .timeline-item .timeline-date {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 4px;
+        }
+
+        .timeline-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Quote */
+        .quote {
+            background: var(--gradient-header);
+            color: white;
+            padding: 28px 32px;
+            border-radius: 16px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .quote::before {
+            content: '\201C';
+            font-size: 4rem;
+            color: var(--anthropic-coral);
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            opacity: 0.5;
+            line-height: 1;
+        }
+
+        .quote p {
+            font-size: 15px;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+            padding-left: 8px;
+        }
+
+        /* Partner Grid */
+        .partner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .partner-tag {
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+
+        .partner-tag:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Detail List */
+        .detail-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .detail-list li {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .detail-list li:last-child {
+            border-bottom: none;
+        }
+
+        .detail-list li .bullet {
+            color: var(--anthropic-coral);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Target Audience */
+        .audience-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .audience-card {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .audience-card .icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .audience-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .audience-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-links {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-value { font-size: 1.8rem; }
+            .partner-grid { grid-template-columns: repeat(2, 1fr); }
+            .audience-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">セキュリティ / AI モデル</span>
+                <h1>Anthropic が Project Glasswing を発表 -- Claude Mythos Preview による防御的サイバーセキュリティの新時代</h1>
+                <p class="date">2026-04-07</p>
+            </div>
+        </header>
+
+        <!-- Overview / Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>12 社のグローバルパートナーによる防御的サイバーセキュリティイニシアチブ</h3>
+                        <p>AWS、Apple、Broadcom、Cisco、CrowdStrike、Google、JPMorganChase、Linux Foundation、Microsoft、NVIDIA、Palo Alto Networks など 12 の主要パートナーが参画。さらに 40 以上の組織が重要インフラのスキャンにアクセスを付与されています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>Claude Mythos Preview: 数千件の高重大度脆弱性を発見</h3>
+                        <p>未公開のフロンティアモデル「Claude Mythos Preview」が主要 OS およびウェブブラウザのすべてにおいて、数千件の高重大度脆弱性を発見。最も熟練した人間を除くほぼ全ての専門家を上回る能力を実証。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💰</div>
+                    <div class="key-point-content">
+                        <h3>最大 1 億ドルの利用クレジット + 400 万ドルの OSS 寄付</h3>
+                        <p>Anthropic は Mythos Preview の利用クレジットとして最大 1 億ドルをコミット。加えてオープンソースセキュリティ組織への 400 万ドルの直接寄付を実施します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>招待制ゲーテッドリサーチプレビュー</h3>
+                        <p>Claude Mythos Preview は現在招待制のゲーテッドリサーチプレビューとして提供されており、防御的サイバーセキュリティ作業に限定。一般公開 API での利用は現時点では不可。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Grid -->
+        <section class="section">
+            <h2 class="section-title">数字で見る Project Glasswing</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">$500B</div>
+                    <div class="stat-label">年間サイバー犯罪被害<br>世界規模</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">パートナー企業<br>グローバル連携</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">40+</div>
+                    <div class="stat-label">追加組織<br>インフラスキャン</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$100M</div>
+                    <div class="stat-label">利用クレジット<br>Anthropic コミット</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$4M</div>
+                    <div class="stat-label">OSS 寄付<br>直接支援</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10 年</div>
+                    <div class="stat-label">DARPA CGC からの進歩<br>2016 年 - 2026 年</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景: なぜ今 Project Glasswing なのか</h2>
+            <div class="quote">
+                <p>サイバー犯罪による世界的な経済損失は年間約 5,000 億ドルに達しており、ソフトウェアの脆弱性発見と防御は現代のデジタルインフラにおいて最も重要な課題の 1 つです。2016 年の初回 DARPA Cyber Grand Challenge から 10 年が経過し、フロンティア AI モデルは脆弱性の発見と悪用において最も熟練した人間のレベルに匹敵する段階に到達しました。</p>
+            </div>
+            <p style="margin-top: 16px; font-size: 14px; color: var(--text-secondary);">攻撃者よりも防御者が先に AI を活用できる環境を構築することが急務となっています。Project Glasswing は「AI 時代のサイバーセキュリティにおいて、防御者に持続的な優位性を与える」ことを目的として設計されました。</p>
+        </section>
+
+        <!-- Partner Ecosystem -->
+        <section class="section">
+            <h2 class="section-title">パートナーエコシステム</h2>
+            <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--text-secondary);">コアパートナー</h3>
+            <div class="partner-grid" style="margin-bottom: 20px;">
+                <div class="partner-tag">🤖 Anthropic</div>
+                <div class="partner-tag">🟠 AWS</div>
+                <div class="partner-tag">🍎 Apple</div>
+                <div class="partner-tag">🔵 Google</div>
+                <div class="partner-tag">🟣 Microsoft</div>
+            </div>
+            <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--text-secondary);">セキュリティパートナー</h3>
+            <div class="partner-grid" style="margin-bottom: 20px;">
+                <div class="partner-tag">🌐 Cisco</div>
+                <div class="partner-tag">🦅 CrowdStrike</div>
+                <div class="partner-tag">🔥 Palo Alto Networks</div>
+            </div>
+            <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--text-secondary);">インフラ / エコシステム</h3>
+            <div class="partner-grid">
+                <div class="partner-tag">📡 Broadcom</div>
+                <div class="partner-tag">💚 NVIDIA</div>
+                <div class="partner-tag">🐧 Linux Foundation</div>
+                <div class="partner-tag">🏦 JPMorganChase</div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主な特徴</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🤝 パートナーエコシステム</h3>
+                    <p>テクノロジー、セキュリティ、金融、オープンソースの各分野から 12 社の主要パートナーが参画。業界横断的な防御ネットワークを構築。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧠 Mythos の脆弱性発見能力</h3>
+                    <p>全主要 OS (Windows、macOS、Linux) およびウェブブラウザにおいて数千件の高重大度脆弱性を発見。最も熟練した人間に匹敵するレベル。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ 防御専用の設計</h3>
+                    <p>防御的サイバーセキュリティ作業に限定して提供。ローンチパートナーが防御目的で活用し、攻撃者より先に脆弱性を発見・修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💰 大規模な資金コミットメント</h3>
+                    <p>最大 1 億ドルの利用クレジットと 400 万ドルの OSS 直接寄付。セキュリティ研究とオープンソースエコシステムの持続的な支援を実現。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">Claude Mythos Preview 技術詳細</h2>
+            <ul class="detail-list">
+                <li>
+                    <span class="bullet">●</span>
+                    <span><strong>脆弱性発見実績:</strong> 主要な OS およびウェブブラウザのすべてにおいて、数千件の高重大度脆弱性を発見</span>
+                </li>
+                <li>
+                    <span class="bullet">●</span>
+                    <span><strong>対象範囲:</strong> 全主要 OS (Windows、macOS、Linux) および主要ウェブブラウザを含む重要ソフトウェア</span>
+                </li>
+                <li>
+                    <span class="bullet">●</span>
+                    <span><strong>アクセス方式:</strong> ゲーテッドリサーチプレビューとして招待制で提供。一般公開 API での利用は現時点では不可</span>
+                </li>
+                <li>
+                    <span class="bullet">●</span>
+                    <span><strong>用途制限:</strong> 防御的サイバーセキュリティ作業に限定。ローンチパートナーが防御目的で活用</span>
+                </li>
+                <li>
+                    <span class="bullet">●</span>
+                    <span><strong>モデル特性:</strong> 汎用フロンティアモデルであり、ソフトウェア脆弱性の発見と悪用において最も熟練した人間を除くほぼ全ての専門家を上回る能力</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">Project Glasswing エコシステム全体像</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Glasswing["🛡️ Project Glasswing"]
+        direction TB
+        subgraph Core["🏢 コアパートナー"]
+            direction LR
+            Anthropic["🤖 Anthropic"]
+            AWS["🟠 AWS"]
+            Apple["🍎 Apple"]
+            Google["🔵 Google"]
+            Microsoft["🟣 Microsoft"]
+            Anthropic ~~~ AWS ~~~ Apple ~~~ Google ~~~ Microsoft
+        end
+
+        subgraph Security["🔒 セキュリティパートナー"]
+            direction LR
+            Cisco["🌐 Cisco"]
+            CrowdStrike["🦅 CrowdStrike"]
+            PaloAlto["🔥 Palo Alto<br/>Networks"]
+            Cisco ~~~ CrowdStrike ~~~ PaloAlto
+        end
+
+        subgraph Infra["⚙️ インフラ / エコシステム"]
+            direction LR
+            Broadcom["📡 Broadcom"]
+            NVIDIA["💚 NVIDIA"]
+            Linux["🐧 Linux<br/>Foundation"]
+            JPMorgan["🏦 JPMorganChase"]
+            Broadcom ~~~ NVIDIA ~~~ Linux ~~~ JPMorgan
+        end
+    end
+
+    subgraph Model["🧠 Claude Mythos Preview"]
+        direction LR
+        Vuln["🔍 脆弱性発見<br/>数千件の高重大度"]
+        Scan["📋 インフラスキャン<br/>40+ 組織"]
+        Vuln ~~~ Scan
+    end
+
+    subgraph Target["🎯 防御対象"]
+        direction LR
+        OS["💻 主要 OS"]
+        Browser["🌐 ウェブブラウザ"]
+        OSS["📦 オープンソース<br/>ソフトウェア"]
+        CriticalInfra["🏗️ 重要インフラ"]
+        OS ~~~ Browser ~~~ OSS ~~~ CriticalInfra
+    end
+
+    subgraph Funding["💰 資金コミットメント"]
+        direction LR
+        Credits["📊 最大 $100M<br/>利用クレジット"]
+        Donation["🎁 $4M<br/>OSS 寄付"]
+        Credits ~~~ Donation
+    end
+
+    Glasswing --> Model
+    Model --> Target
+    Anthropic -.-> Funding
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef core fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef security fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef infra fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef model fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef target fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef funding fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class Glasswing platform
+    class Core,Anthropic,AWS,Apple,Google,Microsoft core
+    class Security,Cisco,CrowdStrike,PaloAlto security
+    class Infra,Broadcom,NVIDIA,Linux,JPMorgan infra
+    class Model,Vuln,Scan model
+    class Target,OS,Browser,OSS,CriticalInfra target
+    class Funding,Credits,Donation funding
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">活用シナリオ</h2>
+            <div class="use-case">
+                <h4>🔍 セキュリティスキャニング</h4>
+                <p>主要 OS やウェブブラウザを含む重要ソフトウェアの脆弱性を自動的にスキャンし、高重大度の脆弱性を攻撃者より先に発見。40 以上の組織が重要インフラのスキャンにアクセスを付与されています。</p>
+            </div>
+            <div class="use-case">
+                <h4>🐛 脆弱性検出と修正</h4>
+                <p>Claude Mythos Preview は脆弱性の発見だけでなく、発見された脆弱性の悪用可能性を評価し、防御的な対策を提案。セキュリティチームがパッチを迅速に適用できるよう支援します。</p>
+            </div>
+            <div class="use-case">
+                <h4>📦 オープンソースプロジェクトの保護</h4>
+                <p>Linux Foundation をはじめとするオープンソースエコシステムのセキュリティを強化。400 万ドルの直接寄付と利用クレジットにより、メンテナーが自身のプロジェクトのセキュリティを向上させる手段を提供します。</p>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="audience-grid">
+                <div class="audience-card">
+                    <div class="icon">🔬</div>
+                    <h4>セキュリティ研究者</h4>
+                    <p>パートナー経由での Mythos Preview アクセスの可能性。脆弱性発見の新たなツールとして注目</p>
+                </div>
+                <div class="audience-card">
+                    <div class="icon">🏢</div>
+                    <h4>重要インフラ運用者</h4>
+                    <p>パートナー組織を通じたアクセスの可能性を確認。インフラセキュリティの強化に活用</p>
+                </div>
+                <div class="audience-card">
+                    <div class="icon">📦</div>
+                    <h4>OSS メンテナー</h4>
+                    <p>OSS 寄付と利用クレジットによる支援。プロジェクトのセキュリティ向上に直接貢献</p>
+                </div>
+                <div class="audience-card">
+                    <div class="icon">👨‍💻</div>
+                    <h4>Claude API 開発者</h4>
+                    <p>現時点でのアクションは不要。今後の一般提供や防御ツールとしての統合に注目</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Required Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <ul class="detail-list">
+                <li>
+                    <span class="bullet">🔒</span>
+                    <span><strong>招待制アクセス:</strong> Claude Mythos Preview は現在招待制のゲーテッドリサーチプレビューとして提供されており、一般の Claude API からはアクセスできません</span>
+                </li>
+                <li>
+                    <span class="bullet">🤝</span>
+                    <span><strong>パートナー経由での活用:</strong> セキュリティ企業や重要インフラ運用者は、パートナー組織を通じたアクセスの可能性を確認してください</span>
+                </li>
+                <li>
+                    <span class="bullet">👀</span>
+                    <span><strong>今後の展開に注目:</strong> Mythos Preview の一般提供や、防御的セキュリティツールとしての統合が今後発表される可能性があります</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Timeline -->
+        <section class="section">
+            <h2 class="section-title">防御的 AI セキュリティの進化</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">2016 年</div>
+                    <p>初回 DARPA Cyber Grand Challenge 開催。AI によるサイバーセキュリティの可能性が示される</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2016 - 2025 年</div>
+                    <p>フロンティア AI モデルが進化し、脆弱性発見能力が人間の専門家レベルに接近</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2026 年 4 月 7 日</div>
+                    <p>Anthropic が Project Glasswing を発表。Claude Mythos Preview による防御的サイバーセキュリティの新時代が幕を開ける</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🎯</div>
+                    <div class="key-point-content">
+                        <h3>防御的セキュリティの新たな基準</h3>
+                        <p>Project Glasswing は、AI 時代のサイバーセキュリティにおいて防御者に持続的な優位性を与えるための画期的なイニシアチブです。Claude Mythos Preview は、主要な OS やウェブブラウザを含む重要ソフトウェアにおいて数千件の高重大度脆弱性を発見する能力を実証しており、防御的セキュリティの新たな基準を確立しようとしています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-content">
+                        <h3>業界全体での協調的な取り組み</h3>
+                        <p>AWS、Apple、Google、Microsoft をはじめとする 12 社のパートナーと 40 以上の組織が参画し、最大 1 億ドルの利用クレジットと 400 万ドルのオープンソース支援という大規模な資金コミットメントが伴う本プロジェクトは、年間約 5,000 億ドルに上るサイバー犯罪被害への対抗策として、業界全体での協調的な取り組みを象徴しています。現時点では招待制のリサーチプレビューに限定されていますが、今後の一般展開や防御ツールとしての統合に注目が集まります。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://www.anthropic.com/glasswing" target="_blank" rel="noopener noreferrer">https://www.anthropic.com/glasswing</a></p>
+            <div class="footer-links">
+                <a href="https://www.anthropic.com/news" target="_blank" rel="noopener noreferrer">Anthropic News</a>
+                <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude API Release Notes</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
