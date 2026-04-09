@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.97 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+            border: 1px solid rgba(212, 165, 116, 0.3);
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card .tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .tag-new {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .tag-fix {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        .tag-security {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .tag-improve {
+            background: #E0E7FF;
+            color: #4338CA;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            line-height: 1.5;
+        }
+
+        .comparison-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '\2717 ';
+            color: #DC2626;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '\2713 ';
+            color: #059669;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid-container .diagram-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Detail list */
+        .detail-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .detail-list li {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .detail-list li:last-child {
+            border-bottom: none;
+        }
+
+        .detail-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Subsection title */
+        .subsection-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 16px 0;
+            padding-left: 12px;
+            border-left: 3px solid var(--anthropic-coral);
+        }
+
+        .subsection-title:first-of-type {
+            margin-top: 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .update-cmd {
+            margin-top: 16px;
+            background: var(--anthropic-dark);
+            color: #e0e0e0;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+        }
+
+        .footer .update-cmd code {
+            color: var(--anthropic-coral);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE</span>
+                <h1>Claude Code v2.1.97 リリース:<br>フォーカスビュー、権限強化、NO_FLICKER 改善</h1>
+                <p class="date">2026-04-08</p>
+                <span class="version-badge">v2.1.94 → v2.1.97 メジャーアップデート</span>
+            </div>
+        </header>
+
+        <!-- 概要 Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">👁️</div>
+                    <div class="key-point-content">
+                        <h3>フォーカスビュー (Ctrl+O)</h3>
+                        <p>NO_FLICKER モード専用の新表示モード。プロンプト、ツールサマリー (diffstats 付き)、最終応答のみを表示し、長いセッションでも重要な情報に集中できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>権限・セキュリティの大幅堅牢化 (6 件)</h3>
+                        <p>--dangerously-skip-permissions のサイレントダウングレード修正、Bash ツール権限強化、プロトタイプ汚染対策、管理設定の即時反映など、セキュリティに直結する 6 件の修正。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🖥️</div>
+                    <div class="key-point-content">
+                        <h3>NO_FLICKER モード: 8 件のバグ修正</h3>
+                        <p>URL コピー時のスペース挿入、zellij アーティファクト、Windows スクロール、CJK テキスト文字化け、メモリリーク、Warp ショートカットなど、多数の環境固有の問題を解消。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💾</div>
+                    <div class="key-point-content">
+                        <h3>MCP メモリリーク修正 (約 50 MB/時)</h3>
+                        <p>HTTP/SSE 接続のサーバー再接続時にバッファが解放されない問題を修正。長時間セッションでの数 GB 規模のメモリ消費を防止します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🇯🇵</div>
+                    <div class="key-point-content">
+                        <h3>CJK/日本語入力の改善</h3>
+                        <p>NO_FLICKER モードでの CJK テキスト文字化け修正、日本語・中国語句読点の後でもスラッシュコマンド補完がトリガーされるように改善。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 統計情報 -->
+        <section class="section">
+            <h2 class="section-title">統計情報</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">27</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">セキュリティ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">NO_FLICKER 修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">44</div>
+                    <div class="stat-label">変更の合計</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 主な機能 -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+
+            <h3 class="subsection-title">新機能 (Added)</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>👁️ フォーカスビュー</h3>
+                    <p>Ctrl+O で NO_FLICKER モードのフォーカスビューをトグル。プロンプト + 1 行ツールサマリー (diffstats 付き) + 最終応答のみ表示。長いセッションでの情報ノイズを削減します。</p>
+                    <span class="tag tag-new">NEW</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 refreshInterval ステータスライン</h3>
+                    <p>ステータスラインコマンドを N 秒ごとに再実行する設定を追加。ビルド状態やテスト結果などの動的情報をリアルタイム表示できます。</p>
+                    <span class="tag tag-new">NEW</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🌳 git_worktree ステータス入力</h3>
+                    <p>リンクされた git worktree 内にいる場合、ステータスライン JSON 入力に workspace.git_worktree が自動設定されます。</p>
+                    <span class="tag tag-new">NEW</span>
+                </div>
+                <div class="feature-card">
+                    <h3>● /agents ライブインジケーター</h3>
+                    <p>/agents コマンドでエージェントタイプの横に「N running」インジケーターが表示。実行中のサブエージェント数を一目で確認できます。</p>
+                    <span class="tag tag-new">NEW</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📜 Cedar シンタックスハイライト</h3>
+                    <p>.cedar および .cedarpolicy ファイルに対するシンタックスハイライトを追加。Cedar ポリシーファイルの可読性が向上します。</p>
+                    <span class="tag tag-new">NEW</span>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">権限・セキュリティ修正 (6 件)</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🛡️ skip-permissions ダウングレード修正</h3>
+                    <p>保護パスへの書き込み承認後に --dangerously-skip-permissions がサイレントに accept-edits モードにダウングレードされる脆弱性を修正。</p>
+                    <span class="tag tag-security">SECURITY</span>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Bash ツール権限強化</h3>
+                    <p>環境変数プレフィックスやネットワークリダイレクトのチェックを厳格化。一般的なコマンドでの誤った権限プロンプト表示も削減。</p>
+                    <span class="tag tag-security">SECURITY</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🔧 プロトタイプ汚染対策</h3>
+                    <p>toString 等の JavaScript プロトタイププロパティ名が権限ルールと一致し、settings.json がサイレントに無視される問題を修正。</p>
+                    <span class="tag tag-security">SECURITY</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 管理設定の即時反映</h3>
+                    <p>管理者が削除した managed-settings の allow ルールがプロセス再起動まで有効だった問題を修正。additionalDirectories のセッション中反映も対応。</p>
+                    <span class="tag tag-security">SECURITY</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📂 --add-dir と additionalDirectories の競合修正</h3>
+                    <p>settings から additionalDirectories を削除した際、--add-dir で渡された同じディレクトリへのアクセスまで取り消される問題を修正。</p>
+                    <span class="tag tag-security">SECURITY</span>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">MCP・ネットワーク修正 (5 件)</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>💾 MCP メモリリーク修正</h3>
+                    <p>HTTP/SSE 接続のサーバー再接続時に約 50 MB/時のバッファが蓄積する問題を修正。複数 MCP サーバー環境で特に重大な影響がありました。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🔑 OAuth トークンリフレッシュ修正</h3>
+                    <p>oauth.authServerMetadataUrl が再起動後のトークンリフレッシュ時に参照されない問題を修正。ADFS 等の IdP で影響がありました。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+                <div class="feature-card">
+                    <h3>⏱️ 429 リトライ: 指数バックオフ</h3>
+                    <p>サーバーが小さな Retry-After 値を返した場合、全リトライが約 13 秒で消費される問題を修正。指数バックオフが最小値として適用されます。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 レートリミットオプション消失修正</h3>
+                    <p>コンテキスト圧縮後にレートリミットのアップグレードオプションが消える問題を修正。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+                <div class="feature-card">
+                    <h3>☁️ Bedrock SigV4 空文字列対応</h3>
+                    <p>AWS_BEARER_TOKEN_BEDROCK 等が空文字列の場合 (GitHub Actions で未設定の入力) に SigV4 認証が失敗する問題を修正。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">セッション・Resume 修正 (4 件)</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📋 /resume ピッカー複数修正</h3>
+                    <p>--resume で読み取り専用になる問題、Ctrl+A リロードで検索クリア、空リストがナビゲーションを飲み込む問題、タスクステータス表示の問題を一括修正。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📄 大容量ファイル diff 修正</h3>
+                    <p>--resume 時に 10 KB を超えるファイルの edit diff が表示されない問題を修正。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+                <div class="feature-card">
+                    <h3>💿 キャッシュミスと入力消失修正</h3>
+                    <p>添付メッセージがトランスクリプトに保存されないことによるキャッシュミスと、mid-turn 入力の消失を修正。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+                <div class="feature-card">
+                    <h3>💬 作業中メッセージの永続化</h3>
+                    <p>Claude が作業中に入力されたメッセージがトランスクリプトに永続化されない問題を修正。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">フック・サブエージェント修正 (3 件)</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🪝 Stop/SubagentStop フック修正</h3>
+                    <p>長時間セッションで Stop/SubagentStop フックが失敗する問題を修正。エラー時に実際のメッセージが表示されるように改善。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📂 サブエージェント作業ディレクトリリーク修正</h3>
+                    <p>worktree 隔離または cwd: オーバーライドを持つサブエージェントが、親セッションの Bash ツールに作業ディレクトリをリークする問題を修正。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 圧縮時の重複トランスクリプト修正</h3>
+                    <p>prompt-too-long リトライ時にマルチ MB のサブエージェントトランスクリプトファイルが重複して書き込まれる問題を修正。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">プラグイン修正 (2 件)</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔌 plugin update 最新版検出修正</h3>
+                    <p>git ベースのマーケットプレイスプラグインで、リモートに新しいコミットがあっても「already at the latest version」と報告される問題を修正。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 YAML ブーリアンキーワード修正</h3>
+                    <p>プラグインの name が YAML ブーリアン (true, false, yes, no) の場合にスラッシュコマンドピッカーが壊れる問題を修正。</p>
+                    <span class="tag tag-fix">FIX</span>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">改善 (12 件)</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>✅ Accept Edits 自動承認強化</h3>
+                    <p>LANG=C rm foo や timeout 5 mkdir out のような安全な環境変数/プロセスラッパー付きコマンドを自動承認。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🌐 サンドボックスネットワーク自動承認</h3>
+                    <p>自動モードとバイパスパーミッションモードでサンドボックスネットワークアクセスプロンプトが自動承認されるように改善。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🍎 macOS サンドボックス改善</h3>
+                    <p>sandbox.network.allowMachLookup が macOS で正しく適用されるように修正。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🖼️ 画像圧縮の統一</h3>
+                    <p>貼り付け/添付画像が Read ツールで読み取った画像と同じトークンバジェットに圧縮されるように統一。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🇯🇵 CJK 入力でのコマンド補完</h3>
+                    <p>日本語/中国語句読点の後でもスラッシュコマンドや @ メンション補完がトリガーされるように改善。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🌉 Bridge セッション情報表示</h3>
+                    <p>claude.ai のセッションカードにローカル git リポジトリ、ブランチ、作業ディレクトリが表示されるように改善。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📐 フッターレイアウト改善</h3>
+                    <p>Focus、通知などのインジケーターがモードインジケーター行に留まり、下に折り返さなくなりました。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+                <div class="feature-card">
+                    <h3>⚠️ コンテキスト残量警告の改善</h3>
+                    <p>永続的な行ではなく、一時的なフッター通知として表示されるように変更。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 Markdown ブロック引用の改善</h3>
+                    <p>折り返し行にも連続した左バーが表示されるように改善。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 トランスクリプトサイズ削減</h3>
+                    <p>空のフックエントリのスキップと、編集前ファイルコピーのキャッピングによりサイズを削減。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 トランスクリプト精度向上</h3>
+                    <p>ブロックごとのエントリがストリーミングプレースホルダーではなく最終トークン使用量を保持するように変更。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 Bash OTEL トレーシング改善</h3>
+                    <p>トレーシング有効時にサブプロセスが W3C TRACEPARENT 環境変数を継承するように改善。</p>
+                    <span class="tag tag-improve">IMPROVE</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After: NO_FLICKER -->
+        <section class="section">
+            <h2 class="section-title">Before / After: NO_FLICKER モード</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.94)</h4>
+                    <ul>
+                        <li>URL コピー時に改行位置にスペースが挿入</li>
+                        <li>zellij 内でスクロールアーティファクト発生</li>
+                        <li>MCP ツール結果ホバーでクラッシュ</li>
+                        <li>API リトライ時にメモリリーク</li>
+                        <li>Windows Terminal でマウスホイールスクロールが遅い</li>
+                        <li>24 行未満のターミナルでステータスライン非表示</li>
+                        <li>Warp の Shift+Enter, Alt/Cmd+矢印が動作しない</li>
+                        <li>韓国語・日本語テキストのコピーで文字化け</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.97)</h4>
+                    <ul>
+                        <li>URL が正確にコピーされる</li>
+                        <li>zellij でスムーズなスクロール</li>
+                        <li>MCP ツール結果のホバーが安定動作</li>
+                        <li>API リトライのメモリリーク解消</li>
+                        <li>Windows Terminal でスムーズなスクロール</li>
+                        <li>短いターミナルでもステータスライン表示</li>
+                        <li>Warp のショートカットが正常動作</li>
+                        <li>CJK/Unicode テキストが正確にコピーされる</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- コードサンプル -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">refreshInterval ステータスライン設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "statusLine": {
+    "command": "git log --oneline -1 && echo \"Branch: $(git branch --show-current)\"",
+    "refreshInterval": 30
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">permissions.additionalDirectories の設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "permissions": {
+    "additionalDirectories": [
+      "/home/user/shared-libs",
+      "/home/user/config"
+    ]
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">sandbox.network.allowMachLookup の設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "sandbox": {
+    "network": {
+      "allowMachLookup": [
+        "com.apple.security.keychain"
+      ]
+    }
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">YAML</span>
+                    <span class="code-title">GitHub Actions での Bedrock 環境変数</span>
+                </div>
+                <pre><code class="language-yaml"># v2.1.97 以降は空文字列が適切にハンドルされるため、
+# 条件分岐は不要になりました
+env:
+  AWS_BEARER_TOKEN_BEDROCK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
+  ANTHROPIC_BEDROCK_BASE_URL: ${{ secrets.ANTHROPIC_BEDROCK_BASE_URL }}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">フォーカスビューの使用</span>
+                </div>
+                <pre><code class="language-bash"># NO_FLICKER モードを有効にして Claude Code を起動
+NO_FLICKER=1 claude
+
+# セッション内で Ctrl+O を押してフォーカスビューをトグル
+# フォーカスビュー: プロンプト + ツールサマリー + 最終応答のみ表示</code></pre>
+            </div>
+        </section>
+
+        <!-- アーキテクチャ図 -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <div class="mermaid-container">
+                <div class="diagram-title">v2.1.97 変更点の全体像</div>
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["🖥️ Claude Code v2.1.97"]
+        subgraph NewFeatures["✨ 新機能 5 件"]
+            direction LR
+            FocusView["👁️ フォーカスビュー&lt;br/&gt;Ctrl+O"]
+            RefreshInterval["🔄 refreshInterval&lt;br/&gt;ステータスライン"]
+            GitWorktree["🌳 git_worktree&lt;br/&gt;ステータス入力"]
+            AgentIndicator["● N running&lt;br/&gt;エージェント表示"]
+            CedarHL["📜 Cedar&lt;br/&gt;シンタックスHL"]
+            FocusView ~~~ RefreshInterval ~~~ GitWorktree ~~~ AgentIndicator ~~~ CedarHL
+        end
+
+        subgraph Security["🔒 権限・セキュリティ 6 件"]
+            direction LR
+            SkipPerms["🛡️ skip-permissions&lt;br/&gt;ダウングレード修正"]
+            BashPerms["⚡ Bash ツール&lt;br/&gt;権限強化"]
+            ProtoFix["🔧 プロトタイプ&lt;br/&gt;プロパティ修正"]
+            ManagedSettings["📋 管理設定&lt;br/&gt;即時反映"]
+            SkipPerms ~~~ BashPerms ~~~ ProtoFix ~~~ ManagedSettings
+        end
+
+        subgraph MCP["🌐 MCP・ネットワーク 5 件"]
+            direction LR
+            MemLeak["💾 メモリリーク修正&lt;br/&gt;50 MB/時"]
+            OAuth["🔑 OAuth トークン&lt;br/&gt;リフレッシュ修正"]
+            Backoff["⏱️ 429 リトライ&lt;br/&gt;指数バックオフ"]
+            SigV4["☁️ Bedrock SigV4&lt;br/&gt;空文字列対応"]
+            MemLeak ~~~ OAuth ~~~ Backoff ~~~ SigV4
+        end
+
+        subgraph Resume["📂 セッション・Resume 4 件"]
+            direction LR
+            Picker["📋 /resume ピッカー&lt;br/&gt;複数修正"]
+            LargeFile["📄 大容量ファイル&lt;br/&gt;diff 修正"]
+            CacheMiss["💿 キャッシュミス&lt;br/&gt;修正"]
+            Persist["💬 メッセージ&lt;br/&gt;永続化修正"]
+            Picker ~~~ LargeFile ~~~ CacheMiss ~~~ Persist
+        end
+
+        subgraph NoFlicker["🖥️ NO_FLICKER 修正 8 件"]
+            direction LR
+            URLCopy["🔗 URL コピー&lt;br/&gt;修正"]
+            Zellij["📐 zellij&lt;br/&gt;アーティファクト"]
+            WinScroll["🖱️ Windows&lt;br/&gt;スクロール"]
+            CJKCopy["🇯🇵 CJK コピー&lt;br/&gt;文字化け修正"]
+            URLCopy ~~~ Zellij ~~~ WinScroll ~~~ CJKCopy
+        end
+
+        subgraph Improvements["📈 改善 12 件"]
+            direction LR
+            AutoApprove["✅ Accept Edits&lt;br/&gt;自動承認強化"]
+            ImageCompress["🖼️ 画像圧縮&lt;br/&gt;統一"]
+            CJKSlash["🇯🇵 CJK 入力&lt;br/&gt;補完改善"]
+            Transcript["📝 トランスクリプト&lt;br/&gt;精度・サイズ"]
+            AutoApprove ~~~ ImageCompress ~~~ CJKSlash ~~~ Transcript
+        end
+    end
+
+    User(["👤 ユーザー"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef security fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef change fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef network fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class NewFeatures,Security,MCP,Resume,NoFlicker,Improvements layer
+    class FocusView,RefreshInterval,GitWorktree,AgentIndicator,CedarHL feature
+    class SkipPerms,BashPerms,ProtoFix,ManagedSettings security
+    class MemLeak,OAuth,Backoff,SigV4 network
+    class Picker,LargeFile,CacheMiss,Persist fix
+    class URLCopy,Zellij,WinScroll,CJKCopy fix
+    class AutoApprove,ImageCompress,CJKSlash,Transcript change
+    class User user
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <div class="diagram-title">権限チェック強化のフロー</div>
+                <pre class="mermaid">
+flowchart LR
+    subgraph Before["❌ 修正前"]
+        Cmd1["⌨️ Bash コマンド"] --> Check1["🔍 権限チェック"]
+        Check1 --> Env1["ENV_VAR=x cmd"]
+        Env1 --> FalsePrompt["⚠️ 誤った&lt;br/&gt;権限プロンプト"]
+        Check1 --> Net1["ネットワーク&lt;br/&gt;リダイレクト"]
+        Net1 --> Bypass1["🚫 チェック漏れ"]
+    end
+
+    subgraph After["✅ 修正後"]
+        Cmd2["⌨️ Bash コマンド"] --> Check2["🔍 権限チェック"]
+        Check2 --> Env2["ENV_VAR=x cmd"]
+        Env2 --> AutoApprove2["✅ 安全な&lt;br/&gt;自動承認"]
+        Check2 --> Net2["ネットワーク&lt;br/&gt;リダイレクト"]
+        Net2 --> Strict2["🔒 厳格な&lt;br/&gt;チェック"]
+    end
+
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef success fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class Before,After layer
+    class Cmd1,Cmd2,Check1,Check2,Env1,Env2,Net1,Net2 process
+    class FalsePrompt warning
+    class Bypass1 error
+    class AutoApprove2,Strict2 success
+                </pre>
+            </div>
+        </section>
+
+        <!-- ユースケース -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+
+            <div class="use-case">
+                <h4>🔒 セキュリティ管理者: 権限システムの堅牢化</h4>
+                <p>企業環境で Claude Code の権限設定を管理する管理者にとって、6 件のセキュリティ修正は極めて重要です。--dangerously-skip-permissions のサイレントダウングレード修正、managed-settings の即時反映、プロトタイプ汚染対策により、設定が意図通りに適用されることが保証されます。settings.json で toString 等のプロトタイププロパティ名を使用していた場合は、設定が無視されていた可能性があるため確認が必要です。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>🔌 MCP プラグイン開発者: メモリリーク解消と安定性向上</h4>
+                <p>複数の MCP サーバーを接続して長時間セッションを実行するプラグイン開発者にとって、約 50 MB/時のメモリリーク修正は重大な改善です。OAuth トークンリフレッシュの修正により ADFS 等の IdP を使用する環境での安定性も向上。また、plugin update コマンドが git リモートの新コミットを正しく検出するようになり、プラグインの更新管理も改善されました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>🇯🇵 日本語/CJK ユーザー: 入力と表示の大幅改善</h4>
+                <p>NO_FLICKER モードでの CJK テキスト文字化け修正により、日本語・韓国語テキストのコピーが正確に動作します。さらに日本語・中国語の句読点の後でもスラッシュコマンドや @ メンション補完がトリガーされるようになり、日本語入力中にわざわざスペースを入力する必要がなくなりました。日常的な使用体験が大幅に向上しています。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連:</strong> <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub</a></p>
+            <div class="update-cmd">
+                <code>npm update -g @anthropic-ai/claude-code</code> または <code>brew upgrade claude-code</code>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

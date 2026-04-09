@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-04-08](2026/2026-04-08-claude-managed-agents-ant-cli.md) - Claude Managed Agents パブリックベータと ant CLI のローンチ
+- [2026-04-08](2026/2026-04-08-claude-code-v2-1-97.md) - Claude Code v2.1.97 リリース: フォーカスビュー、権限強化、NO_FLICKER 改善
+- [2026-04-08](2026/2026-04-08-claude-code-v2-1-96.md) - Claude Code v2.1.96 リリース: Bedrock 認証の緊急修正 (ホットフィックス)
 - [2026-04-07](2026/2026-04-07-messages-api-amazon-bedrock.md) - Messages API が Amazon Bedrock でリサーチプレビューとして利用可能に
 - [2026-04-07](2026/2026-04-07-claude-mythos-preview-glasswing.md) - Anthropic が Project Glasswing を発表 -- Claude Mythos Preview による防御的サイバーセキュリティの新時代
 - [2026-04-07](2026/2026-04-07-claude-code-v2-1-94.md) - Claude Code v2.1.94 リリース: Mantle 対応、デフォルトエフォートレベル引き上げ、CJK テキスト破損修正

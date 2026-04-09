@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Managed Agents と ant CLI - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            padding-left: 20px;
+        }
+
+        /* Sub-section title */
+        .sub-section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 16px;
+            margin-top: 8px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--anthropic-coral);
+            display: inline-block;
+        }
+
+        .sub-section-title + .feature-grid {
+            margin-top: 4px;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            padding: 6px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card.before ul li::before {
+            content: "\2716 ";
+            color: #DC2626;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .comparison-card.after ul li::before {
+            content: "\2714 ";
+            color: #059669;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stat-sublabel {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 4px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Migration Steps */
+        .migration-steps {
+            display: grid;
+            gap: 16px;
+            counter-reset: step;
+        }
+
+        .migration-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .migration-step-number {
+            width: 36px;
+            height: 36px;
+            background: var(--anthropic-coral);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .migration-step-content h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .migration-step-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Branding Note */
+        .branding-note {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border: 2px solid #F59E0B;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .branding-note strong {
+            color: var(--anthropic-dark);
+        }
+
+        /* Info box */
+        .info-box {
+            background: linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%);
+            border: 2px solid #A78BFA;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .info-box strong {
+            color: var(--anthropic-dark);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .related-links {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(212, 165, 116, 0.3);
+        }
+
+        .footer .related-links ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer .related-links li {
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE API</span>
+                <h1>Claude Managed Agents パブリックベータと ant CLI のローンチ</h1>
+                <p class="date">2026-04-08</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>Managed Agents パブリックベータ</h3>
+                        <p>Claude を自律的なエージェントとして実行するためのフルマネージドハーネス。セキュアなサンドボックス環境、組み込みツール、SSE ストリーミングを備え、開発者がインフラを自前で構築することなくエージェントを運用できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🖥️</div>
+                    <div class="key-point-content">
+                        <h3>ant CLI のリリース</h3>
+                        <p>Claude API を操作するためのコマンドラインクライアント。リソースの操作、レスポンスのフィルタリング、YAML ファイルによる API リソースのバージョン管理、Claude Code とのネイティブ統合を提供します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>組み込みツール群</h3>
+                        <p>Bash、ファイル操作、Web 検索 / フェッチ、MCP サーバーを標準搭載。エージェントに必要なツールがすぐに利用可能です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📡</div>
+                    <div class="key-point-content">
+                        <h3>SSE ストリーミング</h3>
+                        <p>Server-Sent Events によるリアルタイムのイベントストリーミングでエージェントの実行状況をリアルタイムに監視できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔗</div>
+                    <div class="key-point-content">
+                        <h3>相互補完的な 2 つの機能</h3>
+                        <p>ant CLI で Managed Agents のリソースを YAML ファイルとして定義・管理し、バージョン管理システムで追跡。エージェント開発のワークフロー全体をカバーします。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>自前でエージェントループを構築</li>
+                        <li>手動でサンドボックス環境を用意</li>
+                        <li>ツール実行・コンテキスト管理を自力で実装</li>
+                        <li>SDK 経由でのみ API を操作</li>
+                        <li>デバッグにコード記述が必要</li>
+                        <li>API リソースのバージョン管理手段なし</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>Managed Agents がエージェント実行基盤を提供</li>
+                        <li>クラウドコンテナで自動サンドボックス化</li>
+                        <li>組み込みツールとセッション管理を標準搭載</li>
+                        <li>ant CLI でコマンドラインから直接操作</li>
+                        <li>--debug フラグで即座に HTTP 検査</li>
+                        <li>YAML ファイルでリソースをバージョン管理</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features: Managed Agents -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+
+            <div class="sub-section-title">🤖 Managed Agents</div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🤖 Agent</h3>
+                    <p>エージェントの定義を保持するリソース。モデル、システムプロンプト、ツール設定などを構成します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 Environment</h3>
+                    <p>エージェントが実行されるクラウドコンテナ環境。ファイルシステム、ネットワークアクセス、MCP サーバー接続などを定義します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔗 Session</h3>
+                    <p>Agent と Environment の組み合わせで作成されるステートフルな実行セッション。会話の状態が維持されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📡 Events</h3>
+                    <p>セッションに送信されるユーザーメッセージやシステムイベント。SSE ストリーミングでレスポンスを受信します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚀 パフォーマンス最適化</h3>
+                    <p>組み込みのプロンプトキャッシングとコンパクション機能で、長時間実行タスクを効率的に処理します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔬 リサーチプレビュー</h3>
+                    <p>outcomes、multiagent、memory などの先進機能を提供。別途アクセス申請が必要です。</p>
+                </div>
+            </div>
+
+            <div class="sub-section-title" style="margin-top: 28px;">🖥️ ant CLI</div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>💻 マルチプラットフォーム</h3>
+                    <p>Homebrew (macOS)、curl (Linux/WSL)、go install に対応。お好みの環境でインストール可能です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 7 種類の出力フォーマット</h3>
+                    <ul>
+                        <li>auto / json / jsonl</li>
+                        <li>yaml / pretty / raw</li>
+                        <li>explore (TUI)</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 レスポンスフィルタリング</h3>
+                    <p>--transform フラグで GJSON パスによるフィルタリング / 整形。必要なデータだけを抽出できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📁 ファイル参照とバージョン管理</h3>
+                    <p>@path 構文でファイル内容をインライン展開。YAML ファイルでエージェント、環境、デプロイメントを管理します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔌 Claude Code 統合</h3>
+                    <p>Claude Code が ant CLI をネイティブに理解。beta: プレフィックスでベータヘッダーを自動送信します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🐛 デバッグ機能</h3>
+                    <p>--debug フラグで HTTP リクエスト / レスポンスを検査。シェル補完は bash、zsh、fish、PowerShell に対応します。</p>
+                </div>
+            </div>
+
+            <div class="branding-note" style="margin-top: 24px;">
+                <strong>⚠️ ブランディングガイドライン:</strong> 「Claude Agent」は許可されていますが、「Claude Code Agent」は不許可です。
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">統計情報</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">60</div>
+                    <div class="stat-label">作成操作</div>
+                    <div class="stat-sublabel">リクエスト/分/組織</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">600</div>
+                    <div class="stat-label">読み取り操作</div>
+                    <div class="stat-sublabel">リクエスト/分/組織</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">コア概念</div>
+                    <div class="stat-sublabel">Agent / Env / Session / Events</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">出力フォーマット</div>
+                    <div class="stat-sublabel">ant CLI 対応形式</div>
+                </div>
+            </div>
+            <div class="info-box" style="margin-top: 20px;">
+                <strong>ベータヘッダー必須:</strong> 全エンドポイントで <code style="background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px;">managed-agents-2026-04-01</code> ベータヘッダーが必要です。
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">Managed Agents: エージェントの作成と実行</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+# 1. Agent を作成
+agent = client.beta.managed_agents.agents.create(
+    model="claude-opus-4-6-20260205",
+    name="research-agent",
+    instructions="You are a research assistant. Use web search and file operations to gather and organize information.",
+    tools=[
+        {"type": "bash"},
+        {"type": "file_operations"},
+        {"type": "web_search"},
+        {"type": "web_fetch"},
+    ],
+    betas=["managed-agents-2026-04-01"],
+)
+print(f"Agent created: {agent.id}")
+
+# 2. Environment を作成
+environment = client.beta.managed_agents.environments.create(
+    agent_id=agent.id,
+    betas=["managed-agents-2026-04-01"],
+)
+print(f"Environment created: {environment.id}")
+
+# 3. Session を開始
+session = client.beta.managed_agents.sessions.create(
+    agent_id=agent.id,
+    environment_id=environment.id,
+    betas=["managed-agents-2026-04-01"],
+)
+print(f"Session started: {session.id}")
+
+# 4. Events を送信して SSE でレスポンスを受信
+with client.beta.managed_agents.sessions.events.stream(
+    session_id=session.id,
+    agent_id=agent.id,
+    messages=[{"role": "user", "content": "Search for the latest AI safety research papers and summarize the key findings."}],
+    betas=["managed-agents-2026-04-01"],
+) as stream:
+    for event in stream:
+        if hasattr(event, "type"):
+            print(f"[{event.type}] ", end="")
+        if hasattr(event, "text"):
+            print(event.text, end="", flush=True)</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ant CLI: インストールと基本操作</span>
+                </div>
+                <pre><code class="language-bash"># macOS - Homebrew でインストール
+brew install anthropic/tap/ant
+
+# Linux/WSL - curl でインストール
+curl -fsSL https://cli.anthropic.com/install.sh | sh
+
+# Go でインストール
+go install github.com/anthropics/ant-cli@latest
+
+# 認証設定
+export ANTHROPIC_API_KEY="sk-ant-..."
+
+# シェル補完の有効化 (zsh の例)
+ant completion zsh > "${fpath[1]}/_ant"
+
+# モデル一覧を取得
+ant models list
+
+# メッセージ送信
+ant messages create --model claude-opus-4-6-20260205 --max-tokens 1024 \
+  --messages '[{"role": "user", "content": "Hello, Claude"}]'
+
+# JSON 出力で特定フィールドを抽出
+ant messages create --model claude-opus-4-6-20260205 --max-tokens 1024 \
+  --messages '[{"role": "user", "content": "Hello"}]' \
+  --output json --transform "content.0.text"
+
+# ファイル内容をインライン展開して送信
+ant messages create --model claude-opus-4-6-20260205 --max-tokens 4096 \
+  --messages '[{"role": "user", "content": "Review this code: @src/main.py"}]'
+
+# ベータリソース (Managed Agents) の操作
+ant beta:managed-agents:agents list
+ant beta:managed-agents:agents create --from agent.yaml
+
+# デバッグモード (HTTP リクエスト/レスポンスを表示)
+ant messages create --model claude-opus-4-6-20260205 --max-tokens 256 \
+  --messages '[{"role": "user", "content": "Test"}]' --debug</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">YAML</span>
+                    <span class="code-title">ant CLI: リソース定義の YAML ファイル例</span>
+                </div>
+                <pre><code class="language-yaml"># agent.yaml - エージェント定義
+name: research-agent
+model: claude-opus-4-6-20260205
+instructions: |
+  You are a research assistant.
+  Use web search and file operations to gather and organize information.
+tools:
+  - type: bash
+  - type: file_operations
+  - type: web_search
+  - type: web_fetch</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <div class="mermaid-container">
+                <h4>Managed Agents のワークフロー</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Developer["👤 開発者"]
+        App["📱 アプリケーション"]
+        CLI["🖥️ ant CLI"]
+    end
+
+    subgraph Platform["🏢 Claude Platform"]
+        subgraph AgentAPI["🔌 Managed Agents API"]
+            direction LR
+            AgentRes["🤖 Agent<br/>モデル / ツール / 指示"]
+            EnvRes["📦 Environment<br/>コンテナ設定"]
+            SessionRes["🔗 Session<br/>Agent + Environment"]
+            AgentRes ~~~ EnvRes ~~~ SessionRes
+        end
+
+        subgraph Runtime["⚙️ エージェントランタイム"]
+            Sandbox["🔒 セキュアサンドボックス<br/>クラウドコンテナ"]
+            SSE["📡 SSE ストリーミング"]
+        end
+
+        subgraph Tools["🔧 組み込みツール"]
+            direction LR
+            BashTool["💻 Bash"]
+            FileTool["📁 ファイル操作"]
+            WebTool["🌐 Web 検索 / フェッチ"]
+            MCPTool["🔌 MCP サーバー"]
+            BashTool ~~~ FileTool ~~~ WebTool ~~~ MCPTool
+        end
+
+        subgraph Optimization["🚀 最適化"]
+            direction LR
+            Cache["💾 プロンプト<br/>キャッシング"]
+            Compact["📐 コンパクション"]
+            Cache ~~~ Compact
+        end
+
+        subgraph Models["🤖 Claude モデル"]
+            direction LR
+            Opus["⭐ Opus 4.6"]
+            Sonnet["🎵 Sonnet 4.6"]
+            Opus ~~~ Sonnet
+        end
+    end
+
+    App -->|"API リクエスト<br/>beta: managed-agents-2026-04-01"| AgentAPI
+    CLI -->|"ant beta:managed-agents:..."| AgentAPI
+    AgentAPI --> Runtime
+    Runtime --> Tools
+    Runtime --> Optimization
+    Runtime --> Models
+    Sandbox -.->|"Events"| SSE
+    SSE -.->|"ストリーミング応答"| App
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef api fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef runtime fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef tool fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef model fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef optimization fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class Developer platform
+    class App,CLI user
+    class Platform platform
+    class AgentAPI platform
+    class AgentRes,EnvRes,SessionRes api
+    class Runtime platform
+    class Sandbox,SSE runtime
+    class Tools platform
+    class BashTool,FileTool,WebTool,MCPTool tool
+    class Optimization platform
+    class Cache,Compact optimization
+    class Models platform
+    class Opus,Sonnet model
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h4>ant CLI のコマンドフロー</h4>
+                <pre class="mermaid">
+sequenceDiagram
+    participant U as 👤 開発者
+    participant CLI as 🖥️ ant CLI
+    participant API as 🔌 Claude API
+    participant MA as 🤖 Managed Agents
+
+    U->>CLI: ant beta:managed-agents:agents create --from agent.yaml
+    CLI->>API: POST /v1/agents<br/>beta: managed-agents-2026-04-01
+    API-->>CLI: Agent ID
+    CLI-->>U: Agent created
+
+    U->>CLI: ant beta:managed-agents:environments create
+    CLI->>API: POST /v1/environments
+    API-->>CLI: Environment ID
+    CLI-->>U: Environment created
+
+    U->>CLI: ant beta:managed-agents:sessions create
+    CLI->>API: POST /v1/sessions
+    API-->>CLI: Session ID
+    CLI-->>U: Session started
+
+    U->>CLI: ant beta:managed-agents:sessions events stream
+    CLI->>API: POST /v1/sessions/{id}/events
+    API->>MA: Execute agent
+    MA-->>API: SSE events
+    API-->>CLI: Stream response
+    CLI-->>U: Real-time output
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🔬 自律型リサーチエージェント</h4>
+                <p>Managed Agents の Web 検索、ファイル操作、Bash ツールを組み合わせて、情報収集から分析・レポート作成までを自動化。セッション管理により複数のステップにまたがるリサーチタスクを継続的に実行できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔄 CI/CD パイプラインへの統合</h4>
+                <p>ant CLI と YAML ファイルによるリソース定義で、エージェントの構成をコードとして管理。Git でバージョン管理し、CI/CD パイプラインから ant CLI でデプロイメントを自動化できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>💻 開発ワークフローの効率化</h4>
+                <p>ant CLI の explore モード (TUI) でレスポンスをインタラクティブに閲覧、--transform でフィルタリング、--debug で HTTP 通信を検査。Claude Code との統合により、開発中の API 操作をシームレスに行えます。</p>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+            <div class="migration-steps">
+                <div class="migration-step">
+                    <div class="migration-step-number">1</div>
+                    <div class="migration-step-content">
+                        <h4>ant CLI をインストール</h4>
+                        <p>まず ant CLI を導入し、API リソースの操作に慣れましょう。シェル補完を有効化して生産性を向上させます。</p>
+                    </div>
+                </div>
+                <div class="migration-step">
+                    <div class="migration-step-number">2</div>
+                    <div class="migration-step-content">
+                        <h4>小規模なエージェントタスクで試行</h4>
+                        <p>小規模なエージェントタスクで Managed Agents を試行し、既存実装との性能・挙動を比較します。</p>
+                    </div>
+                </div>
+                <div class="migration-step">
+                    <div class="migration-step-number">3</div>
+                    <div class="migration-step-content">
+                        <h4>本番ワークロードの移行計画を策定</h4>
+                        <p>検証結果を踏まえ、本番ワークロードの移行計画を策定。Messages API を直接使用する既存のステートレスなアプリケーションは変更不要です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <div class="related-links">
+                <p><strong>関連リンク:</strong></p>
+                <ul>
+                    <li><a href="https://platform.claude.com/docs/en/managed-agents/overview" target="_blank" rel="noopener noreferrer">Managed Agents Overview</a></li>
+                    <li><a href="https://platform.claude.com/docs/en/api/sdks/cli" target="_blank" rel="noopener noreferrer">ant CLI Reference</a></li>
+                    <li><a href="https://platform.claude.com/docs/en/api/client-sdks" target="_blank" rel="noopener noreferrer">Client SDKs</a></li>
+                    <li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview" target="_blank" rel="noopener noreferrer">Tool Use</a></li>
+                    <li><a href="https://platform.claude.com/docs/en/agents-and-tools/mcp-connector" target="_blank" rel="noopener noreferrer">MCP Connector</a></li>
+                </ul>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/yaml.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
