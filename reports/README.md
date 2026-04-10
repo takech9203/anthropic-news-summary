@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-04-10](2026/2026-04-10-claude-code-v2-1-98.md) - Claude Code v2.1.98 リリース: 57 項目の大規模アップデート、14 件のセキュリティ修正と Google Vertex AI セットアップウィザード
+- [2026-04-09](2026/2026-04-09-healthcare-life-sciences.md) - Anthropic がヘルスケアとライフサイエンス向け Claude を発表 -- HIPAA 対応インフラと臨床試験・規制申請ツールを拡充
+- [2026-04-09](2026/2026-04-09-advisor-tool.md) - Claude API 新機能: Advisor Tool (パブリックベータ) -- エグゼキューターモデルにアドバイザーモデルの知性を融合
 - [2026-04-08](2026/2026-04-08-claude-managed-agents-ant-cli.md) - Claude Managed Agents パブリックベータと ant CLI のローンチ
 - [2026-04-08](2026/2026-04-08-claude-code-v2-1-97.md) - Claude Code v2.1.97 リリース: フォーカスビュー、権限強化、NO_FLICKER 改善
 - [2026-04-08](2026/2026-04-08-claude-code-v2-1-96.md) - Claude Code v2.1.96 リリース: Bedrock 認証の緊急修正 (ホットフィックス)
