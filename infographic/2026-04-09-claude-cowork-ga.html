@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Cowork GA - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 4px 0;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li::before {
+            margin-right: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '\2717';
+            color: #DC2626;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '\2713';
+            color: #059669;
+        }
+
+        /* Model Table */
+        .model-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        .model-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .model-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        .model-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        .model-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+            font-size: 14px;
+        }
+
+        .model-table tr:nth-child(even) {
+            background: var(--anthropic-cream);
+        }
+
+        .model-table code {
+            background: rgba(212, 165, 116, 0.15);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 32px;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--anthropic-coral), #34D399);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 72px;
+            margin-bottom: 32px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 20px;
+            top: 4px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            z-index: 1;
+        }
+
+        .timeline-dot.preview {
+            background: #FFF3E0;
+            border: 3px solid #FF9800;
+        }
+
+        .timeline-dot.milestone {
+            background: #E8F1FF;
+            border: 3px solid #4A90E2;
+        }
+
+        .timeline-dot.ga {
+            background: #D1FAE5;
+            border: 3px solid #34D399;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .timeline-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .timeline-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Steps */
+        .steps {
+            display: grid;
+            gap: 16px;
+            counter-reset: step;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: var(--anthropic-coral);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .step-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Target Audience */
+        .audience-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .audience-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .audience-list li:last-child {
+            border-bottom: none;
+        }
+
+        .audience-list li .audience-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .diagram-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        /* Analytics Detail */
+        .detail-block {
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .detail-block h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-block ul {
+            padding-left: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .detail-block ul li {
+            padding: 3px 0;
+        }
+
+        .detail-block p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Summary */
+        .summary-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .summary-text p {
+            margin-bottom: 12px;
+        }
+
+        .summary-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .links {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .footer .links a {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.15);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                left: 24px;
+            }
+
+            .timeline-dot {
+                left: 12px;
+            }
+
+            .timeline-item {
+                padding-left: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">プロダクトアップデート</span>
+                <h1>Claude Cowork が一般提供 (GA) に</h1>
+                <p class="date">2026-04-09</p>
+                <p class="subtitle">macOS / Windows 対応と新しいエンタープライズ機能 -- Analytics API、使用分析ダッシュボード、OpenTelemetry サポートが追加</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x2705;</div>
+                    <div class="key-point-content">
+                        <h3>GA リリース</h3>
+                        <p>リサーチプレビューから一般提供 (GA) に移行。Claude Desktop アプリを通じて macOS と Windows の両方で利用可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4CA;</div>
+                    <div class="key-point-content">
+                        <h3>Analytics API</h3>
+                        <p>Cowork のエンゲージメントと採用データにプログラムでアクセス可能。BI ツールやダッシュボードへの統合が可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4C8;</div>
+                    <div class="key-point-content">
+                        <h3>使用分析ダッシュボード</h3>
+                        <p>Team / Enterprise プラン向けに組織全体の利用動向、ユーザーごとの使用状況、タスクの種類と完了率を可視化</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F50D;</div>
+                    <div class="key-point-content">
+                        <h3>OpenTelemetry サポート</h3>
+                        <p>既存の監視インフラストラクチャと統合し、Cowork のパフォーマンスや動作状況をリアルタイムに追跡可能</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Research Preview</h4>
+                    <ul>
+                        <li>macOS のみ対応</li>
+                        <li>管理ツールなし</li>
+                        <li>利用状況の可視化なし</li>
+                        <li>監視インフラ統合なし</li>
+                        <li>エンゲージメントデータ取得不可</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>GA</h4>
+                    <ul>
+                        <li>macOS + Windows 対応</li>
+                        <li>Analytics API でデータ取得</li>
+                        <li>使用分析ダッシュボード提供</li>
+                        <li>OpenTelemetry による監視</li>
+                        <li>エンタープライズ管理基盤の整備</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x1F310; Cowork GA リリース</h3>
+                    <p>リサーチプレビューから一般提供に移行。Claude Desktop アプリを通じて macOS と Windows の両方で利用可能になりました</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4CA; Analytics API</h3>
+                    <p>Cowork のエンゲージメントと採用データにプログラムでアクセス。組織内の利用状況をダッシュボードやレポートに統合可能</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4C8; 使用分析ダッシュボード</h3>
+                    <p>Team / Enterprise プラン向けに、組織全体の利用動向、ユーザーごとの使用状況、タスクの種類と完了率を可視化</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F50D; OpenTelemetry</h3>
+                    <p>Datadog、Grafana、New Relic などの既存の監視プラットフォームと統合し、Cowork のパフォーマンスをリアルタイム追跡</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px;">プラットフォーム対応状況</h3>
+            <table class="model-table">
+                <thead>
+                    <tr>
+                        <th>プラットフォーム</th>
+                        <th>ステータス</th>
+                        <th>備考</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>macOS</td>
+                        <td>GA</td>
+                        <td>Claude Desktop アプリ経由</td>
+                    </tr>
+                    <tr>
+                        <td>Windows</td>
+                        <td>GA (新規)</td>
+                        <td>Claude Desktop アプリ経由</td>
+                    </tr>
+                    <tr>
+                        <td>iOS / Android</td>
+                        <td>モバイルコントロール</td>
+                        <td>永続スレッドでタスク管理</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-top: 24px; margin-bottom: 12px;">エンタープライズ機能の概要</h3>
+            <table class="model-table">
+                <thead>
+                    <tr>
+                        <th>機能</th>
+                        <th>対象プラン</th>
+                        <th>用途</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Analytics API</td>
+                        <td>Enterprise</td>
+                        <td>エンゲージメントデータの取得</td>
+                    </tr>
+                    <tr>
+                        <td>使用分析ダッシュボード</td>
+                        <td>Team / Enterprise</td>
+                        <td>使用状況の可視化</td>
+                    </tr>
+                    <tr>
+                        <td>OpenTelemetry サポート</td>
+                        <td>Enterprise</td>
+                        <td>アクティビティ監視</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 24px;">
+                <div class="detail-block">
+                    <h4>&#x1F4CA; Analytics API</h4>
+                    <p>Analytics API により、Cowork のエンゲージメントと採用データをプログラムで取得できます。組織の管理者は、以下のようなデータにアクセス可能です。</p>
+                    <ul>
+                        <li>ユーザーごとの Cowork 利用頻度</li>
+                        <li>タスクの種類別の実行回数</li>
+                        <li>組織全体の採用率と利用トレンド</li>
+                    </ul>
+                    <p style="margin-top: 8px;">このデータを社内の BI ツールやダッシュボードに統合することで、Cowork の導入効果を定量的に評価できます。</p>
+                </div>
+                <div class="detail-block">
+                    <h4>&#x1F50D; OpenTelemetry サポート</h4>
+                    <p>OpenTelemetry によるアクティビティ監視では、Cowork のエージェント動作に関するテレメトリデータを標準的なフォーマットで出力します。Datadog、Grafana、New Relic などの既存の監視プラットフォームと統合することで、以下の監視が可能になります。</p>
+                    <ul>
+                        <li>エージェントの実行時間とパフォーマンス</li>
+                        <li>ツール選択の分布 (コネクタ、ブラウザ、Computer Use)</li>
+                        <li>エラー発生率とリトライ回数</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <div class="diagram-title">Claude Cowork GA の全体構成</div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Clients["📱 クライアント"]
+        direction LR
+        MacOS["🍎 macOS<br/>Claude Desktop"]
+        Windows["🪟 Windows<br/>Claude Desktop"]
+        Mobile["📱 iOS / Android<br/>モバイルコントロール"]
+        MacOS ~~~ Windows ~~~ Mobile
+    end
+
+    subgraph CoworkEngine["🤖 Cowork エージェント"]
+        direction LR
+        Connectors["🔌 コネクタ"]
+        Browser["🌐 ブラウザ"]
+        ComputerUse["🖥️ Computer Use"]
+        Dispatch["🚀 Dispatch"]
+        Connectors ~~~ Browser ~~~ ComputerUse ~~~ Dispatch
+    end
+
+    subgraph Enterprise["🏢 エンタープライズ管理"]
+        direction LR
+        Analytics["📊 Analytics API<br/>エンゲージメントデータ"]
+        Dashboard["📈 使用分析<br/>ダッシュボード"]
+        OTel["🔍 OpenTelemetry<br/>アクティビティ監視"]
+        Analytics ~~~ Dashboard ~~~ OTel
+    end
+
+    Clients --> CoworkEngine
+    CoworkEngine --> Enterprise
+
+    classDef clients fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef engine fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef enterprise fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class Clients clients
+    class CoworkEngine engine
+    class Enterprise enterprise
+                </pre>
+            </div>
+
+            <div class="diagram-title" style="margin-top: 32px;">リサーチプレビューから GA への進化</div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    RP(["🔬 リサーチプレビュー<br/>2026 年 3 月"]) --> MC["📱 モバイルコントロール<br/>3 月 17 日"]
+    MC --> CU["🖥️ Computer Use 統合<br/>3 月 23 日"]
+    CU --> GA(["✅ GA リリース<br/>4 月 9 日"])
+
+    subgraph GAFeatures["🆕 GA で追加された機能"]
+        direction LR
+        Win["🪟 Windows 対応"]
+        API["📊 Analytics API"]
+        Dash["📈 使用分析"]
+        OTel["🔍 OpenTelemetry"]
+        Win ~~~ API ~~~ Dash ~~~ OTel
+    end
+
+    GA --> GAFeatures
+
+    classDef preview fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef milestone fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef ga fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef features fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class RP preview
+    class MC,CU milestone
+    class GA ga
+    class GAFeatures features
+                </pre>
+            </div>
+        </section>
+
+        <!-- Timeline -->
+        <section class="section">
+            <h2 class="section-title">タイムライン</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot preview">&#x1F52C;</div>
+                    <div class="timeline-date">2026 年 3 月</div>
+                    <div class="timeline-title">リサーチプレビュー開始</div>
+                    <div class="timeline-desc">Claude Cowork がリサーチプレビューとして公開。当初は macOS のみ対応。コネクタ、ブラウザ操作、Dispatch 機能を搭載</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot milestone">&#x1F4F1;</div>
+                    <div class="timeline-date">2026 年 3 月 17 日</div>
+                    <div class="timeline-title">モバイルコントロール追加</div>
+                    <div class="timeline-desc">スマートフォンからタスクを割り当て、永続スレッドでマルチデバイス対応を実現</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot milestone">&#x1F5A5;</div>
+                    <div class="timeline-date">2026 年 3 月 23 日</div>
+                    <div class="timeline-title">Computer Use 統合</div>
+                    <div class="timeline-desc">画面操作機能が Cowork に統合。Claude がデスクトップを直接操作してタスクを実行可能に</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot ga">&#x2705;</div>
+                    <div class="timeline-date">2026 年 4 月 9 日</div>
+                    <div class="timeline-title">GA リリース</div>
+                    <div class="timeline-desc">一般提供に移行。Windows 対応、Analytics API、使用分析ダッシュボード、OpenTelemetry サポートが追加</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px;">対象</h3>
+            <ul class="audience-list">
+                <li>
+                    <span class="audience-icon">&#x1F4BB;</span>
+                    <span>Claude Desktop アプリを macOS または Windows で利用しているユーザー</span>
+                </li>
+                <li>
+                    <span class="audience-icon">&#x1F52C;</span>
+                    <span>Cowork をリサーチプレビューで利用していたユーザー</span>
+                </li>
+                <li>
+                    <span class="audience-icon">&#x1F3E2;</span>
+                    <span>Team / Enterprise プランで組織的に Claude を導入している管理者</span>
+                </li>
+                <li>
+                    <span class="audience-icon">&#x1F527;</span>
+                    <span>既存の監視インフラストラクチャに Claude の利用状況を統合したいエンジニア</span>
+                </li>
+            </ul>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-top: 24px; margin-bottom: 16px;">必要なアクション</h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Claude Desktop アプリの更新</h4>
+                        <p>macOS または Windows の Claude Desktop アプリを最新バージョンに更新してください</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Windows ユーザー</h4>
+                        <p>新たに Windows 版の Claude Desktop アプリで Cowork が利用可能です。最新版をインストールしてください</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Team / Enterprise 管理者</h4>
+                        <p>使用分析ダッシュボードから組織内の Cowork 利用状況を確認できます</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Analytics API の利用</h4>
+                        <p>Enterprise プランの管理者は Analytics API を通じて Cowork のエンゲージメントデータをプログラムで取得可能です</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>OpenTelemetry の設定</h4>
+                        <p>既存の監視プラットフォームと統合する場合は、OpenTelemetry のセットアップドキュメントを参照してください</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-text">
+                <p>Claude Cowork がリサーチプレビューを経て一般提供 (GA) となりました。2026 年 3 月のリサーチプレビュー開始から約 1 か月での GA 移行であり、その間にモバイルコントロール、Computer Use 統合、Windows 対応と、急速に機能が拡充されてきました。</p>
+                <p>今回の GA リリースで最も注目すべき点は、エンタープライズ向け機能の充実です。Analytics API によるエンゲージメントデータの取得、Team / Enterprise プラン向けの使用分析ダッシュボード、OpenTelemetry によるアクティビティ監視の 3 つが追加されたことで、組織的な導入と運用管理の基盤が整いました。これらの機能により、管理者は Cowork の利用状況を定量的に把握し、既存の監視インフラストラクチャと統合して運用できるようになります。</p>
+                <p>また、Windows 対応の追加により、macOS に限定されていた利用環境が大幅に拡大しました。Windows ユーザーも Claude Desktop アプリを通じて Cowork のすべての機能を利用できるようになります。</p>
+                <p>Cowork は、コネクタ、ブラウザ操作、Computer Use の 3 層構造によるインテリジェントなツール選択、Dispatch によるリモートタスク管理、永続スレッドによるマルチデバイス対応など、包括的なエージェント環境として成熟しつつあります。GA リリースとエンタープライズ機能の追加により、個人利用だけでなく組織レベルでの本格的な導入が進むことが期待されます。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Source: Claude Apps Release Notes (2026-04-09)</p>
+            <div class="links">
+                <a href="https://support.claude.com/en/articles/12138966-release-notes">Release Notes</a>
+                <a href="https://support.claude.com/en/articles/claude-enterprise-analytics-api">Analytics API</a>
+                <a href="https://support.claude.com/en/articles/view-usage-analytics">Usage Analytics</a>
+                <a href="https://support.claude.com/en/articles/monitor-claude-cowork-otel">OpenTelemetry</a>
+                <a href="https://www.anthropic.com/news/computer-use-cowork-dispatch">Cowork Blog Post</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574'
+            }
+        });
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
