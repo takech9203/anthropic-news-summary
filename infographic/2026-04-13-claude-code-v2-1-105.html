@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.105 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content { position: relative; z-index: 1; }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date { font-size: 14px; opacity: 0.8; }
+
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        /* Key Points */
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        /* Bug Fix List */
+        .bugfix-category {
+            margin-bottom: 20px;
+        }
+
+        .bugfix-category h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bugfix-category h3 .count-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .bugfix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bugfix-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 8px 0 8px 24px;
+            position: relative;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            line-height: 1.6;
+        }
+
+        .bugfix-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 13px;
+            padding: 4px 0;
+            line-height: 1.5;
+        }
+
+        .comparison-card.before ul li::before { content: '✗ '; color: #DC2626; font-weight: 700; }
+        .comparison-card.after ul li::before { content: '✓ '; color: #059669; font-weight: 700; }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid { display: flex; justify-content: center; }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title { color: #a0a0b0; font-size: 12px; }
+
+        .code-block pre { margin: 0; padding: 0; }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Improvement Cards */
+        .improvement-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .improvement-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .improvement-item .imp-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .improvement-item .imp-content h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+        .improvement-item .imp-content p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover { text-decoration: underline; }
+
+        .footer .related-links {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .footer .related-links a {
+            display: inline-block;
+            margin-right: 16px;
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .comparison { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code Update</span>
+                <h1>Claude Code v2.1.105 リリース<br>プラグインモニター、PreCompact フック、ストリーム安定性改善</h1>
+                <p class="date">2026-04-13</p>
+                <span class="version-badge">v2.1.101 → v2.1.105</span>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">37</div>
+                    <div class="stat-label">変更項目</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📡</div>
+                    <div class="key-point-content">
+                        <h3>プラグインバックグラウンドモニター</h3>
+                        <p>プラグインマニフェストの <code>monitors</code> キーで、セッション開始時に自動アームされるバックグラウンド監視機能を定義可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>PreCompact フックで圧縮制御</h3>
+                        <p>フックが終了コード 2 または <code>{"decision":"block"}</code> を返すことで、会話コンテキストのコンパクションをブロック可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌊</div>
+                    <div class="key-point-content">
+                        <h3>API ストリームのストール検出</h3>
+                        <p>5 分間データなしのストリームを自動中断し、ノンストリーミングでリトライ。無限ハングを防止</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔍</div>
+                    <div class="key-point-content">
+                        <h3>WebFetch コンテンツ最適化</h3>
+                        <p><code>&lt;style&gt;</code> / <code>&lt;script&gt;</code> タグの除去で、CSS 過多ページでも本文テキストを優先取得</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📂</div>
+                    <div class="key-point-content">
+                        <h3>EnterWorktree path パラメータ</h3>
+                        <p>既存ワークツリーへの直接切り替えが可能に。ワークツリー間の移動が効率化</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">✨ 新機能 4 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📂 EnterWorktree path</h3>
+                    <p>既存のワークツリーに直接切り替えるための <code>path</code> パラメータを <code>EnterWorktree</code> ツールに追加。新規作成だけでなく既存への切り替えも可能に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔧 PreCompact フック</h3>
+                    <p>コンパクション実行前にフックを呼び出し、終了コード 2 または JSON レスポンスでブロック可能。重要なコンテキストの保持を保証</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📡 バックグラウンドモニター</h3>
+                    <p>プラグインマニフェストにトップレベル <code>monitors</code> キーを追加。セッション開始時に自動アームされ、継続的な監視タスクを実行</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 /proactive エイリアス</h3>
+                    <p><code>/proactive</code> が <code>/loop</code> のエイリアスとして追加。定期実行コマンドをより直感的な名前で呼び出し可能に</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After: Stream Handling -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>API ストリームがデータ停止で無限ハング</li>
+                        <li>接続エラー時にサイレントスピナーが回り続ける</li>
+                        <li>WebFetch が CSS/JS でバジェット枯渇</li>
+                        <li>MCP 不正出力でセッション全体がハング</li>
+                        <li>429 エラーが生の JSON ダンプで表示</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>5 分のストール検出で自動リトライ</li>
+                        <li>リトライメッセージが即座に表示</li>
+                        <li>style/script 除去で本文を優先取得</li>
+                        <li>MCP フェイルファストで即座にエラー通知</li>
+                        <li>クリーンなエラーメッセージを表示</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <h2 class="section-title">📈 改善 9 件</h2>
+            <div class="improvement-grid">
+                <div class="improvement-item">
+                    <span class="imp-icon">🌊</span>
+                    <div class="imp-content">
+                        <h4>API ストリームのストール検出</h4>
+                        <p>5 分間データ受信なしのストリームを自動中断。ノンストリーミングモードでリトライし、無限ハングを防止</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">🌐</span>
+                    <div class="imp-content">
+                        <h4>ネットワークエラーメッセージ改善</h4>
+                        <p>接続エラー時にサイレントスピナーではなく、リトライメッセージを即座に表示</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">📄</span>
+                    <div class="imp-content">
+                        <h4>ファイル書き込み表示改善</h4>
+                        <p>長い 1 行書き込み (圧縮 JSON 等) が UI でトランケーション。多数ページのスクロールが不要に</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">🩺</span>
+                    <div class="imp-content">
+                        <h4>/doctor レイアウト改善</h4>
+                        <p>ステータスアイコン追加。<code>f</code> キーで報告された問題を Claude に修正させることが可能に</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">⚙️</span>
+                    <div class="imp-content">
+                        <h4>/config ラベル・説明改善</h4>
+                        <p>設定画面のラベルと説明文がより明確に</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">📝</span>
+                    <div class="imp-content">
+                        <h4>スキル説明文の上限引き上げ</h4>
+                        <p>リスティング文字数上限を 250 → 1,536 文字に拡大。トランケーション時には起動時警告を表示</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">🔍</span>
+                    <div class="imp-content">
+                        <h4>WebFetch コンテンツ最適化</h4>
+                        <p><code>&lt;style&gt;</code> / <code>&lt;script&gt;</code> タグ内容を除去。CSS 過多ページのコンテンツバジェット問題を解消</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">🧹</span>
+                    <div class="imp-content">
+                        <h4>古いワークツリーのクリーンアップ改善</h4>
+                        <p>PR がスカッシュマージされたワークツリーを適切にクリーンアップ。無期限保持を防止</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">📋</span>
+                    <div class="imp-content">
+                        <h4>MCP 大容量出力のトランケーション改善</h4>
+                        <p>フォーマット別レシピを提供: JSON は <code>jq</code>、テキストは計算された Read チャンクサイズ</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">🐛 バグ修正 24 件</h2>
+
+            <div class="bugfix-category">
+                <h3>🖥️ UI/UX <span class="count-badge">7</span></h3>
+                <ul class="bugfix-list">
+                    <li>キューメッセージに添付された画像がドロップされる問題</li>
+                    <li>長い会話でプロンプト入力が 2 行目に折り返される際の画面空白</li>
+                    <li>フルスクリーンモードでの先頭空白コピーの問題</li>
+                    <li>アシスタントメッセージの先頭空白トリミングで ASCII アート崩壊</li>
+                    <li>Python rich/loguru ロギングによる Bash 出力の文字化け</li>
+                    <li>alt+enter / Ctrl+J の改行挿入が機能しない問題 (v2.1.100 リグレッション)</li>
+                    <li>短いターミナル高さで /help のタブバーとフッターが非表示</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>📂 ワークツリー・セッション <span class="count-badge">3</span></h3>
+                <ul class="bugfix-list">
+                    <li>EnterWorktree/ExitWorktree の "Creating worktree" テキスト重複</li>
+                    <li>フォーカスモードでキューメッセージが消失</li>
+                    <li>/resume, --worktree, /branch 後に終了ヒントが非表示</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>🔌 MCP・プラグイン <span class="count-badge">5</span></h3>
+                <ul class="bugfix-list">
+                    <li>stdio MCP サーバーの不正出力でセッションがハング → フェイルファスト化</li>
+                    <li>ヘッドレスセッション初回ターンで MCP ツールが利用不可</li>
+                    <li>マーケットプレイスプラグインの依存関係が自動インストールされない</li>
+                    <li>マーケットプレイス自動更新でプラグインが壊れた状態に</li>
+                    <li>keybindings.json の不正エントリがサイレントにロードされる</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>🔑 API・認証 <span class="count-badge">4</span></h3>
+                <ul class="bugfix-list">
+                    <li>429 レートリミットエラーが生の JSON ダンプで表示</li>
+                    <li>Bedrock 非 US リージョンで無効な us.* モデル ID が settings.json に保存</li>
+                    <li>不正テキストブロックを含むセッション再開時のクラッシュ</li>
+                    <li>1 プロジェクトの CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC が全プロジェクトに影響</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>📨 スケジュール・通知 <span class="count-badge">2</span></h3>
+                <ul class="bugfix-list">
+                    <li>ワンショットスケジュールタスクが繰り返し再実行</li>
+                    <li>Team/Enterprise チャネル通知が最初のメッセージ以降ドロップ</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>🔧 その他 <span class="count-badge">3</span></h3>
+                <ul class="bugfix-list">
+                    <li>フィードバック調査ショートカットキーがプロンプト末尾で誤発火</li>
+                    <li>SSH/mosh 環境の 16 色パレットが色あせ (Ghostty, Kitty, Alacritty, WezTerm 等)</li>
+                    <li>Bash ツールが acceptEdits 権限モードを不適切に提案</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <h3 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--text-secondary);">v2.1.105 変更点の全体像</h3>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["🖥️ Claude Code v2.1.105 - 37 項目"]
+        subgraph NewFeatures["✨ 新機能 4 件"]
+            direction LR
+            Worktree["📂 EnterWorktree<br/>path パラメータ"]
+            PreCompact["🔧 PreCompact<br/>フック"]
+            Monitor["📡 プラグイン<br/>バックグラウンドモニター"]
+            Proactive["🔄 /proactive<br/>エイリアス"]
+            Worktree ~~~ PreCompact ~~~ Monitor ~~~ Proactive
+        end
+
+        subgraph Improvements["📈 改善 9 件"]
+            direction LR
+            Stream["🌊 API ストリーム<br/>ストール検出"]
+            Network["🌐 ネットワーク<br/>エラー表示改善"]
+            WebFetchN["🔍 WebFetch<br/>コンテンツ最適化"]
+            MCPTrunc["📋 MCP トランケーション<br/>レシピ"]
+            Stream ~~~ Network ~~~ WebFetchN ~~~ MCPTrunc
+        end
+
+        subgraph BugFixes["🐛 バグ修正 24 件"]
+            direction LR
+            UIFix["🖥️ UI/UX<br/>7 件"]
+            MCPFix["🔌 MCP・プラグイン<br/>5 件"]
+            APIFix["🔑 API・認証<br/>4 件"]
+            OtherFix["🔧 その他<br/>8 件"]
+            UIFix ~~~ MCPFix ~~~ APIFix ~~~ OtherFix
+        end
+    end
+
+    User(["👤 ユーザー"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef change fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class NewFeatures,Improvements,BugFixes layer
+    class Worktree,PreCompact,Monitor,Proactive feature
+    class Stream,Network,WebFetchN,MCPTrunc change
+    class UIFix,MCPFix,APIFix,OtherFix fix
+    class User user
+                </pre>
+            </div>
+
+            <h3 style="font-size: 0.95rem; margin: 24px 0 12px; color: var(--text-secondary);">API ストリームのストール検出フロー</h3>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant CC as 🖥️ Claude Code
+    participant API as 🌐 API Server
+
+    CC->>API: ストリーミングリクエスト
+    API-->>CC: データチャンク
+    API-->>CC: データチャンク
+    Note over CC,API: データ停止
+
+    Note over CC: 5 分間データなし
+    CC->>CC: ストリームを中断
+    CC->>API: ノンストリーミングリクエスト
+    API-->>CC: 完全なレスポンス
+    Note over CC: 正常に処理を継続
+                </pre>
+            </div>
+
+            <h3 style="font-size: 0.95rem; margin: 24px 0 12px; color: var(--text-secondary);">プラグインバックグラウンドモニターのライフサイクル</h3>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph Lifecycle["📡 モニターライフサイクル"]
+        direction LR
+        Start["🚀 セッション開始<br/>またはスキル呼び出し"] --> Arm["⚡ モニター<br/>自動アーム"]
+        Arm --> Run["🔄 バックグラウンド<br/>監視実行"]
+        Run --> Action["📋 アクション<br/>トリガー"]
+    end
+
+    subgraph Manifest["📄 プラグインマニフェスト"]
+        direction LR
+        Key["🔑 monitors<br/>キー定義"]
+    end
+
+    Manifest --> Start
+
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Lifecycle,Manifest layer
+    class Start,Arm,Run,Action process
+    class Key input
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">PreCompact フックの設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /path/to/pre-compact-check.sh"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">PreCompact チェックスクリプト</span>
+                </div>
+                <pre><code class="language-bash">#!/bin/bash
+# pre-compact-check.sh
+# コンパクション前に重要なコンテキストの有無をチェック
+
+if [ -f ".no-compact" ]; then
+  echo '{"decision":"block"}'
+  exit 0
+fi
+
+# コンパクションを許可
+exit 0</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">プラグインバックグラウンドモニター定義</span>
+                </div>
+                <pre><code class="language-json">{
+  "name": "my-plugin",
+  "monitors": {
+    "my-monitor": {
+      "description": "バックグラウンドで状態を監視"
+    }
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases / Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <div class="use-case">
+                <h4>🔌 プラグイン開発者</h4>
+                <p>バックグラウンドモニターサポートにより、セッション中の継続的な監視機能をプラグインに組み込み可能に。マーケットプレイスプラグインの依存関係インストールと自動更新の信頼性も向上</p>
+            </div>
+            <div class="use-case">
+                <h4>📂 ワークツリー活用ユーザー</h4>
+                <p><code>EnterWorktree</code> の <code>path</code> パラメータで既存ワークツリーへの切り替えが効率化。スカッシュマージ済み PR のワークツリーも適切にクリーンアップ</p>
+            </div>
+            <div class="use-case">
+                <h4>🔧 フック・自動化ユーザー</h4>
+                <p>PreCompact フックでコンパクションの実行をプログラム的に制御。重要なコンテキストの保持を保証できるように</p>
+            </div>
+            <div class="use-case">
+                <h4>🔌 MCP サーバー利用者</h4>
+                <p>stdio MCP サーバーの不正出力対応、ヘッドレスセッションのツール可用性、大容量出力のトランケーションレシピなど、MCP 接続の信頼性が大幅に向上</p>
+            </div>
+            <div class="use-case">
+                <h4>☁️ AWS Bedrock ユーザー</h4>
+                <p>非 US リージョンでの <code>/model</code> ピッカーのモデル ID 保存問題が修正。429 レートリミットエラーもクリーンなメッセージで表示</p>
+            </div>
+            <div class="use-case">
+                <h4>👥 Team/Enterprise ユーザー</h4>
+                <p>インバウンドチャネル通知が最初のメッセージ以降もドロップされなくなり、通知の信頼性が向上</p>
+            </div>
+            <div class="use-case">
+                <h4>🖥️ SSH/mosh ユーザー</h4>
+                <p>Ghostty、Kitty、Alacritty、WezTerm、foot、rio、Contour でのカラーパレット修正。SSH/mosh 経由でも正しい色表示に</p>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">アップデート方法</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">v2.1.105 へのアップデート</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <div class="related-links">
+                <strong>関連リンク:</strong><br>
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a>
+                <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">npm パッケージ</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
