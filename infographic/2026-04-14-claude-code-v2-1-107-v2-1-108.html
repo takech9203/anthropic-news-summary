@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.107-v2.1.108 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content { position: relative; z-index: 1; }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date { font-size: 14px; opacity: 0.8; }
+
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        /* Key Points */
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        .feature-card .version-tag {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.15);
+            color: var(--anthropic-coral);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        /* Bug Fix List */
+        .bugfix-category {
+            margin-bottom: 20px;
+        }
+
+        .bugfix-category h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bugfix-category h3 .count-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .bugfix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bugfix-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 8px 0 8px 24px;
+            position: relative;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            line-height: 1.6;
+        }
+
+        .bugfix-list li::before {
+            content: '\2713';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* Improvement Cards */
+        .improvement-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .improvement-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .improvement-item .imp-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .improvement-item .imp-content h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+        .improvement-item .imp-content p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid { display: flex; justify-content: center; }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title { color: #a0a0b0; font-size: 12px; }
+
+        .code-block pre { margin: 0; padding: 0; }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover { text-decoration: underline; }
+
+        .footer .related-links {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .footer .related-links a {
+            display: inline-block;
+            margin-right: 16px;
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE アップデート</span>
+                <h1>Claude Code v2.1.107-v2.1.108 リリース</h1>
+                <p class="date">2026-04-14</p>
+                <span class="version-badge">v2.1.105 → v2.1.107 → v2.1.108</span>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🗄️</div>
+                    <div class="key-point-content">
+                        <h3>プロンプトキャッシュ TTL 制御</h3>
+                        <p><code>ENABLE_PROMPT_CACHING_1H</code> で全バックエンド統一の 1 時間 TTL、<code>FORCE_PROMPT_CACHING_5M</code> で 5 分 TTL を強制設定。キャッシュ運用がより柔軟に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📋</div>
+                    <div class="key-point-content">
+                        <h3>セッションリキャップ機能</h3>
+                        <p>セッションに戻った際にコンテキスト要約を提供する <code>/recap</code> コマンド。<code>/config</code> で設定可能、テレメトリ無効環境では <code>CLAUDE_CODE_ENABLE_AWAY_SUMMARY</code> で有効化</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔍</div>
+                    <div class="key-point-content">
+                        <h3>スラッシュコマンド Skill ツール経由自動発見</h3>
+                        <p>モデルが Skill ツールを通じて <code>/init</code>、<code>/review</code>、<code>/security-review</code> などの組み込みコマンドを自動発見・実行。自然言語リクエストからの最適コマンド選択が可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💾</div>
+                    <div class="key-point-content">
+                        <h3>メモリフットプリント削減</h3>
+                        <p>言語グラマーをオンデマンドで読み込む方式に変更。セッション開始時の一括読み込みを廃止し、必要な言語のみ読み込むことでメモリ使用量を削減</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>セッション復元 14 件のバグ修正</h3>
+                        <p><code>--resume</code> と <code>--teleport</code> に関する 6 件を含む 14 件のバグ修正。セッション名・カラー保持、前提条件エラー表示、トランケーション防止など、復元の信頼性が包括的に改善</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">25</div>
+                    <div class="stat-label">変更項目</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">14</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能 7 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.107</span>
+                    <h3>💡 Thinking ヒントの早期表示</h3>
+                    <p>長時間の操作中に Thinking ヒントがより早く表示されるようになり、待機中のフィードバックが改善</p>
+                </div>
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.108</span>
+                    <h3>🗄️ プロンプトキャッシュ TTL 制御</h3>
+                    <p><code>ENABLE_PROMPT_CACHING_1H</code> で API キー、Bedrock、Vertex、Foundry の全バックエンドで 1 時間 TTL を有効化。<code>FORCE_PROMPT_CACHING_5M</code> で 5 分 TTL を強制</p>
+                </div>
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.108</span>
+                    <h3>📋 セッションリキャップ機能</h3>
+                    <p>セッション復帰時にコンテキスト要約を提供。<code>/config</code> で設定、<code>/recap</code> で手動実行、<code>CLAUDE_CODE_ENABLE_AWAY_SUMMARY</code> で強制有効化</p>
+                </div>
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.108</span>
+                    <h3>🔍 スラッシュコマンド自動発見</h3>
+                    <p>モデルが Skill ツール経由で <code>/init</code>、<code>/review</code>、<code>/security-review</code> などの組み込みコマンドを自動発見・実行</p>
+                </div>
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.108</span>
+                    <h3>↩️ /undo エイリアス</h3>
+                    <p><code>/undo</code> が <code>/rewind</code> のエイリアスとして追加。直前の変更の巻き戻しをより直感的なコマンド名で実行可能</p>
+                </div>
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.108</span>
+                    <h3>📝 Verbose インジケーター</h3>
+                    <p><code>Ctrl+O</code> で詳細トランスクリプトを表示する際に "verbose" インジケーターが表示されるように</p>
+                </div>
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.108</span>
+                    <h3>⚠️ キャッシュ無効化時の起動警告</h3>
+                    <p><code>DISABLE_PROMPT_CACHING*</code> 環境変数でプロンプトキャッシュが無効化されている場合、起動時に警告を表示</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <h2 class="section-title">改善 5 件</h2>
+            <div class="improvement-grid">
+                <div class="improvement-item">
+                    <span class="imp-icon">💡</span>
+                    <div class="imp-content">
+                        <h4>Thinking ヒントの早期表示 (v2.1.107)</h4>
+                        <p>長時間の操作中に Thinking ヒントがより早く表示されるようになりました</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">⚠️</span>
+                    <div class="imp-content">
+                        <h4>/model のモデル切り替え警告</h4>
+                        <p>会話途中でモデルを切り替える前に警告を表示。次のレスポンスで会話履歴全体をキャッシュなしで再読み込みするため、コスト増加の可能性を事前に通知</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">📂</span>
+                    <div class="imp-content">
+                        <h4>/resume ピッカーのディレクトリフィルタリング</h4>
+                        <p>デフォルトで現在のディレクトリのセッションのみ表示。<code>Ctrl+A</code> で全プロジェクトのセッションに切り替え可能</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">📨</span>
+                    <div class="imp-content">
+                        <h4>エラーメッセージの分類改善</h4>
+                        <p>サーバーレートリミットとプラン使用量リミットを区別。5xx/529 エラーでは status.claude.com へのリンクを表示。未知のコマンドでは最も近いコマンドを提案</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">💾</span>
+                    <div class="imp-content">
+                        <h4>メモリフットプリントの削減</h4>
+                        <p>ファイルの読み取り、編集、シンタックスハイライトで使用される言語グラマーがオンデマンドで読み込まれるようになり、メモリ使用量が削減</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 14 件</h2>
+
+            <div class="bugfix-category">
+                <h3>🔄 セッション・テレポート修正 <span class="count-badge">6</span></h3>
+                <ul class="bugfix-list">
+                    <li><code>/login</code> コードプロンプトでペーストが機能しない問題を修正 (v2.1.105 リグレッション)</li>
+                    <li><code>claude --resume &lt;session-id&gt;</code> 使用時にセッション名とカラーが失われる問題を修正</li>
+                    <li><code>--teleport</code> 後にターミナルエスケープコードがプロンプト入力に文字化けとして表示される問題を修正</li>
+                    <li><code>--teleport</code> と <code>--resume &lt;id&gt;</code> の前提条件エラーがサイレントに終了する問題を修正</li>
+                    <li><code>--resume</code> のセッショントランケーション問題を修正 (自己参照メッセージが含まれる場合)</li>
+                    <li>Remote Control セッションタイトルが 3 番目のメッセージ以降に自動生成タイトルで上書きされる問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>🗄️ キャッシュ・テレメトリ修正 <span class="count-badge">2</span></h3>
+                <ul class="bugfix-list">
+                    <li><code>DISABLE_TELEMETRY</code> 設定時にサブスクライバーが 1 時間の TTL ではなく 5 分の TTL にフォールバックする問題を修正</li>
+                    <li>トランスクリプト書き込みエラーがサイレントにドロップされる代わりにログに記録されるように修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>🔧 ツール・環境修正 <span class="count-badge">4</span></h3>
+                <ul class="bugfix-list">
+                    <li>Agent ツールが安全性分類器のトランスクリプト超過時に自動モードで権限を要求する問題を修正</li>
+                    <li><code>CLAUDE_ENV_FILE</code> が <code>#</code> コメント行で終わる場合に Bash ツールが出力を生成しない問題を修正</li>
+                    <li><code>/feedback</code> の送信失敗後に説明を編集せずに再送信できるように修正</li>
+                    <li><code>language</code> 設定時にレスポンスからダイアクリティカルマークが削除される問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>📌 その他修正 <span class="count-badge">2</span></h3>
+                <ul class="bugfix-list">
+                    <li>最初のメッセージが短い挨拶の場合にセッションタイトルにプレースホルダーテキストが表示される問題を修正</li>
+                    <li>別プロジェクトから実行時にポリシー管理プラグインが自動更新されない問題を修正</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram: Overview -->
+        <section class="section">
+            <h2 class="section-title">v2.1.107-v2.1.108 変更点の全体像</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["🖥️ Claude Code v2.1.107-v2.1.108 - 25 項目"]
+        subgraph NewFeatures["✨ 新機能 7 件"]
+            direction LR
+            Cache["🗄️ プロンプト<br/>キャッシュ TTL 制御"]
+            Recap["📋 セッション<br/>リキャップ機能"]
+            SkillCmd["🔍 スラッシュコマンド<br/>自動発見"]
+            Undo["↩️ /undo<br/>エイリアス"]
+            Cache ~~~ Recap ~~~ SkillCmd ~~~ Undo
+        end
+
+        subgraph Improvements["📈 改善 5 件"]
+            direction LR
+            ModelWarn["⚠️ /model<br/>切り替え警告"]
+            ResumePick["📂 /resume<br/>ディレクトリフィルタ"]
+            ErrorMsg["📨 エラーメッセージ<br/>分類改善"]
+            Memory["💾 メモリフットプリント<br/>削減"]
+            ModelWarn ~~~ ResumePick ~~~ ErrorMsg ~~~ Memory
+        end
+
+        subgraph SessionFixes["🔄 セッション・テレポート修正 6 件"]
+            direction LR
+            PasteFix["📋 /login<br/>ペースト修正"]
+            RenameFix["🏷️ セッション名<br/>カラー保持"]
+            TeleportFix["🚀 --teleport<br/>エスケープ修正"]
+            TruncFix["📝 --resume<br/>トランケーション修正"]
+            PasteFix ~~~ RenameFix ~~~ TeleportFix ~~~ TruncFix
+        end
+
+        subgraph CacheFixes["🗄️ キャッシュ・テレメトリ修正 2 件"]
+            direction LR
+            TTLFix["⏱️ キャッシュ TTL<br/>フォールバック修正"]
+            LogFix["📝 トランスクリプト<br/>書き込みログ"]
+            TTLFix ~~~ LogFix
+        end
+
+        subgraph ToolFixes["🔧 ツール・環境修正 4 件"]
+            direction LR
+            AgentFix["🤖 Agent ツール<br/>権限修正"]
+            BashFix["💻 Bash ツール<br/>出力修正"]
+            FeedbackFix["📨 /feedback<br/>リトライ修正"]
+            DiacriticFix["🔤 ダイアクリティカル<br/>マーク保持"]
+            AgentFix ~~~ BashFix ~~~ FeedbackFix ~~~ DiacriticFix
+        end
+
+        subgraph OtherFixes["📌 その他修正 2 件"]
+            direction LR
+            TitleFix["🏷️ セッション<br/>タイトル修正"]
+            PluginFix["🔌 ポリシー管理<br/>プラグイン修正"]
+            TitleFix ~~~ PluginFix
+        end
+    end
+
+    User(["👤 ユーザー"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef change fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef network fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class NewFeatures,Improvements,SessionFixes,CacheFixes,ToolFixes,OtherFixes layer
+    class Cache,Recap,SkillCmd,Undo feature
+    class ModelWarn,ResumePick,ErrorMsg,Memory change
+    class PasteFix,RenameFix,TeleportFix,TruncFix fix
+    class TTLFix,LogFix network
+    class AgentFix,BashFix,FeedbackFix,DiacriticFix fix
+    class TitleFix,PluginFix fix
+    class User user
+                </pre>
+            </div>
+        </section>
+
+        <!-- Slash Command Discovery Flow -->
+        <section class="section">
+            <h2 class="section-title">スラッシュコマンドの Skill ツール経由での自動発見フロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph UserRequest["👤 ユーザーリクエスト"]
+        NL["📝 自然言語入力<br/>例: コードをレビューして"]
+    end
+
+    subgraph Model["🤖 モデル処理"]
+        Analyze["🔍 リクエスト解析"]
+        Discover["📋 Skill ツール経由で<br/>組み込みコマンド発見"]
+        Select["✅ 最適なコマンド選択"]
+    end
+
+    subgraph Commands["⚡ 組み込みスラッシュコマンド"]
+        direction LR
+        Init["/init"]
+        Review["/review"]
+        Security["/security-review"]
+        Init ~~~ Review ~~~ Security
+    end
+
+    subgraph Result["📤 実行結果"]
+        Execute["🚀 コマンド実行"]
+        Output["📋 結果をユーザーに返却"]
+    end
+
+    NL --> Analyze
+    Analyze --> Discover
+    Discover --> Commands
+    Commands --> Select
+    Select --> Execute
+    Execute --> Output
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class UserRequest,Model,Commands,Result platform
+    class NL user
+    class Analyze,Discover,Select decision
+    class Init,Review,Security input
+    class Execute,Output process
+                </pre>
+            </div>
+        </section>
+
+        <!-- Prompt Cache TTL Flow -->
+        <section class="section">
+            <h2 class="section-title">プロンプトキャッシュ TTL 制御フロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant U as 👤 ユーザー
+    participant CC as 🖥️ Claude Code
+    participant Cache as 🗄️ プロンプトキャッシュ
+    participant API as 🌐 API
+
+    Note over U,API: ENABLE_PROMPT_CACHING_1H=1 設定時
+    U->>CC: リクエスト
+    CC->>Cache: キャッシュ確認
+    alt キャッシュヒット TTL 1 時間以内
+        Cache-->>CC: キャッシュされたプロンプト
+        CC->>API: キャッシュ済みリクエスト
+    else キャッシュミス
+        CC->>API: フルリクエスト
+        API-->>CC: レスポンス
+        CC->>Cache: TTL 1 時間でキャッシュ保存
+    end
+    API-->>CC: レスポンス
+    CC-->>U: 結果
+
+    Note over U,API: FORCE_PROMPT_CACHING_5M=1 設定時
+    U->>CC: リクエスト
+    CC->>Cache: キャッシュ確認
+    Note over Cache: TTL 5 分で強制設定
+    CC->>API: リクエスト
+    API-->>CC: レスポンス
+    CC-->>U: 結果
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">プロンプトキャッシュ TTL の制御</span>
+                </div>
+                <pre><code class="language-bash"># 1 時間のプロンプトキャッシュ TTL を有効化
+# API キー、Bedrock、Vertex、Foundry のすべてで有効
+export ENABLE_PROMPT_CACHING_1H=1
+claude
+
+# 5 分間の TTL を強制 (デバッグ / テスト用)
+export FORCE_PROMPT_CACHING_5M=1
+claude
+
+# キャッシュが無効化されている場合は起動時に警告が表示される
+# 意図的に無効化する場合
+export DISABLE_PROMPT_CACHING=1
+claude
+# Warning: Prompt caching is disabled via DISABLE_PROMPT_CACHING</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">リキャップ機能の使用</span>
+                </div>
+                <pre><code class="language-bash"># セッション内で手動リキャップを実行
+# Claude Code のプロンプトで以下を入力
+> /recap
+# セッションのコンテキスト要約が表示される
+
+# /config からリキャップ機能を設定
+> /config
+# リキャップ機能のオン/オフを切り替え
+
+# テレメトリ無効化環境で強制有効化
+CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデートコマンド</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <div class="use-case">
+                <h4>👥 全ての Claude Code ユーザー</h4>
+                <p>14 件のバグ修正と 5 件の改善により、全体的な安定性と使用体験が向上。言語グラマーのオンデマンド読み込みによるメモリフットプリント削減の恩恵を受けます</p>
+            </div>
+            <div class="use-case">
+                <h4>☁️ API キー / Bedrock / Vertex / Foundry ユーザー</h4>
+                <p><code>ENABLE_PROMPT_CACHING_1H</code> により全バックエンドで統一的にプロンプトキャッシュの 1 時間 TTL を有効化可能。従来の <code>ENABLE_PROMPT_CACHING_1H_BEDROCK</code> は非推奨になりました</p>
+            </div>
+            <div class="use-case">
+                <h4>🔒 テレメトリ無効化ユーザー</h4>
+                <p><code>DISABLE_TELEMETRY</code> 設定時のキャッシュ TTL フォールバック問題が修正。リキャップ機能を利用するには <code>CLAUDE_CODE_ENABLE_AWAY_SUMMARY</code> を設定してください</p>
+            </div>
+            <div class="use-case">
+                <h4>🔄 セッション復元を頻繁に使用するユーザー</h4>
+                <p><code>--resume</code> と <code>--teleport</code> に関する 6 件のバグ修正により、セッション復元の信頼性が大幅に改善</p>
+            </div>
+            <div class="use-case">
+                <h4>🌍 多言語環境のユーザー</h4>
+                <p><code>language</code> 設定使用時にダイアクリティカルマークが削除される問題が修正。アクセント、ウムラウト、セディーユなどを含む言語を使用するユーザーに影響</p>
+            </div>
+            <div class="use-case">
+                <h4>🖥️ Remote Control ユーザー</h4>
+                <p>Web UI で設定したセッションタイトルが自動生成タイトルで上書きされなくなりました</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <div class="related-links">
+                <strong>関連リンク:</strong><br>
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a>
+                <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">npm パッケージ</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

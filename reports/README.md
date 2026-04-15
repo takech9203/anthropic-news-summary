@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-04-14](2026/2026-04-14-narasimhan-board-appointment.md) - Anthropic Long-Term Benefit Trust が Vas Narasimhan を取締役に任命 -- Trust 任命取締役が取締役会の過半数に
+- [2026-04-14](2026/2026-04-14-claude-sonnet-4-opus-4-deprecation.md) - Claude Sonnet 4 / Opus 4 の非推奨化を発表 -- 2026 年 6 月 15 日に廃止、4.6 世代への移行を推奨
+- [2026-04-14](2026/2026-04-14-claude-code-v2-1-107-v2-1-108.md) - Claude Code v2.1.107-v2.1.108 リリース: プロンプトキャッシュ制御、セッションリキャップ機能、スラッシュコマンド自動発見を含む 25 件の変更
 - [2026-04-13](2026/2026-04-13-claude-code-v2-1-105.md) - Claude Code v2.1.105 リリース: プラグインバックグラウンドモニター、PreCompact フック、ストリーム安定性改善を含む 37 件の変更
 - [2026-04-10](2026/2026-04-10-claude-code-v2-1-98.md) - Claude Code v2.1.98 リリース: 57 項目の大規模アップデート、14 件のセキュリティ修正と Google Vertex AI セットアップウィザード
 - [2026-04-10](2026/2026-04-10-claude-code-v2-1-101.md) - Claude Code v2.1.101 リリース: 46 項目の大型アップデート、エンタープライズ TLS プロキシ対応とセキュリティ修正を含む 31 件のバグ修正
