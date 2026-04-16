@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.109-v2.1.110 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content { position: relative; z-index: 1; }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date { font-size: 14px; opacity: 0.8; }
+
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        /* Key Points */
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison { grid-template-columns: 1fr; }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card p { font-size: 13px; line-height: 1.6; }
+        .comparison-card code { font-size: 12px; background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px; }
+
+        .comparison-label {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        .feature-card .version-tag {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.15);
+            color: var(--anthropic-coral);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        /* Improvement Items */
+        .improvement-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .improvement-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .improvement-item .imp-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .improvement-item .imp-content h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+        .improvement-item .imp-content p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+        /* Bug Fix List */
+        .bugfix-category { margin-bottom: 20px; }
+
+        .bugfix-category h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bugfix-category h3 .count-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .bugfix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bugfix-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 8px 0 8px 24px;
+            position: relative;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            line-height: 1.6;
+        }
+
+        .bugfix-list li::before {
+            content: '\2713';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid { display: flex; justify-content: center; }
+
+        .diagram-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title { color: #a0a0b0; font-size: 12px; }
+
+        .code-block pre { margin: 0; padding: 0; }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Migration Guide */
+        .migration-item {
+            background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .migration-item h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #92400E;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .migration-item p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+        .migration-item code { font-size: 12px; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover { text-decoration: underline; }
+
+        .footer .related-links {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .footer .related-links a {
+            display: inline-block;
+            margin-right: 16px;
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE UPDATE</span>
+                <h1>Claude Code v2.1.109-v2.1.110</h1>
+                <p class="date">2026-04-15</p>
+                <span class="version-badge">v2.1.108 &rarr; v2.1.109 &rarr; v2.1.110</span>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">38</div>
+                    <div class="stat-label">変更項目</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F5A5;</div>
+                    <div class="key-point-content">
+                        <h3>TUI フルスクリーンモード</h3>
+                        <p><code>/tui fullscreen</code> でちらつきのないフルスクリーンレンダリングに切り替え可能。<code>autoScrollEnabled</code> 設定と <code>/focus</code> コマンドで操作環境を柔軟に制御</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4F2;</div>
+                    <div class="key-point-content">
+                        <h3>モバイルプッシュ通知</h3>
+                        <p>Remote Control と「Push when Claude decides」設定を有効にすると、Claude がモバイルデバイスにプッシュ通知を送信。長時間タスクの完了やエラー発生を離席中でも把握可能</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F517;</div>
+                    <div class="key-point-content">
+                        <h3>MCP 接続の堅牢化</h3>
+                        <p>SSE/HTTP 接続断でのハングアップ修正、非ストリーミングフォールバックのハング修正、stdio MCP サーバーの非 JSON 出力への耐性回復の 3 件で MCP エコシステムの信頼性が向上</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F512;</div>
+                    <div class="key-point-content">
+                        <h3>セキュリティとパーミッション制御の強化</h3>
+                        <p>ファイル名からのコマンドインジェクション対策、<code>PermissionRequest</code> フックの <code>updatedInput</code> 再検証、<code>bypassPermissions</code> モードの制限強化</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4E1;</div>
+                    <div class="key-point-content">
+                        <h3>SDK/headless 環境と運用支援</h3>
+                        <p><code>TRACEPARENT</code>/<code>TRACESTATE</code> による分散トレースリンキング、Bash ツールのタイムアウト上限強制、テレメトリ無効化環境でのセッションリキャップデフォルト有効化</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before / After: MCP Connection Handling -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+
+            <p class="comparison-label">MCP 接続ハンドリング</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p>SSE/HTTP トランスポートでサーバー接続がレスポンス途中で切断された場合、MCP ツール呼び出しが<strong>無限にハングアップ</strong>。非ストリーミングフォールバックも API 到達不能時に数分間ハング。stdio MCP サーバーが非 JSON 行を出力すると即座に切断</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p><strong>タイムアウト検出</strong>により接続断を適切に検出し、リトライまたはエラーハンドリングに移行。非ストリーミングフォールバックも迅速にエラーフィードバックを返却。stdio MCP サーバーの非 JSON 出力を許容して継続</p>
+                </div>
+            </div>
+
+            <p class="comparison-label">Ctrl+O の動作変更</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p><code>Ctrl+O</code> がトランスクリプト表示とフォーカスビューの<strong>両方を制御</strong>。機能が混在し、個別の制御が不可能</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p><code>Ctrl+O</code> は通常トランスクリプトと verbose トランスクリプトの切り替え<strong>のみ</strong>。フォーカスビューは新しい <code>/focus</code> コマンドで独立して制御</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features v2.1.109 -->
+        <section class="section">
+            <h2 class="section-title">新機能 - v2.1.109</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.109</span>
+                    <h3>&#x1F4AD; Extended Thinking インジケーター改善</h3>
+                    <p>Extended Thinking 中に回転するプログレスヒントが表示されるようになり、処理状況がより直感的に把握できるようになりました</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features v2.1.110 -->
+        <section class="section">
+            <h2 class="section-title">新機能 - v2.1.110 - 6 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.110</span>
+                    <h3>&#x1F5A5; /tui コマンドと tui 設定</h3>
+                    <p><code>/tui fullscreen</code> でちらつきのないフルスクリーンレンダリングに切り替え可能。ターミナル全体を描画バッファとして使用し、フレームごとにバッファを更新する方式</p>
+                </div>
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.110</span>
+                    <h3>&#x1F4F2; プッシュ通知ツール</h3>
+                    <p>Remote Control と「Push when Claude decides」設定を有効にすると、Claude がモバイルデバイスにプッシュ通知を送信可能。長時間タスク完了やエラー発生時に通知</p>
+                </div>
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.110</span>
+                    <h3>&#x1F4DC; autoScrollEnabled 設定</h3>
+                    <p>フルスクリーンモードで会話の自動スクロールを無効化できる設定。長い出力を確認する際にスクロール位置を維持したい場合に有用</p>
+                </div>
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.110</span>
+                    <h3>&#x270F; Ctrl+G 外部エディタでのレスポンス表示</h3>
+                    <p><code>/config</code> で有効化すると、<code>Ctrl+G</code> で外部エディタを開いた際に Claude の最新レスポンスがコメントとして表示。レスポンスを参照しながら次のプロンプトを編集可能</p>
+                </div>
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.110</span>
+                    <h3>&#x1F504; --resume/--continue でのスケジュールタスク復元</h3>
+                    <p>期限切れでないスケジュールタスクを <code>--resume</code> または <code>--continue</code> で復元可能</p>
+                </div>
+                <div class="feature-card">
+                    <span class="version-tag">v2.1.110</span>
+                    <h3>&#x1F3AE; Remote Control からのコマンド実行拡張</h3>
+                    <p><code>/context</code>、<code>/exit</code>、<code>/reload-plugins</code> が Remote Control クライアントから実行可能に。モバイルからの操作範囲が拡張</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Changes v2.1.110 -->
+        <section class="section">
+            <h2 class="section-title">変更 - v2.1.110 - 7 件</h2>
+            <div class="improvement-grid">
+                <div class="improvement-item">
+                    <span class="imp-icon">&#x2328;</span>
+                    <div class="imp-content">
+                        <h4>Ctrl+O と /focus の動作分離</h4>
+                        <p><code>Ctrl+O</code> は通常トランスクリプトと verbose トランスクリプトの切り替えのみに。フォーカスビューは新しい <code>/focus</code> コマンドで独立して切り替え</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">&#x1F50C;</span>
+                    <div class="imp-content">
+                        <h4>/plugin Installed タブの UX 改善</h4>
+                        <p>注意が必要なプラグインとお気に入りが上部に表示され、無効化されたアイテムは折りたたみの背後に隠されるように。<code>f</code> キーでお気に入り追加</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">&#x1FA7A;</span>
+                    <div class="imp-content">
+                        <h4>/doctor の MCP サーバー重複定義検出</h4>
+                        <p>MCP サーバーが複数の設定スコープで異なるエンドポイントとして定義されている場合に警告を表示</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">&#x1F4DD;</span>
+                    <div class="imp-content">
+                        <h4>Write ツールの IDE diff 編集通知</h4>
+                        <p>IDE の diff ビューで提案されたコンテンツをユーザーが編集してから承認した場合、その編集内容がモデルに通知されるように</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">&#x23F1;</span>
+                    <div class="imp-content">
+                        <h4>Bash ツールのタイムアウト上限強制</h4>
+                        <p>ドキュメントに記載された最大タイムアウト値が厳密に適用されるようになり、任意に大きな値は受け付けなくなりました</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">&#x1F4E1;</span>
+                    <div class="imp-content">
+                        <h4>SDK/headless セッションの分散トレースリンキング</h4>
+                        <p>環境変数 <code>TRACEPARENT</code>/<code>TRACESTATE</code> を読み取り、W3C Trace Context 仕様に基づく分散トレースリンキングに対応。OpenTelemetry エコシステムとの統合が容易に</p>
+                    </div>
+                </div>
+                <div class="improvement-item">
+                    <span class="imp-icon">&#x1F4CB;</span>
+                    <div class="imp-content">
+                        <h4>テレメトリ無効化ユーザーへのセッションリキャップ有効化</h4>
+                        <p>Bedrock、Vertex、Foundry、<code>DISABLE_TELEMETRY</code> 環境のユーザーでもセッションリキャップが利用可能に。<code>/config</code> または <code>CLAUDE_CODE_ENABLE_AWAY_SUMMARY=0</code> でオプトアウト</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 24 件</h2>
+
+            <div class="bugfix-category">
+                <h3>&#x1F517; MCP / 接続修正 <span class="count-badge">3</span></h3>
+                <ul class="bugfix-list">
+                    <li>SSE/HTTP トランスポートでレスポンス中にサーバー接続が切断された場合に、MCP ツール呼び出しが無限にハングアップする問題を修正</li>
+                    <li>API に到達できない場合に非ストリーミングフォールバックのリトライが数分間ハングする問題を修正</li>
+                    <li>stdout に JSON 以外の行を出力する stdio MCP サーバーが最初の不正行で切断される問題を修正 (v2.1.105 リグレッション)</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>&#x1F5A5; フルスクリーン / レンダリング修正 <span class="count-badge">5</span></h3>
+                <ul class="bugfix-list">
+                    <li>セッションリキャップ、ローカルスラッシュコマンド出力、その他のシステムステータス行がフォーカスモードで表示されない問題を修正</li>
+                    <li>ツール実行中にテキストが選択されている場合にフルスクリーンモードで CPU 使用率が高くなる問題を修正</li>
+                    <li>macOS Terminal.app および同期出力をサポートしないターミナルでの起動時にレンダリングが文字化けする問題を修正</li>
+                    <li>フルスクリーンモードでリストがモーダルからはみ出る場合に <code>/skills</code> メニューがスクロールしない問題を修正</li>
+                    <li>マルチツールコール中にキューに入れられたメッセージが一時的に 2 回表示される問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>&#x1F512; セキュリティ / パーミッション修正 <span class="count-badge">3</span></h3>
+                <ul class="bugfix-list">
+                    <li>「エディタで開く」アクションが信頼されていないファイル名からのコマンドインジェクションに対して堅牢化</li>
+                    <li><code>PermissionRequest</code> フックが返す <code>updatedInput</code> が <code>permissions.deny</code> ルールに対して再チェックされるように。<code>setMode:'bypassPermissions'</code> の更新も <code>disableBypassPermissionsMode</code> を尊重</li>
+                    <li>ツール呼び出しが失敗した場合に <code>PreToolUse</code> フックの <code>additionalContext</code> がドロップされる問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>&#x1F4C2; セッション / Resume 修正 <span class="count-badge">4</span></h3>
+                <ul class="bugfix-list">
+                    <li>実行中または異常終了したセッションで <code>--resume</code> を使用する際に、<code>/rename</code> で設定した名前ではなく最初のプロンプトが表示される問題を修正</li>
+                    <li>サブエージェントのトランスクリプトを含むセッションディレクトリ全体が適切にクリーンアップされるように修正</li>
+                    <li>セッションが古すぎる場合に汎用エラーではなく再ログインのプロンプトが表示されるように修正</li>
+                    <li>claude.ai からのセッション名変更がローカル CLI セッションに永続化されるように修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>&#x1F50C; プラグイン / Skill 修正 <span class="count-badge">2</span></h3>
+                <ul class="bugfix-list">
+                    <li>マーケットプレイスエントリが省略している場合でも、<code>plugin.json</code> で宣言された依存関係がインストール時に尊重されるように修正</li>
+                    <li>メッセージ途中で <code>/&lt;skill&gt;</code> 経由で呼び出された場合に <code>disable-model-invocation: true</code> が設定された Skill が失敗する問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>&#x2699; SDK / headless 修正 <span class="count-badge">2</span></h3>
+                <ul class="bugfix-list">
+                    <li><code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC</code> または <code>CLAUDE_CODE_DISABLE_TERMINAL_TITLE</code> 設定時に、自動タイトル生成で余分な Haiku リクエストが発行される問題を修正</li>
+                    <li>パイプ出力の Ink 出力に単一の非常に幅の広い行が含まれる場合に過剰なメモリ割り当てが発生する問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>&#x2328; 入力 / キーストローク修正 <span class="count-badge">2</span></h3>
+                <ul class="bugfix-list">
+                    <li><code>/tui</code> やプロバイダーセットアップウィザードなどで CLI が再起動した後にキーストロークがドロップされる問題を修正</li>
+                    <li>v2.1.108 のセッションリキャップ機能が Bedrock、Vertex、Foundry、<code>DISABLE_TELEMETRY</code> 環境でもデフォルトで有効に</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>&#x1F4CC; その他修正 <span class="count-badge">3</span></h3>
+                <ul class="bugfix-list">
+                    <li>二重メッセージ表示: マルチツールコール中にキューに入れられたメッセージが一時的に 2 回表示される問題を修正</li>
+                    <li><code>Ctrl+G</code> 外部エディタでのレスポンス表示が有効化可能に</li>
+                    <li><code>--resume</code>/<code>--continue</code> でのスケジュールタスク復元をサポート</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram 1: Overview -->
+        <section class="section">
+            <h2 class="section-title">v2.1.109-v2.1.110 変更点の全体像</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["Claude Code v2.1.109-v2.1.110 - 38 items"]
+        subgraph NewFeatures["New Features 7"]
+            direction LR
+            TUI["/tui<br/>fullscreen"]
+            Push["Push<br/>Notifications"]
+            AutoScroll["autoScroll<br/>Enabled"]
+            CtrlG["Ctrl+G<br/>Response View"]
+            TUI ~~~ Push ~~~ AutoScroll ~~~ CtrlG
+        end
+
+        subgraph Changes["Changes 8"]
+            direction LR
+            CtrlO["Ctrl+O<br/>/focus split"]
+            Plugin["/plugin<br/>UX update"]
+            Doctor["/doctor<br/>MCP dup check"]
+            Trace["Distributed<br/>Trace Linking"]
+            CtrlO ~~~ Plugin ~~~ Doctor ~~~ Trace
+        end
+
+        subgraph MCPFixes["MCP / Connection Fixes 3"]
+            direction LR
+            MCPHang["MCP tool<br/>hang fix"]
+            RetryHang["Fallback<br/>hang fix"]
+            StdioFix["stdio MCP<br/>disconnect fix"]
+            MCPHang ~~~ RetryHang ~~~ StdioFix
+        end
+
+        subgraph RenderFixes["Fullscreen / Rendering Fixes 5"]
+            direction LR
+            FocusFix["Focus<br/>mode display"]
+            CPUFix["CPU usage<br/>fix"]
+            MacFix["macOS<br/>Terminal fix"]
+            SkillsFix["/skills<br/>scroll fix"]
+            FocusFix ~~~ CPUFix ~~~ MacFix ~~~ SkillsFix
+        end
+
+        subgraph SecurityFixes["Security / Permission Fixes 3"]
+            direction LR
+            InjectFix["Command<br/>injection fix"]
+            PermFix["Permission<br/>hook recheck"]
+            PreToolFix["PreToolUse<br/>context fix"]
+            InjectFix ~~~ PermFix ~~~ PreToolFix
+        end
+
+        subgraph SessionFixes["Session Fixes 4 + Other 6"]
+            direction LR
+            ResumeFix["--resume<br/>name fix"]
+            CleanupFix["Session<br/>cleanup"]
+            RCFix["Remote Control<br/>fixes"]
+            MemFix["Memory<br/>alloc fix"]
+            ResumeFix ~~~ CleanupFix ~~~ RCFix ~~~ MemFix
+        end
+    end
+
+    User(["User"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef change fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef security fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef network fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class NewFeatures,Changes,MCPFixes,RenderFixes,SecurityFixes,SessionFixes layer
+    class TUI,Push,AutoScroll,CtrlG feature
+    class CtrlO,Plugin,Doctor,Trace change
+    class MCPHang,RetryHang,StdioFix network
+    class FocusFix,CPUFix,MacFix,SkillsFix fix
+    class InjectFix,PermFix,PreToolFix security
+    class ResumeFix,CleanupFix,RCFix,MemFix fix
+    class User user
+                </pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram 2: TUI Fullscreen + Push Notification Flow -->
+        <section class="section">
+            <h2 class="section-title">TUI フルスクリーンモードと通知フロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph UserSession["User Session"]
+        Normal["Normal Mode<br/>Standard Terminal Output"]
+        TUICmd["/tui fullscreen"]
+        FullScreen["Fullscreen Mode<br/>Flicker-free Rendering"]
+    end
+
+    subgraph Settings["Settings"]
+        direction LR
+        AutoScrollSt["autoScrollEnabled<br/>Auto-scroll Control"]
+        FocusSt["/focus<br/>Focus View"]
+        AutoScrollSt ~~~ FocusSt
+    end
+
+    subgraph Notification["Push Notifications"]
+        RC["Remote Control<br/>Enabled"]
+        PushConfig["Push when<br/>Claude decides"]
+        Mobile["Mobile<br/>Device"]
+    end
+
+    subgraph RemoteOps["Remote Control Commands"]
+        direction LR
+        Context["/context"]
+        Exit["/exit"]
+        Reload["/reload-plugins"]
+        Context ~~~ Exit ~~~ Reload
+    end
+
+    Normal --> TUICmd
+    TUICmd --> FullScreen
+    FullScreen --> Settings
+    FullScreen -.-> RC
+    RC --> PushConfig
+    PushConfig --> Mobile
+    Mobile --> RemoteOps
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class UserSession,Settings,Notification,RemoteOps platform
+    class Normal,TUICmd user
+    class FullScreen input
+    class AutoScrollSt,FocusSt process
+    class RC,PushConfig decision
+    class Mobile,Context,Exit,Reload process
+                </pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram 3: MCP Connection Hardening Sequence -->
+        <section class="section">
+            <h2 class="section-title">MCP 接続堅牢化のシーケンス</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant CC as Claude Code
+    participant MCP as MCP Server
+    participant API as Claude API
+
+    Note over CC,API: v2.1.110 before: Hang on disconnect
+    CC->>MCP: Tool call
+    MCP--xCC: Connection dropped
+    Note over CC: Infinite wait...
+
+    Note over CC,API: v2.1.110 after: Timeout detection
+    CC->>MCP: Tool call
+    MCP--xCC: Connection dropped
+    Note over CC: Timeout detected
+    CC->>CC: Error handling
+    CC->>MCP: Reconnect or fallback
+
+    Note over CC,API: stdio MCP non-JSON output
+    MCP->>CC: Non-JSON diagnostic message
+    Note over CC: v2.1.105: Immediate disconnect
+    Note over CC: v2.1.110: Tolerate and continue
+    MCP->>CC: Valid JSON response
+    CC->>API: Continue processing
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/tui フルスクリーンモードの使用</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 起動後にフルスクリーンモードに切り替え
+> /tui fullscreen
+# ちらつきのないフルスクリーンレンダリングに切り替わる
+
+# /config で自動スクロールを無効化
+> /config
+# autoScrollEnabled を false に設定
+
+# フォーカスビューの切り替え
+> /focus
+# フォーカスモードに切り替わる</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">プッシュ通知の設定</span>
+                </div>
+                <pre><code class="language-bash"># Remote Control を有効化
+> /config
+# Remote Control を有効化
+# "Push when Claude decides" を有効化
+
+# 長時間タスクの実行 - 完了時に通知が届く
+> 大規模なリファクタリングを実行してください
+# Claude がタスク完了時にモバイルへプッシュ通知を送信</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">分散トレースリンキングの設定</span>
+                </div>
+                <pre><code class="language-bash"># CI/CD パイプラインで TRACEPARENT を設定して Claude Code を実行
+export TRACEPARENT="00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+export TRACESTATE="congo=t61rcWkgMzE"
+
+# headless モードで実行
+claude --headless "テストを実行してください"
+# セッションが上位トレースにリンクされる</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/doctor による MCP サーバー設定の確認</span>
+                </div>
+                <pre><code class="language-bash"># MCP サーバーの設定を診断
+> /doctor
+# 複数スコープで異なるエンドポイントの MCP サーバーが検出された場合:
+# Warning: MCP server "my-server" is defined in multiple config scopes
+#   with different endpoints:
+#   - project: http://localhost:3000
+#   - user: http://localhost:4000</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデートコマンド</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+
+            <div class="use-case">
+                <h4>&#x1F5A5; フルスクリーン開発者体験の最適化</h4>
+                <p><code>/tui fullscreen</code> でちらつきのないレンダリングに切り替え、<code>autoScrollEnabled</code> で長い出力のスクロール位置を固定、<code>/focus</code> でフォーカスビューを独立制御。macOS Terminal.app の文字化け修正や CPU 使用率修正と合わせ、快適なフルスクリーン開発環境を構築</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4F1; モバイルからの非同期タスク管理</h4>
+                <p>Remote Control を有効にしてプッシュ通知を設定すれば、長時間ビルドやテスト完了時にモバイルで通知を受け取れます。<code>/context</code>、<code>/exit</code>、<code>/reload-plugins</code> もリモートから実行可能で、離席中のタスク管理が容易に</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F50D; CI/CD パイプラインでの分散トレース統合</h4>
+                <p><code>TRACEPARENT</code>/<code>TRACESTATE</code> 環境変数を設定して <code>claude --headless</code> を実行すれば、Claude Code のセッションを上位の OpenTelemetry トレースに関連付け可能。CI/CD 全体のオブザーバビリティが向上</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F6E1; MCP エコシステムの安定運用</h4>
+                <p>SSE/HTTP 接続断でのハングアップ修正と stdio MCP サーバーの非 JSON 出力への耐性回復により、MCP サーバーとの接続安定性が向上。<code>/doctor</code> で重複定義を検出し、設定ミスを事前に発見</p>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+
+            <div class="migration-item">
+                <h4>&#x26A0; Ctrl+O とフォーカスビューの分離</h4>
+                <p>従来 <code>Ctrl+O</code> はトランスクリプト表示とフォーカスビューの両方を制御していましたが、v2.1.110 では分離されました。<code>Ctrl+O</code> は通常トランスクリプトと verbose トランスクリプトの切り替えのみになり、フォーカスビューは新しい <code>/focus</code> コマンドで独立して切り替えます。</p>
+            </div>
+
+            <div class="migration-item">
+                <h4>&#x26A0; テレメトリ無効化環境でのリキャップオプトアウト</h4>
+                <p>Bedrock、Vertex、Foundry、<code>DISABLE_TELEMETRY</code> 環境のユーザーはセッションリキャップがデフォルト有効になりました。不要な場合は <code>CLAUDE_CODE_ENABLE_AWAY_SUMMARY=0</code> を設定するか、<code>/config</code> からオプトアウトしてください。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <div class="related-links">
+                <strong>関連リンク:</strong><br>
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a>
+                <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">npm パッケージ</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
