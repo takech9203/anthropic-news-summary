@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.111-v2.1.112 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-badges {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.25);
+            color: #E8C9A8;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(212, 165, 116, 0.4);
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card .badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .badge-opus { background: #E8EAF6; color: #283593; }
+        .badge-new { background: #E9F7EC; color: #1B5E20; }
+        .badge-debug { background: #FFF3E0; color: #E65100; }
+
+        /* Changes List */
+        .changes-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .change-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .change-item .change-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .change-item h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .change-item p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Bug fix categories */
+        .bugfix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .bugfix-category {
+            padding: 20px;
+            background: #FFF5F5;
+            border-radius: 12px;
+            border: 1px solid #FECACA;
+        }
+
+        .bugfix-category h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #DC2626;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bugfix-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bugfix-category ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .bugfix-category ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 6px;
+            height: 6px;
+            background: #F87171;
+            border-radius: 50%;
+        }
+
+        /* Technical Detail */
+        .tech-detail {
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .effort-scale {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 16px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .effort-level {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .effort-arrow {
+            font-size: 18px;
+            color: var(--anthropic-coral);
+            padding: 0 4px;
+        }
+
+        .effort-low { background: #E0F2FE; color: #0369A1; }
+        .effort-medium { background: #FEF3C7; color: #92400E; }
+        .effort-high { background: #FED7AA; color: #C2410C; }
+        .effort-xhigh { background: #E8EAF6; color: #283593; border: 2px solid #283593; }
+        .effort-max { background: #FEE2E2; color: #991B1B; }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card pre {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+
+        .comparison-card p {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 6px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Sub-section title */
+        .sub-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 20px 0 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed rgba(212, 165, 116, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .effort-scale {
+                gap: 4px;
+            }
+
+            .effort-level {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ============================================ -->
+        <!-- 1. Header -->
+        <!-- ============================================ -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE アップデート</span>
+                <h1>Claude Code v2.1.111-v2.1.112 リリース: Opus 4.7 xhigh エフォート、/ultrareview、Auto モード簡素化を含む 37 件の変更</h1>
+                <p class="date">2026-04-16</p>
+                <div class="version-badges">
+                    <span class="version-badge">v2.1.111 (36 件)</span>
+                    <span class="version-badge">v2.1.112 (1 件 ホットフィックス)</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============================================ -->
+        <!-- 2. Overview -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x2B50;</div>
+                    <div class="key-point-content">
+                        <h3>Opus 4.7 xhigh エフォートレベル</h3>
+                        <p>Claude Opus 4.7 専用の新しいエフォートレベル xhigh を追加。high と max の間に位置し、速度とインテリジェンスの最適なバランスを実現します。/effort コマンドのインタラクティブスライダーから選択可能です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F916;</div>
+                    <div class="key-point-content">
+                        <h3>Auto モードの簡素化</h3>
+                        <p>--enable-auto-mode フラグが不要に。Max サブスクライバーが Opus 4.7 使用時にデフォルトで Auto モードが利用可能。v2.1.112 でホットフィックスも適用済みです。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F50D;</div>
+                    <div class="key-point-content">
+                        <h3>/ultrareview クラウドコードレビュー</h3>
+                        <p>クラウド上で並列マルチエージェント分析と批評を実行する包括的なコードレビュー機能。現在のブランチまたは GitHub PR を対象にセキュリティ、パフォーマンス、アーキテクチャの観点からレビューします。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F6E1;&#xFE0F;</div>
+                    <div class="key-point-content">
+                        <h3>/less-permission-prompts スキル</h3>
+                        <p>トランスクリプトをスキャンして頻繁に使用する読み取り専用コマンドを特定し、.claude/settings.json に許可リストを提案。パーミッションプロンプトの頻度を大幅に削減します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4BB;</div>
+                    <div class="key-point-content">
+                        <h3>Windows PowerShell ツール</h3>
+                        <p>Windows で PowerShell ツールが段階的にロールアウト。CLAUDE_CODE_USE_POWERSHELL_TOOL 環境変数でオプトイン/オプトアウトが可能。Windows ネイティブ環境のサポートが向上しました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 3. Statistics -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">リリース統計</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">37</div>
+                    <div class="stat-label">合計変更項目</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">新機能 (Added)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">14</div>
+                    <div class="stat-label">変更 (Changed)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">14</div>
+                    <div class="stat-label">バグ修正 (Fixed)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">ホットフィックス</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">バージョン数</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 4. New Feature Cards -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">新機能 (v2.1.111)</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x2B50; xhigh エフォートレベル</h3>
+                    <p>Opus 4.7 専用の新しいエフォートレベル。high と max の間に位置し、max ほどのレイテンシを発生させずに高いインテリジェンスを発揮します。/effort、--effort、モデルピッカーから選択可能。</p>
+                    <span class="badge badge-opus">Opus 4.7 専用</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F50D; /ultrareview</h3>
+                    <p>クラウド上で並列マルチエージェント分析と批評を実行する包括的なコードレビュー機能。引数なしで現在のブランチ、PR 番号指定で GitHub PR をレビューします。</p>
+                    <span class="badge badge-new">クラウドベース</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F6E1;&#xFE0F; /less-permission-prompts</h3>
+                    <p>トランスクリプトをスキャンして読み取り専用の Bash/MCP ツール呼び出しを特定し、.claude/settings.json に優先度付き許可リストを提案します。</p>
+                    <span class="badge badge-new">新スキル</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F3A8; Auto テーマ</h3>
+                    <p>ターミナルのダーク/ライトモードに自動的に合わせる "Auto (match terminal)" テーマオプション。/theme から選択できます。</p>
+                    <span class="badge badge-new">UX 改善</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F39A;&#xFE0F; /effort スライダー</h3>
+                    <p>/effort を引数なしで呼び出すとインタラクティブスライダーが表示。矢印キーでレベル間を移動し、Enter で確定する直感的な操作が可能です。</p>
+                    <span class="badge badge-new">インタラクティブ</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F916; Auto モード簡素化</h3>
+                    <p>Max サブスクライバーが Opus 4.7 使用時に Auto モードを利用可能。--enable-auto-mode フラグが不要になりました。v2.1.112 でホットフィックス済み。</p>
+                    <span class="badge badge-opus">Max サブスクライバー</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4CA; OTEL_LOG_RAW_API_BODIES</h3>
+                    <p>完全な API リクエスト/レスポンスボディを OpenTelemetry ログイベントとして出力するデバッグ用環境変数。CI/CD パイプラインでの詳細なモニタリングが可能です。</p>
+                    <span class="badge badge-debug">デバッグ</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 5. Changes Section -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">変更点 (14 件)</h2>
+
+            <h3 class="sub-title">Auto モード / モデル関連</h3>
+            <div class="changes-list">
+                <div class="change-item">
+                    <span class="change-icon">&#x1F504;</span>
+                    <div>
+                        <h4>Auto モードのフラグ不要化</h4>
+                        <p>--enable-auto-mode フラグが不要に。デフォルトで Auto モードが利用可能です。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x1F4BB;</span>
+                    <div>
+                        <h4>Windows PowerShell ツールの段階的ロールアウト</h4>
+                        <p>CLAUDE_CODE_USE_POWERSHELL_TOOL でオプトイン/オプトアウト可能。Linux/macOS では pwsh が PATH に必要です。</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="sub-title">パーミッション / UX 改善</h3>
+            <div class="changes-list">
+                <div class="change-item">
+                    <span class="change-icon">&#x1F4C2;</span>
+                    <div>
+                        <h4>読み取り専用 Bash コマンドのパーミッション省略</h4>
+                        <p>glob パターンを含む読み取り専用コマンド (ls *.ts) や cd &lt;project-dir&gt; && で始まるコマンドでパーミッションプロンプトが不要に。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x270F;&#xFE0F;</span>
+                    <div>
+                        <h4>サブコマンドのタイポ修正提案</h4>
+                        <p>claude &lt;word&gt; でタイポに近いサブコマンドを提案。例: claude udpate で "Did you mean claude update?" と表示。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x1F4CB;</span>
+                    <div>
+                        <h4>プランファイルの命名改善</h4>
+                        <p>プロンプトに基づいた名前で生成 (例: fix-auth-race-snug-otter.md)。従来のランダム命名から改善。</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="sub-title">セットアップ / 設定改善</h3>
+            <div class="changes-list">
+                <div class="change-item">
+                    <span class="change-icon">&#x2699;&#xFE0F;</span>
+                    <div>
+                        <h4>/setup-vertex と /setup-bedrock の改善</h4>
+                        <p>CLAUDE_CONFIG_DIR 設定時に実際の settings.json パスを表示。再実行時に既存ピンからモデル候補をシード。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x1F4DA;</span>
+                    <div>
+                        <h4>/skills メニューのトークン数ソート</h4>
+                        <p>t キーで推定トークン数によるソートが可能。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x21A9;&#xFE0F;</span>
+                    <div>
+                        <h4>v2.1.110 のリトライ制限の撤回</h4>
+                        <p>非ストリーミングフォールバックリトライの上限が撤回。API 過負荷時の完全な失敗が増えるトレードオフが不適切と判断。</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="sub-title">キーバインド / UI 改善</h3>
+            <div class="changes-list">
+                <div class="change-item">
+                    <span class="change-icon">&#x2328;&#xFE0F;</span>
+                    <div>
+                        <h4>Ctrl+U の動作変更</h4>
+                        <p>入力バッファ全体をクリア (従来は行頭まで削除)。Ctrl+Y でクリアした内容を復元可能。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x1F5A5;&#xFE0F;</span>
+                    <div>
+                        <h4>Ctrl+L の動作強化</h4>
+                        <p>プロンプト入力のクリアに加え、画面全体の再描画を強制。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x1F4DC;</span>
+                    <div>
+                        <h4>トランスクリプトビューのショートカット表示</h4>
+                        <p>フッターに [ (スクロールバックにダンプ) と v (エディタで開く) が表示。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x1F4CB;</span>
+                    <div>
+                        <h4>長いペーストの "+N lines" マーカー改善</h4>
+                        <p>全幅のルールで表示されるようになり、スキャンが容易に。</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="sub-title">SDK / headless 改善</h3>
+            <div class="changes-list">
+                <div class="change-item">
+                    <span class="change-icon">&#x1F50C;</span>
+                    <div>
+                        <h4>headless stream-json の plugin_errors 追加</h4>
+                        <p>プラグインが依存関係の不備により降格された場合に init イベントに plugin_errors を含める。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x1F507;</span>
+                    <div>
+                        <h4>不要なエラーメッセージの抑制</h4>
+                        <p>TUI 通常操作中の解凍エラー、ネットワークエラー、一時的なエラーメッセージを抑制。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 6. Bug Fixes Summary -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 (14 件)</h2>
+            <div class="bugfix-grid">
+                <div class="bugfix-category">
+                    <h4>&#x1F5A5;&#xFE0F; ターミナル / 表示修正 (3 件)</h4>
+                    <ul>
+                        <li>iTerm2 + tmux でのターミナル表示崩れ修正</li>
+                        <li>/context グリッドレンダリングの余分な空行修正</li>
+                        <li>URL のクリック可能性の修正 (行折り返し時)</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x1F4C1; ファイル / セッション修正 (4 件)</h4>
+                    <ul>
+                        <li>@ ファイル提案の再スキャン問題修正</li>
+                        <li>LSP 診断のタイミング修正</li>
+                        <li>/resume のタブ補完修正</li>
+                        <li>/clear でのセッション名ドロップ修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x1F50C; プラグイン / Skill 修正 (2 件)</h4>
+                    <ul>
+                        <li>プラグインエラーハンドリング改善 (依存関係エラー区別)</li>
+                        <li>commit スキル呼び出しエラー修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x26A0;&#xFE0F; エラーハンドリング (2 件)</h4>
+                    <ul>
+                        <li>Bedrock/Vertex/Foundry 429 レート制限エラーメッセージ修正</li>
+                        <li>フィードバックサーベイの連続表示修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x1FA9F; Windows 修正 (3 件)</h4>
+                    <ul>
+                        <li>CLAUDE_ENV_FILE と SessionStart フック環境ファイル適用修正</li>
+                        <li>ドライブレターパスのパーミッションルール修正</li>
+                        <li>CLAUDE_ENV_FILE の正しい適用</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 7. Technical Details -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <div class="tech-detail">
+                <h4>&#x2B50; xhigh エフォートシステム</h4>
+                <p>Claude Code のエフォートレベルシステムに xhigh が追加されました。Opus 4.7 専用で、既存の 4 段階に加わる 5 段階目のレベルです。max ほどのレイテンシを発生させずに高いインテリジェンスを発揮します。Opus 4.7 以外で xhigh を指定した場合は自動的に high にフォールバックします。</p>
+                <div class="effort-scale">
+                    <span class="effort-level effort-low">low</span>
+                    <span class="effort-arrow">&rarr;</span>
+                    <span class="effort-level effort-medium">medium</span>
+                    <span class="effort-arrow">&rarr;</span>
+                    <span class="effort-level effort-high">high</span>
+                    <span class="effort-arrow">&rarr;</span>
+                    <span class="effort-level effort-xhigh">xhigh (Opus 4.7)</span>
+                    <span class="effort-arrow">&rarr;</span>
+                    <span class="effort-level effort-max">max</span>
+                </div>
+            </div>
+
+            <div class="tech-detail">
+                <h4>&#x1F50D; /ultrareview アーキテクチャ</h4>
+                <p>/ultrareview はクラウドベースのコードレビュー機能です。ローカルの単一エージェントによるレビューとは異なり、クラウド上で複数のエージェントが並列に分析と批評を実行します。引数なしで現在のブランチ、/ultrareview &lt;PR#&gt; で特定の GitHub PR をレビュー。セキュリティ、パフォーマンス、アーキテクチャ、コード品質などの複数の観点から同時に分析が行われます。</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>&#x1F6E1;&#xFE0F; /less-permission-prompts ワークフロー</h4>
+                <p>過去のトランスクリプトを分析してユーザーが頻繁に許可している読み取り専用の Bash コマンドや MCP ツール呼び出しを特定し、.claude/settings.json に追加する許可リストを提案します。glob パターンを含む読み取り専用 Bash コマンド (例: ls *.ts) と cd &lt;project-dir&gt; && で始まるコマンドはデフォルトでパーミッション不要になりました。</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>&#x1F4BB; Windows PowerShell ツール</h4>
+                <p>Windows で段階的に自動有効化され、オプトアウトは CLAUDE_CODE_USE_POWERSHELL_TOOL=0 で可能。Linux/macOS では明示的に有効化が必要で、PATH に pwsh が必要です。Windows ユーザーはネイティブの PowerShell 環境でツール実行が可能になり、Bash エミュレーションに依存する必要がなくなります。</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>&#x1F4CA; OpenTelemetry デバッグ拡張</h4>
+                <p>OTEL_LOG_RAW_API_BODIES 環境変数で完全な API リクエスト/レスポンスボディを OpenTelemetry ログイベントとして出力。前バージョンの TRACEPARENT/TRACESTATE 分散トレースリンキングと組み合わせて CI/CD パイプラインでの詳細なデバッグが可能です。</p>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 8. Code Examples -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">エフォートレベルの設定</span>
+                </div>
+                <pre><code class="language-bash"># インタラクティブスライダーで設定
+&gt; /effort
+# 矢印キーでレベルを選択、Enter で確定
+# low &rarr; medium &rarr; high &rarr; xhigh &rarr; max
+
+# CLI から直接指定
+claude --effort xhigh "コードの最適化を提案してください"
+
+# /effort コマンドで直接指定
+&gt; /effort xhigh</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/ultrareview によるコードレビュー</span>
+                </div>
+                <pre><code class="language-bash"># 現在のブランチをレビュー
+&gt; /ultrareview
+# クラウドで並列マルチエージェント分析が実行される
+
+# 特定の GitHub PR をレビュー
+&gt; /ultrareview 456
+# PR #456 を取得してクラウドレビューを実行</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/less-permission-prompts によるパーミッション最適化</span>
+                </div>
+                <pre><code class="language-bash"># トランスクリプトをスキャンして許可リストを提案
+&gt; /less-permission-prompts
+# 一般的な読み取り専用コマンドを特定
+# .claude/settings.json に追加する許可リストを提案</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <span class="code-title">Windows PowerShell ツール制御</span>
+                </div>
+                <pre><code class="language-powershell"># Windows: PowerShell ツールをオプトアウト
+$env:CLAUDE_CODE_USE_POWERSHELL_TOOL = "0"
+
+# Windows: PowerShell ツールを明示的に有効化
+$env:CLAUDE_CODE_USE_POWERSHELL_TOOL = "1"
+
+# Linux / macOS: pwsh が PATH に必要
+which pwsh  # pwsh のパスを確認
+export CLAUDE_CODE_USE_POWERSHELL_TOOL=1</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">OTEL デバッグとその他のコマンド</span>
+                </div>
+                <pre><code class="language-bash"># API リクエスト/レスポンスボディの完全なログ出力を有効化
+export OTEL_LOG_RAW_API_BODIES=1
+claude "テストを作成してください"
+
+# Auto テーマの設定
+&gt; /theme
+# "Auto (match terminal)" を選択
+
+# /skills メニューのトークン数ソート
+&gt; /skills
+# t キーを押してトークン数でソート</code></pre>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 9. Mermaid Diagrams -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <div class="mermaid-container">
+                <h4>v2.1.111-v2.1.112 変更点の全体像</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["&#x1F5A5;&#xFE0F; Claude Code v2.1.111-v2.1.112 - 37 項目"]
+        subgraph ModelSupport["&#x2B50; Opus 4.7 サポート 3 件"]
+            direction LR
+            XHigh["&#x2B50; xhigh&lt;br/&gt;エフォートレベル"]
+            AutoMode["&#x1F916; Auto モード&lt;br/&gt;Opus 4.7 対応"]
+            AutoFix["&#x1F527; Auto モード&lt;br/&gt;ホットフィックス"]
+            XHigh ~~~ AutoMode ~~~ AutoFix
+        end
+
+        subgraph NewFeatures["&#x2728; 新機能 5 件"]
+            direction LR
+            UltraReview["&#x1F50D; /ultrareview&lt;br/&gt;クラウドレビュー"]
+            LessPerm["&#x1F6E1;&#xFE0F; /less-permission&lt;br/&gt;-prompts"]
+            AutoTheme["&#x1F3A8; Auto テーマ&lt;br/&gt;ダーク/ライト"]
+            EffortSlider["&#x1F39A;&#xFE0F; /effort&lt;br/&gt;スライダー"]
+            UltraReview ~~~ LessPerm ~~~ AutoTheme ~~~ EffortSlider
+        end
+
+        subgraph Changes["&#x1F504; 変更 14 件"]
+            direction LR
+            PSRollout["&#x1F4BB; PowerShell&lt;br/&gt;段階的ロールアウト"]
+            GlobPerm["&#x1F4C2; 読み取り専用&lt;br/&gt;パーミッション省略"]
+            TypoSuggest["&#x270F;&#xFE0F; タイポ&lt;br/&gt;修正提案"]
+            PlanName["&#x1F4CB; プランファイル&lt;br/&gt;命名改善"]
+            PSRollout ~~~ GlobPerm ~~~ TypoSuggest ~~~ PlanName
+        end
+
+        subgraph KeybindUI["&#x2328;&#xFE0F; キーバインド・UI 改善 4 件"]
+            direction LR
+            CtrlU["&#x2328;&#xFE0F; Ctrl+U&lt;br/&gt;バッファクリア"]
+            CtrlL["&#x1F5A5;&#xFE0F; Ctrl+L&lt;br/&gt;画面再描画"]
+            Transcript["&#x1F4DC; トランスクリプト&lt;br/&gt;ショートカット"]
+            PasteMark["+N lines&lt;br/&gt;マーカー改善"]
+            CtrlU ~~~ CtrlL ~~~ Transcript ~~~ PasteMark
+        end
+
+        subgraph BugFixes["&#x1F41B; バグ修正 14 件"]
+            direction LR
+            ITerm["&#x1F5A5;&#xFE0F; iTerm2+tmux&lt;br/&gt;表示崩れ修正"]
+            LSP["&#x1F4DD; LSP 診断&lt;br/&gt;タイミング修正"]
+            WinFix["&#x1FA9F; Windows&lt;br/&gt;3 件の修正"]
+            PluginFix["&#x1F50C; プラグイン&lt;br/&gt;エラー改善"]
+            ITerm ~~~ LSP ~~~ WinFix ~~~ PluginFix
+        end
+    end
+
+    User(["&#x1F464; ユーザー"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef model fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef change fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef keybind fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef fix fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class ModelSupport,NewFeatures,Changes,KeybindUI,BugFixes layer
+    class XHigh,AutoMode,AutoFix model
+    class UltraReview,LessPerm,AutoTheme,EffortSlider feature
+    class PSRollout,GlobPerm,TypoSuggest,PlanName change
+    class CtrlU,CtrlL,Transcript,PasteMark keybind
+    class ITerm,LSP,WinFix,PluginFix fix
+    class User user
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h4>Opus 4.7 エフォートシステムとモデル選択フロー</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph EffortSystem["&#x1F39A;&#xFE0F; エフォートレベルシステム"]
+        EffortCmd["/effort&lt;br/&gt;引数なし"]
+        Slider["&#x1F39A;&#xFE0F; インタラクティブ&lt;br/&gt;スライダー"]
+        EffortArg["--effort xhigh&lt;br/&gt;CLI 指定"]
+        ModelPicker["&#x1F916; モデルピッカー&lt;br/&gt;から選択"]
+    end
+
+    subgraph Levels["&#x1F4CA; エフォートレベル"]
+        direction LR
+        Low["&#x1F4A4; low"]
+        Medium["&#x26A1; medium"]
+        High["&#x1F525; high"]
+        XHighLevel["&#x2B50; xhigh&lt;br/&gt;Opus 4.7 専用"]
+        Max["&#x1F680; max"]
+        Low ~~~ Medium ~~~ High ~~~ XHighLevel ~~~ Max
+    end
+
+    subgraph ModelCheck["&#x1F500; モデル判定"]
+        IsOpus{"Opus 4.7?"}
+        UseXHigh["xhigh で実行"]
+        FallbackHigh["high に&lt;br/&gt;フォールバック"]
+    end
+
+    subgraph AutoModeFlow["&#x1F916; Auto モード"]
+        MaxSub{"Max&lt;br/&gt;サブスクライバー?"}
+        AutoEnabled["Auto モード&lt;br/&gt;有効"]
+        NoAuto["Auto モード&lt;br/&gt;利用不可"]
+    end
+
+    EffortCmd --> Slider
+    Slider --> Levels
+    EffortArg --> Levels
+    ModelPicker --> Levels
+
+    XHighLevel --> IsOpus
+    IsOpus -->|Yes| UseXHigh
+    IsOpus -->|No| FallbackHigh
+
+    UseXHigh --> MaxSub
+    MaxSub -->|Yes| AutoEnabled
+    MaxSub -->|No| NoAuto
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef model fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class EffortSystem,Levels,ModelCheck,AutoModeFlow platform
+    class EffortCmd,Slider,EffortArg,ModelPicker input
+    class Low,Medium,High,XHighLevel,Max model
+    class IsOpus,MaxSub decision
+    class UseXHigh,AutoEnabled process
+    class FallbackHigh,NoAuto process
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h4>/ultrareview マルチエージェントアーキテクチャ</h4>
+                <pre class="mermaid">
+sequenceDiagram
+    participant U as &#x1F464; ユーザー
+    participant CC as &#x1F5A5;&#xFE0F; Claude Code
+    participant Cloud as &#x2601;&#xFE0F; クラウド
+    participant A1 as &#x1F50D; エージェント 1&lt;br/&gt;セキュリティ
+    participant A2 as &#x1F50D; エージェント 2&lt;br/&gt;パフォーマンス
+    participant A3 as &#x1F50D; エージェント 3&lt;br/&gt;アーキテクチャ
+
+    U->>CC: /ultrareview PR#123
+    CC->>CC: GitHub PR の変更を取得
+    CC->>Cloud: レビューリクエスト送信
+
+    par 並列分析
+        Cloud->>A1: セキュリティ分析
+        Cloud->>A2: パフォーマンス分析
+        Cloud->>A3: アーキテクチャ分析
+    end
+
+    A1-->>Cloud: セキュリティレポート
+    A2-->>Cloud: パフォーマンスレポート
+    A3-->>Cloud: アーキテクチャレポート
+
+    Cloud->>Cloud: 批評と統合
+    Cloud-->>CC: 包括的レビュー結果
+    CC-->>U: レビューレポート表示
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h4>/less-permission-prompts ワークフロー</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Scan["&#x1F4CA; トランスクリプトスキャン"]
+        Transcripts["&#x1F4DC; 過去の&lt;br/&gt;トランスクリプト"]
+        Analyze["&#x1F50D; 読み取り専用&lt;br/&gt;コマンド特定"]
+    end
+
+    subgraph Classify["&#x1F3F7;&#xFE0F; コマンド分類"]
+        direction LR
+        BashRO["&#x1F4BB; Bash&lt;br/&gt;読み取り専用"]
+        MCPRead["&#x1F50C; MCP&lt;br/&gt;読み取りツール"]
+        BashRO ~~~ MCPRead
+    end
+
+    subgraph Propose["&#x1F4CB; 許可リスト提案"]
+        Allowlist["&#x1F4DD; 優先度付き&lt;br/&gt;許可リスト"]
+        Settings["&#x2699;&#xFE0F; .claude/&lt;br/&gt;settings.json"]
+    end
+
+    subgraph Result["&#x2705; 結果"]
+        LessPrompts["&#x1F507; パーミッション&lt;br/&gt;プロンプト削減"]
+    end
+
+    Transcripts --> Analyze
+    Analyze --> Classify
+    Classify --> Allowlist
+    Allowlist --> Settings
+    Settings --> LessPrompts
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class Scan,Classify,Propose,Result platform
+    class Transcripts,Analyze input
+    class BashRO,MCPRead process
+    class Allowlist,Settings decision
+    class LessPrompts input
+                </pre>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 10. Developer Impact / Use Cases -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <div class="use-case">
+                <h4>&#x1F464; 全ての Claude Code ユーザー</h4>
+                <p>14 件のバグ修正と 14 件の変更により、全体的な安定性と操作性が向上。iTerm2 + tmux の表示崩れ修正、@ ファイル提案の再スキャン問題修正、LSP 診断のタイミング修正は日常的な開発体験に直接影響します。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x2B50; Claude Opus 4.7 ユーザー</h4>
+                <p>xhigh エフォートレベルにより、速度とインテリジェンスの最適なバランスを選択可能。Auto モードも Opus 4.7 で利用可能になり、--enable-auto-mode フラグが不要になりました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x1F451; Max サブスクライバー</h4>
+                <p>Opus 4.7 での Auto モードがデフォルトで利用可能。v2.1.112 のホットフィックスにより、Auto モードでの一時利用不可問題も解消されています。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x1F50D; コードレビューを行うチーム</h4>
+                <p>/ultrareview により、クラウドベースの並列マルチエージェントコードレビューが利用可能。PR レビューワークフローを大幅に効率化できます。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x1F6E1;&#xFE0F; パーミッションプロンプトを煩わしく感じるユーザー</h4>
+                <p>/less-permission-prompts スキルで許可リストを自動提案可能。読み取り専用 Bash コマンドのパーミッション自動省略も適用されます。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x1FA9F; Windows ユーザー</h4>
+                <p>PowerShell ツールの段階的ロールアウト、CLAUDE_ENV_FILE の適用修正、ドライブレターパスのパーミッション修正により、Windows 環境のサポートが大幅に改善されました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x2699;&#xFE0F; SDK/headless 利用者 / CI/CD パイプライン運用者</h4>
+                <p>OTEL_LOG_RAW_API_BODIES による API デバッグ、plugin_errors の init イベント出力、不要なエラーメッセージの抑制により、自動化環境での運用性が向上しました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x1F50C; プラグイン開発者</h4>
+                <p>依存関係エラーの詳細な区別、plugin update 後の古いバージョン修正、plugin install の中断からの復旧など、プラグインエコシステムの信頼性が向上しています。</p>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 11. Migration Guide -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+
+            <h3 class="sub-title">Auto モードフラグの削除</h3>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">v2.1.111 で --enable-auto-mode フラグが不要になりました。スクリプトやエイリアスで使用している場合は削除を推奨します。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.110 以前)</h4>
+                    <pre>claude --enable-auto-mode "タスクを実行してください"</pre>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.111 以降)</h4>
+                    <pre>claude "タスクを実行してください"
+# Auto モードは Max + Opus 4.7 で自動有効</pre>
+                </div>
+            </div>
+
+            <h3 class="sub-title" style="margin-top: 28px;">Ctrl+U の動作変更</h3>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.110 以前)</h4>
+                    <p>Ctrl+U: カーソル位置から行頭までを削除</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.111 以降)</h4>
+                    <p>Ctrl+U: 入力バッファ全体をクリア<br>Ctrl+Y: クリアした内容を復元</p>
+                </div>
+            </div>
+
+            <h3 class="sub-title" style="margin-top: 28px;">PowerShell ツールの制御</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">PowerShell オプトイン/オプトアウト</span>
+                </div>
+                <pre><code class="language-bash"># Windows: オプトアウト
+export CLAUDE_CODE_USE_POWERSHELL_TOOL=0
+
+# Linux / macOS: 明示的にオプトイン (pwsh が PATH に必要)
+export CLAUDE_CODE_USE_POWERSHELL_TOOL=1</code></pre>
+            </div>
+
+            <h3 class="sub-title" style="margin-top: 28px;">アップデート方法</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">最新バージョンへの更新</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 12. Footer -->
+        <!-- ============================================ -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連:</strong> <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></p>
+            <p style="margin-top: 12px; font-size: 12px; opacity: 0.7;">このインフォグラフィックは Claude Code v2.1.111-v2.1.112 リリースレポートに基づいて自動生成されました。</p>
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
