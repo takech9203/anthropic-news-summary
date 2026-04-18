@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.113-v2.1.114 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-badges {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.25);
+            color: #E8C9A8;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(212, 165, 116, 0.4);
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card .badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .badge-security { background: #FFEBEE; color: #C62828; }
+        .badge-new { background: #E9F7EC; color: #1B5E20; }
+        .badge-debug { background: #FFF3E0; color: #E65100; }
+        .badge-ux { background: #E8EAF6; color: #283593; }
+        .badge-remote { background: #E0F2FE; color: #0369A1; }
+
+        /* Changes List */
+        .changes-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .change-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .change-item .change-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .change-item h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .change-item p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Bug fix categories */
+        .bugfix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .bugfix-category {
+            padding: 20px;
+            background: #FFF5F5;
+            border-radius: 12px;
+            border: 1px solid #FECACA;
+        }
+
+        .bugfix-category h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #DC2626;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bugfix-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bugfix-category ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .bugfix-category ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 6px;
+            height: 6px;
+            background: #F87171;
+            border-radius: 50%;
+        }
+
+        /* Technical Detail */
+        .tech-detail {
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card pre {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+
+        .comparison-card p {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Security Items */
+        .security-item {
+            padding: 20px;
+            background: #FFF5F5;
+            border-radius: 12px;
+            border: 1px solid #FECACA;
+            margin-bottom: 16px;
+        }
+
+        .security-item h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #DC2626;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .security-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 6px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Sub-section title */
+        .sub-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 20px 0 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed rgba(212, 165, 116, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ============================================ -->
+        <!-- 1. Header -->
+        <!-- ============================================ -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE</span>
+                <h1>Claude Code v2.1.113-v2.1.114 リリース: ネイティブバイナリアーキテクチャへの移行、セキュリティ強化、20 件超のバグ修正を含む 40 件の変更</h1>
+                <p class="date">2026-04-17</p>
+                <div class="version-badges">
+                    <span class="version-badge">v2.1.113 (39 件)</span>
+                    <span class="version-badge">v2.1.114 (1 件 ホットフィックス)</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============================================ -->
+        <!-- 2. Key Points -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x26A1;</div>
+                    <div class="key-point-content">
+                        <h3>ネイティブバイナリアーキテクチャへの移行</h3>
+                        <p>CLI がバンドル済み JavaScript を実行する方式から、プラットフォーム固有のネイティブバイナリを spawn する方式に根本的に変更。npm のオプショナル依存関係として各プラットフォーム向けバイナリが配布され、起動速度とメモリ効率の向上が期待されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F512;</div>
+                    <div class="key-point-content">
+                        <h3>セキュリティモデルの大幅強化</h3>
+                        <p>macOS /private パス保護、コマンドラッパーに対する deny ルール適用、find -exec/-delete の自動承認防止の 3 件のセキュリティ強化。Bash ツールのセキュリティが複数の観点から強化されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F41B;</div>
+                    <div class="key-point-content">
+                        <h3>20 件超のバグ修正</h3>
+                        <p>MCP タイムアウト、マークダウンテーブル、セッションリキャップ、リモートコントロール、Opus 4.7 Bedrock 互換性、SDK 画像処理など幅広い領域の問題が解消。v2.1.114 ではエージェントチームのクラッシュも修正されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x2728;</div>
+                    <div class="key-point-content">
+                        <h3>開発者体験の改善</h3>
+                        <p>deniedDomains 設定、フルスクリーン選択スクロール、/loop の Esc キャンセル、/ultrareview の高速化、リモートコントロールからの /extra-usage と @ ファイル補完など、15 件の新機能が追加されました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 3. Statistics -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">リリース統計</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">40</div>
+                    <div class="stat-label">合計変更項目</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">アーキテクチャ変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">セキュリティ強化</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">20+</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">ホットフィックス</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 4. Before/After Comparison -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ比較: Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.112 以前)</h4>
+                    <p><strong>JavaScript バンドル方式</strong></p>
+                    <pre>claude コマンド
+  → Node.js ランタイム起動
+    → バンドル済み JS をパース
+      → JS 実行エンジンで実行</pre>
+                    <p style="margin-top: 12px;">Node.js のブートストラップと JavaScript パースのオーバーヘッドが発生。全てのロジックが JavaScript として実行されていました。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.113 以降)</h4>
+                    <p><strong>ネイティブバイナリ方式</strong></p>
+                    <pre>claude コマンド
+  → ランチャー (プラットフォーム判定)
+    → ネイティブバイナリを spawn
+      → ネイティブ実行</pre>
+                    <p style="margin-top: 12px;">プラットフォーム固有の最適化バイナリを直接実行。起動速度、メモリ効率が向上します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 5. Architecture Change -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ変更</h2>
+
+            <div class="tech-detail">
+                <h4>&#x26A1; ネイティブバイナリアーキテクチャへの移行</h4>
+                <p>v2.1.113 における最大の技術的変更です。CLI エントリポイントはプラットフォーム固有のネイティブバイナリを spawn するシンプルなランチャーとして機能します。ネイティブバイナリは npm のオプショナル依存関係として配布され、macOS arm64、macOS x64、Linux x64、Windows x64 等の各プラットフォームに最適化されたバイナリが提供されます。</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>期待される効果</h4>
+                <p><strong>起動速度の向上</strong>: Node.js のブートストラップと JavaScript パースのオーバーヘッドが排除されます。<br/>
+                <strong>メモリ効率</strong>: ネイティブバイナリは JavaScript VM のメモリオーバーヘッドなしに動作できます。<br/>
+                <strong>プラットフォーム最適化</strong>: 各プラットフォームの特性に合わせたネイティブコードの最適化が可能です。<br/>
+                <strong>配布の柔軟性</strong>: npm のオプショナル依存関係メカニズムにより、必要なプラットフォームのバイナリのみがインストールされます。</p>
+            </div>
+
+            <div class="mermaid-container">
+                <h4>ネイティブバイナリアーキテクチャの移行</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Before["&#x1F4E6; v2.1.112 以前 - JavaScript バンドル方式"]
+        CLI_Old(["&#x1F464; claude コマンド"])
+        NodeJS["&#x1F7E2; Node.js ランタイム"]
+        JSBundle["&#x1F4DC; バンドル済み&lt;br/&gt;JavaScript"]
+        JSExec["&#x2699;&#xFE0F; JS 実行エンジン"]
+
+        CLI_Old --> NodeJS
+        NodeJS --> JSBundle
+        JSBundle --> JSExec
+    end
+
+    subgraph After["&#x1F4E6; v2.1.113 以降 - ネイティブバイナリ方式"]
+        CLI_New(["&#x1F464; claude コマンド"])
+        Launcher["&#x1F680; ランチャー&lt;br/&gt;プラットフォーム判定"]
+        subgraph Binaries["&#x1F5A5;&#xFE0F; プラットフォーム固有バイナリ"]
+            direction LR
+            MacARM["&#x1F34E; macOS&lt;br/&gt;arm64"]
+            MacX64["&#x1F34E; macOS&lt;br/&gt;x64"]
+            LinuxX64["&#x1F427; Linux&lt;br/&gt;x64"]
+            WinX64["&#x1FA9F; Windows&lt;br/&gt;x64"]
+            MacARM ~~~ MacX64 ~~~ LinuxX64 ~~~ WinX64
+        end
+        NativeExec["&#x26A1; ネイティブ実行"]
+
+        CLI_New --> Launcher
+        Launcher --> Binaries
+        Binaries --> NativeExec
+    end
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef oldStyle fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef newStyle fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef binary fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class Before platform
+    class After platform
+    class Binaries layer
+    class CLI_Old,CLI_New user
+    class NodeJS,JSBundle,JSExec oldStyle
+    class Launcher,NativeExec newStyle
+    class MacARM,MacX64,LinuxX64,WinX64 binary
+                </pre>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 6. Security Hardening -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">セキュリティ強化 (3 件)</h2>
+
+            <div class="security-item">
+                <h4>&#x1F34E; macOS の危険なパスの保護</h4>
+                <p>macOS ではシステムディレクトリが /private 配下にシンボリックリンクされています (/etc → /private/etc、/var → /private/var 等)。従来の Bash(rm:*) 許可ルールは /etc を危険な対象として検出していましたが、/private/etc としてアクセスされた場合の検出が漏れていました。v2.1.113 で /private/{etc,var,tmp,home} パスが危険な削除対象として保護されるようになりました。</p>
+            </div>
+
+            <div class="security-item">
+                <h4>&#x1F6E1;&#xFE0F; コマンドラッパーに対する deny ルールの適用</h4>
+                <p>Bash の deny ルールが env、sudo、watch、ionice、setsid などの実行ラッパーで囲まれたコマンドにもマッチするようになりました。従来は「sudo rm -rf /」のようなラッパー経由の危険なコマンド実行がブロックされませんでしたが、v2.1.113 ではラッパーを透過的に解析し、内部のコマンドに対して deny ルールを適用します。</p>
+            </div>
+
+            <div class="security-item">
+                <h4>&#x1F50D; find -exec/-delete の自動承認防止</h4>
+                <p>Bash(find:*) 許可ルールが find -exec および find -delete を自動承認しなくなりました。find はファイル検索だけでなく任意のコマンド実行やファイル削除が可能であり、find:* のワイルドカード許可がこれらの危険な操作まで自動承認していた問題が修正されました。</p>
+            </div>
+
+            <div class="mermaid-container">
+                <h4>セキュリティ強化: Bash deny ルールの適用範囲</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Input["&#x1F4E5; コマンド入力"]
+        RawCmd["&#x1F4BB; ユーザーコマンド"]
+    end
+
+    subgraph WrapperDetect["&#x1F50D; ラッパー検出"]
+        IsWrapped{"ラッパーで&lt;br/&gt;囲まれている?"}
+        Unwrap["&#x1F513; ラッパーを除去して&lt;br/&gt;内部コマンドを抽出"]
+        DirectCmd["&#x1F4BB; 直接コマンド"]
+    end
+
+    subgraph DenyCheck["&#x1F6E1;&#xFE0F; deny ルールチェック"]
+        IsDangerous{"危険な&lt;br/&gt;コマンド?"}
+        Block["&#x1F6AB; ブロック"]
+        FindCheck{"find -exec&lt;br/&gt;または -delete?"}
+        PermPrompt["&#x26A0;&#xFE0F; パーミッション&lt;br/&gt;プロンプト表示"]
+        Allow["&#x2705; 実行許可"]
+    end
+
+    subgraph Wrappers["&#x1F4CB; 検出対象ラッパー"]
+        direction LR
+        Env["env"]
+        Sudo["sudo"]
+        Watch["watch"]
+        Ionice["ionice"]
+        Setsid["setsid"]
+        Env ~~~ Sudo ~~~ Watch ~~~ Ionice ~~~ Setsid
+    end
+
+    RawCmd --> IsWrapped
+    IsWrapped -->|Yes| Unwrap
+    IsWrapped -->|No| DirectCmd
+    Unwrap --> IsDangerous
+    DirectCmd --> IsDangerous
+    IsDangerous -->|Yes| Block
+    IsDangerous -->|No| FindCheck
+    FindCheck -->|Yes| PermPrompt
+    FindCheck -->|No| Allow
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef danger fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef warn fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef safe fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef input fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+
+    class Input,WrapperDetect,DenyCheck platform
+    class Wrappers platform
+    class RawCmd input
+    class IsWrapped,IsDangerous,FindCheck decision
+    class Block danger
+    class PermPrompt warn
+    class Allow safe
+    class Unwrap,DirectCmd process
+    class Env,Sudo,Watch,Ionice,Setsid process
+                </pre>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 7. New Features -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">新機能 (15 件)</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x1F310; deniedDomains 設定</h3>
+                    <p>sandbox.network.deniedDomains により特定のドメインをブロック可能。allowedDomains のワイルドカードで広範に許可しつつ、個別のドメインをブロックする粒度の細かいネットワーク制御が可能になりました。</p>
+                    <span class="badge badge-security">セキュリティ</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4DC; フルスクリーン選択スクロール</h3>
+                    <p>Shift+Up/Down で選択を拡張する際、選択範囲が画面の端を超えるとビューポートが自動スクロール。Ctrl+A/Ctrl+E が論理行の先頭/末尾に移動するようになり、readline の動作と一致します。</p>
+                    <span class="badge badge-ux">UX 改善</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F504; /loop 改善</h3>
+                    <p>Esc キーでペンディング中のウェイクアップをキャンセル可能。ウェイクアップ時の表示が "Claude resuming /loop wakeup" に明確化されました。</p>
+                    <span class="badge badge-new">改善</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F50D; /ultrareview 強化</h3>
+                    <p>並列化されたチェックによる高速起動、起動ダイアログでの diffstat 表示、アニメーション付きの起動状態が追加されました。</p>
+                    <span class="badge badge-new">高速化</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4F1; リモートコントロール強化</h3>
+                    <p>リモートコントロールから /extra-usage が利用可能に。@ ファイルのオートコンプリート候補をクエリできるようになりました。</p>
+                    <span class="badge badge-remote">リモート</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x23F1;&#xFE0F; サブエージェントストール検出</h3>
+                    <p>ストリーム中にストールしたサブエージェントが、無限に待機する代わりに 10 分後に明確なエラーで失敗するようになりました。</p>
+                    <span class="badge badge-new">信頼性</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4BB; Bash コメント行表示改善</h3>
+                    <p>複数行コマンドの最初の行がコメントの場合、トランスクリプトにコマンド全体が表示。UI スプーフィングの攻撃ベクターが閉じられました。</p>
+                    <span class="badge badge-security">セキュリティ</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4C2; cd ノーオプの自動承認</h3>
+                    <p>cd が現在のディレクトリへの移動の場合、パーミッションプロンプトがトリガーされなくなりました。</p>
+                    <span class="badge badge-ux">UX 改善</span>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4CA; OTEL_LOG_RAW_API_BODIES</h3>
+                    <p>完全な API リクエスト/レスポンスボディを OpenTelemetry ログイベントとして出力するデバッグ用環境変数が追加されました。</p>
+                    <span class="badge badge-debug">デバッグ</span>
+                </div>
+            </div>
+
+            <h3 class="sub-title" style="margin-top: 28px;">その他の新機能</h3>
+            <div class="changes-list">
+                <div class="change-item">
+                    <span class="change-icon">&#x1FA9F;</span>
+                    <div>
+                        <h4>Windows: Ctrl+Backspace で単語削除</h4>
+                        <p>Windows 環境で Ctrl+Backspace が前の単語を削除するようになりました。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x1F517;</span>
+                    <div>
+                        <h4>長い URL の折り返し対応</h4>
+                        <p>レスポンスや Bash 出力中の長い URL が行をまたいで折り返されても、クリック可能な状態が維持されます (OSC 8 ハイパーリンク対応ターミナル)。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 8. Bug Fixes -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 (20 件 + ホットフィックス 1 件)</h2>
+            <div class="bugfix-grid">
+                <div class="bugfix-category">
+                    <h4>&#x1F50C; MCP / ツール修正 (2 件)</h4>
+                    <ul>
+                        <li>MCP 同時呼び出しタイムアウトの修正</li>
+                        <li>ToolSearch ランキングの修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x2328;&#xFE0F; 入力 / キーバインド修正 (3 件)</h4>
+                    <ul>
+                        <li>Cmd+Backspace/Ctrl+U の修正</li>
+                        <li>プロンプトカーソルの消失修正</li>
+                        <li>セッションリキャップの自動発火修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x1F5A5;&#xFE0F; UI / 表示修正 (4 件)</h4>
+                    <ul>
+                        <li>マークダウンテーブルのパイプ文字修正</li>
+                        <li>/copy のテーブル整列修正</li>
+                        <li>コピートーストの文字数カウント修正</li>
+                        <li>補完メニューの位置修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x1F916; サブエージェント / セッション修正 (3 件)</h4>
+                    <ul>
+                        <li>メッセージ誤帰属の修正</li>
+                        <li>長いコンテキストのコンパクト化修正</li>
+                        <li>/effort auto の確認メッセージ修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x1F512; サンドボックス / セキュリティ修正 (1 件)</h4>
+                    <ul>
+                        <li>dangerouslyDisableSandbox がパーミッションなしに実行される重大な問題の修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x1F50C; プラグイン修正 (1 件)</h4>
+                    <ul>
+                        <li>plugin install のバージョン競合検出</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x1F4F1; リモートコントロール修正 (3 件)</h4>
+                    <ul>
+                        <li>サブエージェントトランスクリプトのストリーミング</li>
+                        <li>セッションのアーカイブ</li>
+                        <li>"Refine with Ultraplan" の URL 表示</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x1FA9F; プラットフォーム互換性修正 (3 件)</h4>
+                    <ul>
+                        <li>Windows /insights クラッシュの修正</li>
+                        <li>終了確認ダイアログの修正</li>
+                        <li>Opus 4.7 Bedrock ARN 互換性修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x2699;&#xFE0F; SDK / 画像処理修正 (2 件)</h4>
+                    <ul>
+                        <li>SDK 画像コンテンツブロックのクラッシュ修正</li>
+                        <li>CLAUDE_CODE_EXTRA_BODY エフォート設定の修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-category">
+                    <h4>&#x1F527; ホットフィックス v2.1.114 (1 件)</h4>
+                    <ul>
+                        <li>エージェントチームのパーミッションダイアログクラッシュの修正</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 9. Code Samples -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSONC</span>
+                    <span class="code-title">sandbox.network.deniedDomains の設定</span>
+                </div>
+                <pre><code class="language-json">// .claude/settings.json
+{
+  "sandbox": {
+    "network": {
+      "allowedDomains": ["*.example.com", "api.github.com"],
+      "deniedDomains": ["admin.example.com", "internal.example.com"]
+    }
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">OTEL_LOG_RAW_API_BODIES によるデバッグ</span>
+                </div>
+                <pre><code class="language-bash"># API リクエスト/レスポンスボディの完全なログ出力を有効化
+export OTEL_LOG_RAW_API_BODIES=1
+
+# Claude Code を実行
+claude "テストを作成してください"
+# OpenTelemetry ログイベントに完全な API ボディが含まれる</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/loop の改善された操作</span>
+                </div>
+                <pre><code class="language-bash"># /loop を開始
+&gt; /loop 5m "ビルドステータスを確認してください"
+
+# ウェイクアップ時の表示
+# "Claude resuming /loop wakeup"
+
+# Esc キーでペンディング中のウェイクアップをキャンセル
+# (次のウェイクアップまで待つ必要がなくなる)</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">find コマンドのセキュリティ変更</span>
+                </div>
+                <pre><code class="language-bash"># ファイル検索 (安全) - 引き続き自動承認
+find . -name "*.ts"
+
+# 任意コマンド実行 (危険) - 自動承認されなくなった
+find . -name "*.log" -exec rm {} \;
+
+# ファイル削除 (危険) - 自動承認されなくなった
+find . -name "*.tmp" -delete</code></pre>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 10. npm Distribution Flow -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">npm 配布フロー</h2>
+
+            <div class="tech-detail">
+                <h4>&#x1F4E6; npm オプショナル依存関係による配布</h4>
+                <p>npm パッケージのインストール時にプラットフォーム固有のオプショナル依存関係が自動的にダウンロードされ、CLI 起動時にネイティブバイナリが使用されます。macOS arm64、macOS x64、Linux x64、Windows x64 の各プラットフォーム別パッケージが提供されます。</p>
+            </div>
+
+            <div class="mermaid-container">
+                <h4>npm オプショナル依存関係による配布フロー</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph NPMInstall["&#x1F4E6; npm install @anthropic-ai/claude-code"]
+        PackageJSON["&#x1F4CB; package.json&lt;br/&gt;optionalDependencies"]
+        PlatformDetect{"&#x1F50D; プラットフォーム&lt;br/&gt;検出"}
+    end
+
+    subgraph Platforms["&#x1F5A5;&#xFE0F; プラットフォーム別パッケージ"]
+        direction LR
+        DarwinARM["&#x1F34E; darwin-arm64"]
+        DarwinX64["&#x1F34E; darwin-x64"]
+        LinuxPkg["&#x1F427; linux-x64"]
+        WinPkg["&#x1FA9F; win32-x64"]
+        DarwinARM ~~~ DarwinX64 ~~~ LinuxPkg ~~~ WinPkg
+    end
+
+    subgraph Runtime["&#x26A1; 実行時"]
+        CLIEntry["&#x1F680; CLI エントリポイント"]
+        FindBinary["&#x1F50D; ネイティブバイナリ検索"]
+        SpawnBinary["&#x26A1; バイナリ spawn"]
+    end
+
+    PackageJSON --> PlatformDetect
+    PlatformDetect -->|macOS ARM| DarwinARM
+    PlatformDetect -->|macOS x64| DarwinX64
+    PlatformDetect -->|Linux x64| LinuxPkg
+    PlatformDetect -->|Windows x64| WinPkg
+
+    Platforms -.-> CLIEntry
+    CLIEntry --> FindBinary
+    FindBinary --> SpawnBinary
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef binary fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class NPMInstall,Runtime platform
+    class Platforms layer
+    class PackageJSON,CLIEntry,FindBinary,SpawnBinary process
+    class PlatformDetect decision
+    class DarwinARM,DarwinX64,LinuxPkg,WinPkg binary
+                </pre>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 11. Overview Diagram -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">全体像</h2>
+
+            <div class="mermaid-container">
+                <h4>v2.1.113-v2.1.114 変更点の全体像</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["&#x1F5A5;&#xFE0F; Claude Code v2.1.113-v2.1.114 - 40 項目"]
+        subgraph Architecture["&#x1F3D7;&#xFE0F; アーキテクチャ変更 1 件"]
+            NativeBin["&#x26A1; ネイティブバイナリ&lt;br/&gt;アーキテクチャ移行"]
+        end
+
+        subgraph NewFeatures["&#x2728; 新機能 15 件"]
+            direction LR
+            DeniedDomains["&#x1F310; deniedDomains&lt;br/&gt;ドメインブロック"]
+            FSScroll["&#x1F4DC; フルスクリーン&lt;br/&gt;選択スクロール"]
+            LoopImprove["&#x1F504; /loop 改善&lt;br/&gt;Esc キャンセル"]
+            UltraImprove["&#x1F50D; /ultrareview&lt;br/&gt;高速化・diffstat"]
+            DeniedDomains ~~~ FSScroll ~~~ LoopImprove ~~~ UltraImprove
+        end
+
+        subgraph Security["&#x1F512; セキュリティ強化 3 件"]
+            direction LR
+            MacPrivate["&#x1F34E; macOS&lt;br/&gt;/private パス保護"]
+            WrapperDeny["&#x1F6E1;&#xFE0F; コマンドラッパー&lt;br/&gt;deny ルール適用"]
+            FindExec["&#x1F50D; find -exec&lt;br/&gt;自動承認防止"]
+            MacPrivate ~~~ WrapperDeny ~~~ FindExec
+        end
+
+        subgraph BugFixes["&#x1F41B; バグ修正 20 件 + ホットフィックス 1 件"]
+            direction LR
+            MCPTimeout["&#x1F50C; MCP タイムアウト&lt;br/&gt;修正"]
+            SandboxFix["&#x1F512; サンドボックス&lt;br/&gt;外実行修正"]
+            RemoteFix["&#x1F4F1; リモートコントロール&lt;br/&gt;3 件修正"]
+            OpusFix["&#x2B50; Opus 4.7&lt;br/&gt;Bedrock 互換性"]
+            MCPTimeout ~~~ SandboxFix ~~~ RemoteFix ~~~ OpusFix
+        end
+    end
+
+    User(["&#x1F464; ユーザー"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef arch fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef security fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef fix fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class Architecture,NewFeatures,Security,BugFixes layer
+    class NativeBin arch
+    class DeniedDomains,FSScroll,LoopImprove,UltraImprove feature
+    class MacPrivate,WrapperDeny,FindExec security
+    class MCPTimeout,SandboxFix,RemoteFix,OpusFix fix
+    class User user
+                </pre>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 12. Developer Impact -->
+        <!-- ============================================ -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <div class="use-case">
+                <h4>&#x1F464; 全ての Claude Code ユーザー</h4>
+                <p>ネイティブバイナリアーキテクチャへの移行により、起動速度とメモリ効率が向上する可能性があります。20 件のバグ修正により全体的な安定性が大幅に改善されています。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x1F512; セキュリティを重視する組織</h4>
+                <p>3 件のセキュリティ強化と dangerouslyDisableSandbox の修正により、Bash ツールのセキュリティモデルが大幅に強化されました。sandbox.network.deniedDomains 設定によりネットワークアクセスの細粒度制御も可能になりました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x1F34E; macOS ユーザー</h4>
+                <p>/private/{etc,var,tmp,home} パスの保護により、macOS 固有のシンボリックリンク構造に起因するセキュリティギャップが解消されました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x1F50C; MCP ツール利用者</h4>
+                <p>同時呼び出しタイムアウトの修正と ToolSearch ランキングの修正により、MCP ツールの信頼性が向上しています。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x1F4F1; リモートコントロール利用者</h4>
+                <p>サブエージェントトランスクリプトのストリーミング、セッションアーカイブ、/extra-usage 対応、@ ファイル補完の 4 件の改善により、モバイル/Web からの操作体験が大幅に向上しました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x2B50; Bedrock 経由の Opus 4.7 利用者</h4>
+                <p>アプリケーション推論プロファイル ARN 使用時の thinking.type.enabled 400 エラーが修正されました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x1F91D; エージェントチーム利用者</h4>
+                <p>v2.1.114 のホットフィックスにより、チームメイトからのツールパーミッションリクエスト時のクラッシュが解消されました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x1F50C; プラグイン開発者</h4>
+                <p>plugin install のバージョン競合検出が改善され、依存関係の整合性が確保されるようになりました。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>&#x2699;&#xFE0F; CI/CD パイプライン運用者</h4>
+                <p>OTEL_LOG_RAW_API_BODIES 環境変数によるデバッグ、サブエージェントストール検出のタイムアウト、SDK 画像コンテンツブロックのグレースフルデグレードにより、自動化環境の信頼性が向上しました。</p>
+            </div>
+
+            <h3 class="sub-title" style="margin-top: 28px;">必要なアクション</h3>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">最新バージョンへの更新</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+
+            <h3 class="sub-title" style="margin-top: 28px;">確認が推奨される項目</h3>
+            <div class="changes-list">
+                <div class="change-item">
+                    <span class="change-icon">&#x26A1;</span>
+                    <div>
+                        <h4>ネイティブバイナリの動作確認</h4>
+                        <p>アップデート後に claude --version で正常に起動することを確認してください。ネイティブバイナリの spawn に失敗する場合は、npm の再インストールを試してください。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x1F512;</span>
+                    <div>
+                        <h4>セキュリティ設定の確認</h4>
+                        <p>Bash(rm:*) や Bash(find:*) の許可ルールを使用している場合、v2.1.113 のセキュリティ強化によりこれらのルールの動作が変わります。特に find -exec を自動承認に依存していた場合は、ワークフローの見直しが必要です。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x1F310;</span>
+                    <div>
+                        <h4>deniedDomains の設定</h4>
+                        <p>ネットワークアクセスを制限する必要がある環境では、sandbox.network.deniedDomains を設定してください。</p>
+                    </div>
+                </div>
+                <div class="change-item">
+                    <span class="change-icon">&#x2B50;</span>
+                    <div>
+                        <h4>Bedrock Opus 4.7</h4>
+                        <p>Bedrock アプリケーション推論プロファイル ARN 経由で Opus 4.7 を使用している場合、thinking.type.enabled エラーが解消されていることを確認してください。</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="sub-title" style="margin-top: 28px;">移行ガイド: ネイティブバイナリアーキテクチャ</h3>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">v2.1.113 のアーキテクチャ変更は自動的に適用されます。npm パッケージのインストール時にプラットフォーム固有のオプショナル依存関係が自動的にダウンロードされます。</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">問題がある場合の再インストール</span>
+                </div>
+                <pre><code class="language-bash"># アップデート
+npm update -g @anthropic-ai/claude-code
+
+# 正常に動作することを確認
+claude --version
+
+# 問題がある場合は再インストール
+npm uninstall -g @anthropic-ai/claude-code
+npm install -g @anthropic-ai/claude-code</code></pre>
+            </div>
+
+            <h3 class="sub-title" style="margin-top: 28px;">移行ガイド: find コマンドの許可ルール見直し</h3>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.112 以前)</h4>
+                    <pre>Bash(find:*) で全てが自動承認
+find . -name "*.log" -exec rm {} \;
+→ 自動承認される (危険)</pre>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.113 以降)</h4>
+                    <pre>find -exec と find -delete は
+パーミッション確認が必要
+find . -name "*.ts"
+→ 引き続き自動承認 (安全)</pre>
+                </div>
+            </div>
+
+            <h3 class="sub-title" style="margin-top: 28px;">移行ガイド: deniedDomains の設定</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSONC</span>
+                    <span class="code-title">deniedDomains の設定例</span>
+                </div>
+                <pre><code class="language-json">// .claude/settings.json
+{
+  "sandbox": {
+    "network": {
+      // 広範にドメインを許可
+      "allowedDomains": ["*.company.com"],
+      // 特定のドメインをブロック
+      "deniedDomains": [
+        "internal-admin.company.com",
+        "secrets.company.com"
+      ]
+    }
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- 13. Footer -->
+        <!-- ============================================ -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連:</strong> <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></p>
+            <p><strong>前バージョン:</strong> <a href="./2026-04-16-claude-code-v2-1-111-v2-1-112.html">Claude Code v2.1.111-v2.1.112</a></p>
+            <p style="margin-top: 12px; font-size: 12px; opacity: 0.7;">このインフォグラフィックは Claude Code v2.1.113-v2.1.114 リリースレポートに基づいて自動生成されました。</p>
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

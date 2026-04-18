@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Design - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .stat-detail {
+            font-size: 11px;
+            opacity: 0.65;
+            margin-top: 6px;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card .feature-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card .badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 4px;
+        }
+
+        /* Spec Table */
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .spec-table thead th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .spec-table thead th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .spec-table thead th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .spec-table tbody td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .spec-table tbody tr:nth-child(even) {
+            background: var(--anthropic-light);
+        }
+
+        .spec-table tbody tr:last-child td:first-child {
+            border-radius: 0 0 0 10px;
+        }
+
+        .spec-table tbody tr:last-child td:last-child {
+            border-radius: 0 0 10px 0;
+        }
+
+        .spec-table .highlight {
+            color: #059669;
+            font-weight: 700;
+        }
+
+        .spec-table .breaking {
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .use-case ul {
+            margin-top: 8px;
+            padding-left: 18px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .use-case ul li {
+            margin-bottom: 4px;
+            line-height: 1.5;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Quote Cards */
+        .quote-card {
+            background: var(--anthropic-cream);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .quote-card blockquote {
+            font-size: 14px;
+            font-style: italic;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .quote-card .quote-source {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .quote-card .quote-company {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .quote-card .quote-note {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        /* Behavior Item */
+        .behavior-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .behavior-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            border-left: 3px solid var(--anthropic-coral);
+        }
+
+        .behavior-item .b-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .behavior-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 13px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            line-height: 1.5;
+        }
+
+        .comparison-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, var(--anthropic-dark) 0%, #2d2d44 100%);
+            color: white;
+            padding: 28px;
+            border-radius: 16px;
+            margin-top: 16px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            line-height: 1.7;
+            opacity: 0.9;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer ul li {
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ============================================================ -->
+        <!-- 1. Header -->
+        <!-- ============================================================ -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">新製品</span>
+                <h1>Claude Design</h1>
+                <p class="date">2026-04-17</p>
+                <p class="subtitle">Anthropic Labs が AI デザインコラボレーションツールをリサーチプレビューとして公開。Claude Opus 4.7 搭載で、ブランド統合からエクスポート、Claude Code ハンドオフまでデザインワークフロー全体をカバー。</p>
+            </div>
+        </header>
+
+        <!-- ============================================================ -->
+        <!-- 2. 概要 (Key Points) -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🎨</div>
+                    <div class="key-point-content">
+                        <h3>AI デザインコラボレーションツール</h3>
+                        <p>Claude Design は Anthropic Labs の新製品で、Claude と協力してデザイン、プロトタイプ、スライド、ワンページャーなどの洗練されたビジュアルワークを作成できるツールです。Claude Opus 4.7 を搭載しています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏷️</div>
+                    <div class="key-point-content">
+                        <h3>ブランド統合機能</h3>
+                        <p>オンボーディング時にチームのコードベースとデザインファイルを読み取り、デザインシステム (カラー、タイポグラフィ、コンポーネント) を自動構築。すべてのプロジェクトでブランドガイドラインに自動準拠します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔗</div>
+                    <div class="key-point-content">
+                        <h3>Claude Code ハンドオフ</h3>
+                        <p>Claude Design で作成したデザインをハンドオフバンドルとしてパッケージ化し、Claude Code でそのまま実装に移行可能。デザインから実装までの一気通貫ワークフローを実現します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📤</div>
+                    <div class="key-point-content">
+                        <h3>多彩なエクスポート</h3>
+                        <p>内部 URL、フォルダ出力、Canva、PDF、PPTX、スタンドアロン HTML の 6 形式に対応。Canva との統合により、シームレスな編集・共同作業が可能です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">👥</div>
+                    <div class="key-point-content">
+                        <h3>組織レベルのコラボレーション</h3>
+                        <p>組織スコープの共有、3 段階のアクセス権限管理 (プライベート / 閲覧 / 編集)、グループ会話機能を備え、チーム内での共同デザイン作業を支援します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 3. 統計 (Stats) -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">数字で見る Claude Design</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">主要機能</div>
+                    <div class="stat-detail">ブランド統合 / インポート / 編集 / コラボ / エクスポート / ハンドオフ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">対応プラン</div>
+                    <div class="stat-detail">Pro / Max / Team / Enterprise + Free 不可</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">エクスポート形式</div>
+                    <div class="stat-detail">URL / フォルダ / Canva / PDF / PPTX / HTML</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">90%</div>
+                    <div class="stat-label">プロンプト数削減</div>
+                    <div class="stat-detail">Brilliant 社の事例: 20+ → 2</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 4. 主要機能 (Feature Cards) -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🏷️</div>
+                    <h3>ブランド統合</h3>
+                    <p>オンボーディング時にコードベースとデザインファイルからデザインシステムを自動構築。カラーパレット、タイポグラフィ、コンポーネントが全プロジェクトで自動適用されます。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📥</div>
+                    <h3>マルチソースインポート</h3>
+                    <p>テキストプロンプト、画像 / ドキュメント (DOCX、PPTX、XLSX)、コードベース参照、Web キャプチャなど、さまざまな入力ソースからプロジェクトを開始できます。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✏️</div>
+                    <h3>編集コントロール</h3>
+                    <p>インラインコメントで特定要素への修正指示、テキスト直接編集、スペーシング / カラー / レイアウトの調整ノブによるライブ微調整が可能です。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>コラボレーション</h3>
+                    <p>組織スコープの共有、プライベート / 閲覧 / 編集の 3 段階アクセス権限管理、チームメンバーとのグループ会話機能を搭載しています。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📤</div>
+                    <h3>エクスポート</h3>
+                    <p>内部 URL、フォルダ出力、Canva 直接エクスポート、PDF、PPTX (PowerPoint)、スタンドアロン HTML ファイルの 6 形式に対応しています。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Claude Code ハンドオフ <span class="badge">NEW</span></h3>
+                    <p>デザイン成果物をハンドオフバンドルとしてパッケージ化し、Claude Code に引き渡し。デザインインテントを正確に伝達し、そのまま実装に移行できます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 5. 対応フォーマット -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">対応フォーマット</h2>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px;">入力フォーマット</h3>
+            <div style="overflow-x: auto; margin-bottom: 24px;">
+                <table class="spec-table">
+                    <thead>
+                        <tr>
+                            <th>フォーマット</th>
+                            <th>説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>テキスト</td>
+                            <td>自然言語プロンプト</td>
+                        </tr>
+                        <tr>
+                            <td>画像</td>
+                            <td>PNG、JPG など</td>
+                        </tr>
+                        <tr>
+                            <td>DOCX</td>
+                            <td>Microsoft Word 文書</td>
+                        </tr>
+                        <tr>
+                            <td>PPTX</td>
+                            <td>Microsoft PowerPoint プレゼンテーション</td>
+                        </tr>
+                        <tr>
+                            <td>XLSX</td>
+                            <td>Microsoft Excel スプレッドシート</td>
+                        </tr>
+                        <tr>
+                            <td>コードベース</td>
+                            <td>プロジェクトのソースコード</td>
+                        </tr>
+                        <tr>
+                            <td>Web URL</td>
+                            <td>Web キャプチャツールで取得</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px;">出力フォーマット</h3>
+            <div style="overflow-x: auto;">
+                <table class="spec-table">
+                    <thead>
+                        <tr>
+                            <th>フォーマット</th>
+                            <th>説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>内部 URL</td>
+                            <td>Claude Design 上での共有リンク</td>
+                        </tr>
+                        <tr>
+                            <td>フォルダ</td>
+                            <td>ローカルフォルダへの出力</td>
+                        </tr>
+                        <tr>
+                            <td>Canva</td>
+                            <td>Canva プラットフォームへの直接エクスポート</td>
+                        </tr>
+                        <tr>
+                            <td>PDF</td>
+                            <td>PDF ドキュメント</td>
+                        </tr>
+                        <tr>
+                            <td>PPTX</td>
+                            <td>PowerPoint ファイル</td>
+                        </tr>
+                        <tr>
+                            <td>HTML</td>
+                            <td>スタンドアロン HTML ファイル</td>
+                        </tr>
+                        <tr>
+                            <td>ハンドオフバンドル</td>
+                            <td>Claude Code 用のパッケージ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 6. ユースケース -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+
+            <div class="use-case">
+                <h4>1. リアルなプロトタイプ</h4>
+                <p>デザイナーが静的なモックアップをインタラクティブなプロトタイプに変換。Claude Opus 4.7 の高度な推論能力により、プロフェッショナルレベルの成果物を生成します。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>2. プロダクトワイヤフレームとモックアップ</h4>
+                <p>PM が機能フローをスケッチし、Claude Code に引き渡し。ハンドオフバンドルにより、デザインインテントを正確に伝達して実装に移行できます。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>3. デザインエクスプロレーション</h4>
+                <p>多様なデザイン方向性を迅速に作成。ブランド統合機能により、すべてのバリエーションが組織のデザインシステムに自動準拠します。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>4. ピッチデッキとプレゼンテーション</h4>
+                <p>アウトラインからオンブランドのデッキを数分で作成。PPTX や Canva にエクスポートして、さらなる編集や共同作業が可能です。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>5. マーケティングコラテラル</h4>
+                <p>ランディングページ、ソーシャルメディアアセット、キャンペーンビジュアルを作成。Web キャプチャ機能で既存サイトを参考にしたデザインも可能です。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>6. フロンティアデザイン</h4>
+                <p>音声、動画、シェーダー、3D、AI を活用したコード駆動プロトタイプ。従来のデザインツールでは実現が難しかったインタラクティブな表現を可能にします。</p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 7. アーキテクチャ図 -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <!-- Diagram 1: Anthropic プロダクトエコシステム -->
+            <div class="mermaid-container">
+                <h4>Anthropic プロダクトエコシステムにおける Claude Design の位置付け</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Anthropic["🏢 Anthropic プラットフォーム"]
+        subgraph Products["📦 製品ラインナップ"]
+            direction LR
+            ClaudeAI["💬 Claude.ai&lt;br/&gt;チャット / 対話"]
+            ClaudeDesign["🎨 Claude Design&lt;br/&gt;デザイン / ビジュアル"]
+            ClaudeCode["⌨️ Claude Code&lt;br/&gt;コーディング"]
+            ClaudeAI ~~~ ClaudeDesign ~~~ ClaudeCode
+        end
+
+        subgraph Foundation["🤖 基盤モデル"]
+            direction LR
+            Opus["⭐ Opus 4.7"]
+            Sonnet["🎵 Sonnet 4.6"]
+            Haiku["🐦 Haiku 4.5"]
+            Opus ~~~ Sonnet ~~~ Haiku
+        end
+
+        subgraph API["🔌 API レイヤー"]
+            direction LR
+            MessagesAPI["📨 Messages API"]
+            FilesAPI["📁 Files API"]
+            ToolUse["🔧 Tool Use"]
+            MessagesAPI ~~~ FilesAPI ~~~ ToolUse
+        end
+    end
+
+    User(["👤 ユーザー"]) --> ClaudeAI
+    User --> ClaudeDesign
+    User --> ClaudeCode
+    Developer(["👩‍💻 開発者"]) --> API
+
+    ClaudeDesign -->|"ハンドオフバンドル"| ClaudeCode
+    ClaudeDesign -->|"Canva エクスポート"| Canva{{"🖌️ Canva"}}
+
+    Products --> Foundation
+    API --> Foundation
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef product fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef design fill:#F3E5F5,stroke:#CE93D8,stroke-width:2px,color:#4A148C
+    classDef model fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef api fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef external fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class Anthropic platform
+    class Products,Foundation,API platform
+    class ClaudeAI,ClaudeCode product
+    class ClaudeDesign design
+    class Opus,Sonnet,Haiku model
+    class MessagesAPI,FilesAPI,ToolUse api
+    class User,Developer user
+    class Canva external
+                </pre>
+            </div>
+
+            <!-- Diagram 2: Claude Design のワークフロー -->
+            <div class="mermaid-container">
+                <h4>Claude Design のワークフロー</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Input["📥 入力ソース"]
+        direction LR
+        TextPrompt["📝 テキスト&lt;br/&gt;プロンプト"]
+        FileUpload["📄 ファイル&lt;br/&gt;DOCX / PPTX / XLSX"]
+        CodeRef["💻 コードベース&lt;br/&gt;参照"]
+        WebCapture["🌐 Web&lt;br/&gt;キャプチャ"]
+        TextPrompt ~~~ FileUpload ~~~ CodeRef ~~~ WebCapture
+    end
+
+    subgraph Onboarding["🎨 デザインシステム構築"]
+        BrandRead["📖 ブランド情報読み取り"]
+        DesignSystem["🎯 カラー / タイポグラフィ /&lt;br/&gt;コンポーネント自動構築"]
+        BrandRead --> DesignSystem
+    end
+
+    subgraph Editing["✏️ 編集と調整"]
+        direction LR
+        InlineComment["💬 インライン&lt;br/&gt;コメント"]
+        DirectEdit["📝 テキスト&lt;br/&gt;直接編集"]
+        AdjustKnob["🎛️ スペーシング /&lt;br/&gt;カラー / レイアウト"]
+        InlineComment ~~~ DirectEdit ~~~ AdjustKnob
+    end
+
+    subgraph Collaboration["👥 コラボレーション"]
+        direction LR
+        Share["🔗 組織スコープ&lt;br/&gt;共有"]
+        Access["🔒 アクセス権限&lt;br/&gt;管理"]
+        GroupChat["💬 グループ&lt;br/&gt;会話"]
+        Share ~~~ Access ~~~ GroupChat
+    end
+
+    subgraph Export["📤 出力"]
+        direction LR
+        URL["🔗 内部 URL"]
+        PDF["📄 PDF"]
+        PPTX["📊 PPTX"]
+        HTML["🌐 HTML"]
+        CanvaExp["🖌️ Canva"]
+        Handoff["📦 Claude Code&lt;br/&gt;ハンドオフ"]
+        URL ~~~ PDF ~~~ PPTX ~~~ HTML ~~~ CanvaExp ~~~ Handoff
+    end
+
+    Input --> Onboarding
+    Onboarding --> Generation["🤖 Claude Opus 4.7&lt;br/&gt;デザイン生成"]
+    Generation --> Editing
+    Editing --> Collaboration
+    Collaboration --> Export
+
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef onboarding fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef editing fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef collab fill:#F3E5F5,stroke:#CE93D8,stroke-width:2px,color:#4A148C
+    classDef export fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef model fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class Input,Onboarding,Editing,Collaboration,Export container
+    class TextPrompt,FileUpload,CodeRef,WebCapture input
+    class BrandRead,DesignSystem onboarding
+    class InlineComment,DirectEdit,AdjustKnob editing
+    class Share,Access,GroupChat collab
+    class URL,PDF,PPTX,HTML,CanvaExp,Handoff export
+    class Generation model
+                </pre>
+            </div>
+
+            <!-- Diagram 3: Claude Design から Claude Code へのハンドオフフロー -->
+            <div class="mermaid-container">
+                <h4>Claude Design から Claude Code へのハンドオフフロー</h4>
+                <pre class="mermaid">
+sequenceDiagram
+    participant U as 👤 ユーザー
+    participant CD as 🎨 Claude Design
+    participant O as 🤖 Opus 4.7
+    participant CC as ⌨️ Claude Code
+
+    U->>CD: デザインプロンプト入力
+    CD->>O: デザイン生成リクエスト
+    O-->>CD: デザイン成果物
+
+    U->>CD: インライン編集で微調整
+    CD->>O: 修正リクエスト
+    O-->>CD: 更新されたデザイン
+
+    U->>CD: ハンドオフリクエスト
+    CD->>O: バンドル生成
+    O-->>CD: ハンドオフバンドル
+
+    CD->>CC: デザインバンドル転送
+    CC->>O: コード実装リクエスト
+    O-->>CC: 実装コード生成
+    CC-->>U: 実装済みプロジェクト
+                </pre>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 8. パートナーの反応 -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">パートナーの反応</h2>
+
+            <div class="quote-card">
+                <blockquote>"Claude Design から Canva へのシームレスな移行を実現。"</blockquote>
+                <div class="quote-source">Melanie Perkins (CEO)</div>
+                <div class="quote-company">Canva</div>
+                <div class="quote-note">Canva との統合により、Claude Design で生成したデザインを Canva プラットフォームに直接エクスポートし、さらなる編集や共同作業が可能になります。</div>
+            </div>
+
+            <div class="quote-card">
+                <blockquote>"複雑なページの作成に 20 以上のプロンプトが必要だったものが 2 プロンプトに削減。Claude Code ハンドオフでデザインインテントが正確に伝達される。"</blockquote>
+                <div class="quote-source">Olivia Xu</div>
+                <div class="quote-company">Brilliant</div>
+                <div class="quote-note">従来のワークフローと比較して、プロンプト数が 90% 削減されるという大幅な効率改善が報告されています。</div>
+            </div>
+
+            <div class="quote-card">
+                <blockquote>"ミーティングが終わる前に動作するプロトタイプが完成。ブランドへの忠実さも維持される。"</blockquote>
+                <div class="quote-source">Aneesh Kethini</div>
+                <div class="quote-company">Datadog</div>
+                <div class="quote-note">リアルタイムでのプロトタイプ生成能力により、意思決定プロセスが大幅に加速されることが示されています。</div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 9. 利用可能プラン -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">利用可能プラン</h2>
+            <div style="overflow-x: auto;">
+                <table class="spec-table">
+                    <thead>
+                        <tr>
+                            <th>プラン</th>
+                            <th>利用可否</th>
+                            <th>デフォルト設定</th>
+                            <th>追加使用量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Pro</td>
+                            <td class="highlight">利用可能</td>
+                            <td>有効</td>
+                            <td>追加使用量あり</td>
+                        </tr>
+                        <tr>
+                            <td>Max</td>
+                            <td class="highlight">利用可能</td>
+                            <td>有効</td>
+                            <td>追加使用量あり</td>
+                        </tr>
+                        <tr>
+                            <td>Team</td>
+                            <td class="highlight">利用可能</td>
+                            <td>有効</td>
+                            <td>追加使用量あり</td>
+                        </tr>
+                        <tr>
+                            <td>Enterprise</td>
+                            <td class="highlight">利用可能</td>
+                            <td class="breaking">無効 (管理者が有効化)</td>
+                            <td>追加使用量あり</td>
+                        </tr>
+                        <tr>
+                            <td>Free</td>
+                            <td class="breaking">利用不可</td>
+                            <td>--</td>
+                            <td>--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 16px;">
+                <div class="behavior-item">
+                    <div class="b-icon">⚠️</div>
+                    <p><strong>Enterprise プラン</strong>: 管理者が Organization settings から手動で有効化する必要があります。</p>
+                </div>
+                <div class="behavior-item" style="margin-top: 12px;">
+                    <div class="b-icon">🔄</div>
+                    <p><strong>段階的ロールアウト</strong>: アクセスは段階的にロールアウト中であり、即座に利用できない場合があります。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 10. 開発者への影響 -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px;">対象ユーザー</h3>
+
+            <div class="use-case">
+                <h4>デザイナー</h4>
+                <p>プロトタイプの迅速な作成、デザインエクスプロレーションの高速化が可能になります。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>プロダクトマネージャー</h4>
+                <p>ワイヤフレームやモックアップの自主作成、Claude Code との連携によるデザインから実装への移行が効率化されます。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>マーケティングチーム</h4>
+                <p>プレゼン資料、ランディングページ、キャンペーンビジュアルの作成をセルフサービスで実施できます。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>開発者</h4>
+                <p>Claude Code ハンドオフによるデザインからの実装効率化。デザインインテントが正確に伝達されます。</p>
+            </div>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-top: 28px; margin-bottom: 16px;">一般ユーザー向けアクション</h3>
+
+            <div class="behavior-list">
+                <div class="behavior-item">
+                    <div class="b-icon">1️⃣</div>
+                    <p><strong>プランの確認</strong>: Claude Pro、Max、Team、Enterprise のいずれかのプランに加入していることを確認してください。</p>
+                </div>
+                <div class="behavior-item">
+                    <div class="b-icon">2️⃣</div>
+                    <p><strong>アクセスの確認</strong>: <a href="https://claude.ai/design" style="color: var(--anthropic-coral);">claude.ai/design</a> にアクセスし、ロールアウト対象かどうかを確認してください (段階的にロールアウト中)。</p>
+                </div>
+                <div class="behavior-item">
+                    <div class="b-icon">3️⃣</div>
+                    <p><strong>オンボーディングの実施</strong>: 初回利用時にコードベースやデザインファイルを読み込ませ、デザインシステムを構築してください。</p>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-top: 28px; margin-bottom: 16px;">エンタープライズ管理者向けアクション</h3>
+
+            <div class="behavior-list">
+                <div class="behavior-item">
+                    <div class="b-icon">1️⃣</div>
+                    <p><strong>アクセスの有効化</strong>: Claude Design はエンタープライズプランではデフォルトでオフです。Organization settings から管理者が手動で有効化する必要があります。</p>
+                </div>
+                <div class="behavior-item">
+                    <div class="b-icon">2️⃣</div>
+                    <p><strong>アクセスポリシーの策定</strong>: 組織内での共有ポリシー (プライベート / 閲覧 / 編集) を策定してください。</p>
+                </div>
+                <div class="behavior-item">
+                    <div class="b-icon">3️⃣</div>
+                    <p><strong>デザインシステムの準備</strong>: オンボーディングで読み込ませるコードベースやデザインファイルを準備してください。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 既存のデザインワークフローとの統合 -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">既存ワークフローとの統合</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (従来のワークフロー)</h4>
+                    <ul>
+                        <li>Figma でモックアップ作成 → 手動で開発者に共有</li>
+                        <li>PowerPoint で資料作成 → 手動でブランド適用</li>
+                        <li>デザイナーに依頼 → 複数回のレビューサイクル</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (Claude Design)</h4>
+                    <ul>
+                        <li>Claude Design でプロトタイプ作成 → Claude Code にハンドオフ</li>
+                        <li>Claude Design でオンブランドのデッキを自動生成</li>
+                        <li>Claude Design でラピッドプロトタイピング → 微調整</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 搭載モデル情報 -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">搭載モデル: Claude Opus 4.7</h2>
+            <div style="overflow-x: auto;">
+                <table class="spec-table">
+                    <thead>
+                        <tr>
+                            <th>特性</th>
+                            <th>内容</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>モデル</td>
+                            <td class="highlight">Claude Opus 4.7</td>
+                        </tr>
+                        <tr>
+                            <td>高解像度画像</td>
+                            <td>2576px / 3.75MP 対応</td>
+                        </tr>
+                        <tr>
+                            <td>ナレッジワーク</td>
+                            <td>.docx / .pptx の高度な処理</td>
+                        </tr>
+                        <tr>
+                            <td>Adaptive Thinking</td>
+                            <td>複雑なデザイン判断の推論</td>
+                        </tr>
+                        <tr>
+                            <td>コンテキストウィンドウ</td>
+                            <td>1M トークン</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- まとめ -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>
+                    <strong>Claude Design</strong> は、Anthropic Labs が公開した AI デザインコラボレーションツールであり、Claude のプロダクトエコシステムにおいてビジュアルワークという新たな領域をカバーする製品です。<strong>Claude Opus 4.7</strong> を搭載し、デザインシステムの自動構築、マルチソースインポート、きめ細かい編集コントロール、組織レベルのコラボレーション、多彩なエクスポートオプション、そして <strong>Claude Code へのハンドオフ</strong>機能を備えています。
+                </p>
+                <p style="margin-top: 12px;">
+                    特に注目すべきは、オンボーディング時にチームのコードベースとデザインファイルから<strong>デザインシステムを自動構築</strong>する機能です。これにより、生成されるすべてのデザインが組織のブランドガイドラインに自動的に準拠し、一貫したビジュアルアイデンティティを維持できます。
+                </p>
+                <p style="margin-top: 12px;">
+                    Brilliant の事例では、複雑なページ作成のプロンプト数が <strong>20 以上から 2 に削減</strong>されたと報告されており、デザインワークの効率を大幅に向上させる可能性があります。Claude Pro、Max、Team、Enterprise プランの契約者が利用可能で、Enterprise プランでは管理者が有効化する必要があります。
+                </p>
+                <p style="margin-top: 12px;">
+                    現在<strong>リサーチプレビュー</strong>として段階的にロールアウト中のため、<a href="https://claude.ai/design" style="color: var(--anthropic-coral);">claude.ai/design</a> からアクセスを確認してください。
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 11. Footer -->
+        <!-- ============================================================ -->
+        <footer class="footer">
+            <h4>出典・関連リンク</h4>
+            <ul>
+                <li><a href="https://www.anthropic.com/news/claude-design-anthropic-labs" target="_blank" rel="noopener noreferrer">Claude Design 公式発表</a></li>
+                <li><a href="https://claude.ai/design" target="_blank" rel="noopener noreferrer">Claude Design</a></li>
+                <li><a href="https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-7" target="_blank" rel="noopener noreferrer">Claude Opus 4.7 リリースノート</a></li>
+                <li><a href="https://support.claude.com/en/articles/12138966-release-notes" target="_blank" rel="noopener noreferrer">Claude Apps Release Notes</a></li>
+                <li><a href="https://claude.ai/code" target="_blank" rel="noopener noreferrer">Claude Code</a></li>
+                <li><a href="https://www.anthropic.com/news" target="_blank" rel="noopener noreferrer">Anthropic News</a></li>
+            </ul>
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+</body>
+</html>
