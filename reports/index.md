@@ -5,8 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-04-22](2026/2026-04-22-claude-code-v2-1-97-v2-1-98.md) - Claude Code v2.1.97 & v2.1.98 リリース -- セキュリティ強化・Vertex AI セットアップウィザード・NO_FLICKER 改善
 - [2026-04-20](2026/2026-04-20-claude-haiku-3-retirement.md) - Claude Haiku 3 モデルが廃止 -- API リクエストはエラーを返却、Claude Haiku 4.5 への移行が必要
 - [2026-04-20](2026/2026-04-20-claude-code-v2-1-116.md) - Claude Code v2.1.116 リリース: 大規模セッションの復元高速化、UX 全般の改善、セキュリティ修正を含む包括的アップデート
+- [2026-04-20](2026/2026-04-20-anthropic-amazon-5gw-compute.md) - Anthropic と Amazon が提携を拡大し、最大 5 ギガワットの新規コンピュート容量を確保
 - [2026-04-17](2026/2026-04-17-claude-design-anthropic-labs.md) - Claude Design -- Anthropic Labs が AI デザインコラボレーションツールをリサーチプレビューとして公開
 - [2026-04-17](2026/2026-04-17-claude-code-v2-1-113-v2-1-114.md) - Claude Code v2.1.113-v2.1.114 リリース: ネイティブバイナリアーキテクチャへの移行、セキュリティ強化、20 件超のバグ修正を含む 40 件の変更
 - [2026-04-16](2026/2026-04-16-claude-opus-4-7.md) - Claude Opus 4.7 リリース -- 高解像度画像対応・タスクバジェット・新エフォートレベルを搭載、Opus 4.6 からの破壊的変更あり

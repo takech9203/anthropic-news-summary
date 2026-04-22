@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.97 & v2.1.98 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --danger: #EF4444;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .security-badge {
+            display: inline-block;
+            background: var(--danger);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .header h1 {
+            font-size: 1.85rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Security Section */
+        .section-security {
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFF5F5 100%);
+            border: 2px solid rgba(239, 68, 68, 0.2);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.08);
+        }
+
+        .section-security .section-title::before {
+            background: var(--danger);
+        }
+
+        .security-alert {
+            background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+            border: 1px solid #FECACA;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .security-alert-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .security-alert-text {
+            font-size: 14px;
+            color: #991B1B;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .security-category {
+            background: #FFF5F5;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid #F87171;
+        }
+
+        .security-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .security-category h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #991B1B;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .security-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .security-category ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(239, 68, 68, 0.1);
+            line-height: 1.6;
+        }
+
+        .security-category ul li:last-child {
+            border-bottom: none;
+        }
+
+        .security-category ul li strong {
+            color: #B91C1C;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-icon.critical {
+            background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .stat-card.danger {
+            border: 2px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .stat-card.danger .stat-value {
+            color: #F87171;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-version {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            color: #8B6F4E;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        /* Category Labels */
+        .category-label {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .category-label.security { background: #FFEBEE; color: #C62828; }
+        .category-label.feature { background: #E8F5E9; color: #2E7D32; }
+        .category-label.fix { background: #E3F2FD; color: #1565C0; }
+        .category-label.mcp { background: #F3E5F5; color: #6A1B9A; }
+        .category-label.ui { background: #E8EAF6; color: #283593; }
+
+        /* Bug Fix Summary */
+        .bug-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .bug-category {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .bug-category.mcp-fix { border-left-color: #7C3AED; }
+        .bug-category.ui-fix { border-left-color: #3B82F6; }
+        .bug-category.noflicker-fix { border-left-color: #10B981; }
+        .bug-category.session-fix { border-left-color: #F59E0B; }
+        .bug-category.other-fix { border-left-color: #6B7280; }
+
+        .bug-category h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bug-category .bug-count {
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .bug-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-category ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            line-height: 1.5;
+        }
+
+        .bug-category ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: center;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            .comparison-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 13px;
+            padding: 6px 0;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .comparison-arrow {
+            font-size: 2rem;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .comparison-arrow .improvement {
+            display: block;
+            font-size: 12px;
+            color: var(--success);
+            margin-top: 4px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .mermaid-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 12px;
+            font-style: italic;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Impact Section */
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .impact-card {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .impact-card.urgent {
+            background: linear-gradient(135deg, #FEF2F2 0%, #FFEAEA 100%);
+            border-left-color: #EF4444;
+        }
+
+        .impact-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .impact-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .urgency-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .urgency-tag.critical { background: #FEE2E2; color: #B91C1C; }
+        .urgency-tag.high { background: #FFF3E0; color: #E65100; }
+        .urgency-tag.medium { background: #E8F5E9; color: #2E7D32; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .header {
+                padding: 32px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bug-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .impact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- 1. Header -->
+        <div class="header">
+            <div class="header-content">
+                <span class="category-badge">ツールアップデート</span>
+                <span class="security-badge">SECURITY CRITICAL</span>
+                <h1>Claude Code v2.1.97 & v2.1.98 -- セキュリティ強化・Vertex AI ウィザード・NO_FLICKER 改善</h1>
+                <div class="date">2026-04-22</div>
+                <div class="subtitle">Bash ツールのパーミッションバイパスに関する 10 件以上のセキュリティ修正を含む重要リリース。Google Vertex AI セットアップウィザード、Perforce モード、NO_FLICKER フォーカスビューなど新機能も多数追加。</div>
+            </div>
+        </div>
+
+        <!-- 2. Key Points -->
+        <div class="section">
+            <h2 class="section-title">Key Points</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon critical">🚨</div>
+                    <div class="key-point-content">
+                        <h3>Bash ツールセキュリティ修正 10 件以上</h3>
+                        <p>バックスラッシュエスケープ攻撃、複合コマンドバイパス、環境変数プレフィックス悪用など、任意コード実行につながる脆弱性を包括的に修正。全ユーザーに即時アップデートを推奨。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">☁️</div>
+                    <div class="key-point-content">
+                        <h3>Google Vertex AI セットアップウィザード</h3>
+                        <p>GCP 認証からモデルピニングまでをインタラクティブにガイドする新しいセットアップウィザードを追加。初期設定の複雑さを大幅に軽減。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📁</div>
+                    <div class="key-point-content">
+                        <h3>Perforce モード対応</h3>
+                        <p><code>CLAUDE_CODE_PERFORCE_MODE</code> 環境変数により、読み取り専用ファイルへの誤上書きを防止。<code>p4 edit</code> ヒントを自動表示。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">👁️</div>
+                    <div class="key-point-content">
+                        <h3>NO_FLICKER フォーカスビュー</h3>
+                        <p><code>Ctrl+O</code> でプロンプト・ツールサマリー・最終レスポンスのみを表示するフォーカスビューに切り替え可能。6 件以上の NO_FLICKER バグ修正も実施。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🐛</div>
+                    <div class="key-point-content">
+                        <h3>30 件以上のバグ修正</h3>
+                        <p>MCP OAuth トークンリフレッシュ、HTTP/SSE バッファリーク、/resume ピッカー、429 リトライ指数バックオフなど幅広い領域で修正。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Stats -->
+        <div class="section">
+            <h2 class="section-title">数字で見るリリース</h2>
+            <div class="stats-grid">
+                <div class="stat-card danger">
+                    <div class="stat-value">10+</div>
+                    <div class="stat-label">セキュリティ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">30+</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">50MB/h</div>
+                    <div class="stat-label">MCP リーク修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Security Section (CRITICAL) -->
+        <div class="section section-security">
+            <h2 class="section-title">🔒 セキュリティ修正 -- 重大</h2>
+
+            <div class="security-alert">
+                <div class="security-alert-icon">🚨</div>
+                <div class="security-alert-text">
+                    Bash ツールのパーミッションシステムに対する包括的なセキュリティ監査の結果、複数の攻撃ベクターが同時に修正されました。任意コード実行に至る脆弱性を含むため、全ての Claude Code ユーザーに対して速やかなアップデートを強く推奨します。
+                </div>
+            </div>
+
+            <div class="security-category">
+                <h4>🚨 任意コード実行につながる脆弱性</h4>
+                <ul>
+                    <li><strong>バックスラッシュエスケープ攻撃</strong>: エスケープされたフラグが読み取り専用コマンドとして自動許可され、任意コード実行が可能になる脆弱性</li>
+                    <li><strong>複合コマンドによるプロンプト回避</strong>: 複合 Bash コマンドが auto モードおよび bypass-permissions モードで安全チェックと明示的 ask ルールの強制パーミッションプロンプトをバイパス</li>
+                </ul>
+            </div>
+
+            <div class="security-category">
+                <h4>🔍 パーミッション判定の不備</h4>
+                <ul>
+                    <li><strong>環境変数プレフィックスの悪用</strong>: 任意の環境変数プレフィックスが安全とみなされ、読み取り専用判定を迂回可能</li>
+                    <li><strong>/dev/tcp, /dev/udp リダイレクト</strong>: ネットワークリダイレクトがファイルシステム操作として自動許可</li>
+                    <li><strong>grep -f / rg -f パターンファイル</strong>: 作業ディレクトリ外のパターンファイルをプロンプトなしで読み取り可能</li>
+                </ul>
+            </div>
+
+            <div class="security-category">
+                <h4>🔧 パーミッションモードの整合性</h4>
+                <ul>
+                    <li><strong>--dangerously-skip-permissions のダウングレード</strong>: 保護パスへの書き込み承認後、accept-edits モードにサイレントにダウングレード</li>
+                    <li><strong>エージェントチームのモード継承</strong>: チームメンバーがリーダーのパーミッションモードを継承しない問題</li>
+                </ul>
+            </div>
+
+            <div class="security-category">
+                <h4>📋 ルール処理の不備</h4>
+                <ul>
+                    <li><strong>管理設定の allow ルール残留</strong>: 管理者が削除した allow ルールがプロセス再起動まで有効のまま残留</li>
+                    <li><strong>ワイルドカードルールのスペース/タブ不一致</strong>: <code>Bash(cmd:*)</code> が余分なスペースやタブを含むコマンドにマッチしない</li>
+                    <li><strong>deny ルールのプロンプトダウングレード</strong>: cd と他のセグメントを混在させたパイプコマンドに対して deny がプロンプトに降格</li>
+                    <li><strong>JavaScript プロトタイププロパティ衝突</strong>: toString 等のプロパティ名が settings.json をサイレントに無視させる</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Mermaid: Security Fix Categories -->
+        <div class="section">
+            <h2 class="section-title">セキュリティ修正カテゴリの全体像</h2>
+            <div class="mermaid-container">
+                <div class="mermaid">
+flowchart TD
+    subgraph SecurityFixes["🔒 Bash ツールセキュリティ修正 v2.1.97/v2.1.98"]
+        subgraph CodeExec["🚨 任意コード実行"]
+            direction LR
+            Backslash["⚠️ バックスラッシュ&lt;br/&gt;エスケープ攻撃"]
+            Compound["⚠️ 複合コマンド&lt;br/&gt;プロンプト回避"]
+            Backslash ~~~ Compound
+        end
+
+        subgraph PermJudge["🔍 パーミッション判定"]
+            direction LR
+            EnvVar["🛡️ 環境変数&lt;br/&gt;プレフィックス悪用"]
+            NetRedir["🌐 /dev/tcp,udp&lt;br/&gt;リダイレクト許可"]
+            GrepFile["📄 grep -f&lt;br/&gt;パターンファイル"]
+            EnvVar ~~~ NetRedir ~~~ GrepFile
+        end
+
+        subgraph PermMode["🔧 パーミッションモード"]
+            direction LR
+            SkipPerm["⚙️ skip-permissions&lt;br/&gt;ダウングレード"]
+            TeamInherit["👥 エージェントチーム&lt;br/&gt;モード継承"]
+            SkipPerm ~~~ TeamInherit
+        end
+
+        subgraph RuleProc["📋 ルール処理"]
+            direction LR
+            ManagedRules["🏢 管理設定&lt;br/&gt;allow ルール残留"]
+            Wildcard["✳️ ワイルドカード&lt;br/&gt;スペース不一致"]
+            DenyDowngrade["🚫 deny ルール&lt;br/&gt;プロンプト化"]
+            ProtoProps["🔤 プロトタイプ&lt;br/&gt;プロパティ衝突"]
+            ManagedRules ~~~ Wildcard ~~~ DenyDowngrade ~~~ ProtoProps
+        end
+    end
+
+    Attack(["🎯 攻撃ベクター"]) --> CodeExec
+    Attack --> PermJudge
+    Attack --> PermMode
+    Attack --> RuleProc
+
+    CodeExec -->|"修正済"| Safe(["✅ 安全な状態"])
+    PermJudge -->|"修正済"| Safe
+    PermMode -->|"修正済"| Safe
+    RuleProc -->|"修正済"| Safe
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef critical fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef rule fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef attack fill:#FFCDD2,stroke:#E53935,stroke-width:2px,color:#333333
+    classDef safe fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class SecurityFixes platform
+    class CodeExec,PermJudge,PermMode,RuleProc layer
+    class Backslash,Compound critical
+    class EnvVar,NetRedir,GrepFile warning
+    class SkipPerm,TeamInherit process
+    class ManagedRules,Wildcard,DenyDowngrade,ProtoProps rule
+    class Attack attack
+    class Safe safe
+                </div>
+            </div>
+            <p class="mermaid-label">Bash ツールのパーミッションシステムに対する包括的な修正の全体像</p>
+        </div>
+
+        <!-- 5. New Features Cards -->
+        <div class="section">
+            <h2 class="section-title">✨ 新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>☁️ Vertex AI セットアップウィザード</h3>
+                    <p>ログイン画面で "3rd-party platform" を選択するとアクセス可能。GCP 認証、プロジェクト・リージョン設定、認証情報検証、モデルピニングをインタラクティブにガイド。</p>
+                    <span class="feature-version">v2.1.98</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📁 Perforce モード</h3>
+                    <p><code>CLAUDE_CODE_PERFORCE_MODE</code> を設定すると、Edit/Write/NotebookEdit が読み取り専用ファイルに対して <code>p4 edit</code> ヒントと共にエラーを返します。</p>
+                    <span class="feature-version">v2.1.98</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📡 Monitor ツール</h3>
+                    <p>バックグラウンドスクリプトからのイベントストリーミング用 Monitor ツール。リアルタイムのイベント監視が可能に。</p>
+                    <span class="feature-version">v2.1.98</span>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ サブプロセス PID サンドボックス</h3>
+                    <p><code>CLAUDE_CODE_SUBPROCESS_ENV_SCRUB</code> 設定時に Linux 上で PID 名前空間分離が有効に。<code>CLAUDE_CODE_SCRIPT_CAPS</code> でスクリプト呼び出し数を制限可能。</p>
+                    <span class="feature-version">v2.1.98</span>
+                </div>
+                <div class="feature-card">
+                    <h3>👁️ NO_FLICKER フォーカスビュー</h3>
+                    <p><code>Ctrl+O</code> でプロンプト、ツールサマリー (編集 diffstat 付き)、最終レスポンスのみを表示するフォーカスビューに切り替え。</p>
+                    <span class="feature-version">v2.1.97</span>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 OTEL TRACEPARENT</h3>
+                    <p>OTEL トレーシング有効時に Bash ツールのサブプロセスに W3C <code>TRACEPARENT</code> 環境変数を設定。子プロセスのスパンがトレースツリーに正しく紐づけ。</p>
+                    <span class="feature-version">v2.1.98</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Bug Fix Categories -->
+        <div class="section">
+            <h2 class="section-title">🐛 バグ修正カテゴリ</h2>
+            <div class="bug-grid">
+                <div class="bug-category mcp-fix">
+                    <h4>🔌 MCP 関連 <span class="bug-count">2</span></h4>
+                    <ul>
+                        <li>OAuth トークンリフレッシュ: authServerMetadataUrl の設定オーバーライドが再起動後に適用されない問題</li>
+                        <li>HTTP/SSE バッファリーク: 再接続時に約 50MB/時 の未解放バッファ蓄積</li>
+                    </ul>
+                </div>
+                <div class="bug-category ui-fix">
+                    <h4>🎨 UI/UX 関連 <span class="bug-count">6</span></h4>
+                    <ul>
+                        <li>kitty キーボードプロトコルで大文字が小文字に変換</li>
+                        <li>macOS テキスト置換が正しく動作しない</li>
+                        <li>MCP ツール結果ホバー時のクラッシュ</li>
+                        <li>URL コピー時のスペース挿入</li>
+                        <li>Vim モードのナビゲーション改善</li>
+                        <li>フッターインジケーターの折り返し防止</li>
+                    </ul>
+                </div>
+                <div class="bug-category noflicker-fix">
+                    <h4>✨ NO_FLICKER 関連 <span class="bug-count">6</span></h4>
+                    <ul>
+                        <li>zellij 内でのスクロールアーティファクト</li>
+                        <li>API リトライ時のメモリリーク</li>
+                        <li>Windows Terminal の低速マウスホイール</li>
+                        <li>24 行未満でのステータスライン非表示</li>
+                        <li>Warp でのキーボードショートカット</li>
+                        <li>CJK テキストの文字化け</li>
+                    </ul>
+                </div>
+                <div class="bug-category session-fix">
+                    <h4>💾 セッション/リジューム <span class="bug-count">6</span></h4>
+                    <ul>
+                        <li>/resume ピッカーの複数修正 (編集不可、検索消失、空リスト)</li>
+                        <li>10KB 超ファイル編集の diff 消失</li>
+                        <li>--resume キャッシュミス</li>
+                        <li>作業中メッセージの未保存</li>
+                        <li>サブエージェント worktree リーク</li>
+                        <li>コンパクション時の重複トランスクリプト</li>
+                    </ul>
+                </div>
+                <div class="bug-category other-fix">
+                    <h4>🔧 その他 <span class="bug-count">10+</span></h4>
+                    <ul>
+                        <li>ストリーミングレスポンスのタイムアウトフォールバック</li>
+                        <li>429 リトライの指数バックオフ改善</li>
+                        <li>/export のパス処理</li>
+                        <li>音声モードのスペースリーク</li>
+                        <li>DISABLE_AUTOUPDATER の完全抑制</li>
+                        <li>Remote Control のメモリリーク</li>
+                        <li>Bedrock SigV4 認証の空文字列問題</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Before/After Comparison -->
+        <div class="section">
+            <h2 class="section-title">Bash パーミッションチェック: Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>❌ Before -- v2.1.96 以前</h4>
+                    <ul>
+                        <li>⚠️ <code>command \--flag</code> が読み取り専用として自動許可</li>
+                        <li>⚠️ 複合コマンドが安全チェックをバイパス</li>
+                        <li>⚠️ 任意の環境変数プレフィックスが安全とみなされる</li>
+                        <li>⚠️ <code>/dev/tcp</code>, <code>/dev/udp</code> へのリダイレクトが自動許可</li>
+                        <li>⚠️ deny ルールがパイプコマンドでプロンプトに降格</li>
+                        <li>⚠️ ワイルドカードルールがスペース/タブでミスマッチ</li>
+                    </ul>
+                </div>
+                <div class="comparison-arrow">
+                    →
+                    <span class="improvement">修正済</span>
+                </div>
+                <div class="comparison-card after">
+                    <h4>✅ After -- v2.1.97/v2.1.98</h4>
+                    <ul>
+                        <li>✅ エスケープされたフラグも正しく解析</li>
+                        <li>✅ 複合コマンドを分割して個別にチェック</li>
+                        <li>✅ LANG, TZ, NO_COLOR 等の既知変数のみ安全</li>
+                        <li>✅ ネットワークリダイレクトにプロンプト表示</li>
+                        <li>✅ deny ルールが確実にブロック</li>
+                        <li>✅ ワイルドカードが空白を正しくマッチ</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mermaid: Bash Permission Check Flow -->
+        <div class="section">
+            <h2 class="section-title">Bash ツールパーミッションチェックフロー -- 修正後</h2>
+            <div class="mermaid-container">
+                <div class="mermaid">
+flowchart TD
+    subgraph Input["📥 コマンド入力"]
+        Cmd["💻 Bash コマンド"]
+    end
+
+    subgraph Parse["🔍 コマンド解析 v2.1.98"]
+        Unescape["バックスラッシュ&lt;br/&gt;エスケープ正規化"]
+        SplitCompound["複合コマンド&lt;br/&gt;分割解析"]
+        StripEnv["環境変数&lt;br/&gt;プレフィックス分離"]
+    end
+
+    subgraph SafeCheck["🛡️ 安全性チェック"]
+        IsDeny{"deny ルール&lt;br/&gt;に一致?"}
+        Block["🚫 ブロック"]
+        IsNetRedir{"/dev/tcp,udp&lt;br/&gt;リダイレクト?"}
+        PromptNet["⚠️ ネットワーク&lt;br/&gt;プロンプト"]
+        IsEnvSafe{"既知の安全な&lt;br/&gt;環境変数?"}
+        PromptEnv["⚠️ 環境変数&lt;br/&gt;プロンプト"]
+        IsReadOnly{"読み取り専用&lt;br/&gt;コマンド?"}
+        AutoAllow["✅ 自動許可"]
+        PromptWrite["⚠️ 書き込み&lt;br/&gt;プロンプト"]
+    end
+
+    Cmd --> Unescape
+    Unescape --> SplitCompound
+    SplitCompound --> StripEnv
+    StripEnv --> IsDeny
+    IsDeny -->|"Yes"| Block
+    IsDeny -->|"No"| IsNetRedir
+    IsNetRedir -->|"Yes"| PromptNet
+    IsNetRedir -->|"No"| IsEnvSafe
+    IsEnvSafe -->|"No"| PromptEnv
+    IsEnvSafe -->|"Yes/なし"| IsReadOnly
+    IsReadOnly -->|"Yes"| AutoAllow
+    IsReadOnly -->|"No"| PromptWrite
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef input fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef parse fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef danger fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef warn fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef safe fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Input,Parse,SafeCheck platform
+    class Cmd input
+    class Unescape,SplitCompound,StripEnv parse
+    class IsDeny,IsNetRedir,IsEnvSafe,IsReadOnly decision
+    class Block danger
+    class PromptNet,PromptEnv,PromptWrite warn
+    class AutoAllow safe
+                </div>
+            </div>
+            <p class="mermaid-label">v2.1.98 で追加された 3 段階のコマンド解析パイプラインによりバイパスを防止</p>
+        </div>
+
+        <!-- 8. Code Samples -->
+        <div class="section">
+            <h2 class="section-title">⌨️ コード例</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                    <span class="code-title">アップデートとバージョン確認</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code を最新バージョンに更新
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# バージョン確認
+claude --version
+# Claude Code v2.1.98</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                    <span class="code-title">Perforce モードの設定</span>
+                </div>
+                <pre><code class="language-bash"># 環境変数を設定して Claude Code を起動
+export CLAUDE_CODE_PERFORCE_MODE=1
+claude
+
+# 読み取り専用ファイルを編集しようとすると:
+# Error: File is read-only. Run "p4 edit &lt;file&gt;" first.</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                    <span class="code-title">サブプロセスサンドボックスの有効化</span>
+                </div>
+                <pre><code class="language-bash"># サブプロセス環境スクラブの有効化
+export CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1
+
+# セッションごとのスクリプト呼び出し数の制限
+export CLAUDE_CODE_SCRIPT_CAPS=100</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                    <span class="code-title">NO_FLICKER フォーカスビュー</span>
+                </div>
+                <pre><code class="language-bash"># NO_FLICKER モードでの実行
+export NO_FLICKER=1
+claude
+
+# セッション中に Ctrl+O でフォーカスビューを切り替え
+# プロンプト、ツールサマリー (diffstat 付き)、最終レスポンスのみ表示</code></pre>
+            </div>
+        </div>
+
+        <!-- Mermaid: Overall Improvement Areas -->
+        <div class="section">
+            <h2 class="section-title">v2.1.97/v2.1.98 改善領域の全体像</h2>
+            <div class="mermaid-container">
+                <div class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["🖥️ Claude Code v2.1.97/v2.1.98"]
+        subgraph Security["🔒 セキュリティ修正 10 件以上"]
+            direction LR
+            BashPerm["🚨 Bash パーミッション&lt;br/&gt;包括的修正"]
+            SubSandbox["🛡️ サブプロセス&lt;br/&gt;PID 名前空間分離"]
+            BashPerm ~~~ SubSandbox
+        end
+
+        subgraph NewFeatures["✨ 新機能"]
+            direction LR
+            VertexWiz["☁️ Vertex AI&lt;br/&gt;セットアップウィザード"]
+            Perforce["📁 Perforce モード"]
+            Monitor["📡 Monitor ツール"]
+            FocusView["👁️ NO_FLICKER&lt;br/&gt;フォーカスビュー"]
+            VertexWiz ~~~ Perforce ~~~ Monitor ~~~ FocusView
+        end
+
+        subgraph BugFixes["🐛 バグ修正 30 件以上"]
+            direction LR
+            MCPFix["🔌 MCP 関連&lt;br/&gt;OAuth, バッファリーク"]
+            UIFix["🎨 UI/UX&lt;br/&gt;kitty, macOS, Vim"]
+            SessionFix["💾 セッション&lt;br/&gt;/resume, worktree"]
+            NOFlicker["✨ NO_FLICKER&lt;br/&gt;6 件修正"]
+            MCPFix ~~~ UIFix ~~~ SessionFix ~~~ NOFlicker
+        end
+
+        subgraph Improvements["📈 改善"]
+            direction LR
+            AgentsTab["🤖 /agents&lt;br/&gt;タブレイアウト"]
+            RetryLogic["🔄 429 リトライ&lt;br/&gt;指数バックオフ"]
+            CJKInput["🇯🇵 CJK 入力&lt;br/&gt;補完改善"]
+            AgentsTab ~~~ RetryLogic ~~~ CJKInput
+        end
+    end
+
+    User(["👤 ユーザー"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef security fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef fix fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef improve fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class Security,NewFeatures,BugFixes,Improvements layer
+    class BashPerm,SubSandbox security
+    class VertexWiz,Perforce,Monitor,FocusView feature
+    class MCPFix,UIFix,SessionFix,NOFlicker fix
+    class AgentsTab,RetryLogic,CJKInput improve
+    class User user
+                </div>
+            </div>
+            <p class="mermaid-label">セキュリティ、新機能、バグ修正、改善の 4 つの柱でリリースを構成</p>
+        </div>
+
+        <!-- 10. Developer Impact -->
+        <div class="section">
+            <h2 class="section-title">👩‍💻 開発者への影響</h2>
+            <div class="impact-grid">
+                <div class="impact-card urgent">
+                    <h4>🚨 全ての Claude Code ユーザー <span class="urgency-tag critical">即時</span></h4>
+                    <p>Bash ツールのパーミッションバイパス修正はセキュリティクリティカル。任意コード実行に至る脆弱性を含むため、全ユーザーに即座のアップデートを推奨。</p>
+                </div>
+                <div class="impact-card urgent">
+                    <h4>⚙️ auto / bypass-permissions ユーザー <span class="urgency-tag critical">即時</span></h4>
+                    <p>複合コマンドのバイパス修正により、これらのモードでのセキュリティが大幅に強化。特に注意が必要。</p>
+                </div>
+                <div class="impact-card">
+                    <h4>☁️ Google Vertex AI ユーザー <span class="urgency-tag high">推奨</span></h4>
+                    <p>新しいセットアップウィザードにより、初期設定が大幅に簡素化。GCP 認証からモデルピニングまでをガイド。</p>
+                </div>
+                <div class="impact-card">
+                    <h4>📁 Perforce ユーザー <span class="urgency-tag high">推奨</span></h4>
+                    <p>CLAUDE_CODE_PERFORCE_MODE 環境変数により、読み取り専用ファイルの誤上書きが防止されます。</p>
+                </div>
+                <div class="impact-card">
+                    <h4>✨ NO_FLICKER ユーザー <span class="urgency-tag medium">推奨</span></h4>
+                    <p>フォーカスビュー追加と 6 件以上のバグ修正により、NO_FLICKER モードの使用体験が大幅に向上。</p>
+                </div>
+                <div class="impact-card">
+                    <h4>🇯🇵 CJK 入力ユーザー <span class="urgency-tag medium">推奨</span></h4>
+                    <p>スラッシュコマンド補完の CJK 句読点対応と NO_FLICKER モードのテキスト文字化け修正により、日本語環境の使用性が改善。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 11. Footer -->
+        <div class="footer">
+            <p>Source: <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;">Anthropic News Summary -- 2026-04-22</p>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
