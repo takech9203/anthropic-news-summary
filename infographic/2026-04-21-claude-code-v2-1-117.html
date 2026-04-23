@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.117 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Category Label */
+        .category-label {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .category-label.perf { background: #D1FAE5; color: #065F46; }
+        .category-label.ux { background: #E8EAF6; color: #283593; }
+        .category-label.plugin { background: #FFF3E0; color: #E65100; }
+        .category-label.agent { background: #E3F2FD; color: #1565C0; }
+        .category-label.security { background: #FFEBEE; color: #C62828; }
+        .category-label.model { background: #F3E5F5; color: #6A1B9A; }
+        .category-label.new { background: #E8F5E9; color: #1B5E20; }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: center;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            .comparison-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 6px 0;
+            color: var(--text-secondary);
+        }
+
+        .comparison-arrow {
+            font-size: 2rem;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .comparison-arrow .improvement {
+            display: block;
+            font-size: 12px;
+            color: var(--success);
+            margin-top: 4px;
+        }
+
+        /* Bug Fix Summary */
+        .bug-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .bug-category {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .bug-category h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bug-category .bug-count {
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .bug-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-category ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .bug-category ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Action Items */
+        .action-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .action-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-list li:last-child {
+            border-bottom: none;
+        }
+
+        .action-list li .action-icon {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Technical Detail */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tech-detail ol, .tech-detail ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .tech-detail ol li, .tech-detail ul li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            border-radius: 16px;
+            padding: 28px;
+            color: white;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Cleanup Table */
+        .cleanup-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .cleanup-table th, .cleanup-table td {
+            padding: 8px 12px;
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            text-align: left;
+        }
+
+        .cleanup-table th {
+            background: var(--anthropic-coral);
+            color: white;
+            font-weight: 700;
+        }
+
+        .cleanup-table td {
+            color: var(--text-secondary);
+        }
+
+        .cleanup-table tr:nth-child(even) td {
+            background: rgba(212, 165, 116, 0.05);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 6px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bug-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code Update</span>
+                <h1>Claude Code v2.1.117</h1>
+                <p class="date">2026-04-21</p>
+                <p class="subtitle">&#x26A1; ネイティブビルドでの検索高速化 (bfs/ugrep)、Opus 4.6/Sonnet 4.6 デフォルトエフォート引き上げ、Opus 4.7 コンテキストウィンドウ修正を含む大型アップデート</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">Key Points</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F50D;</div>
+                    <div class="key-point-content">
+                        <h3>ネイティブビルドで bfs/ugrep 組み込み - 検索パフォーマンス革新</h3>
+                        <p>macOS/Linux ネイティブビルドで Glob/Grep ツールが組み込みの bfs と ugrep に置き換えられました。ツール往復通信が不要になり、Bash ツールから直接高速検索が可能になります。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4C8;</div>
+                    <div class="key-point-content">
+                        <h3>Pro/Max デフォルトエフォートレベルが high に引き上げ</h3>
+                        <p>Opus 4.6 および Sonnet 4.6 のデフォルトエフォートレベルが medium から high に変更されました。より深い思考によるデフォルトでの高品質な応答が得られます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F916;</div>
+                    <div class="key-point-content">
+                        <h3>Opus 4.7 コンテキストウィンドウ修正: 200K &#x2192; 1M</h3>
+                        <p>Opus 4.7 のコンテキストウィンドウが 200K として誤計算されていた重大なバグが修正され、本来の 1M トークンが正しく認識されるようになりました。/context の表示精度改善と不必要な早期自動コンパクションが解消されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F500;</div>
+                    <div class="key-point-content">
+                        <h3>フォーク型サブエージェントの外部ビルド対応</h3>
+                        <p>環境変数 CLAUDE_CODE_FORK_SUBAGENT=1 を設定することで、外部ビルドでもフォーク型サブエージェントを有効化できるようになりました。プロセス起動のオーバーヘッド削減とリソース効率の向上が実現します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F50C;</div>
+                    <div class="key-point-content">
+                        <h3>MCP 同時接続によるスタートアップ高速化</h3>
+                        <p>ローカルと claude.ai の両方の MCP サーバーが設定されている場合、同時接続がデフォルトになりました。直列接続から並列接続への移行でスタートアップ時間が短縮されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F41B;</div>
+                    <div class="key-point-content">
+                        <h3>15 件のバグ修正で安定性が大幅向上</h3>
+                        <p>OAuth トークンリフレッシュ、WebFetch の大規模 HTML ハング、Bedrock Opus 4.7 推論プロファイル、サブエージェントのマルウェア誤検出、Linux メモリ増加など幅広い修正が含まれています。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">&#x1F4CA; 数字で見る v2.1.117</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">30</div>
+                    <div class="stat-label">変更の総数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1M</div>
+                    <div class="stat-label">Opus 4.7 コンテキスト修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1 日</div>
+                    <div class="stat-label">前バージョンからの間隔</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After: Native Build Search -->
+        <section class="section">
+            <h2 class="section-title">Before / After: ネイティブビルド検索アーキテクチャ</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>&#x274C; Before - npm/従来ビルド</h4>
+                    <ul>
+                        <li>&#x1F916; モデルが Glob/Grep ツールを呼び出し</li>
+                        <li>&#x1F504; ツール往復通信が発生</li>
+                        <li>&#x1F50D; Glob: ファイル検索</li>
+                        <li>&#x1F4DD; Grep: テキスト検索</li>
+                        <li>&#x23F1;&#xFE0F; オーバーヘッドあり</li>
+                    </ul>
+                </div>
+                <div class="comparison-arrow">
+                    &#x27A1;&#xFE0F;
+                    <span class="improvement">往復通信排除</span>
+                </div>
+                <div class="comparison-card after">
+                    <h4>&#x2705; After - ネイティブビルド v2.1.117</h4>
+                    <ul>
+                        <li>&#x1F916; モデルが Bash ツールを実行</li>
+                        <li>&#x26A1; bfs/ugrep を直接実行</li>
+                        <li>&#x26A1; bfs: 高速ファイル検索</li>
+                        <li>&#x26A1; ugrep: 高速テキスト検索</li>
+                        <li>&#x1F680; オーバーヘッド排除</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After: Opus 4.7 Context Window -->
+        <section class="section">
+            <h2 class="section-title">Before / After: Opus 4.7 コンテキストウィンドウ</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>&#x274C; Before - v2.1.116 以前</h4>
+                    <ul>
+                        <li>&#x274C; 200K トークンと誤認識</li>
+                        <li>&#x1F4CA; /context が膨張表示 (5% &#x2192; 25%)</li>
+                        <li>&#x26A0;&#xFE0F; 早期自動コンパクション発生</li>
+                        <li>&#x1F614; コンテキスト容量が無駄に制限</li>
+                    </ul>
+                </div>
+                <div class="comparison-arrow">
+                    &#x27A1;&#xFE0F;
+                    <span class="improvement">5x 容量修正</span>
+                </div>
+                <div class="comparison-card after">
+                    <h4>&#x2705; After - v2.1.117</h4>
+                    <ul>
+                        <li>&#x2705; 1M トークンと正しく認識</li>
+                        <li>&#x1F4CA; /context が正確表示 (5% &#x2192; 5%)</li>
+                        <li>&#x1F7E2; 適切なタイミングでコンパクション</li>
+                        <li>&#x1F389; フルコンテキスト容量を活用可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <span class="category-label new">&#x1F195; 新機能 - 7 件</span>
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x26A1; bfs/ugrep ネイティブ検索</h3>
+                    <p>macOS/Linux ネイティブビルドで Glob と Grep ツールが組み込みの bfs と ugrep に置き換えられました。Bash ツールから直接利用でき、ツール往復通信が不要に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4C8; デフォルトエフォート high</h3>
+                    <p>Pro/Max サブスクライバー向けに Opus 4.6 および Sonnet 4.6 のデフォルトエフォートレベルが medium から high に変更。より高品質な応答がデフォルトで得られます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F500; フォーク型サブエージェント</h3>
+                    <p>環境変数 CLAUDE_CODE_FORK_SUBAGENT=1 で外部ビルドでも有効化可能。プロセス起動のオーバーヘッド削減とメモリ空間共有を実現。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4CB; mcpServers の --agent 対応</h3>
+                    <p>エージェントフロントマターの mcpServers が --agent 経由のメインスレッドエージェントセッションで読み込まれるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4E1; OpenTelemetry 拡張</h3>
+                    <p>user_prompt イベントにスラッシュコマンドの command_name と command_source が含まれ、cost.usage 等にエフォート属性が追加されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F9EA; Advisor Tool 改善</h3>
+                    <p>"experimental" ラベル、詳細リンク、有効時のスタートアップ通知が追加。"content could not be processed" エラーでセッション停止する問題も解消されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F5D1;&#xFE0F; cleanupPeriodDays 対象拡大</h3>
+                    <p>リテンションスイープの対象に tasks/、shell-snapshots/、backups/ が追加。より包括的なデータクリーンアップが可能に。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <span class="category-label ux">&#x1F527; 改善 - 8 件</span>
+            <h2 class="section-title">改善</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x1F4BE; /model 永続化改善</h3>
+                    <p>モデル選択がプロジェクトピンと異なる場合でもリスタート間で永続化。スタートアップヘッダーにアクティブモデルのソースが表示されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4C4; /resume セッション要約</h3>
+                    <p>/resume コマンドが古く大きなセッションの再読み込み前に要約を提案。既存の --resume フラグの動作と統一されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F50C; MCP 同時接続</h3>
+                    <p>ローカルと claude.ai の MCP サーバーが設定されている場合、同時接続がデフォルトになりスタートアップが高速化。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F9E9; プラグイン依存関係解決</h3>
+                    <p>plugin install が "already installed" で停止せず不足依存関係をインストール。marketplace add で自動解決も可能に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F6E1;&#xFE0F; マネージド設定制御</h3>
+                    <p>blockedMarketplaces と strictKnownMarketplaces がプラグインの install/update/refresh/autoupdate で適用されるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F3CE;&#xFE0F; Windows サブプロセス高速化</h3>
+                    <p>where.exe の実行ファイル検索結果がプロセス単位でキャッシュされ、サブプロセスの起動が高速化されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F504; SDK reload_plugins 並列化</h3>
+                    <p>reload_plugins が全ユーザー MCP サーバーを直列ではなく並列で再接続するようになり、プラグインの再読み込みが高速化。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4AC; プラグインエラーメッセージ改善</h3>
+                    <p>依存関係エラーが "not installed" とインストールヒントを表示するようになり、トラブルシューティングが容易に。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fix Summary -->
+        <section class="section">
+            <h2 class="section-title">&#x1F41B; バグ修正サマリー - 15 件</h2>
+            <div class="bug-grid">
+                <div class="bug-category">
+                    <h4>&#x1F511; 認証/セッション <span class="bug-count">3 件</span></h4>
+                    <ul>
+                        <li>Plain-CLI OAuth トークンリフレッシュ: 401 時の反応的リフレッシュ</li>
+                        <li>CLAUDE_CODE_OAUTH_TOKEN 環境変数での /login 修正</li>
+                        <li>NO_PROXY のリモート API リクエスト対応修正</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x2328;&#xFE0F; 入力/操作 <span class="bug-count">2 件</span></h4>
+                    <ul>
+                        <li>Ctrl+_ アンドゥの即時動作と状態スキップ修正</li>
+                        <li>低速接続でのエスケープ/リターン誤トリガー修正</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F310; API/モデル <span class="bug-count">3 件</span></h4>
+                    <ul>
+                        <li>WebFetch の大規模 HTML ハング修正</li>
+                        <li>プロキシ HTTP 204 クラッシュ修正</li>
+                        <li>Bedrock Opus 4.7 推論プロファイル 400 エラー修正</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F4CA; コンテキスト/メモリ <span class="bug-count">3 件</span></h4>
+                    <ul>
+                        <li>Opus 4.7 コンテキストウィンドウ 200K &#x2192; 1M 修正</li>
+                        <li>サブエージェントのマルウェア警告誤検出修正</li>
+                        <li>アイドル再レンダーループによる Linux メモリ増加修正</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F50C; MCP/プラグイン <span class="bug-count">2 件</span></h4>
+                    <ul>
+                        <li>MCP elicitation/create の自動キャンセル修正</li>
+                        <li>VS Code "Manage Plugins" パネル修正</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F6E0;&#xFE0F; SDK <span class="bug-count">2 件</span></h4>
+                    <ul>
+                        <li>reload_plugins の直列接続 &#x2192; 並列接続修正</li>
+                        <li>フォーク型サブエージェントのモデル不一致修正</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <div class="tech-detail">
+                <h4>&#x26A1; ネイティブビルドでの bfs/ugrep 組み込み</h4>
+                <p>v2.1.117 の最も重要な技術的変更です。従来のアーキテクチャでは Glob と Grep は個別ツールとして実装されており、モデルがこれらを呼び出す際にツール往復通信が必要でした。v2.1.117 ではネイティブビルドに bfs (高速ファイル検索) と ugrep (高速テキスト検索) がバイナリとして直接組み込まれ、Bash ツールを通じて直接実行されるためオーバーヘッドが排除されます。</p>
+                <ul>
+                    <li><strong>macOS ネイティブビルド</strong>: 適用</li>
+                    <li><strong>Linux ネイティブビルド</strong>: 適用</li>
+                    <li><strong>Windows</strong>: 変更なし (従来のツールを維持)</li>
+                    <li><strong>npm インストール版</strong>: 変更なし (従来のツールを維持)</li>
+                </ul>
+            </div>
+
+            <div class="tech-detail">
+                <h4>&#x1F4C8; デフォルトエフォートレベルの変更</h4>
+                <p>Pro/Max サブスクライバー向けに、Opus 4.6 および Sonnet 4.6 のデフォルトエフォートレベルが medium から high に引き上げられました。エフォートレベルはモデルが応答生成に費やす「思考の深さ」を制御するパラメータです。high エフォートではモデルがより深く思考するため応答品質が向上しますが、トークン使用量と応答時間は増加する可能性があります。</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>&#x1F916; Opus 4.7 コンテキストウィンドウの修正</h4>
+                <p>v2.1.117 以前では Opus 4.7 のコンテキストウィンドウサイズが 200K トークンとして計算されていましたが、ネイティブコンテキストウィンドウは 1M トークンです。この誤認識により以下の問題が発生していました。</p>
+                <ol>
+                    <li><strong>/context の不正確な表示</strong>: 実際のコンテキスト使用率より大幅に高い値が表示 (例: 5% なのに 25% と表示)</li>
+                    <li><strong>早期自動コンパクション</strong>: 上限に達していないにもかかわらず自動コンパクションが実行</li>
+                </ol>
+            </div>
+
+            <div class="tech-detail">
+                <h4>&#x1F500; フォーク型サブエージェントの外部ビルド対応</h4>
+                <p>フォーク型サブエージェントはメインプロセスからフォークされたサブプロセスとして実行されるエージェントです。従来は内部ビルドのみで利用可能でしたが、CLAUDE_CODE_FORK_SUBAGENT=1 で外部ビルドでも有効化可能に。プロセス起動のオーバーヘッド削減、メモリ空間共有によるリソース効率の向上、コンテキストの高速引き継ぎがメリットです。</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>&#x1F511; OAuth トークンリフレッシュの改善</h4>
+                <p>Plain-CLI の OAuth セッションでアクセストークンが期限切れになるとセッションが終了する問題がありました。v2.1.117 では API からの 401 レスポンスを検出した際にトークンを反応的にリフレッシュするメカニズムが導入され、長時間セッションでもトークン期限切れによる中断が発生しなくなります。</p>
+            </div>
+
+            <div class="tech-detail">
+                <h4>&#x1F5D1;&#xFE0F; cleanupPeriodDays の対象拡大</h4>
+                <table class="cleanup-table">
+                    <thead>
+                        <tr>
+                            <th>ディレクトリ</th>
+                            <th>内容</th>
+                            <th>v2.1.116</th>
+                            <th>v2.1.117</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>~/.claude/sessions/</td>
+                            <td>セッションデータ</td>
+                            <td>対象</td>
+                            <td>対象</td>
+                        </tr>
+                        <tr>
+                            <td>~/.claude/tasks/</td>
+                            <td>タスクデータ</td>
+                            <td>対象外</td>
+                            <td><strong>対象</strong></td>
+                        </tr>
+                        <tr>
+                            <td>~/.claude/shell-snapshots/</td>
+                            <td>シェルスナップショット</td>
+                            <td>対象外</td>
+                            <td><strong>対象</strong></td>
+                        </tr>
+                        <tr>
+                            <td>~/.claude/backups/</td>
+                            <td>バックアップ</td>
+                            <td>対象外</td>
+                            <td><strong>対象</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">&#x1F4BB; コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデートとバージョン確認</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code を最新バージョンに更新
+npm update -g @anthropic-ai/claude-code
+
+# バージョン確認
+claude --version
+# Claude Code v2.1.117</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">フォーク型サブエージェントの有効化</span>
+                </div>
+                <pre><code class="language-bash"># 環境変数を設定して Claude Code を起動
+CLAUDE_CODE_FORK_SUBAGENT=1 claude
+
+# または .bashrc/.zshrc に追加
+echo 'export CLAUDE_CODE_FORK_SUBAGENT=1' >> ~/.bashrc
+source ~/.bashrc</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">YAML</span>
+                    <span class="code-title">エージェントフロントマターでの MCP サーバー設定</span>
+                </div>
+                <pre><code class="language-yaml">---
+mcpServers:
+  my-server:
+    command: "npx"
+    args: ["-y", "@my-org/mcp-server"]
+    env:
+      API_KEY: "$MY_API_KEY"
+---
+
+# このエージェントを --agent で起動すると mcpServers が読み込まれる
+# claude --agent my-agent.md</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ネイティブビルドでの高速検索</span>
+                </div>
+                <pre><code class="language-bash"># ネイティブビルドでは bfs/ugrep が組み込まれている
+# 従来の Glob/Grep ツール呼び出しなしに直接検索可能
+
+# bfs: 高速なファイル検索
+bfs . -name "*.py" -type f -newer ./setup.py
+
+# ugrep: 高速なテキスト検索
+ugrep -rn "def main" --include="*.py"
+
+# パイプラインで組み合わせ
+bfs . -name "*.ts" -type f | xargs ugrep -l "import.*React"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">エフォートレベルの手動調整</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 内でモデル設定を開く
+&gt; /model
+
+# エフォートレベルを medium に変更
+# デフォルトは high (Pro/Max ユーザー向け)</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">OpenTelemetry ツール詳細ログの有効化</span>
+                </div>
+                <pre><code class="language-bash"># カスタム/MCP コマンド名の詳細ログを有効化
+OTEL_LOG_TOOL_DETAILS=1 claude
+
+# cost.usage、token.usage、api_request、api_error に
+# effort 属性が含まれるようになります</code></pre>
+            </div>
+        </section>
+
+        <!-- Mermaid Diagrams -->
+        <section class="section">
+            <h2 class="section-title">&#x1F4D0; アーキテクチャ図</h2>
+
+            <div class="mermaid-container">
+                <h3>v2.1.117 改善領域の全体像</h3>
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["&#x1F5A5;&#xFE0F; Claude Code v2.1.117"]
+        subgraph NewFeatures["&#x1F195; 新機能 7 件"]
+            direction LR
+            ForkSub["&#x1F500; フォーク型&lt;br/&gt;サブエージェント&lt;br/&gt;外部ビルド対応"]
+            NativeBuild["&#x26A1; bfs/ugrep&lt;br/&gt;ネイティブ検索"]
+            Effort["&#x1F4C8; デフォルト&lt;br/&gt;エフォート high"]
+            Advisor["&#x1F9EA; Advisor Tool&lt;br/&gt;改善"]
+            ForkSub ~~~ NativeBuild ~~~ Effort ~~~ Advisor
+        end
+
+        subgraph Improvements["&#x1F527; 改善 8 件"]
+            direction LR
+            ModelPersist["&#x1F4BE; /model&lt;br/&gt;永続化改善"]
+            MCPConcurrent["&#x1F50C; MCP&lt;br/&gt;同時接続"]
+            PluginDeps["&#x1F9E9; プラグイン&lt;br/&gt;依存関係解決"]
+            Cleanup["&#x1F5D1;&#xFE0F; cleanup&lt;br/&gt;対象拡大"]
+            ModelPersist ~~~ MCPConcurrent ~~~ PluginDeps ~~~ Cleanup
+        end
+
+        subgraph BugFixes["&#x1F41B; バグ修正 15 件"]
+            direction LR
+            Auth["&#x1F511; 認証/OAuth&lt;br/&gt;3 件"]
+            APIModel["&#x1F916; API/モデル&lt;br/&gt;3 件"]
+            Context["&#x1F4CA; コンテキスト&lt;br/&gt;3 件"]
+            MCPPlugin["&#x1F50C; MCP/プラグイン&lt;br/&gt;2 件"]
+            InputSDK["&#x2328;&#xFE0F; 入力/SDK&lt;br/&gt;4 件"]
+            Auth ~~~ APIModel ~~~ Context ~~~ MCPPlugin ~~~ InputSDK
+        end
+    end
+
+    User(["&#x1F464; ユーザー"]) --> ClaudeCode
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>ネイティブビルド検索アーキテクチャの変化</h3>
+                <pre class="mermaid">
+flowchart LR
+    subgraph Before["&#x1F4E6; v2.1.116 以前 - npm/従来ビルド"]
+        direction TB
+        Model1["&#x1F916; モデル"]
+        GlobTool["&#x1F50D; Glob ツール"]
+        GrepTool["&#x1F4DD; Grep ツール"]
+        FS1[("&#x1F4C1; ファイルシステム")]
+
+        Model1 -->|"ツール呼び出し"| GlobTool
+        Model1 -->|"ツール呼び出し"| GrepTool
+        GlobTool -->|"検索"| FS1
+        GrepTool -->|"検索"| FS1
+    end
+
+    subgraph After["&#x1F4E6; v2.1.117 - ネイティブビルド"]
+        direction TB
+        Model2["&#x1F916; モデル"]
+        BashTool["&#x1F4BB; Bash ツール"]
+        BFS["&#x26A1; bfs&lt;br/&gt;組み込み"]
+        UGREP["&#x26A1; ugrep&lt;br/&gt;組み込み"]
+        FS2[("&#x1F4C1; ファイルシステム")]
+
+        Model2 -->|"Bash 実行"| BashTool
+        BashTool --> BFS
+        BashTool --> UGREP
+        BFS -->|"高速検索"| FS2
+        UGREP -->|"高速検索"| FS2
+    end
+
+    Before -.->|"ツール往復通信の排除"| After
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>Opus 4.7 コンテキストウィンドウ修正</h3>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Bug["&#x1F41B; v2.1.116 以前の問題"]
+        direction TB
+        Session1["&#x1F4AC; Opus 4.7 セッション"]
+        Wrong["&#x274C; 200K と誤認識"]
+        Inflate["&#x1F4CA; /context が膨張表示&lt;br/&gt;実際 5% &#x2192; 表示 25%"]
+        EarlyCompact["&#x26A0;&#xFE0F; 早期自動コンパクション"]
+
+        Session1 --> Wrong
+        Wrong --> Inflate
+        Inflate --> EarlyCompact
+    end
+
+    subgraph Fix["&#x2705; v2.1.117 での修正"]
+        direction TB
+        Session2["&#x1F4AC; Opus 4.7 セッション"]
+        Correct["&#x2705; 1M と正しく認識"]
+        Accurate["&#x1F4CA; /context が正確表示&lt;br/&gt;実際 5% &#x2192; 表示 5%"]
+        NormalCompact["&#x1F7E2; 適切なタイミングで&lt;br/&gt;コンパクション"]
+
+        Session2 --> Correct
+        Correct --> Accurate
+        Accurate --> NormalCompact
+    end
+
+    Bug -.->|"修正"| Fix
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>MCP 同時接続フロー</h3>
+                <pre class="mermaid">
+sequenceDiagram
+    participant C as &#x1F5A5;&#xFE0F; Claude Code
+    participant L as &#x1F50C; ローカル MCP
+    participant R as &#x2601;&#xFE0F; claude.ai MCP
+
+    Note over C: v2.1.116 以前: 直列接続
+    C->>L: 接続要求
+    L-->>C: 接続完了
+    C->>R: 接続要求
+    R-->>C: 接続完了
+    Note over C: 準備完了
+
+    Note over C: v2.1.117: 同時接続
+    par 並列接続
+        C->>L: 接続要求
+        L-->>C: 接続完了
+    and
+        C->>R: 接続要求
+        R-->>C: 接続完了
+    end
+    Note over C: 準備完了 - より高速
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>OAuth トークンリフレッシュフロー</h3>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Session["&#x1F511; OAuth セッション"]
+        Request["&#x1F4E4; API リクエスト"]
+        Check{"401 レスポンス?"}
+        Refresh["&#x1F504; トークンリフレッシュ"]
+        Retry["&#x1F501; リクエスト再実行"]
+        Success["&#x2705; 正常レスポンス"]
+        Error["&#x274C; リフレッシュ失敗&lt;br/&gt;/login を促す"]
+    end
+
+    Request --> Check
+    Check -->|"No"| Success
+    Check -->|"Yes"| Refresh
+    Refresh -->|"成功"| Retry
+    Refresh -->|"失敗"| Error
+    Retry --> Success
+                </pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact / Use Cases -->
+        <section class="section">
+            <h2 class="section-title">&#x1F468;&#x200D;&#x1F4BB; 開発者への影響</h2>
+            <div class="use-case">
+                <h4>&#x26A1; macOS/Linux ネイティブビルドユーザー</h4>
+                <p>bfs/ugrep の組み込みにより、ファイル検索とテキスト検索が高速化されます。ツール往復通信のオーバーヘッドが排除され、大規模コードベースでの検索体験が向上します。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4C8; 全 Pro/Max サブスクライバー</h4>
+                <p>Opus 4.6/Sonnet 4.6 のデフォルトエフォートが high に変更。応答品質が向上しますが、トークン使用量と応答時間が増加する可能性があります。必要に応じて /model からエフォートレベルを調整してください。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F916; Opus 4.7 利用者</h4>
+                <p>コンテキストウィンドウの修正により /context の表示が正確になり、不必要な自動コンパクションが解消されます。1M トークンのフルコンテキスト容量を活用できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F511; OAuth 認証ユーザー</h4>
+                <p>トークンリフレッシュの修正により、長時間セッションの安定性が向上します。401 レスポンス時の反応的リフレッシュで中断が発生しなくなります。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F500; エージェント開発者</h4>
+                <p>フォーク型サブエージェントの外部ビルド対応と mcpServers の --agent 対応により、エージェントの構成オプションが拡大されます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F9E9; プラグイン開発者/利用者</h4>
+                <p>依存関係の自動解決改善とマネージド設定によるマーケットプレイス制御により、プラグインエコシステムの管理性が向上します。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F50C; MCP を多用するユーザー</h4>
+                <p>同時接続のデフォルト化と reload_plugins の並列化により、スタートアップ時間とプラグイン再読み込み時間が短縮されます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x2601;&#xFE0F; Bedrock ユーザー</h4>
+                <p>Opus 4.7 をバックエンドとする Bedrock アプリケーション推論プロファイルの 400 エラーが修正されました。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4E1; OpenTelemetry を利用する組織</h4>
+                <p>スラッシュコマンドの追跡とエフォートレベルの可観測性が向上し、利用状況の分析がより詳細に行えます。</p>
+            </div>
+        </section>
+
+        <!-- Recommended Actions -->
+        <section class="section">
+            <h2 class="section-title">&#x2705; 推奨アクション</h2>
+            <ul class="action-list">
+                <li>
+                    <span class="action-icon">&#x1F4C8;</span>
+                    <span><strong>エフォートレベルの確認</strong>: Pro/Max サブスクライバーはデフォルトエフォートが high に変更されています。トークン使用量を監視し、必要に応じて /model からエフォートレベルを調整してください</span>
+                </li>
+                <li>
+                    <span class="action-icon">&#x1F916;</span>
+                    <span><strong>Opus 4.7 セッションの確認</strong>: Opus 4.7 を使用している場合、/context の表示が修正されていることを確認してください。以前の不必要な自動コンパクションは解消されています</span>
+                </li>
+                <li>
+                    <span class="action-icon">&#x26A1;</span>
+                    <span><strong>ネイティブビルドの動作確認</strong>: macOS/Linux ネイティブビルドユーザーは、bfs と ugrep による検索が正常に動作することを確認してください</span>
+                </li>
+                <li>
+                    <span class="action-icon">&#x1F511;</span>
+                    <span><strong>OAuth セッションの確認</strong>: OAuth 認証を使用している場合、長時間セッションでトークンリフレッシュが正常に動作することを確認してください</span>
+                </li>
+                <li>
+                    <span class="action-icon">&#x1F500;</span>
+                    <span><strong>フォーク型サブエージェントの検討</strong>: パフォーマンス向上が必要な場合、CLAUDE_CODE_FORK_SUBAGENT=1 の設定を検討してください</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">&#x1F4DD; まとめ</h2>
+            <div class="summary-box">
+                <h3>&#x1F4CB; 3 つのテーマ</h3>
+                <p><strong>1. ネイティブビルドの本格的な性能活用</strong>: macOS/Linux ネイティブビルドで Glob と Grep ツールが組み込みの bfs と ugrep に置き換えられ、ツール往復通信のオーバーヘッドが排除されました。MCP 同時接続のデフォルト化、Windows サブプロセス起動キャッシュ、フォーク型サブエージェントの外部ビルド対応により、Claude Code の応答性とスタートアップ速度が全体的に向上しています。</p>
+                <p><strong>2. モデル利用体験の最適化</strong>: Pro/Max 向けに Opus 4.6/Sonnet 4.6 のデフォルトエフォートが high に引き上げられ、より高品質な応答がデフォルトで得られるようになりました。Opus 4.7 のコンテキストウィンドウが 200K から正しい 1M に修正され、/context の表示精度改善と不必要な早期自動コンパクションの解消が実現。/model の永続化改善と OpenTelemetry のエフォート属性追加も含まれています。</p>
+                <p><strong>3. プラグインエコシステムの成熟と安定性向上</strong>: プラグインの依存関係自動解決の改善、マネージド設定による blockedMarketplaces と strictKnownMarketplaces の制御が追加されました。15 件のバグ修正には OAuth トークンリフレッシュ改善、WebFetch の大規模 HTML ハング修正、Bedrock の Opus 4.7 対応修正、サブエージェントのマルウェア誤検出修正、Linux メモリ増加修正など幅広い領域の問題解消が含まれています。</p>
+                <p>全ての Claude Code ユーザーに対してアップデートを推奨します。特に Opus 4.7 ユーザーはコンテキストウィンドウ修正により大幅な体験改善が得られます。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <p><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code</a></p>
+            <p><a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">https://www.npmjs.com/package/@anthropic-ai/claude-code</a></p>
+            <p><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">https://docs.anthropic.com/en/docs/claude-code</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
