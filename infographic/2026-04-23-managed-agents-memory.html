@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Managed Agents Memory パブリックベータ - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .category-label {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .category-label.store { background: #E8EAF6; color: #283593; }
+        .category-label.memory { background: #DCEDC8; color: #33691E; }
+        .category-label.version { background: #FFF3E0; color: #E65100; }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: center;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            .comparison-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 6px 0;
+            color: var(--text-secondary);
+        }
+
+        .comparison-arrow {
+            font-size: 2rem;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .comparison-arrow .improvement {
+            display: block;
+            font-size: 12px;
+            color: var(--success);
+            margin-top: 4px;
+        }
+
+        /* Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .info-table thead th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .info-table thead th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        .info-table thead th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        .info-table tbody td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            color: var(--text-secondary);
+        }
+
+        .info-table tbody tr:last-child td:first-child {
+            border-radius: 0 0 0 8px;
+        }
+
+        .info-table tbody tr:last-child td:last-child {
+            border-radius: 0 0 8px 0;
+        }
+
+        .info-table tbody tr:nth-child(even) {
+            background: var(--anthropic-cream);
+        }
+
+        .info-table tbody tr:hover {
+            background: rgba(212, 165, 116, 0.1);
+        }
+
+        .info-table code {
+            background: rgba(212, 165, 116, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            color: var(--anthropic-dark);
+        }
+
+        /* Warning Card */
+        .warning-card {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border: 2px solid #FF9800;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px 0;
+        }
+
+        .warning-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Access Level Cards */
+        .access-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 16px 0;
+        }
+
+        @media (max-width: 600px) {
+            .access-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .access-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .access-card.readwrite {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border: 2px solid #FF9800;
+        }
+
+        .access-card.readonly {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .access-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .access-card.readwrite h4 { color: #E65100; }
+        .access-card.readonly h4 { color: #059669; }
+
+        .access-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Tech Detail */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tech-detail ol, .tech-detail ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .tech-detail ol li, .tech-detail ul li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            border-radius: 16px;
+            padding: 28px;
+            color: white;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 6px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE API</span>
+                <h1>Managed Agents Memory パブリックベータ</h1>
+                <p class="date">2026-04-23</p>
+                <p class="subtitle">セッション横断の記憶保持が API で利用可能に -- Memory Store によるエージェントの永続的な知識管理</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">リリース概要</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">1,000</div>
+                    <div class="stat-label">最大 Store 数/組織</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2,000</div>
+                    <div class="stat-label">最大 Memory 数/Store</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">対応 SDK 言語</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">30 日</div>
+                    <div class="stat-label">バージョン履歴保持</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F9E0;</div>
+                    <div class="key-point-content">
+                        <h3>Memory Store の導入</h3>
+                        <p>ワークスペーススコープのテキストドキュメントコレクションを作成可能。Claude に最適化されたストレージとして、エージェントが自然にファイルとして読み書きできる形式を採用しています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F504;</div>
+                    <div class="key-point-content">
+                        <h3>イミュータブルバージョン管理</h3>
+                        <p>すべての変更が <code>memver_...</code> プレフィックスのバージョンとして記録され、30 日間の履歴を保持。完全な監査証跡が確保されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F310;</div>
+                    <div class="key-point-content">
+                        <h3>多言語 SDK 対応</h3>
+                        <p>Python、TypeScript、Go、Java、C#、PHP、Ruby の各 SDK および <code>ant</code> CLI で利用可能。<code>managed-agents-2026-04-01</code> ヘッダーで有効化します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F512;</div>
+                    <div class="key-point-content">
+                        <h3>セキュリティ制御</h3>
+                        <p><code>read_write</code> と <code>read_only</code> のアクセスレベルにより、エージェントの権限を適切に管理。プロンプトインジェクションからの保護が可能です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F50F;</div>
+                    <div class="key-point-content">
+                        <h3>楽観的並行性制御</h3>
+                        <p><code>content_sha256</code> プリコンディションによるセーフな更新をサポート。複数セッションからの同時更新を安全に処理できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After Comparison -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (Memory なし)</h4>
+                    <ul>
+                        <li>&#x274C; セッションごとに独立した記憶</li>
+                        <li>&#x274C; 前回の学びを引き継げない</li>
+                        <li>&#x274C; 外部 DB の構築が必要</li>
+                        <li>&#x274C; ユーザー情報の再入力</li>
+                    </ul>
+                </div>
+                <div class="comparison-arrow">
+                    &#x2192;
+                    <span class="improvement">Memory 導入</span>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (Memory 有効)</h4>
+                    <ul>
+                        <li>&#x2705; セッション横断の記憶保持</li>
+                        <li>&#x2705; ユーザーの好み・慣例を永続化</li>
+                        <li>&#x2705; ファーストパーティのストレージ</li>
+                        <li>&#x2705; /mnt/memory/ でファイル操作</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Memory Store Architecture -->
+        <section class="section">
+            <h2 class="section-title">Memory Store アーキテクチャ</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Memory Store は 3 階層構造で構成されます。Store がコレクションを管理し、Memory が個々のドキュメントを保持し、Version が変更履歴を記録します。</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label store">Store</span>
+                    <h3>&#x1F5C2;&#xFE0F; Memory Store</h3>
+                    <p>ワークスペーススコープのコレクション。組織あたり最大 1,000 個作成可能。名前と説明を持ち、説明はシステムプロンプトに自動追加されます。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label memory">Memory</span>
+                    <h3>&#x1F4DD; Memory</h3>
+                    <p>各ストア内に最大 2,000 個保存可能なテキストドキュメント。パスで識別され、1 つあたり最大 100 kB。ファイルツールで読み書きを行います。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label version">Version</span>
+                    <h3>&#x1F516; Memory Version</h3>
+                    <p>メモリの各変更を記録するイミュータブルなスナップショット。<code>memver_...</code> プレフィックスの ID で管理され、30 日間保持されます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Operations Table -->
+        <section class="section">
+            <h2 class="section-title">API オペレーション</h2>
+            <div style="overflow-x: auto;">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>オペレーション</th>
+                            <th>エンドポイント</th>
+                            <th>説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ストア作成</td>
+                            <td><code>POST /v1/memory_stores</code></td>
+                            <td>名前と説明を指定して作成</td>
+                        </tr>
+                        <tr>
+                            <td>メモリ作成</td>
+                            <td><code>POST /v1/memory_stores/{id}/memories</code></td>
+                            <td>パスとコンテンツを指定して作成</td>
+                        </tr>
+                        <tr>
+                            <td>メモリ一覧</td>
+                            <td><code>GET /v1/memory_stores/{id}/memories</code></td>
+                            <td><code>path_prefix</code> と <code>depth</code> でフィルタ可能</td>
+                        </tr>
+                        <tr>
+                            <td>メモリ取得</td>
+                            <td><code>GET /v1/memory_stores/{id}/memories/{path}</code></td>
+                            <td>特定パスのメモリを取得</td>
+                        </tr>
+                        <tr>
+                            <td>メモリ更新</td>
+                            <td><code>PUT /v1/memory_stores/{id}/memories/{path}</code></td>
+                            <td>コンテンツを更新</td>
+                        </tr>
+                        <tr>
+                            <td>メモリ削除</td>
+                            <td><code>DELETE /v1/memory_stores/{id}/memories/{path}</code></td>
+                            <td>メモリを削除</td>
+                        </tr>
+                        <tr>
+                            <td>バージョン一覧</td>
+                            <td><code>GET /v1/memory_stores/{id}/versions</code></td>
+                            <td>変更履歴を取得</td>
+                        </tr>
+                        <tr>
+                            <td>バージョン取得</td>
+                            <td><code>GET /v1/memory_stores/{id}/versions/{ver}</code></td>
+                            <td>特定バージョンを取得</td>
+                        </tr>
+                        <tr>
+                            <td>バージョン墨消し</td>
+                            <td><code>POST /v1/memory_stores/{id}/versions/{ver}/redact</code></td>
+                            <td>機密情報を墨消し</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Limits Table -->
+        <section class="section">
+            <h2 class="section-title">制限事項</h2>
+            <div style="overflow-x: auto;">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>制限項目</th>
+                            <th>値</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>組織あたりの Memory Store 数</td>
+                            <td><strong>1,000</strong></td>
+                        </tr>
+                        <tr>
+                            <td>ストアあたりのメモリ数</td>
+                            <td><strong>2,000</strong></td>
+                        </tr>
+                        <tr>
+                            <td>ストアあたりの総容量</td>
+                            <td><strong>100 MB</strong></td>
+                        </tr>
+                        <tr>
+                            <td>1 メモリあたりのサイズ</td>
+                            <td><strong>100 kB</strong></td>
+                        </tr>
+                        <tr>
+                            <td>バージョン履歴の保持期間</td>
+                            <td><strong>30 日</strong></td>
+                        </tr>
+                        <tr>
+                            <td>セッションあたりの Memory Store 数</td>
+                            <td><strong>8</strong></td>
+                        </tr>
+                        <tr>
+                            <td>アタッチ時の instructions フィールド</td>
+                            <td><strong>4,096 文字</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Security Section -->
+        <section class="section">
+            <h2 class="section-title">セキュリティとアクセス制御</h2>
+
+            <div class="access-grid">
+                <div class="access-card readwrite">
+                    <h4>&#x1F513; read_write</h4>
+                    <p><strong>用途</strong>: ユーザー固有の学習、動的な知識蓄積</p>
+                    <p><strong>リスク</strong>: プロンプトインジェクションによる汚染リスクあり</p>
+                    <p><strong>推奨</strong>: 信頼された入力を処理するエージェント向け</p>
+                </div>
+                <div class="access-card readonly">
+                    <h4>&#x1F512; read_only</h4>
+                    <p><strong>用途</strong>: 参照資料、静的なガイドライン、テンプレート</p>
+                    <p><strong>リスク</strong>: 書き込み不可のため汚染リスクなし</p>
+                    <p><strong>推奨</strong>: 信頼されていないユーザー入力を処理するエージェント向け</p>
+                </div>
+            </div>
+
+            <div class="warning-card">
+                <h4>&#x26A0;&#xFE0F; プロンプトインジェクションに関する重要な注意事項</h4>
+                <p>Memory Store はデフォルトで <code>read_write</code> アクセスでアタッチされます。エージェントが信頼されていない入力を処理する場合、プロンプトインジェクションによって悪意のあるコンテンツが Memory Store に書き込まれるリスクがあります。参照用の Memory Store には必ず <code>read_only</code> を指定することが強く推奨されます。</p>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <!-- Mermaid: Memory Store Architecture -->
+            <div class="mermaid-container">
+                <h3>Memory Store の全体アーキテクチャ</h3>
+                <div class="mermaid">
+flowchart TD
+    subgraph Developer["&#x1F464; 開発者"]
+        API["&#x1F50C; Claude API&lt;br/&gt;managed-agents-2026-04-01"]
+    end
+
+    subgraph MemorySystem["&#x1F9E0; Memory システム"]
+        subgraph StoreLayer["&#x1F4E6; Memory Store レイヤー"]
+            direction LR
+            Store1["&#x1F5C2;&#xFE0F; Store A&lt;br/&gt;User Preferences"]
+            Store2["&#x1F5C2;&#xFE0F; Store B&lt;br/&gt;Project Context"]
+            Store3["&#x1F5C2;&#xFE0F; Store C&lt;br/&gt;Reference Docs"]
+            Store1 ~~~ Store2 ~~~ Store3
+        end
+
+        subgraph MemoryLayer["&#x1F4C4; Memory レイヤー"]
+            direction LR
+            Mem1["&#x1F4DD; /formatting.md"]
+            Mem2["&#x1F4DD; /user/prefs.md"]
+            Mem3["&#x1F4DD; /rules/coding.md"]
+            Mem1 ~~~ Mem2 ~~~ Mem3
+        end
+
+        subgraph VersionLayer["&#x1F4CB; Version レイヤー"]
+            direction LR
+            Ver1["&#x1F516; memver_001&lt;br/&gt;初期作成"]
+            Ver2["&#x1F516; memver_002&lt;br/&gt;更新"]
+            Ver3["&#x1F516; memver_003&lt;br/&gt;最新"]
+            Ver1 ~~~ Ver2 ~~~ Ver3
+        end
+    end
+
+    subgraph SessionLayer["&#x1F916; Agent セッション"]
+        direction LR
+        Mount["/mnt/memory/&lt;br/&gt;ファイルシステムマウント"]
+        Agent["&#x1F916; Managed Agent&lt;br/&gt;ファイルツールで読み書き"]
+        Mount ~~~ Agent
+    end
+
+    API -->|"POST /v1/memory_stores"| StoreLayer
+    API -->|"POST memories"| MemoryLayer
+    StoreLayer --> MemoryLayer
+    MemoryLayer --> VersionLayer
+    StoreLayer -->|"resources で&lt;br/&gt;アタッチ"| SessionLayer
+    Agent -->|"読み書き"| Mount
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef store fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef memory fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef version fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef session fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class Developer user
+    class MemorySystem,StoreLayer,MemoryLayer,VersionLayer layer
+    class Store1,Store2,Store3 store
+    class Mem1,Mem2,Mem3 memory
+    class Ver1,Ver2,Ver3 version
+    class Mount,Agent session
+    class API api
+                </div>
+            </div>
+
+            <!-- Mermaid: Session Attach and Access Control -->
+            <div class="mermaid-container">
+                <h3>セッションアタッチとアクセス制御</h3>
+                <div class="mermaid">
+flowchart LR
+    subgraph Session["&#x1F916; Agent セッション"]
+        Agent["&#x1F916; Managed Agent"]
+    end
+
+    subgraph Resources["&#x1F4E6; resources 配列"]
+        direction TB
+        RW["&#x1F513; read_write&lt;br/&gt;動的な学習・記録"]
+        RO["&#x1F512; read_only&lt;br/&gt;参照資料・テンプレート"]
+    end
+
+    subgraph Stores["&#x1F5C2;&#xFE0F; Memory Stores"]
+        direction TB
+        UserStore["&#x1F4DD; User Preferences&lt;br/&gt;read_write"]
+        RefStore["&#x1F4DA; Reference Docs&lt;br/&gt;read_only"]
+    end
+
+    subgraph Container["&#x1F4C2; コンテナ"]
+        MntDir["/mnt/memory/&lt;br/&gt;ファイルシステム"]
+    end
+
+    Agent -->|"resources[]"| Resources
+    RW --> UserStore
+    RO --> RefStore
+    UserStore --> MntDir
+    RefStore --> MntDir
+    Agent -->|"ファイルツール"| MntDir
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef agent fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef rw fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef ro fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef store fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef container fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+
+    class Session,Resources,Stores,Container platform
+    class Agent agent
+    class RW rw
+    class RO ro
+    class UserStore,RefStore store
+    class MntDir container
+                </div>
+            </div>
+
+            <!-- Mermaid: Security / Prompt Injection -->
+            <div class="mermaid-container">
+                <h3>セキュリティ: プロンプトインジェクションのリスク</h3>
+                <div class="mermaid">
+flowchart TD
+    subgraph SafeFlow["&#x2705; 安全なフロー"]
+        TrustedInput["&#x1F464; 信頼された入力"]
+        RWAgent1["&#x1F916; Agent&lt;br/&gt;read_write"]
+        MemWrite["&#x1F4DD; 正常な書き込み"]
+
+        TrustedInput --> RWAgent1
+        RWAgent1 --> MemWrite
+    end
+
+    subgraph RiskFlow["&#x26A0;&#xFE0F; リスクのあるフロー"]
+        UntrustedInput["&#x2753; 信頼されていない入力"]
+        RWAgent2["&#x1F916; Agent&lt;br/&gt;read_write"]
+        Injection["&#x1F489; プロンプトインジェクション&lt;br/&gt;悪意のあるコンテンツ書き込み"]
+
+        UntrustedInput --> RWAgent2
+        RWAgent2 --> Injection
+    end
+
+    subgraph Mitigation["&#x1F6E1;&#xFE0F; 緩和策"]
+        UntrustedInput2["&#x2753; 信頼されていない入力"]
+        ROAgent["&#x1F916; Agent&lt;br/&gt;read_only"]
+        Blocked["&#x1F6AB; 書き込みブロック"]
+
+        UntrustedInput2 --> ROAgent
+        ROAgent --> Blocked
+    end
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef safe fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef risk fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef mitigation fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+
+    class SafeFlow,RiskFlow,Mitigation platform
+    class TrustedInput,RWAgent1,MemWrite safe
+    class UntrustedInput,RWAgent2,Injection risk
+    class UntrustedInput2 warning
+    class ROAgent,Blocked mitigation
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Examples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">Memory Store の作成からセッションアタッチまで</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+# 1. Memory Store を作成
+store = client.beta.memory_stores.create(
+    name="User Preferences",
+    description="Per-user preferences and project context.",
+)
+
+print(f"Memory Store created: {store.id}")
+
+# 2. 初期コンテンツをシード
+client.beta.memory_stores.memories.create(
+    store.id,
+    path="/formatting_standards.md",
+    content="All reports use GAAP formatting. Dates are ISO-8601...",
+)
+
+client.beta.memory_stores.memories.create(
+    store.id,
+    path="/user/preferences.md",
+    content="Preferred language: Japanese\nTimezone: Asia/Tokyo\n",
+)
+
+# 3. セッションに Memory Store をアタッチ
+session = client.beta.sessions.create(
+    agent=agent.id,
+    environment_id=environment.id,
+    resources=[
+        {
+            "type": "memory_store",
+            "memory_store_id": store.id,
+            "access": "read_write",
+            "instructions": (
+                "User preferences and project context. "
+                "Check before starting any task."
+            ),
+        }
+    ],
+)
+
+print(f"Session created with memory: {session.id}")</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">read_only アクセスでの参照資料アタッチ</span>
+                </div>
+                <pre><code class="language-python"># 参照資料用のストアを read_only でアタッチ (セキュリティ推奨)
+session = client.beta.sessions.create(
+    agent=agent.id,
+    environment_id=environment.id,
+    resources=[
+        {
+            "type": "memory_store",
+            "memory_store_id": reference_store.id,
+            "access": "read_only",
+            "instructions": "Reference documentation. Do not attempt to modify.",
+        },
+        {
+            "type": "memory_store",
+            "memory_store_id": learning_store.id,
+            "access": "read_write",
+            "instructions": "Store learned preferences and patterns here.",
+        },
+    ],
+)</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">メモリの一覧取得とバージョン管理</span>
+                </div>
+                <pre><code class="language-python"># メモリの一覧取得 (パスプレフィックスでフィルタ)
+memories = client.beta.memory_stores.memories.list(
+    store.id,
+    path_prefix="/user/",
+    depth=2,
+)
+
+for memory in memories:
+    print(f"  {memory.path}: {len(memory.content)} bytes")
+
+# バージョン履歴の取得 (監査証跡)
+versions = client.beta.memory_stores.versions.list(store.id)
+
+for version in versions:
+    print(f"  {version.id}: {version.created_at}")</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">楽観的並行性制御によるセーフな更新</span>
+                </div>
+                <pre><code class="language-python">import hashlib
+
+# 現在のメモリを取得
+memory = client.beta.memory_stores.memories.retrieve(
+    store.id,
+    path="/user/preferences.md",
+)
+
+# コンテンツの SHA256 ハッシュを計算
+content_hash = hashlib.sha256(memory.content.encode()).hexdigest()
+
+# ハッシュをプリコンディションとして指定して更新
+# 他のプロセスが同時に更新した場合はエラーになる
+client.beta.memory_stores.memories.update(
+    store.id,
+    path="/user/preferences.md",
+    content="Updated preferences...",
+    content_sha256=content_hash,
+)</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+
+            <div class="use-case">
+                <h4>&#x1F4DE; カスタマーサポートエージェント</h4>
+                <p>ユーザーの過去のやり取りや好みを Memory Store に記憶し、パーソナライズされた対応を実現。セッションを跨いでコンテキストを維持することで、ユーザーが情報を繰り返し伝える必要がなくなります。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4BB; コード生成エージェント</h4>
+                <p>プロジェクトの慣例、コーディング規約、技術スタックの情報を Memory Store に格納。エージェントがプロジェクト固有のスタイルに従った一貫性のあるコードを生成します。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F3AF; ドメイン特化型エージェント</h4>
+                <p>ビジネスルール、業界固有の知識、フォーマット基準などを Memory Store に格納。ドメインエキスパートとしての出力品質を維持し、過去のミスから学習して精度を向上させます。</p>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <div class="tech-detail">
+                <h4>必要なアクション</h4>
+                <ol>
+                    <li><strong>ベータヘッダーの確認</strong>: <code>managed-agents-2026-04-01</code> ヘッダーが設定されていることを確認</li>
+                    <li><strong>Memory Store の設計</strong>: エージェントに記憶させたい情報の種類とパス構造を設計</li>
+                    <li><strong>アクセスレベルの検討</strong>: 各 Memory Store に対して <code>read_write</code> と <code>read_only</code> のどちらが適切か、セキュリティ要件に基づいて判断</li>
+                    <li><strong>既存エージェントへの統合</strong>: 既存の Managed Agents セッションに Memory Store をアタッチして、セッション横断の記憶を有効化</li>
+                </ol>
+            </div>
+
+            <div class="tech-detail">
+                <h4>移行ガイド</h4>
+                <p>Memory 機能は新規追加であるため、破壊的変更はありません。既存の Managed Agents アプリケーションに段階的に導入できます。</p>
+                <ol>
+                    <li>Memory Store を作成し、初期コンテンツをシードする</li>
+                    <li>セッション作成時に <code>resources[]</code> 配列で Memory Store をアタッチする</li>
+                    <li>エージェントの指示文に Memory Store の活用方法を記述する</li>
+                    <li>バージョン履歴を監視して、エージェントの書き込み内容を検証する</li>
+                </ol>
+            </div>
+
+            <div class="summary-box">
+                <h3>まとめ</h3>
+                <p>Claude Managed Agents の Memory 機能がパブリックベータとして公開されました。<code>managed-agents-2026-04-01</code> ヘッダーで利用可能なこの機能により、エージェントはセッションを跨いでユーザーの好み、プロジェクト慣例、過去の学びなどを永続化できるようになります。</p>
+                <p>Memory Store はワークスペーススコープのテキストドキュメントコレクションとして構成され、セッションのコンテナ内に <code>/mnt/memory/</code> としてマウントされます。エージェントは標準のファイルツールで読み書きを行うため、特別な API を学習する必要がありません。すべての変更はイミュータブルなバージョンとして記録され、30 日間の監査証跡が確保されます。</p>
+                <p>Python、TypeScript、Go、Java、C#、PHP、Ruby の各 SDK および <code>ant</code> CLI で利用可能であり、既存の Managed Agents アプリケーションに段階的に導入できます。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>ソース: <a href="https://platform.claude.com/docs/en/managed-agents/memory" target="_blank" rel="noopener noreferrer">Using Agent Memory - Claude API Documentation</a></p>
+            <p>カテゴリ: Claude API アップデート | 発行日: 2026-04-23</p>
+            <p>このインフォグラフィックは Claude API Release Notes に基づいて自動生成されています。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/python.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

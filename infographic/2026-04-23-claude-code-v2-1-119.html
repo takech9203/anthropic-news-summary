@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.119 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .category-label {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .category-label.config { background: #FFF3E0; color: #E65100; }
+        .category-label.platform { background: #E3F2FD; color: #1565C0; }
+        .category-label.feature { background: #E9F7EC; color: #065F46; }
+        .category-label.hook { background: #F3E5F5; color: #6A1B9A; }
+        .category-label.security { background: #FFEBEE; color: #C62828; }
+        .category-label.ux { background: #FCE4EC; color: #880E4F; }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            .comparison-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 6px 0;
+            color: var(--text-secondary);
+        }
+
+        .comparison-arrow {
+            font-size: 2rem;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .comparison-arrow .improvement {
+            display: block;
+            font-size: 12px;
+            color: var(--success);
+            margin-top: 4px;
+        }
+
+        .comparison-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Bug Fix Summary */
+        .bug-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .bug-category {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .bug-category h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bug-category .bug-count {
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .bug-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-category ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .bug-category ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Tech Detail */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tech-detail ol, .tech-detail ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .tech-detail ol li, .tech-detail ul li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            border-radius: 16px;
+            padding: 28px;
+            color: white;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 6px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bug-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.119</h1>
+                <p class="date">2026-04-23</p>
+                <p class="subtitle">設定永続化、マルチプラットフォーム PR 対応、フックの実行時間計測、30 件以上のバグ修正を含む大規模アップデート</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x2699;&#xFE0F;</div>
+                    <div class="key-point-content">
+                        <h3>/config 設定の永続化</h3>
+                        <p><code>/config</code> で設定したテーマ、エディタモード、verbose 等が <code>~/.claude/settings.json</code> に永続化。プロジェクト/ローカル/ポリシーのオーバーライド優先順位にも対応し、再起動後も設定が維持されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F310;</div>
+                    <div class="key-point-content">
+                        <h3>--from-pr マルチプラットフォーム対応</h3>
+                        <p><code>--from-pr</code> が GitHub に加えて GitLab マージリクエスト、Bitbucket プルリクエスト、GitHub Enterprise PR URL を受け付けるようになりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x23F1;&#xFE0F;</div>
+                    <div class="key-point-content">
+                        <h3>フックの duration_ms 計測</h3>
+                        <p><code>PostToolUse</code> / <code>PostToolUseFailure</code> フック入力にツール実行時間 <code>duration_ms</code> が追加。パーミッションプロンプトと PreToolUse の時間を除いた正確な計測が可能です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F41B;</div>
+                    <div class="key-point-content">
+                        <h3>30 件以上のバグ修正</h3>
+                        <p>Windows クリップボード、kitty キーボードプロトコル、Glob/Grep ツール消失、フルスクリーンスクロール、MCP OAuth 接続など多岐にわたる問題が解消されました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="section">
+            <h2 class="section-title">リリース概要</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">46+</div>
+                    <div class="stat-label">総変更数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">16</div>
+                    <div class="stat-label">新機能/改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">30+</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">改善テーマ</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings/Customization -->
+        <section class="section">
+            <h2 class="section-title">設定/カスタマイズ - 4 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label config">Config</span>
+                    <h3>&#x1F4BE; /config 設定の永続化</h3>
+                    <p>テーマ、エディタモード、verbose 等の設定が <code>~/.claude/settings.json</code> に永続化。プロジェクト/ローカル/ポリシーのオーバーライド優先順位にも対応します。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label config">Config</span>
+                    <h3>&#x1F517; prUrlTemplate 設定</h3>
+                    <p>PR バッジのフッターリンクを github.com ではなくカスタムコードレビュー URL に変更できる <code>prUrlTemplate</code> 設定が追加されました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label config">Config</span>
+                    <h3>&#x1F648; CLAUDE_CODE_HIDE_CWD</h3>
+                    <p>起動ロゴに表示されるワーキングディレクトリを非表示にする環境変数が追加されました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label config">Config</span>
+                    <h3>&#x1F527; verbose 設定の永続化修正</h3>
+                    <p>再起動後に verbose 出力設定が失われる問題が修正されました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Multi-platform Support -->
+        <section class="section">
+            <h2 class="section-title">マルチプラットフォーム対応 - 3 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label platform">Platform</span>
+                    <h3>&#x1F500; --from-pr マルチプラットフォーム</h3>
+                    <p>GitHub に加えて GitLab マージリクエスト、Bitbucket プルリクエスト、GitHub Enterprise PR URL を受け付けるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label platform">Platform</span>
+                    <h3>&#x1F517; owner/repo#N リモート対応</h3>
+                    <p>出力内の <code>owner/repo#N</code> ショートハンドリンクが常に github.com を指すのではなく、git リモートのホストを使用するようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label platform">Platform</span>
+                    <h3>&#x26A1; PowerShell 自動承認</h3>
+                    <p>PowerShell ツールコマンドがパーミッションモードで自動承認可能になり、Bash と同等の動作に対応しました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能/改善 - 6 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label feature">Feature</span>
+                    <h3>&#x1F4C4; --print フロントマター対応</h3>
+                    <p><code>--print</code> モードがエージェントの <code>tools:</code> と <code>disallowedTools:</code> フロントマターを尊重するようになり、インタラクティブモードと同一の動作になりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label feature">Feature</span>
+                    <h3>&#x1F916; --agent permissionMode</h3>
+                    <p><code>--agent &lt;name&gt;</code> がビルトインエージェントのエージェント定義の <code>permissionMode</code> を尊重するようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label feature">Feature</span>
+                    <h3>&#x26A1; MCP サーバー並列接続</h3>
+                    <p>サブエージェントと SDK MCP サーバーの再構成時にサーバーへの接続がシリアルではなく並列で行われるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label feature">Feature</span>
+                    <h3>&#x1F504; プラグイン自動更新</h3>
+                    <p>他のプラグインのバージョン制約で固定されたプラグインが、制約を満たす最高の git タグに自動更新されるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x1F50D; スラッシュコマンドハイライト</h3>
+                    <p>スラッシュコマンド候補でクエリにマッチした文字がハイライト表示されるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x1F4DD; 説明文の折り返し</h3>
+                    <p>スラッシュコマンドピッカーで長い説明文が切り詰められるのではなく、2 行目に折り返されるようになりました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hooks/Instrumentation -->
+        <section class="section">
+            <h2 class="section-title">フック/計測 - 3 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label hook">Hook</span>
+                    <h3>&#x23F1;&#xFE0F; duration_ms 追加</h3>
+                    <p><code>PostToolUse</code> / <code>PostToolUseFailure</code> フック入力にツール実行時間がミリ秒単位で含まれるようになりました。パーミッションプロンプトと <code>PreToolUse</code> フックの時間は除外されます。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label hook">Hook</span>
+                    <h3>&#x1F4CA; OpenTelemetry tool_use_id</h3>
+                    <p><code>tool_result</code> と <code>tool_decision</code> イベントに <code>tool_use_id</code> が追加。<code>tool_result</code> には <code>tool_input_size_bytes</code> も追加されています。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label hook">Hook</span>
+                    <h3>&#x1F4C8; ステータスライン拡張</h3>
+                    <p>stdin JSON に <code>effort.level</code> と <code>thinking.enabled</code> が含まれるようになりました。</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">json</span>
+                    <span class="code-title">duration_ms を活用したフック設定例</span>
+                </div>
+                <pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "if [ \"$TOOL_DURATION_MS\" -gt 30000 ]; then echo 'Tool took over 30s'; fi"
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Before/After Comparison -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+
+            <p class="comparison-label">&#x2699;&#xFE0F; /config 設定の永続化</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.118 以前)</h4>
+                    <ul>
+                        <li>&#x274C; /config の設定はセッション限り</li>
+                        <li>&#x274C; 再起動すると設定がリセット</li>
+                        <li>&#x274C; verbose 設定が消失</li>
+                    </ul>
+                </div>
+                <div class="comparison-arrow">
+                    &#x2192;
+                    <span class="improvement">永続化</span>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.119)</h4>
+                    <ul>
+                        <li>&#x2705; ~/.claude/settings.json に永続化</li>
+                        <li>&#x2705; 再起動後も設定が維持</li>
+                        <li>&#x2705; 優先順位に基づくオーバーライド</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p class="comparison-label">&#x1F310; --from-pr マルチプラットフォーム対応</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.118 以前)</h4>
+                    <ul>
+                        <li>&#x274C; GitHub PR URL のみ対応</li>
+                        <li>&#x274C; GitLab/Bitbucket は非対応</li>
+                        <li>&#x274C; GitHub Enterprise も非対応</li>
+                    </ul>
+                </div>
+                <div class="comparison-arrow">
+                    &#x2192;
+                    <span class="improvement">拡張</span>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.119)</h4>
+                    <ul>
+                        <li>&#x2705; GitHub PR + GitHub Enterprise</li>
+                        <li>&#x2705; GitLab マージリクエスト</li>
+                        <li>&#x2705; Bitbucket プルリクエスト</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <div class="mermaid-container">
+                <h3>v2.1.119 主要変更の全体像</h3>
+                <div class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["&#x1F5A5;&#xFE0F; Claude Code v2.1.119"]
+        subgraph Config["&#x2699;&#xFE0F; 設定/カスタマイズ 4 件"]
+            direction LR
+            Persist["&#x1F4BE; /config 永続化&lt;br/&gt;settings.json"]
+            PrUrl["&#x1F517; prUrlTemplate&lt;br/&gt;カスタム PR URL"]
+            HideCwd["&#x1F648; HIDE_CWD&lt;br/&gt;ディレクトリ非表示"]
+            Persist ~~~ PrUrl ~~~ HideCwd
+        end
+
+        subgraph MultiPlatform["&#x1F310; マルチプラットフォーム 3 件"]
+            direction LR
+            FromPR["&#x1F500; --from-pr&lt;br/&gt;GitLab / Bitbucket / GHE"]
+            RepoLinks["&#x1F517; owner/repo#N&lt;br/&gt;リモートホスト対応"]
+            PowerShell["&#x26A1; PowerShell&lt;br/&gt;自動承認対応"]
+            FromPR ~~~ RepoLinks ~~~ PowerShell
+        end
+
+        subgraph Features["&#x2728; 新機能/改善 6 件"]
+            direction LR
+            PrintMode["&#x1F4C4; --print フロントマター"]
+            ParallelMCP["&#x26A1; MCP 並列接続"]
+            SlashCmd["&#x1F50D; スラッシュコマンド&lt;br/&gt;ハイライト/折り返し"]
+            PrintMode ~~~ ParallelMCP ~~~ SlashCmd
+        end
+
+        subgraph Hooks["&#x1FA9D; フック/計測 3 件"]
+            direction LR
+            DurationMs["&#x23F1;&#xFE0F; duration_ms&lt;br/&gt;ツール実行時間"]
+            OTel["&#x1F4CA; OpenTelemetry&lt;br/&gt;tool_use_id 追加"]
+            StatusLine["&#x1F4C8; ステータスライン&lt;br/&gt;effort / thinking"]
+            DurationMs ~~~ OTel ~~~ StatusLine
+        end
+
+        subgraph BugFixes["&#x1F41B; バグ修正 30 件以上"]
+            direction LR
+            InputFixes["&#x2328;&#xFE0F; 入力/クリップ&lt;br/&gt;3 件"]
+            UIFixes["&#x1F5BC;&#xFE0F; UI/表示&lt;br/&gt;5 件"]
+            MCPFixes["&#x1F50C; MCP&lt;br/&gt;5 件"]
+            AgentFixes["&#x1F916; エージェント&lt;br/&gt;4 件"]
+            CmdFixes["&#x1F4CB; コマンド&lt;br/&gt;4 件"]
+            OtherFixes["&#x1F4E6; その他&lt;br/&gt;10 件以上"]
+            InputFixes ~~~ UIFixes ~~~ MCPFixes ~~~ AgentFixes ~~~ CmdFixes ~~~ OtherFixes
+        end
+    end
+
+    User(["&#x1F464; ユーザー"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef config fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef multi fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef feature fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef hook fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class Config,MultiPlatform,Features,Hooks,BugFixes layer
+    class Persist,PrUrl,HideCwd config
+    class FromPR,RepoLinks,PowerShell multi
+    class PrintMode,ParallelMCP,SlashCmd feature
+    class DurationMs,OTel,StatusLine hook
+    class InputFixes,UIFixes,MCPFixes,AgentFixes,CmdFixes,OtherFixes fix
+    class User user
+                </div>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>設定優先順位アーキテクチャ</h3>
+                <div class="mermaid">
+flowchart TD
+    subgraph SettingsPrecedence["&#x2699;&#xFE0F; 設定優先順位 v2.1.119"]
+        Policy["&#x1F3DB;&#xFE0F; ポリシー設定&lt;br/&gt;管理者定義 - 最高優先"]
+        Local["&#x1F4BB; ローカル設定&lt;br/&gt;マシン固有"]
+        Project["&#x1F4C1; プロジェクト設定&lt;br/&gt;.claude/settings.json"]
+        UserSettings["&#x1F464; ユーザー設定&lt;br/&gt;~/.claude/settings.json"]
+        ConfigCmd["&#x2699;&#xFE0F; /config コマンド"]
+    end
+
+    ConfigCmd -->|"永続化"| UserSettings
+    UserSettings -->|"上書きされる"| Project
+    Project -->|"上書きされる"| Local
+    Local -->|"上書きされる"| Policy
+
+    Policy --> Applied["&#x2705; 最終設定値"]
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef policy fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef local fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef project fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef user fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef cmd fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef success fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class SettingsPrecedence platform
+    class Policy policy
+    class Local local
+    class Project project
+    class UserSettings user
+    class ConfigCmd cmd
+    class Applied success
+                </div>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>--from-pr マルチプラットフォーム対応</h3>
+                <div class="mermaid">
+flowchart LR
+    subgraph Platforms["&#x1F310; 対応プラットフォーム"]
+        direction TB
+        GitHub["&#x1F419; GitHub&lt;br/&gt;github.com"]
+        GHE["&#x1F3E2; GitHub Enterprise&lt;br/&gt;ghe.example.com"]
+        GitLab["&#x1F98A; GitLab&lt;br/&gt;gitlab.com"]
+        Bitbucket["&#x1FAA3; Bitbucket&lt;br/&gt;bitbucket.org"]
+    end
+
+    subgraph ClaudeCode["&#x1F5A5;&#xFE0F; Claude Code"]
+        FromPR["&#x1F500; --from-pr&lt;br/&gt;URL パーサー"]
+        Context["&#x1F4CB; PR/MR コンテキスト&lt;br/&gt;差分・コメント・説明"]
+    end
+
+    GitHub -->|"PR URL"| FromPR
+    GHE -->|"PR URL"| FromPR
+    GitLab -->|"MR URL"| FromPR
+    Bitbucket -->|"PR URL"| FromPR
+    FromPR --> Context
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef github fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef gitlab fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef bitbucket fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef claude fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Platforms,ClaudeCode platform
+    class GitHub,GHE github
+    class GitLab gitlab
+    class Bitbucket bitbucket
+    class FromPR,Context claude
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fix Summary -->
+        <section class="section">
+            <h2 class="section-title">バグ修正サマリー (30 件以上)</h2>
+            <div class="bug-grid">
+                <div class="bug-category">
+                    <h4>&#x2328;&#xFE0F; 入力/クリップボード <span class="bug-count">3</span></h4>
+                    <ul>
+                        <li>CRLF ペースト時の余分な空行</li>
+                        <li>kitty プロトコルでの改行消失</li>
+                        <li>@ ファイル Tab 補完の誤動作</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F5BC;&#xFE0F; UI/表示 <span class="bug-count">5</span></h4>
+                    <ul>
+                        <li>フルスクリーンスクロール</li>
+                        <li>Rewind 「no prompt」表示</li>
+                        <li>/export モデル名の表示</li>
+                        <li>/usage プログレスバーの重なり</li>
+                        <li>リスト項目の数値折り返し</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F50C; MCP <span class="bug-count">5</span></h4>
+                    <ul>
+                        <li>HTTP OAuth エラー修正</li>
+                        <li>headers 環境変数置換</li>
+                        <li>OAuth client_secret_post</li>
+                        <li>プラグイン MCP Windows 起動</li>
+                        <li>user_config 空白参照</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F916; エージェント/プラン <span class="bug-count">4</span></h4>
+                    <ul>
+                        <li>auto モード plan 上書き</li>
+                        <li>/plan 既存プラン動作</li>
+                        <li>スキルの再実行</li>
+                        <li>Agent worktree 再利用</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F4CB; スラッシュコマンド <span class="bug-count">4</span></h4>
+                    <ul>
+                        <li>/skills Enter キー動作</li>
+                        <li>/agents 詳細ビュー表示</li>
+                        <li>/reload-plugins エラー報告</li>
+                        <li>/doctor MCP サーバー警告</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F527; ツール/パーミッション <span class="bug-count">2</span></h4>
+                    <ul>
+                        <li>Glob/Grep ツールの消失</li>
+                        <li>Vertex AI Tool Search 無効化</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1FA9D; フック/セッション <span class="bug-count">3</span></h4>
+                    <ul>
+                        <li>非同期 PostToolUse 空エントリ</li>
+                        <li>サブエージェントスピナー</li>
+                        <li>PR セッション紐付け</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F4BB; プラットフォーム固有 <span class="bug-count">3</span></h4>
+                    <ul>
+                        <li>macOS Terminal.app 起動時 p 文字</li>
+                        <li>Windows MCP config 誤警告</li>
+                        <li>VSCode macOS 音声入力</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F4E6; その他 <span class="bug-count">5</span></h4>
+                    <ul>
+                        <li>Vim モード Esc キー</li>
+                        <li>TaskList ソート順</li>
+                        <li>GitHub rate limit 誤検知</li>
+                        <li>SDK read_file サイズキャップ</li>
+                        <li>無効化 MCP サーバー表示</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Examples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                    <span class="code-title">--from-pr マルチプラットフォーム使用</span>
+                </div>
+                <pre><code class="language-bash"># GitHub PR
+claude --from-pr https://github.com/owner/repo/pull/123
+
+# GitLab マージリクエスト
+claude --from-pr https://gitlab.com/owner/repo/-/merge_requests/456
+
+# Bitbucket プルリクエスト
+claude --from-pr https://bitbucket.org/owner/repo/pull-requests/789
+
+# GitHub Enterprise PR
+claude --from-pr https://ghe.example.com/owner/repo/pull/101</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">json</span>
+                    <span class="code-title">フックでの duration_ms 活用</span>
+                </div>
+                <pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "if [ \"$TOOL_DURATION_MS\" -gt 30000 ]; then echo 'Tool took over 30s'; fi"
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">json</span>
+                    <span class="code-title">MCP サーバーの環境変数置換</span>
+                </div>
+                <pre><code class="language-json">{
+  "mcpServers": {
+    "my-server": {
+      "type": "http",
+      "url": "https://api.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${API_TOKEN}"
+      }
+    }
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">json</span>
+                    <span class="code-title">prUrlTemplate の設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "prUrlTemplate": "https://review.example.com/repos/${owner}/${repo}/pulls/${number}"
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                    <span class="code-title">CLAUDE_CODE_HIDE_CWD の使用</span>
+                </div>
+                <pre><code class="language-bash"># 起動ロゴのワーキングディレクトリを非表示
+export CLAUDE_CODE_HIDE_CWD=1
+claude</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <div class="use-case">
+                <h4>&#x2699;&#xFE0F; 全ての Claude Code ユーザー</h4>
+                <p><code>/config</code> 設定の永続化により、再起動後も設定が維持されます。テーマ、エディタモード、verbose 等の設定が <code>~/.claude/settings.json</code> に保存されます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F310; GitHub 以外のプラットフォーム利用者</h4>
+                <p><code>--from-pr</code> が GitLab、Bitbucket、GitHub Enterprise に対応し、マルチプラットフォーム環境でのワークフローが改善されます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1FA9D; フック/自動化利用者</h4>
+                <p><code>duration_ms</code> による実行時間計測が可能になり、パフォーマンス監視やアラートの設定が容易になりました。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F50C; MCP サーバー利用者</h4>
+                <p>OAuth 接続、環境変数置換、プラグインの起動に関する複数の修正が適用されました。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F5A5;&#xFE0F; Windows ユーザー</h4>
+                <p>CRLF ペースト問題、MCP config の誤警告、プラグイン MCP サーバーの起動問題が修正されました。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x2328;&#xFE0F; Vim モード利用者</h4>
+                <p>Esc キーの動作が改善され、INSERT モードでのメッセージの意図しない引き戻しが防止されます。</p>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                    <span class="code-title">アップデートコマンド</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version
+# Claude Code v2.1.119</code></pre>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <h3>4 つの主要テーマ</h3>
+                <p><strong>1. 設定管理の永続化と統一</strong>: <code>/config</code> で設定したテーマ、エディタモード、verbose 等が <code>~/.claude/settings.json</code> に永続化。プロジェクト/ローカル/ポリシーのオーバーライド優先順位に参加。<code>prUrlTemplate</code> と <code>CLAUDE_CODE_HIDE_CWD</code> で柔軟なカスタマイズが可能に。</p>
+                <p><strong>2. マルチプラットフォーム対応の強化</strong>: <code>--from-pr</code> が GitHub に加えて GitLab マージリクエスト、Bitbucket プルリクエスト、GitHub Enterprise PR URL を受け付け。<code>owner/repo#N</code> リンクも git リモートのホストを使用。PowerShell 自動承認も追加。</p>
+                <p><strong>3. フック/計測システムの拡充</strong>: <code>PostToolUse</code> と <code>PostToolUseFailure</code> への <code>duration_ms</code> 追加、OpenTelemetry の <code>tool_use_id</code> と <code>tool_input_size_bytes</code>、ステータスラインへの <code>effort.level</code> と <code>thinking.enabled</code> 追加で運用監視基盤を強化。</p>
+                <p><strong>4. 30 件を超える大量バグ修正</strong>: Windows CRLF、kitty プロトコル、Glob/Grep 消失、フルスクリーンスクロール、MCP OAuth、auto/plan モード競合、スラッシュコマンド不良など、あらゆる領域の問題を解消。全ユーザーにアップデートを推奨します。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>ソース: <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></p>
+            <p>カテゴリ: Claude Code アップデート | 発行日: 2026-04-23</p>
+            <p>&#x2139;&#xFE0F; このインフォグラフィックは Claude Code Changelog に基づいて自動生成されています。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/json.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
