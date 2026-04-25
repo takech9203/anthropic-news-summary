@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-04-24](2026/2026-04-24-rate-limits-api.md) - Rate Limits API リリース -- 組織とワークスペースのレートリミットをプログラマティックに取得可能に
+- [2026-04-24](2026/2026-04-24-election-safeguards-update.md) - Anthropic が 2026 年選挙に向けた Claude の安全対策を公開 -- 政治的中立性テストと影響工作防止の最新結果
+- [2026-04-24](2026/2026-04-24-anthropic-nec-japan-ai-workforce.md) - Anthropic と NEC が戦略的提携 -- 日本最大規模の AI エンジニアリング組織を構築
 - [2026-04-23](2026/2026-04-23-managed-agents-memory.md) - Claude Managed Agents Memory がパブリックベータとして公開 -- セッション横断の記憶保持が API で利用可能に
 - [2026-04-23](2026/2026-04-23-claude-code-v2-1-119.md) - Claude Code v2.1.119 リリース: 設定永続化、マルチプラットフォーム PR 対応、フックの実行時間計測、大量バグ修正
 - [2026-04-22](2026/2026-04-22-claude-code-v2-1-97-v2-1-98.md) - Claude Code v2.1.97 & v2.1.98 リリース -- セキュリティ強化・Vertex AI セットアップウィザード・NO_FLICKER 改善

@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Limits API リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code {
+            background: rgba(212, 165, 116, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Endpoint Table */
+        .endpoint-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .endpoint-table th,
+        .endpoint-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .endpoint-table th {
+            background: var(--anthropic-cream);
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .endpoint-table td code {
+            background: rgba(26, 26, 46, 0.06);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            padding: 6px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '\2717';
+            color: #DC2626;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '\2713';
+            color: #059669;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding-left: 12px;
+            border-left: 3px solid var(--anthropic-coral);
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Response Structure */
+        .response-info {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 16px;
+        }
+
+        .response-info h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--anthropic-dark);
+        }
+
+        .response-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .response-info ul li {
+            padding: 4px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .response-info ul li strong {
+            color: var(--text-primary);
+        }
+
+        /* Auth Note */
+        .auth-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #FFF3E0;
+            border: 1px solid #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .auth-note-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .endpoint-table {
+                font-size: 12px;
+            }
+
+            .endpoint-table th,
+            .endpoint-table td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <h1>Rate Limits API リリース -- レートリミットをプログラマティックに取得可能に</h1>
+                <p class="date">2026-04-24</p>
+            </div>
+        </header>
+
+        <!-- 概要 -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p style="font-size: 15px; color: var(--text-secondary); margin-bottom: 20px;">
+                Anthropic は組織およびワークスペースに設定された API レートリミットをプログラマティックに取得できる Rate Limits API をリリースしました。Claude Console の Limits ページで確認できる情報と同等のデータを API 経由で取得できます。
+            </p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>組織・ワークスペースのリミット取得</h3>
+                        <p>組織レベルとワークスペースレベルの両方のレートリミットを API 経由で一覧取得可能。ワークスペースのレスポンスには <code>org_limit</code> フィールドが含まれ、オーバーライド値と組織リミットを比較できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>Admin API キー必須</h3>
+                        <p>Rate Limits API の利用には Admin API キー (<code>sk-ant-admin...</code>) が必要です。管理者ロールを持つユーザーのみがこのキーをプロビジョニングできます。通常の API キーでは利用不可です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📖</div>
+                    <div class="key-point-content">
+                        <h3>読み取り専用 API</h3>
+                        <p>現時点では読み取り専用の API です。レートリミットの変更は API からは行えず、引き続き Claude Console から行う必要があります。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 主要機能カード -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📡 エンドポイント</h3>
+                    <p>組織レベル: <code>GET /v1/organizations/rate_limits</code> とワークスペースレベル: <code>GET /v1/organizations/workspaces/{id}/rate_limits</code> の 2 つの主要エンドポイントを提供。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 フィルタオプション</h3>
+                    <p><code>?model=</code> で特定モデルを検索、<code>?group_type=</code> で <code>model_group</code>、<code>batch</code>、<code>token_count</code>、<code>files</code>、<code>skills</code>、<code>web_search</code> をフィルタ可能。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔐 認証</h3>
+                    <p>Admin API キー (<code>sk-ant-admin...</code>) による認証が必須。管理者ロールのみがプロビジョニング可能。通常の <code>sk-ant-api...</code> キーでは利用不可。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📄 ページネーション</h3>
+                    <p><code>page</code> パラメータと <code>next_page</code> フィールドによるページネーションをサポート。将来の拡張に備えてループ処理の実装を推奨。</p>
+                </div>
+            </div>
+
+            <!-- エンドポイント一覧テーブル -->
+            <table class="endpoint-table" style="margin-top: 24px;">
+                <thead>
+                    <tr>
+                        <th>エンドポイント</th>
+                        <th>説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>GET /v1/organizations/rate_limits</code></td>
+                        <td>組織レベルのレートリミットを一覧取得</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET ...rate_limits?model={model}</code></td>
+                        <td>特定モデルのリミットを検索</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET .../workspaces/{id}/rate_limits</code></td>
+                        <td>ワークスペースのオーバーライド一覧</td>
+                    </tr>
+                    <tr>
+                        <td><code>?group_type={type}</code></td>
+                        <td>グループタイプでフィルタ</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- レスポンス構造 -->
+            <div class="response-info" style="margin-top: 20px;">
+                <h4>レスポンス構造</h4>
+                <ul>
+                    <li><strong>group_type</strong>: リミットのグループタイプ (model_group、batch など)</li>
+                    <li><strong>models[]</strong>: 対象モデルの一覧</li>
+                    <li><strong>limits[]</strong>: {type, value} ペアの配列 (requests_per_minute、input_tokens_per_minute、output_tokens_per_minute)</li>
+                    <li><strong>org_limit</strong>: ワークスペースレスポンスのみ -- 組織レベルのリミット値を参照可能</li>
+                </ul>
+            </div>
+
+            <div class="auth-note">
+                <span class="auth-note-icon">&#x26A0;</span>
+                <div>
+                    <strong>制限事項:</strong> レートリミットの更新は API からは行えません。変更は Claude Console から行う必要があります。ワークスペースレスポンスにグループが含まれていない場合は、組織レベルのリミットがそのまま継承されていることを意味します。
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After 比較 -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>Claude Console の Limits ページで手動確認が必要</li>
+                        <li>ゲートウェイやプロキシにレートリミット値をハードコード</li>
+                        <li>Anthropic 側でリミット変更時にドリフトが発生</li>
+                        <li>内部アラート生成に手動でリミット値を管理</li>
+                        <li>複数ワークスペースのオーバーライド検証が困難</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>API 経由でプログラマティックにリミットを取得</li>
+                        <li>ゲートウェイ・プロキシ設定を動的に同期</li>
+                        <li>リミット変更を自動検知してドリフトを防止</li>
+                        <li>Usage and Cost API と組み合わせてアラート自動化</li>
+                        <li>ワークスペース設定の一元的な監査が可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- コードサンプル -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">組織レベルのレートリミット取得</span>
+                </div>
+                <pre><code class="language-bash">curl "https://api.anthropic.com/v1/organizations/rate_limits" \
+  --header "anthropic-version: 2023-06-01" \
+  --header "x-api-key: $ANTHROPIC_ADMIN_KEY"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">レスポンス例</span>
+                </div>
+                <pre><code class="language-json">{
+  "data": [
+    {
+      "type": "rate_limit",
+      "group_type": "model_group",
+      "models": [
+        "claude-opus-4-5",
+        "claude-opus-4-5-20251101",
+        "claude-opus-4-6",
+        "claude-opus-4-7"
+      ],
+      "limits": [
+        { "type": "requests_per_minute", "value": 4000 },
+        { "type": "input_tokens_per_minute", "value": 2000000 },
+        { "type": "output_tokens_per_minute", "value": 400000 }
+      ]
+    }
+  ],
+  "next_page": null
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">特定モデルのレートリミット検索</span>
+                </div>
+                <pre><code class="language-bash">curl "https://api.anthropic.com/v1/organizations/rate_limits?model=claude-opus-4-7" \
+  --header "anthropic-version: 2023-06-01" \
+  --header "x-api-key: $ANTHROPIC_ADMIN_KEY"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ワークスペースのオーバーライド取得</span>
+                </div>
+                <pre><code class="language-bash">curl "https://api.anthropic.com/v1/organizations/workspaces/${WORKSPACE_ID}/rate_limits" \
+  --header "anthropic-version: 2023-06-01" \
+  --header "x-api-key: $ANTHROPIC_ADMIN_KEY"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">ワークスペースレスポンス例</span>
+                </div>
+                <pre><code class="language-json">{
+  "data": [
+    {
+      "type": "workspace_rate_limit",
+      "group_type": "model_group",
+      "models": [
+        "claude-opus-4-5",
+        "claude-opus-4-5-20251101",
+        "claude-opus-4-6",
+        "claude-opus-4-7"
+      ],
+      "limits": [
+        { "type": "requests_per_minute", "value": 1000, "org_limit": 4000 },
+        { "type": "input_tokens_per_minute", "value": 500000, "org_limit": 2000000 }
+      ]
+    }
+  ],
+  "next_page": null
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">レートリミット取得とアラート生成の例</span>
+                </div>
+                <pre><code class="language-python">import requests
+
+ADMIN_KEY = "sk-ant-admin-..."
+BASE_URL = "https://api.anthropic.com/v1"
+
+headers = {
+    "anthropic-version": "2023-06-01",
+    "x-api-key": ADMIN_KEY,
+}
+
+
+def get_org_rate_limits(model=None):
+    """組織レベルのレートリミットを取得する"""
+    url = f"{BASE_URL}/organizations/rate_limits"
+    if model:
+        url += f"?model={model}"
+
+    all_limits = []
+    while url:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        all_limits.extend(data["data"])
+        # ページネーション対応
+        next_page = data.get("next_page")
+        if next_page:
+            url = f"{BASE_URL}/organizations/rate_limits?page={next_page}"
+        else:
+            url = None
+
+    return all_limits
+
+
+def get_workspace_rate_limits(workspace_id):
+    """ワークスペースのオーバーライドを取得する"""
+    url = f"{BASE_URL}/organizations/workspaces/{workspace_id}/rate_limits"
+
+    all_limits = []
+    while url:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        all_limits.extend(data["data"])
+        next_page = data.get("next_page")
+        if next_page:
+            url = (
+                f"{BASE_URL}/organizations/workspaces/"
+                f"{workspace_id}/rate_limits?page={next_page}"
+            )
+        else:
+            url = None
+
+    return all_limits
+
+
+def check_usage_against_limits(usage_rpm, model="claude-opus-4-7", threshold=0.8):
+    """使用量がリミットの閾値を超えていないか確認する"""
+    limits = get_org_rate_limits(model=model)
+    for group in limits:
+        for limit in group["limits"]:
+            if limit["type"] == "requests_per_minute":
+                ratio = usage_rpm / limit["value"]
+                if ratio >= threshold:
+                    print(
+                        f"[ALERT] {model}: RPM usage {usage_rpm}/{limit['value']} "
+                        f"({ratio:.0%}) exceeds threshold {threshold:.0%}"
+                    )
+                else:
+                    print(
+                        f"[OK] {model}: RPM usage {usage_rpm}/{limit['value']} "
+                        f"({ratio:.0%})"
+                    )
+
+
+# 使用例
+org_limits = get_org_rate_limits()
+for group in org_limits:
+    print(f"Group: {group['group_type']}")
+    print(f"  Models: {', '.join(group['models'])}")
+    for limit in group["limits"]:
+        print(f"  {limit['type']}: {limit['value']}")
+
+# アラートチェック
+check_usage_against_limits(usage_rpm=3500, model="claude-opus-4-7")</code></pre>
+            </div>
+        </section>
+
+        <!-- Mermaid 図 -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <div class="mermaid-container">
+                <h3>Rate Limits API の全体フロー</h3>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Admin["&#x1F464; 管理者"]
+        AdminKey["&#x1F511; Admin API キー&lt;br/&gt;sk-ant-admin..."]
+    end
+
+    subgraph RateLimitsAPI["&#x1F50C; Rate Limits API"]
+        direction LR
+        OrgEndpoint["&#x1F4CA; 組織リミット&lt;br/&gt;GET /v1/organizations/&lt;br/&gt;rate_limits"]
+        WSEndpoint["&#x1F4CA; ワークスペースリミット&lt;br/&gt;GET /v1/organizations/&lt;br/&gt;workspaces/ID/rate_limits"]
+        OrgEndpoint ~~~ WSEndpoint
+    end
+
+    subgraph Filters["&#x1F50D; フィルタオプション"]
+        direction LR
+        ModelFilter["&#x1F916; model&lt;br/&gt;特定モデル"]
+        GroupFilter["&#x1F4C2; group_type&lt;br/&gt;model_group, batch 等"]
+        ModelFilter ~~~ GroupFilter
+    end
+
+    subgraph Response["&#x1F4CB; レスポンス"]
+        direction LR
+        RateLimit["&#x1F4C8; rate_limit&lt;br/&gt;group_type, models,&lt;br/&gt;limits"]
+        WSRateLimit["&#x1F4C8; workspace_rate_limit&lt;br/&gt;org_limit 付き"]
+        RateLimit ~~~ WSRateLimit
+    end
+
+    subgraph UseCases["&#x1F4A1; ユースケース"]
+        direction LR
+        Gateway["&#x1F310; ゲートウェイ同期"]
+        Alert["&#x1F514; 内部アラート"]
+        Audit["&#x1F4CB; 設定監査"]
+        Gateway ~~~ Alert ~~~ Audit
+    end
+
+    AdminKey --> RateLimitsAPI
+    RateLimitsAPI --> Filters
+    Filters --> Response
+    Response --> UseCases
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef filter fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef response fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef usecase fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef key fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class Admin user
+    class RateLimitsAPI,Filters,Response,UseCases layer
+    class OrgEndpoint,WSEndpoint api
+    class ModelFilter,GroupFilter filter
+    class RateLimit,WSRateLimit response
+    class Gateway,Alert,Audit usecase
+    class AdminKey key
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>ゲートウェイ同期のシーケンス</h3>
+                <pre class="mermaid">
+sequenceDiagram
+    participant G as &#x1F310; ゲートウェイ
+    participant A as &#x1F50C; Rate Limits API
+    participant C as &#x1F5A5;&#xFE0F; Claude Console
+
+    Note over G,C: 起動時またはスケジュール実行
+
+    G->>A: GET /v1/organizations/rate_limits
+    A-->>G: rate_limit データ
+
+    G->>G: ローカル設定を更新
+
+    alt リミット変更を検知
+        G->>G: 新しいリミット値を適用
+        Note over G: ハードコード値のドリフトを防止
+    end
+
+    Note over C: リミット変更は Console から
+    C->>A: リミット更新を反映
+
+    G->>A: 次回スケジュールで再取得
+    A-->>G: 最新の rate_limit データ
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>ワークスペースリミットの継承構造</h3>
+                <pre class="mermaid">
+flowchart TD
+    subgraph OrgLevel["&#x1F3E2; 組織レベル"]
+        OrgLimits["&#x1F4CA; 組織リミット&lt;br/&gt;RPM: 4,000&lt;br/&gt;Input: 2,000,000 TPM&lt;br/&gt;Output: 400,000 TPM"]
+    end
+
+    subgraph Workspaces["&#x1F4C2; ワークスペース"]
+        direction LR
+        WS1["&#x1F527; Workspace A&lt;br/&gt;RPM: 1,000 / 4,000&lt;br/&gt;Input: 500,000 / 2,000,000&lt;br/&gt;オーバーライドあり"]
+        WS2["&#x1F527; Workspace B&lt;br/&gt;グループ欠如&lt;br/&gt;= 組織リミットを継承"]
+        WS3["&#x1F527; Workspace C&lt;br/&gt;RPM: 2,000 / 4,000&lt;br/&gt;オーバーライドあり"]
+        WS1 ~~~ WS2 ~~~ WS3
+    end
+
+    OrgLimits -->|"オーバーライド"| WS1
+    OrgLimits -->|"継承"| WS2
+    OrgLimits -->|"オーバーライド"| WS3
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef org fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef override fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef inherit fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class OrgLevel,Workspaces platform
+    class OrgLimits org
+    class WS1,WS3 override
+    class WS2 inherit
+                </pre>
+            </div>
+        </section>
+
+        <!-- ユースケース -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🌐 ゲートウェイ・プロキシ設定の自動同期</h4>
+                <p>ゲートウェイやプロキシにハードコードされたレートリミット値を Rate Limits API からの動的取得に切り替えることで、Anthropic 側のリミット変更時に発生するドリフトを防止できます。起動時またはスケジュール実行で最新のリミット値を取得し、ローカル設定を自動更新します。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔔 内部アラートの生成</h4>
+                <p>Usage and Cost API と Rate Limits API を組み合わせることで、リミット到達前のアラートを自動生成できます。使用量がリミットの閾値 (例: 80%) を超えた場合に通知を送信し、API 利用の安定性を確保します。</p>
+            </div>
+            <div class="use-case">
+                <h4>📋 ワークスペース設定の監査</h4>
+                <p>複数ワークスペースのオーバーライド設定が期待値と一致しているかを自動検証できます。ワークスペースレスポンスの <code>org_limit</code> フィールドにより、オーバーライド値と組織レベルのリミットを容易に比較でき、IaC ツールとの統合による設定の一貫性検証も可能です。</p>
+            </div>
+        </section>
+
+        <!-- 開発者への影響 -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響と導入ステップ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">1</div>
+                    <div class="key-point-content">
+                        <h3>Admin API キーの取得</h3>
+                        <p>Claude Console で管理者ロールを持つユーザーが Admin API キーをプロビジョニングします。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">2</div>
+                    <div class="key-point-content">
+                        <h3>既存のハードコード値の確認</h3>
+                        <p>ゲートウェイやプロキシにハードコードされたレートリミット値がある場合、Rate Limits API からの動的取得に切り替えを検討します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">3</div>
+                    <div class="key-point-content">
+                        <h3>監視・アラートの統合</h3>
+                        <p>Usage and Cost API と Rate Limits API を組み合わせた監視ダッシュボードやアラートの構築を検討します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">4</div>
+                    <div class="key-point-content">
+                        <h3>ページネーション対応</h3>
+                        <p>将来の拡張に備えて、<code>next_page</code> フィールドを使ったループ処理を実装します。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="auth-note" style="margin-top: 20px;">
+                <span class="auth-note-icon">&#x2139;&#xFE0F;</span>
+                <div>
+                    <strong>破壊的変更なし:</strong> Rate Limits API は新規追加の読み取り専用 API であるため、既存のアプリケーションへの破壊的変更はありません。段階的に導入できます。
+                </div>
+            </div>
+        </section>
+
+        <!-- フッター -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong>
+                <a href="https://platform.claude.com/docs/en/api/rate-limits" target="_blank" rel="noopener noreferrer">Rate Limits</a> |
+                <a href="https://platform.claude.com/docs/en/api/admin-api" target="_blank" rel="noopener noreferrer">Administration API</a> |
+                <a href="https://platform.claude.com/docs/en/api/usage" target="_blank" rel="noopener noreferrer">Usage and Cost API</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/json.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
