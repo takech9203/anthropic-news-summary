@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.120 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .category-label {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .category-label.windows { background: #E3F2FD; color: #1565C0; }
+        .category-label.cicd { background: #E9F7EC; color: #065F46; }
+        .category-label.skill { background: #FFF3E0; color: #E65100; }
+        .category-label.ux { background: #FCE4EC; color: #880E4F; }
+        .category-label.perf { background: #DCEDC8; color: #33691E; }
+        .category-label.plugin { background: #F3E5F5; color: #6A1B9A; }
+        .category-label.vscode { background: #E8EAF6; color: #283593; }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            .comparison-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 6px 0;
+            color: var(--text-secondary);
+        }
+
+        .comparison-arrow {
+            font-size: 2rem;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .comparison-arrow .improvement {
+            display: block;
+            font-size: 12px;
+            color: var(--success);
+            margin-top: 4px;
+        }
+
+        .comparison-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Bug Fix Summary */
+        .bug-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .bug-category {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .bug-category h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bug-category .bug-count {
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .bug-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-category ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .bug-category ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Tech Detail */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tech-detail ol, .tech-detail ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .tech-detail ol li, .tech-detail ul li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            border-radius: 16px;
+            padding: 28px;
+            color: white;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 6px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bug-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.120</h1>
+                <p class="date">2026-04-25</p>
+                <p class="subtitle">Windows PowerShell 対応、<code>claude ultrareview</code> CI サブコマンド、起動高速化、大量バグ修正を含むアップデート</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1FA9F;</div>
+                    <div class="key-point-content">
+                        <h3>Windows PowerShell フォールバック</h3>
+                        <p>Git for Windows (Git Bash) が未インストールの環境で、Claude Code が自動的に PowerShell をシェルツールとして使用するようになりました。Windows 環境でのセットアップ障壁が大幅に低下します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F50D;</div>
+                    <div class="key-point-content">
+                        <h3>claude ultrareview サブコマンド</h3>
+                        <p>CI やスクリプトから非インタラクティブにコードレビューを実行できる <code>claude ultrareview [target]</code> が追加。<code>--json</code> オプションによる機械可読出力と終了コード 0/1 に対応しています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x26A1;</div>
+                    <div class="key-point-content">
+                        <h3>起動速度の改善</h3>
+                        <p>リリースノートスプラッシュから Recent Activity パネルが削除され、多数の claude.ai コネクタが設定されている環境でのセッション開始も高速化されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F41B;</div>
+                    <div class="key-point-content">
+                        <h3>重要なバグ修正 10 件</h3>
+                        <p>stdio MCP ツールコール中の Esc キーによるサーバー接続切断 (v2.1.105 リグレッション)、<code>find</code> コマンドによるファイルディスクリプタ枯渇、テレメトリ無効化の不具合など重要な修正が含まれています。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="section">
+            <h2 class="section-title">リリース概要</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">22</div>
+                    <div class="stat-label">総変更数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">新機能/改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">リリース間隔 (日)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After Comparison -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+
+            <p class="comparison-label">&#x1FA9F; Windows シェル環境</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.119 以前)</h4>
+                    <ul>
+                        <li>&#x274C; Git for Windows (Git Bash) が必須</li>
+                        <li>&#x274C; Git Bash 未インストールでは使用不可</li>
+                        <li>&#x274C; セットアップに追加インストールが必要</li>
+                    </ul>
+                </div>
+                <div class="comparison-arrow">
+                    &#x2192;
+                    <span class="improvement">簡素化</span>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.120)</h4>
+                    <ul>
+                        <li>&#x2705; Git Bash があれば従来どおり使用</li>
+                        <li>&#x2705; Git Bash がなければ PowerShell を自動使用</li>
+                        <li>&#x2705; 追加インストール不要で即利用開始</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p class="comparison-label">&#x1F50D; コードレビューの自動化</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.119 以前)</h4>
+                    <ul>
+                        <li>&#x274C; /ultrareview はインタラクティブのみ</li>
+                        <li>&#x274C; CI/CD パイプラインに組み込めない</li>
+                        <li>&#x274C; 自動化には非対応</li>
+                    </ul>
+                </div>
+                <div class="comparison-arrow">
+                    &#x2192;
+                    <span class="improvement">自動化</span>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.120)</h4>
+                    <ul>
+                        <li>&#x2705; claude ultrareview で非インタラクティブ実行</li>
+                        <li>&#x2705; --json で機械可読出力</li>
+                        <li>&#x2705; 終了コード 0/1 で CI 統合</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Windows Platform -->
+        <section class="section">
+            <h2 class="section-title">Windows プラットフォーム改善 - 1 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label windows">Windows</span>
+                    <h3>&#x1FA9F; Git Bash 不要化</h3>
+                    <p>Windows 環境で Git for Windows (Git Bash) がインストールされていない場合、Claude Code が自動的に PowerShell をシェルツールとして使用。Git Bash の事前インストールが不要になり、エンタープライズ環境でのデプロイが容易になります。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CI/CD Integration -->
+        <section class="section">
+            <h2 class="section-title">CI/CD 統合 - 1 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label cicd">CI/CD</span>
+                    <h3>&#x1F50D; claude ultrareview サブコマンド</h3>
+                    <p><code>/ultrareview</code> を CI やスクリプトから非インタラクティブに実行できるサブコマンド。結果は標準出力に出力され、<code>--json</code> で JSON 形式の出力も可能。終了コードは正常完了で 0、失敗時に 1 を返します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills/Env Variables -->
+        <section class="section">
+            <h2 class="section-title">スキル/環境変数 - 2 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label skill">Skill</span>
+                    <h3>&#x1F4CA; ${CLAUDE_EFFORT} スキル変数</h3>
+                    <p>スキルのコンテンツ内で <code>${CLAUDE_EFFORT}</code> を参照することで、現在のエフォートレベルに応じた動的な動作が可能に。高エフォートでは詳細レビュー、低エフォートでは簡易チェックといった条件分岐が実現できます。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label skill">Skill</span>
+                    <h3>&#x1F916; AI_AGENT 環境変数</h3>
+                    <p>サブプロセスに <code>AI_AGENT</code> 環境変数が設定されるようになり、<code>gh</code> コマンドなどがトラフィックを Claude Code に帰属できるようになりました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- UX Improvements -->
+        <section class="section">
+            <h2 class="section-title">UX 改善 - 4 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x1F4A1; スピナーヒントの条件表示</h3>
+                    <p>デスクトップアプリのインストール推奨やスキル/エージェント作成の推奨ヒントが、既に対応済みの場合は非表示になりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x2B06;&#xFE0F; PgUp/PgDn スクロールヒント</h3>
+                    <p>ターミナルがスクロールイベントの代わりに矢印キーを送信する場合に「PgUp/PgDn でスクロール」というヒントが表示されるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x1F6AB; auto モード拒否メッセージ改善</h3>
+                    <p>auto モードの拒否メッセージに設定ドキュメントへのリンクが追加されました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x1F4DD; auto-compact 表示改善</h3>
+                    <p>auto モードでの auto-compact 表示が、誤解を招くトークン数の代わりに <code>auto</code> (小文字、トークン数なし) と表示されるようになりました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Improvements -->
+        <section class="section">
+            <h2 class="section-title">起動速度改善 - 2 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label perf">Performance</span>
+                    <h3>&#x1F680; リリースノートスプラッシュ高速化</h3>
+                    <p>アップグレード後のリリースノートスプラッシュから Recent Activity パネルが削除され、起動が高速化されました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label perf">Performance</span>
+                    <h3>&#x1F50C; セッション開始の高速化</h3>
+                    <p>多数の claude.ai コネクタが設定されているが未認証の場合のセッション開始が高速化されました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Plugin/Validation & VSCode -->
+        <section class="section">
+            <h2 class="section-title">プラグイン / VSCode 拡張機能 - 3 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label plugin">Plugin</span>
+                    <h3>&#x1F9E9; claude plugin validate 拡張</h3>
+                    <p><code>marketplace.json</code> のトップレベルに <code>$schema</code>、<code>version</code>、<code>description</code> フィールドを、<code>plugin.json</code> に <code>$schema</code> フィールドを受け付けるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label vscode">VSCode</span>
+                    <h3>&#x1F4B0; /usage ネイティブダイアログ化</h3>
+                    <p><code>/usage</code> がプレーンテキストのセッションコストではなく、ネイティブの Account &amp; Usage ダイアログを開くようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label vscode">VSCode</span>
+                    <h3>&#x1F3A4; 音声ディクテーション言語設定</h3>
+                    <p>音声ディクテーションが <code>~/.claude/settings.json</code> の <code>language</code> 設定を尊重するようになりました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Examples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                    <span class="code-title">アップデートとバージョン確認</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code を最新バージョンに更新
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# バージョン確認
+claude --version
+# Claude Code v2.1.120</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                    <span class="code-title">claude ultrareview の基本使用</span>
+                </div>
+                <pre><code class="language-bash"># 現在のディレクトリをレビュー
+claude ultrareview .
+
+# 特定のファイルやディレクトリを指定してレビュー
+claude ultrareview src/
+
+# JSON 形式で出力
+claude ultrareview src/ --json
+
+# 終了コードを利用した条件分岐
+claude ultrareview . &amp;&amp; echo "レビュー完了" || echo "レビュー失敗"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">yaml</span>
+                    <span class="code-title">GitHub Actions での ultrareview 活用</span>
+                </div>
+                <pre><code class="language-yaml"># .github/workflows/code-review.yml
+name: Claude Code Review
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  ultrareview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run ultrareview
+        run: claude ultrareview . --json > review-results.json
+
+      - name: Check review results
+        run: |
+          if [ $? -ne 0 ]; then
+            echo "Code review found issues"
+            cat review-results.json
+            exit 1
+          fi</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">markdown</span>
+                    <span class="code-title">スキルでの ${CLAUDE_EFFORT} 活用</span>
+                </div>
+                <pre><code class="language-markdown"># レビュースキル例
+
+エフォートレベル: ${CLAUDE_EFFORT}
+
+## レビュー基準
+
+高エフォートの場合は以下を全て確認してください。
+- コードスタイルの一貫性
+- パフォーマンスへの影響
+- セキュリティの考慮事項
+- テストカバレッジ
+- ドキュメントの更新
+
+低エフォートの場合は以下のみ確認してください。
+- 明らかなバグ
+- セキュリティの問題</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">powershell</span>
+                    <span class="code-title">Windows での PowerShell フォールバック確認</span>
+                </div>
+                <pre><code class="language-powershell"># Windows で Claude Code を起動 (Git Bash 不要)
+claude
+
+# PowerShell がシェルとして使用されていることを確認
+# Claude Code 内で以下を実行
+$PSVersionTable</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <div class="mermaid-container">
+                <h3>v2.1.120 主要変更の全体像</h3>
+                <div class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["&#x1F5A5;&#xFE0F; Claude Code v2.1.120"]
+        subgraph Windows["&#x1FA9F; Windows 改善"]
+            direction LR
+            PSFallback["&#x26A1; PowerShell フォールバック&lt;br/&gt;Git Bash 不要"]
+        end
+
+        subgraph CICD["&#x1F504; CI/CD 統合"]
+            direction LR
+            UltraReview["&#x1F50D; claude ultrareview&lt;br/&gt;非インタラクティブレビュー"]
+            JsonOutput["&#x1F4CB; --json 出力&lt;br/&gt;機械可読フォーマット"]
+            UltraReview ~~~ JsonOutput
+        end
+
+        subgraph SkillsEnv["&#x1F9E9; スキル/環境変数"]
+            direction LR
+            Effort["&#x1F4CA; CLAUDE_EFFORT&lt;br/&gt;エフォートレベル参照"]
+            AIAgent["&#x1F916; AI_AGENT&lt;br/&gt;サブプロセス帰属"]
+            Effort ~~~ AIAgent
+        end
+
+        subgraph Performance["&#x26A1; 起動速度改善"]
+            direction LR
+            Splash["&#x1F680; スプラッシュ高速化&lt;br/&gt;Recent Activity 削除"]
+            SessionStart["&#x1F50C; セッション開始&lt;br/&gt;コネクタ最適化"]
+            Splash ~~~ SessionStart
+        end
+
+        subgraph BugFixes["&#x1F41B; バグ修正 10 件"]
+            direction LR
+            MCPFix["&#x1F50C; MCP Esc キー&lt;br/&gt;リグレッション修正"]
+            FindFix["&#x1F4C1; find FD 枯渇&lt;br/&gt;クラッシュ防止"]
+            TelemetryFix["&#x1F512; テレメトリ&lt;br/&gt;無効化修正"]
+            UIFixes["&#x1F5BC;&#xFE0F; UI/表示&lt;br/&gt;4 件修正"]
+            MCPFix ~~~ FindFix ~~~ TelemetryFix ~~~ UIFixes
+        end
+    end
+
+    User(["&#x1F464; ユーザー"]) --> ClaudeCode
+    CI(["&#x1F504; CI/CD パイプライン"]) --> CICD
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef windows fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef cicd fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef skill fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef perf fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class Windows,CICD,SkillsEnv,Performance,BugFixes layer
+    class PSFallback windows
+    class UltraReview,JsonOutput cicd
+    class Effort,AIAgent skill
+    class Splash,SessionStart perf
+    class MCPFix,FindFix,TelemetryFix,UIFixes fix
+    class User,CI user
+                </div>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>claude ultrareview CI/CD フロー</h3>
+                <div class="mermaid">
+sequenceDiagram
+    participant CI as &#x1F504; CI パイプライン
+    participant CC as &#x1F5A5;&#xFE0F; Claude Code
+    participant Review as &#x1F50D; ultrareview エンジン
+    participant Out as &#x1F4CB; 標準出力
+
+    CI->>CC: claude ultrareview [target]
+    CC->>Review: コードレビュー実行
+
+    alt --json フラグあり
+        Review-->>Out: JSON 形式の結果
+    else テキスト出力
+        Review-->>Out: テキスト形式の結果
+    end
+
+    alt 正常完了
+        CC-->>CI: 終了コード 0
+    else 失敗
+        CC-->>CI: 終了コード 1
+        CI->>CI: パイプライン停止/通知
+    end
+                </div>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>Windows シェル選択フロー</h3>
+                <div class="mermaid">
+flowchart TD
+    Start(["&#x1F5A5;&#xFE0F; Claude Code 起動&lt;br/&gt;Windows"]) --> CheckGitBash{"&#x1F50D; Git Bash&lt;br/&gt;インストール済み?"}
+
+    CheckGitBash -->|"Yes"| UseGitBash["&#x1F41A; Git Bash を使用&lt;br/&gt;従来の動作"]
+    CheckGitBash -->|"No"| UsePowerShell["&#x26A1; PowerShell を使用&lt;br/&gt;v2.1.120 新機能"]
+
+    UseGitBash --> Ready["&#x2705; シェルツール準備完了"]
+    UsePowerShell --> Ready
+
+    classDef start fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef gitbash fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef powershell fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef ready fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+
+    class Start start
+    class CheckGitBash decision
+    class UseGitBash gitbash
+    class UsePowerShell powershell
+    class Ready ready
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fix Summary -->
+        <section class="section">
+            <h2 class="section-title">バグ修正サマリー (10 件)</h2>
+            <div class="bug-grid">
+                <div class="bug-category">
+                    <h4>&#x1F50C; MCP/サーバー接続 <span class="bug-count">1</span></h4>
+                    <ul>
+                        <li>stdio MCP ツールコール中の Esc キーでサーバー接続が切断される問題 (v2.1.105 リグレッション)</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x2328;&#xFE0F; 入力/キーボード <span class="bug-count">1</span></h4>
+                    <ul>
+                        <li><code>--resume</code> 後の <code>/rewind</code> やインタラクティブオーバーレイがキーボード入力に応答しない問題</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F5BC;&#xFE0F; ターミナル表示 <span class="bug-count">2</span></h4>
+                    <ul>
+                        <li>非フルスクリーンモードでのスクロールバック重複</li>
+                        <li>フルスクリーンモードで長い選択メニューが切れる問題</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F512; テレメトリ/プライバシー <span class="bug-count">1</span></h4>
+                    <ul>
+                        <li><code>DISABLE_TELEMETRY</code> / <code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC</code> が使用量メトリクスを抑制しない問題</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F916; auto モード <span class="bug-count">1</span></h4>
+                    <ul>
+                        <li>パイプとリダイレクトの両方を含む複数行 Bash コマンドで「Dangerous rm operation」が誤表示される問題</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F5BC;&#xFE0F; UI/表示 <span class="bug-count">2</span></h4>
+                    <ul>
+                        <li>Write ツール出力の展開/折りたたみが逆に動作する問題</li>
+                        <li>スラッシュコマンドピッカーが入力中にジャンプする問題</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F9E9; プラグイン <span class="bug-count">1</span></h4>
+                    <ul>
+                        <li>1 つのエントリが認識されないソースフォーマットの場合にマーケットプレイス全体の読み込みが失敗する問題</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F4BB; システム安定性 <span class="bug-count">1</span></h4>
+                    <ul>
+                        <li><code>find</code> コマンドが大きなディレクトリツリーでファイルディスクリプタを枯渇させ、ホスト全体がクラッシュする問題</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <div class="use-case">
+                <h4>&#x1FA9F; Windows ユーザー</h4>
+                <p>Git Bash の事前インストールが不要になり、PowerShell のみで Claude Code を使用可能になりました。エンタープライズ環境でのデプロイや新規ユーザーのオンボーディングが容易になります。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F504; CI/CD パイプライン利用者</h4>
+                <p><code>claude ultrareview</code> により、コードレビューの自動化をパイプラインに組み込めるようになりました。PR の自動レビューやマージ前の品質ゲートとして活用できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F9E9; スキル開発者</h4>
+                <p><code>${CLAUDE_EFFORT}</code> によるエフォートレベル参照が可能になり、スキルの動的な動作制御が実現できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F512; エンタープライズ/API ユーザー</h4>
+                <p>テレメトリ無効化が正しく機能するようになり、プライバシー要件を満たせるようになりました。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F50C; MCP サーバー利用者</h4>
+                <p>stdio MCP ツールコール中の Esc キーによる接続切断リグレッション (v2.1.105) が修正されました。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4BB; macOS/Linux ネイティブビルドユーザー</h4>
+                <p><code>find</code> コマンドによるファイルディスクリプタ枯渇問題が修正され、システム安定性が向上しました。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4BB; VSCode 拡張機能ユーザー</h4>
+                <p><code>/usage</code> のネイティブダイアログ化と音声ディクテーションの言語設定対応が追加されました。</p>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F517;</div>
+                    <div class="key-point-content">
+                        <h3>公式リソース</h3>
+                        <p>
+                            <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" style="color: var(--anthropic-coral);">Claude Code Changelog</a> |
+                            <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer" style="color: var(--anthropic-coral);">GitHub リポジトリ</a> |
+                            <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer" style="color: var(--anthropic-coral);">npm パッケージ</a> |
+                            <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer" style="color: var(--anthropic-coral);">ドキュメント</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <h3>4 つの主要テーマ</h3>
+                <p><strong>1. Windows プラットフォームのアクセシビリティ向上</strong>: Git for Windows (Git Bash) が未インストールの環境で自動的に PowerShell にフォールバックするようになり、Windows ユーザーのセットアップ障壁が大幅に低下しました。エンタープライズ環境でのデプロイや新規ユーザーのオンボーディングが容易になります。</p>
+                <p><strong>2. CI/CD パイプラインとの統合強化</strong>: <code>claude ultrareview [target]</code> サブコマンドにより、非インタラクティブなコードレビューが可能になりました。<code>--json</code> オプションによる機械可読出力と終了コード 0/1 の返却により、GitHub Actions や他の CI ツールとの統合が容易です。</p>
+                <p><strong>3. 起動速度とユーザー体験の改善</strong>: リリースノートスプラッシュの高速化、多数のコネクタ環境でのセッション開始高速化に加え、スピナーヒントの条件表示、PgUp/PgDn スクロールヒント、auto-compact の表示改善など、日常的な使用感を向上させる改善が含まれています。</p>
+                <p><strong>4. 重要なバグ修正と安定性向上</strong>: v2.1.105 で発生した stdio MCP ツールコール中の Esc キーによるサーバー接続切断リグレッション、<code>find</code> コマンドによるファイルディスクリプタ枯渇でホスト全体がクラッシュする致命的な問題、テレメトリ無効化が正しく機能しない問題など、安定性とセキュリティに関わる修正が含まれています。全ての Claude Code ユーザーにアップデートを推奨します。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>ソース: <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></p>
+            <p>カテゴリ: Claude Code アップデート | 発行日: 2026-04-25</p>
+            <p>&#x2139;&#xFE0F; このインフォグラフィックは Claude Code Changelog に基づいて自動生成されています。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/json.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/markdown.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/powershell.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.121 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .category-label {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .category-label.feature { background: #E9F7EC; color: #065F46; }
+        .category-label.mcp { background: #E8EAF6; color: #283593; }
+        .category-label.ux { background: #FCE4EC; color: #880E4F; }
+        .category-label.hook { background: #F3E5F5; color: #6A1B9A; }
+        .category-label.config { background: #FFF3E0; color: #E65100; }
+        .category-label.platform { background: #E3F2FD; color: #1565C0; }
+        .category-label.critical { background: #FFEBEE; color: #C62828; }
+
+        /* Warning/Critical Section */
+        .warning-section {
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFEBEE 100%);
+            border: 2px solid #F44336;
+        }
+
+        .warning-section .section-title::before {
+            background: #F44336;
+        }
+
+        .memory-fix-card {
+            background: linear-gradient(135deg, #FFEBEE 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .memory-fix-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .memory-fix-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #C62828;
+        }
+
+        .memory-fix-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .memory-fix-card .severity {
+            display: inline-block;
+            background: #C62828;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        /* Bug Fix Summary */
+        .bug-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .bug-category {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .bug-category h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bug-category .bug-count {
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .bug-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-category ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .bug-category ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Tech Detail */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tech-detail ol, .tech-detail ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .tech-detail ol li, .tech-detail ul li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            border-radius: 16px;
+            padding: 28px;
+            color: white;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 6px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bug-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.121</h1>
+                <p class="date">2026-04-28</p>
+                <p class="subtitle">MCP alwaysLoad オプション、プラグイン管理の強化、重大メモリリーク修正、MCP 信頼性向上を含む大規模アップデート</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F50C;</div>
+                    <div class="key-point-content">
+                        <h3>MCP サーバー alwaysLoad オプション</h3>
+                        <p>MCP サーバー設定に <code>alwaysLoad: true</code> を指定すると、そのサーバーの全ツールが遅延読み込みをスキップし、セッション開始時から常に利用可能になります。頻繁に使用するツールへの即座のアクセスを確保できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F9F9;</div>
+                    <div class="key-point-content">
+                        <h3>claude plugin prune コマンド</h3>
+                        <p>孤立した自動インストール済みプラグインの依存関係を削除する <code>claude plugin prune</code> コマンドが追加されました。<code>plugin uninstall --prune</code> でカスケード削除も可能です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F9E0;</div>
+                    <div class="key-point-content">
+                        <h3>重大メモリリーク修正 3 件</h3>
+                        <p>画像処理時の数 GB 規模の RSS 増加、<code>/usage</code> コマンドの約 2GB メモリリーク、長時間実行ツールのメモリリークの 3 件が修正され、長時間セッションの安定性が大幅に改善されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F504;</div>
+                    <div class="key-point-content">
+                        <h3>MCP サーバーの信頼性向上</h3>
+                        <p>起動時の一時的なエラーに対する自動リトライ (最大 3 回)、Claude.ai コネクタの重複排除、認証エラーによるコネクタ消失の防止など、MCP 接続の安定性が包括的に強化されました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="section">
+            <h2 class="section-title">リリース概要</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">16</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">20+</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">メモリリーク修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Memory Leak Fixes (Critical) -->
+        <section class="section warning-section">
+            <h2 class="section-title">&#x26A0;&#xFE0F; 重大メモリリーク修正 - 3 件</h2>
+            <div class="memory-fix-card">
+                <span class="severity">CRITICAL</span>
+                <h3>&#x1F5BC;&#xFE0F; 画像処理時のメモリ無制限増加修正</h3>
+                <p>多数の画像を処理するセッションで RSS が数 GB に膨れ上がるメモリ無制限増加問題が修正されました。画像データのバッファが適切に解放されず、長時間のコードレビューや画像を含むドキュメント処理で特に顕著でした。</p>
+            </div>
+            <div class="memory-fix-card">
+                <span class="severity">CRITICAL</span>
+                <h3>&#x1F4CA; /usage のメモリリーク修正</h3>
+                <p>大量のトランスクリプト履歴を持つマシンで <code>/usage</code> コマンドが最大約 2GB のメモリをリークする問題が修正されました。履歴データの処理中にメモリが解放されない問題でした。</p>
+            </div>
+            <div class="memory-fix-card">
+                <span class="severity">CRITICAL</span>
+                <h3>&#x23F3; 長時間実行ツールのメモリリーク修正</h3>
+                <p>進捗イベントを正しく送出しない長時間実行ツール (例: 大規模な検索やビルド処理) で、内部バッファが蓄積し続ける問題が修正されました。</p>
+            </div>
+
+            <div class="tech-detail" style="margin-top: 20px;">
+                <h4>&#x1F527; 技術的背景</h4>
+                <p>これらの修正により、長時間セッションでのメモリ使用量が大幅に安定しました。特に画像を多用するワークフローやトランスクリプト履歴の多い環境での安定性が向上しています。</p>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能 - 4 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label mcp">MCP</span>
+                    <h3>&#x1F50C; alwaysLoad オプション</h3>
+                    <p>MCP サーバー設定で <code>alwaysLoad: true</code> を指定すると、遅延読み込みをスキップしてツールが常に利用可能になります。毎回使用するツールのレイテンシを回避できます。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label feature">Feature</span>
+                    <h3>&#x1F9F9; plugin prune コマンド</h3>
+                    <p>孤立した自動インストール済みプラグインの依存関係を削除する <code>claude plugin prune</code> コマンドが追加されました。<code>--prune</code> でカスケード削除も可能です。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x1F50D; /skills フィルタリング検索</h3>
+                    <p><code>/skills</code> コマンドにタイプして絞り込める検索ボックスが追加され、長いスキルリストから目的のスキルを素早く見つけられます。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label hook">Hook</span>
+                    <h3>&#x1FA9D; updatedToolOutput 拡張</h3>
+                    <p><code>PostToolUse</code> フックの <code>updatedToolOutput</code> が全ツールに対応し、Bash、Read、Write 等のビルトインツールの出力もフックで置換できるようになりました。</p>
+                </div>
+            </div>
+
+            <div class="tech-detail" style="margin-top: 20px;">
+                <h4>&#x2699;&#xFE0F; alwaysLoad が有用なケース</h4>
+                <ul>
+                    <li>毎回のセッションで確実に使用するツールがある場合</li>
+                    <li>ツール検索の遅延によるレイテンシを回避したい場合</li>
+                    <li>カスタムワークフローで特定のツールが常に必要な場合</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- MCP Reliability -->
+        <section class="section">
+            <h2 class="section-title">MCP 信頼性向上</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label mcp">MCP</span>
+                    <h3>&#x1F504; 自動リトライ機構</h3>
+                    <p>起動時に一時的なエラーが発生した MCP サーバーが最大 3 回まで自動リトライされるようになりました。ネットワーク不安定な環境でも自動回復します。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label mcp">MCP</span>
+                    <h3>&#x1F517; コネクタ重複排除</h3>
+                    <p>同じアップストリーム URL を持つ Claude.ai コネクタが重複表示されなくなりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label mcp">MCP</span>
+                    <h3>&#x1F511; redirectUri サポート</h3>
+                    <p><code>mcp_authenticate</code> がカスタムスキーム完了のための <code>redirectUri</code> と Claude.ai コネクタをサポートするようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label platform">Platform</span>
+                    <h3>&#x1F916; FORK_SUBAGENT 非対話対応</h3>
+                    <p>SDK と <code>claude -p</code> で <code>CLAUDE_CODE_FORK_SUBAGENT=1</code> が非対話セッションでも動作するようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label platform">Platform</span>
+                    <h3>&#x1F510; Vertex AI X.509 証明書</h3>
+                    <p>Vertex AI で mTLS ADC による X.509 証明書ベースの Workload Identity Federation がサポートされました。</p>
+                </div>
+            </div>
+
+            <div class="tech-detail" style="margin-top: 20px;">
+                <h4>&#x1F504; 自動リトライ機構の動作</h4>
+                <p>従来、MCP サーバーが起動時にネットワークの一時的なエラーなどで接続に失敗した場合、サーバーは切断状態のまま放置されていました。v2.1.121 では、一時的なエラーが検出された場合に最大 3 回まで自動リトライする機構が追加され、自動的に回復するようになります。</p>
+            </div>
+        </section>
+
+        <!-- UI/UX Improvements -->
+        <section class="section">
+            <h2 class="section-title">UI/UX 改善 - 5 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x1F4DC; スクロール改善</h3>
+                    <p>フルスクリーンモードでスクロールアップした状態でプロンプトに入力しても、スクロール位置が最下部にジャンプしなくなりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x1F4CB; ダイアログスクロール対応</h3>
+                    <p>ターミナルからはみ出すダイアログが矢印キー、PgUp/PgDn、Home/End、マウスホイールでスクロール可能になりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x1F517; 複数行 URL クリック対応</h3>
+                    <p>フルスクリーンモードで複数行にまたがる長い URL の任意の行をクリックすると、完全な URL が開かれるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x1F50D; LSP 診断サマリー展開</h3>
+                    <p>LSP 診断サマリーがクリックまたは Ctrl+O で展開でき、展開ヒントも表示されるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x26A1; リリースノート高速化</h3>
+                    <p>アップグレード後の起動を高速化するため、リリースノートスプラッシュから Recent Activity パネルが削除されました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Other Improvements -->
+        <section class="section">
+            <h2 class="section-title">その他の改善 - 6 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="category-label config">Config</span>
+                    <h3>&#x1F513; スキル/エージェント書き込み許可</h3>
+                    <p><code>--dangerously-skip-permissions</code> 使用時に <code>.claude/skills/</code>、<code>.claude/agents/</code>、<code>.claude/commands/</code> への書き込みでプロンプトが表示されなくなりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label config">Config</span>
+                    <h3>&#x1F4CB; iTerm2 クリップボード</h3>
+                    <p><code>/terminal-setup</code> が iTerm2 の「Applications in terminal may access clipboard」設定を有効化し、tmux 環境を含む <code>/copy</code> が動作するようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label ux">UX</span>
+                    <h3>&#x1F310; タブタイトル言語設定</h3>
+                    <p>ターミナルのタブセッションタイトルが <code>language</code> 設定で指定した言語で生成されるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label hook">Hook</span>
+                    <h3>&#x1F4CA; OpenTelemetry 拡張</h3>
+                    <p>LLM リクエストスパンに <code>stop_reason</code>、<code>gen_ai.response.finish_reasons</code>、<code>user_system_prompt</code> が追加されました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label platform">Platform</span>
+                    <h3>&#x1F399;&#xFE0F; VSCode 音声ディクテーション</h3>
+                    <p>Claude Code の言語が未設定の場合、音声ディクテーションが <code>accessibility.voice.speechLanguage</code> 設定を参照するようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="category-label platform">Platform</span>
+                    <h3>&#x1F4C8; VSCode /context ダイアログ</h3>
+                    <p><code>/context</code> コマンドがネイティブのトークン使用量ダイアログを開くようになりました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Examples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">json</span>
+                    <span class="code-title">MCP サーバーの alwaysLoad 設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "mcpServers": {
+    "database-tools": {
+      "type": "http",
+      "url": "https://db.example.com/mcp",
+      "alwaysLoad": true,
+      "headers": {
+        "Authorization": "Bearer ${DB_TOKEN}"
+      }
+    },
+    "optional-tools": {
+      "type": "http",
+      "url": "https://tools.example.com/mcp"
+    }
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                    <span class="code-title">プラグイン管理コマンド</span>
+                </div>
+                <pre><code class="language-bash"># 孤立した自動インストール済みプラグイン依存関係の削除
+claude plugin prune
+
+# プラグインのアンインストールと依存関係のカスケード削除
+claude plugin uninstall my-plugin --prune
+
+# インストール済みプラグインの確認
+claude plugin list</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">json</span>
+                    <span class="code-title">PostToolUse フックによるツール出力の置換</span>
+                </div>
+                <pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "python3 transform_output.py",
+        "matcher": {
+          "tool_name": "Bash"
+        }
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">bash</span>
+                    <span class="code-title">アップデートコマンド</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code を最新バージョンに更新
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# バージョン確認
+claude --version
+# Claude Code v2.1.121</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+
+            <div class="mermaid-container">
+                <h3>v2.1.121 主要変更の全体像</h3>
+                <div class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["&#x1F5A5;&#xFE0F; Claude Code v2.1.121"]
+        subgraph NewFeatures["&#x2728; 新機能 4 件"]
+            direction LR
+            AlwaysLoad["&#x1F50C; alwaysLoad&lt;br/&gt;MCP ツール常時有効"]
+            PluginPrune["&#x1F9F9; plugin prune&lt;br/&gt;依存関係整理"]
+            SkillsFilter["&#x1F50D; /skills フィルター&lt;br/&gt;検索ボックス"]
+            HookOutput["&#x1FA9D; updatedToolOutput&lt;br/&gt;全ツール対応"]
+            AlwaysLoad ~~~ PluginPrune ~~~ SkillsFilter ~~~ HookOutput
+        end
+
+        subgraph MemoryFixes["&#x1F9E0; メモリリーク修正 3 件"]
+            direction LR
+            ImageLeak["&#x1F5BC;&#xFE0F; 画像処理&lt;br/&gt;数 GB RSS 修正"]
+            UsageLeak["&#x1F4CA; /usage&lt;br/&gt;約 2GB リーク修正"]
+            ToolLeak["&#x23F3; 長時間ツール&lt;br/&gt;リーク修正"]
+            ImageLeak ~~~ UsageLeak ~~~ ToolLeak
+        end
+
+        subgraph MCPReliability["&#x1F50C; MCP 信頼性向上"]
+            direction LR
+            AutoRetry["&#x1F504; 自動リトライ&lt;br/&gt;最大 3 回"]
+            ConnectorDedup["&#x1F517; コネクタ重複排除"]
+            AuthRecovery["&#x1F511; 認証エラー回復"]
+            AutoRetry ~~~ ConnectorDedup ~~~ AuthRecovery
+        end
+
+        subgraph UIUX["&#x1F3A8; UI/UX 改善 5 件"]
+            direction LR
+            ScrollFix["&#x1F4DC; スクロール改善"]
+            DialogScroll["&#x1F4CB; ダイアログ&lt;br/&gt;スクロール対応"]
+            URLClick["&#x1F517; 複数行 URL&lt;br/&gt;クリック対応"]
+            ScrollFix ~~~ DialogScroll ~~~ URLClick
+        end
+
+        subgraph OtherFixes["&#x1F41B; その他修正 14 件以上"]
+            direction LR
+            SessionFixes["&#x1F4BE; セッション&lt;br/&gt;4 件"]
+            OAuthFixes["&#x1F510; MCP/OAuth&lt;br/&gt;3 件"]
+            SettingsFixes["&#x2699;&#xFE0F; 設定&lt;br/&gt;3 件"]
+            MiscFixes["&#x1F4E6; その他&lt;br/&gt;4 件以上"]
+            SessionFixes ~~~ OAuthFixes ~~~ SettingsFixes ~~~ MiscFixes
+        end
+    end
+
+    User(["&#x1F464; ユーザー"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef memory fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef mcp fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef ui fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class NewFeatures,MemoryFixes,MCPReliability,UIUX,OtherFixes layer
+    class AlwaysLoad,PluginPrune,SkillsFilter,HookOutput feature
+    class ImageLeak,UsageLeak,ToolLeak memory
+    class AutoRetry,ConnectorDedup,AuthRecovery mcp
+    class ScrollFix,DialogScroll,URLClick ui
+    class SessionFixes,OAuthFixes,SettingsFixes,MiscFixes fix
+    class User user
+                </div>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>MCP サーバー alwaysLoad の動作フロー</h3>
+                <div class="mermaid">
+flowchart TD
+    subgraph Startup["&#x1F680; Claude Code 起動"]
+        LoadConfig["&#x1F4C4; 設定ファイル読み込み"]
+        CheckAlwaysLoad{"&#x1F50D; alwaysLoad?"}
+    end
+
+    subgraph AlwaysLoadPath["&#x26A1; 即時読み込みパス"]
+        LoadImmediate["&#x1F50C; ツール即時読み込み"]
+        Available["&#x2705; 常時利用可能"]
+    end
+
+    subgraph DeferralPath["&#x23F3; 遅延読み込みパス"]
+        DeferTools["&#x1F4CB; ツール検索に登録"]
+        OnDemand["&#x1F50D; 必要時に読み込み"]
+    end
+
+    LoadConfig --> CheckAlwaysLoad
+    CheckAlwaysLoad -->|"true"| LoadImmediate
+    CheckAlwaysLoad -->|"false/未設定"| DeferTools
+    LoadImmediate --> Available
+    DeferTools --> OnDemand
+
+    classDef startup fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef always fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef defer fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class LoadConfig startup
+    class CheckAlwaysLoad decision
+    class LoadImmediate,Available always
+    class DeferTools,OnDemand defer
+                </div>
+            </div>
+
+            <div class="mermaid-container">
+                <h3>MCP サーバー自動リトライ機構</h3>
+                <div class="mermaid">
+sequenceDiagram
+    participant CC as &#x1F5A5;&#xFE0F; Claude Code
+    participant MCP as &#x1F50C; MCP サーバー
+
+    CC->>MCP: 接続試行 1
+    MCP-->>CC: 一時的エラー
+
+    Note over CC: リトライ待機
+
+    CC->>MCP: 接続試行 2
+    MCP-->>CC: 一時的エラー
+
+    Note over CC: リトライ待機
+
+    CC->>MCP: 接続試行 3
+    alt 成功
+        MCP-->>CC: 接続成功
+        Note over CC: &#x2705; サーバー利用可能
+    else 失敗
+        MCP-->>CC: エラー
+        Note over CC: &#x274C; サーバー切断状態
+    end
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fix Summary -->
+        <section class="section">
+            <h2 class="section-title">バグ修正サマリー (20 件以上)</h2>
+            <div class="bug-grid">
+                <div class="bug-category">
+                    <h4>&#x1F4BE; セッション/起動 <span class="bug-count">4</span></h4>
+                    <ul>
+                        <li>Bash ツールの永久使用不可修正</li>
+                        <li>--resume の外部ビルドクラッシュ修正</li>
+                        <li>--resume の大規模セッション失敗修正</li>
+                        <li>管理設定承認プロンプト修正</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F510; MCP/OAuth <span class="bug-count">3</span></h4>
+                    <ul>
+                        <li>Bedrock 推論プロファイル ARN エラー修正</li>
+                        <li>Microsoft 365 MCP OAuth 修正</li>
+                        <li>Claude.ai MCP コネクタ消失修正</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F5BC;&#xFE0F; UI/表示 <span class="bug-count">4</span></h4>
+                    <ul>
+                        <li>tmux 等でのスクロールバック重複修正</li>
+                        <li>/usage のレートリミット誤表示修正</li>
+                        <li>/usage ダイアログのクリッピング修正</li>
+                        <li>/focus の Unknown command 修正</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x2699;&#xFE0F; 設定/パーミッション <span class="bug-count">3</span></h4>
+                    <ul>
+                        <li>リモートセッションの Always allow ルール修正</li>
+                        <li>NO_PROXY の全 HTTP クライアント適用修正</li>
+                        <li>settings.json の無効レガシー列挙値修正</li>
+                    </ul>
+                </div>
+                <div class="bug-category">
+                    <h4>&#x1F4E6; その他 <span class="bug-count">3+</span></h4>
+                    <ul>
+                        <li>grep/find/rg ラッパーのフォールバック修正</li>
+                        <li>Bash ツール find ファイルディスクリプタ削減</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <div class="use-case">
+                <h4>&#x1F9E0; 全ての Claude Code ユーザー</h4>
+                <p>3 件のメモリリーク修正により、長時間セッションの安定性が大幅に向上します。特に画像処理を行うセッションでは数 GB 規模のメモリ節約が期待できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F50C; MCP サーバー利用者</h4>
+                <p><code>alwaysLoad</code> オプションで頻繁に使用するツールを常時利用可能にでき、自動リトライにより接続の信頼性が向上します。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F9F9; プラグイン利用者</h4>
+                <p><code>claude plugin prune</code> で不要な依存関係を整理でき、ディスク使用量を削減できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1FA9D; フック/自動化利用者</h4>
+                <p><code>PostToolUse</code> の <code>updatedToolOutput</code> が全ツールに拡張され、より柔軟なフック処理が可能になりました。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x2601;&#xFE0F; Vertex AI / Bedrock 利用者</h4>
+                <p>X.509 証明書ベースの Workload Identity Federation サポートと、推論プロファイル ARN エラーの修正が含まれます。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F5A5;&#xFE0F; リモートセッション利用者</h4>
+                <p>Always allow ルールがワーカー再起動後も維持されるようになりました。</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4BB; tmux / iTerm2 利用者</h4>
+                <p>スクロールバック重複の修正と <code>/terminal-setup</code> による iTerm2 クリップボードアクセスの自動有効化が含まれます。</p>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4D6;</div>
+                    <div class="key-point-content">
+                        <h3>公式リソース</h3>
+                        <p>
+                            <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" style="color: var(--anthropic-coral);">Claude Code Changelog</a> |
+                            <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer" style="color: var(--anthropic-coral);">GitHub リポジトリ</a> |
+                            <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer" style="color: var(--anthropic-coral);">npm パッケージ</a> |
+                            <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer" style="color: var(--anthropic-coral);">ドキュメント</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <h3>4 つの主要テーマ</h3>
+                <p><strong>1. MCP サーバーの設定柔軟性の向上</strong>: 新しい <code>alwaysLoad</code> オプションにより、頻繁に使用する MCP サーバーのツールを遅延読み込みなしで常時利用可能にできるようになりました。ツール検索によるレイテンシを回避し、重要なツールへの即座のアクセスを確保できます。</p>
+                <p><strong>2. 致命的なメモリリークの修正</strong>: 画像処理時の数 GB 規模の RSS 増加、<code>/usage</code> コマンドの約 2GB メモリリーク、長時間実行ツールのメモリリークという 3 つの独立した問題が修正されました。長時間セッションの安定性とメモリ効率が大幅に向上しています。</p>
+                <p><strong>3. MCP サーバーの信頼性向上</strong>: 起動時の一時的なエラーに対する自動リトライ (最大 3 回)、Claude.ai コネクタの重複排除、認証エラーによるコネクタ消失の防止、Microsoft 365 MCP OAuth の修正など、MCP 接続の安定性が包括的に強化されました。</p>
+                <p><strong>4. プラグイン管理と UI/UX の改善</strong>: <code>claude plugin prune</code> による孤立した依存関係の整理、<code>/skills</code> の検索ボックス、フルスクリーンモードのスクロール改善、ダイアログのスクロール対応、複数行 URL のクリック対応など、日常的な操作の利便性が向上しています。</p>
+                <p>全ての Claude Code ユーザーに対してアップデートを強く推奨します。特にメモリリークの修正は長時間セッションの安定性に直結するため、早急なアップデートが望ましいです。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>ソース: <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></p>
+            <p>カテゴリ: Claude Code アップデート | 発行日: 2026-04-28</p>
+            <p>&#x2139;&#xFE0F; このインフォグラフィックは Claude Code Changelog に基づいて自動生成されています。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/json.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
