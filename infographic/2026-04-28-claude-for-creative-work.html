@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude for Creative Work - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '🎨';
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 80px;
+            opacity: 0.15;
+        }
+
+        .header-content { position: relative; z-index: 1; }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .category-badge + .category-badge { margin-left: 8px; }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date { font-size: 14px; opacity: 0.8; }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        .feature-card .partner-tag {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            color: var(--anthropic-dark);
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        /* Before/After */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card { padding: 24px; border-radius: 16px; }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+        .comparison-card ul { padding-left: 20px; font-size: 14px; line-height: 1.8; }
+        .comparison-card.before ul { color: #7F1D1D; }
+        .comparison-card.after ul { color: #064E3B; }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Connector Table */
+        .connector-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .connector-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .connector-table td {
+            padding: 12px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .connector-table tr:nth-child(even) { background: var(--anthropic-cream); }
+        .connector-table tr:last-child td { border-bottom: none; }
+
+        .connector-table .domain-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .domain-3d { background: #E0E7FF; color: #3730A3; }
+        .domain-audio { background: #FCE7F3; color: #9D174D; }
+        .domain-design { background: #FEF3C7; color: #92400E; }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid { display: flex; justify-content: center; }
+
+        /* Edu grid */
+        .edu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .edu-card {
+            background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+            border: 2px solid #A5B4FC;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .edu-card .edu-icon { font-size: 32px; margin-bottom: 8px; }
+        .edu-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: #3730A3; }
+        .edu-card p { font-size: 13px; color: #4338CA; }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a { color: var(--anthropic-coral); text-decoration: none; word-break: break-all; }
+        .footer a:hover { text-decoration: underline; }
+        .footer p { margin-bottom: 4px; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .comparison { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .edu-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">PRODUCT</span>
+                <span class="category-badge">CREATIVE</span>
+                <h1>Claude for Creative Work<br>クリエイティブ業界向け MCP コネクタ群をリリース</h1>
+                <p class="date">2026-04-28 | Anthropic News</p>
+            </div>
+        </header>
+
+        <!-- Overview / Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>8 つの MCP コネクタを一斉リリース</h3>
+                        <p>Blender、Autodesk、Adobe、Ableton、Splice など主要クリエイティブソフトウェア企業と提携し、MCP ベースのコネクタ群を公開。3D、音楽、映像、デザインの全領域をカバー</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤝</div>
+                    <div class="key-point-content">
+                        <h3>Blender Development Fund にパトロンとして参加</h3>
+                        <p>Blender 開発チームが公式 MCP コネクタを作成。Anthropic は Blender Development Fund に参加し、連携を可能にする Python API の継続開発を支援</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎨</div>
+                    <div class="key-point-content">
+                        <h3>Claude Design から Canva へのエクスポート対応</h3>
+                        <p>Anthropic Labs のプロダクト「Claude Design」が Canva へのエクスポートに対応。アイデア探索からデザインツールへのハンドオフを実現</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎓</div>
+                    <div class="key-point-content">
+                        <h3>3 つの美術・デザイン教育機関と連携開始</h3>
+                        <p>RISD、Ringling College、Goldsmiths University と連携し、クリエイティブコンピュテーション教育に AI ツールを統合</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るリリース</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">新しい MCP コネクタ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5+</div>
+                    <div class="stat-label">パートナー企業</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">50+</div>
+                    <div class="stat-label">Adobe CC 対応ツール</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">教育機関パートナー</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before / After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>🔴 Before</h4>
+                    <ul>
+                        <li>Claude はテキスト・コーディング中心</li>
+                        <li>クリエイティブツールとの連携なし</li>
+                        <li>ツールごとに手動でデータ変換</li>
+                        <li>デザイン探索から制作ツールへの移行が煩雑</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>🟢 After</h4>
+                    <ul>
+                        <li>3D、音楽、映像、デザインをカバー</li>
+                        <li>MCP コネクタで直接操作が可能</li>
+                        <li>パイプラインでツール間連携を自動化</li>
+                        <li>Claude Design → Canva でシームレスに移行</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Connector Table -->
+        <section class="section">
+            <h2 class="section-title">新しい MCP コネクタ一覧</h2>
+            <table class="connector-table">
+                <thead>
+                    <tr>
+                        <th>コネクタ</th>
+                        <th>パートナー</th>
+                        <th>領域</th>
+                        <th>主な機能</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Blender</strong></td>
+                        <td>Blender Foundation</td>
+                        <td><span class="connector-table domain-tag domain-3d">3D</span></td>
+                        <td>Python API への自然言語インターフェース、シーン分析・デバッグ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Autodesk Fusion</strong></td>
+                        <td>Autodesk</td>
+                        <td><span class="connector-table domain-tag domain-3d">3D</span></td>
+                        <td>対話で 3D モデルを作成・修正</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SketchUp</strong></td>
+                        <td>Trimble</td>
+                        <td><span class="connector-table domain-tag domain-3d">3D</span></td>
+                        <td>対話から 3D モデリングの出発点を生成</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ableton</strong></td>
+                        <td>Ableton</td>
+                        <td><span class="connector-table domain-tag domain-audio">音楽</span></td>
+                        <td>Live / Push の公式ドキュメントに基づく回答</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Splice</strong></td>
+                        <td>Splice</td>
+                        <td><span class="connector-table domain-tag domain-audio">音楽</span></td>
+                        <td>ロイヤリティフリーサンプルカタログの検索</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Resolume Arena/Wire</strong></td>
+                        <td>Resolume</td>
+                        <td><span class="connector-table domain-tag domain-audio">VJ</span></td>
+                        <td>自然言語でリアルタイムライブビジュアル制御</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adobe for creativity</strong></td>
+                        <td>Adobe</td>
+                        <td><span class="connector-table domain-tag domain-design">デザイン</span></td>
+                        <td>Creative Cloud 50 以上のツールで画像・映像・デザイン制作</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Affinity by Canva</strong></td>
+                        <td>Canva</td>
+                        <td><span class="connector-table domain-tag domain-design">デザイン</span></td>
+                        <td>バッチ画像調整、レイヤーリネーム、エクスポート自動化</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 5 Creative Work Areas -->
+        <section class="section">
+            <h2 class="section-title">Claude を活用したクリエイティブワークの 5 領域</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📚 ツールの学習とマスター</h3>
+                    <p>Claude が複雑なソフトウェアのオンデマンドチューターとして機能。モディファイアスタック、シンセサイズ技法、未知の機能の解説をリアルタイムで提供</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💻 コードによるツール拡張</h3>
+                    <p>Claude Code がスクリプト、プラグイン、ジェネラティブシステムを作成。カスタムシェーダー、プロシージャルアニメーション、パラメトリックモデルの生成コードを提供</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 パイプラインでのツール間連携</h3>
+                    <p>フォーマット変換、データ再構成、プロジェクト全体でのアセット同期を実現。デザイン・3D・オーディオツール間の手動ハンドオフを不要に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 迅速な探索とハンドオフ</h3>
+                    <p>Claude Design によるソフトウェア体験のアイデア探索。フィードバックに基づくイテレーションと Canva へのエクスポートが可能</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚙️ プロダクション作業の自動化</h3>
+                    <p>アセットのバッチ処理、プロジェクトスキャフォールディングの設定、シーン全体へのプロシージャル変更適用など、マルチステップタスクの処理</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blender Partnership -->
+        <section class="section">
+            <h2 class="section-title">Blender パートナーシップ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🧊</div>
+                    <div class="key-point-content">
+                        <h3>Blender 公式 MCP コネクタ</h3>
+                        <p>Blender 開発チームが Claude 向けに公式 MCP コネクタを作成。3D アーティストは Blender シーン全体の分析・デバッグ、オブジェクトへのバッチ変更スクリプトの構築、Python API を通じた新ツールの直接追加が可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💰</div>
+                    <div class="key-point-content">
+                        <h3>Blender Development Fund へパトロン参加</h3>
+                        <p>Anthropic が Blender Development Fund にパトロンとして参加。MCP 連携を可能にする Python API の継続的な開発を支援</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-content">
+                        <h3>オープンソースとの親和性</h3>
+                        <p>コネクタは MCP 上に構築されているため、Claude 以外の LLM からもアクセスが可能。Blender のオープンソースと相互運用性へのコミットメントを反映</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Claude["🤖 Claude"]
+        direction LR
+        Chat["💬 Claude Chat"]
+        Code["💻 Claude Code"]
+        Design["🎨 Claude Design"]
+        Chat ~~~ Code ~~~ Design
+    end
+
+    subgraph MCP["🔌 MCP コネクタ"]
+        direction LR
+        subgraph ThreeD["🧊 3D モデリング"]
+            Blender["Blender"]
+            Fusion["Autodesk Fusion"]
+            SketchUp["SketchUp"]
+            Blender ~~~ Fusion ~~~ SketchUp
+        end
+        subgraph Audio["🎵 音楽・オーディオ"]
+            Ableton["Ableton"]
+            Splice["Splice"]
+            Resolume["Resolume"]
+            Ableton ~~~ Splice ~~~ Resolume
+        end
+        subgraph Visual["🎨 デザイン・映像"]
+            Adobe["Adobe CC"]
+            Affinity["Affinity by Canva"]
+            Adobe ~~~ Affinity
+        end
+    end
+
+    subgraph Edu["🎓 教育連携"]
+        direction LR
+        RISD["RISD"]
+        Ringling["Ringling"]
+        Goldsmiths["Goldsmiths"]
+        RISD ~~~ Ringling ~~~ Goldsmiths
+    end
+
+    subgraph Output["📤 エクスポート"]
+        Canva["🎨 Canva"]
+    end
+
+    Chat -->|"自然言語で操作"| MCP
+    Code -->|"スクリプト・プラグイン生成"| MCP
+    Design -->|"デザインエクスポート"| Output
+    Claude -->|"ツール・アクセス提供"| Edu
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef claude fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef connector fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef edu fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef output fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+
+    class Claude,MCP platform
+    class ThreeD,Audio,Visual,Edu layer
+    class Chat,Code,Design claude
+    class Blender,Fusion,SketchUp,Ableton,Splice,Resolume,Adobe,Affinity connector
+    class RISD,Ringling,Goldsmiths edu
+    class Output,Canva output
+                </pre>
+            </div>
+        </section>
+
+        <!-- Education Partners -->
+        <section class="section">
+            <h2 class="section-title">教育機関パートナー</h2>
+            <div class="edu-grid">
+                <div class="edu-card">
+                    <div class="edu-icon">🏛️</div>
+                    <h4>Rhode Island School of Design</h4>
+                    <p>Art and Computation</p>
+                </div>
+                <div class="edu-card">
+                    <div class="edu-icon">🎭</div>
+                    <h4>Ringling College of Art and Design</h4>
+                    <p>Fundamentals of AI for Creatives</p>
+                </div>
+                <div class="edu-card">
+                    <div class="edu-icon">🇬🇧</div>
+                    <h4>Goldsmiths, University of London</h4>
+                    <p>MA/MFA Computational Arts</p>
+                </div>
+            </div>
+            <p style="margin-top: 16px; font-size: 14px; color: var(--text-secondary);">学生と教員には Claude と新しいコネクタへのアクセスが提供され、クリエイティブ実践者からのフィードバックが収集されます。今後さらに多くの教育機関への拡大が予定されています。</p>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🧊 3D アーティスト / モデラー</h4>
+                <p>Blender、Autodesk Fusion、SketchUp のコネクタにより、3D 制作ワークフローに Claude を直接統合。シーン分析やバッチスクリプト、カスタムツールの追加を自然言語で指示可能</p>
+            </div>
+            <div class="use-case">
+                <h4>🎵 音楽プロデューサー / DJ</h4>
+                <p>Ableton コネクタによる Live / Push の公式ドキュメント参照と、Splice コネクタによるロイヤリティフリーサンプル検索で音楽制作を効率化。Resolume で VJ パフォーマンスのリアルタイム制御も</p>
+            </div>
+            <div class="use-case">
+                <h4>🎨 映像・グラフィックデザイナー</h4>
+                <p>Adobe Creative Cloud 50 以上のツールとの連携で画像・映像・デザイン制作を支援。Affinity by Canva でバッチ画像調整やレイヤーリネームなどプロダクションワークを自動化</p>
+            </div>
+            <div class="use-case">
+                <h4>📐 デザイナー / プロダクトマネージャー</h4>
+                <p>Claude Design でソフトウェア体験のアイデアを高速に探索し、フィードバックに基づいてイテレーション。Canva へのエクスポートでデザインツールへのシームレスなハンドオフを実現</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 16px;">
+                Anthropic は主要クリエイティブソフトウェア企業と提携し、Claude をクリエイティブプロフェッショナルの日常業務に統合する <strong>8 つの MCP コネクタ</strong> をリリースしました。3D モデリング、音楽制作、映像編集、グラフィックデザイン、ライブビジュアルパフォーマンスなど、クリエイティブワークの幅広い領域で Claude を直接活用できるようになります。
+            </p>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 16px;">
+                特に注目すべきは、Blender 開発チームが公式 MCP コネクタを作成し、Anthropic が Blender Development Fund にパトロンとして参加した点です。MCP 上に構築されたオープンなアーキテクチャにより、Claude 以外の LLM からもアクセスが可能です。
+            </p>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8;">
+                今回の発表は、Claude をコーディングやテキスト生成だけでなく、<strong>クリエイティブ分野全体をカバーする総合的な AI アシスタント</strong> へと進化させる Anthropic の戦略を明確に示しています。
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://www.anthropic.com/news/claude-for-creative-work" target="_blank" rel="noopener noreferrer">https://www.anthropic.com/news/claude-for-creative-work</a></p>
+            <p><strong>関連:</strong> <a href="https://www.anthropic.com/news/claude-design-anthropic-labs" target="_blank" rel="noopener noreferrer">Claude Design - Anthropic Labs</a> | <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer">Model Context Protocol</a> | <a href="https://www.blender.org/" target="_blank" rel="noopener noreferrer">Blender</a></p>
+            <p style="margin-top: 8px; font-size: 11px;">Generated: 2026-04-29 | Anthropic News Summary</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

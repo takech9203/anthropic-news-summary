@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.122 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '🖥️';
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 80px;
+            opacity: 0.15;
+        }
+
+        .header-content { position: relative; z-index: 1; }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .category-badge + .category-badge { margin-left: 8px; }
+
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
+        .header .date { font-size: 14px; opacity: 0.8; }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--anthropic-coral); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        /* Bug fix list */
+        .bugfix-group { margin-bottom: 20px; }
+
+        .bugfix-group-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bugfix-group-title .count {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .bugfix-list { list-style: none; padding: 0; }
+
+        .bugfix-list li {
+            padding: 10px 16px;
+            border-left: 3px solid #F59E0B;
+            background: #FFFBEB;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .bugfix-list li code {
+            background: rgba(212, 165, 116, 0.15);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+
+        .code-block pre { margin: 0; padding: 0; }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid { display: flex; justify-content: center; }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a { color: var(--anthropic-coral); text-decoration: none; word-break: break-all; }
+        .footer a:hover { text-decoration: underline; }
+        .footer p { margin-bottom: 4px; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE</span>
+                <span class="category-badge">UPDATE</span>
+                <h1>Claude Code v2.1.122<br>Bedrock サービスティア選択、PR URL セッション復元など</h1>
+                <p class="date">2026-04-28 | Claude Code Changelog</p>
+                <span class="version-badge">v2.1.122</span>
+            </div>
+        </header>
+
+        <!-- Overview -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">☁️</div>
+                    <div class="key-point-content">
+                        <h3>Bedrock サービスティア選択機能</h3>
+                        <p><code>ANTHROPIC_BEDROCK_SERVICE_TIER</code> 環境変数で <code>default</code>、<code>flex</code>、<code>priority</code> を選択可能。ワークロードに応じたコストとパフォーマンスの最適化を実現</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔗</div>
+                    <div class="key-point-content">
+                        <h3>PR URL からのセッション復元</h3>
+                        <p><code>/resume</code> の検索ボックスに PR URL を貼り付けると、その PR を作成したセッションを自動検索。GitHub、GitHub Enterprise、GitLab、Bitbucket に対応</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🐛</div>
+                    <div class="key-point-content">
+                        <h3>12 件のバグ修正で安定性を大幅向上</h3>
+                        <p>画像リサイズの最大値修正 (2576px → 2000px)、<code>/branch</code> のフォーク失敗、Vertex AI/Bedrock の構造化出力エラー、<code>!exit</code>/<code>!quit</code> の誤動作など</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">リリースサマリー</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">合計変更数</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>☁️ Bedrock サービスティア</h3>
+                    <p><code>ANTHROPIC_BEDROCK_SERVICE_TIER</code> 環境変数で Amazon Bedrock のサービスティアを選択。<code>flex</code> でコスト最適化、<code>priority</code> で低レイテンシを実現。<code>X-Amzn-Bedrock-Service-Tier</code> ヘッダーとして送信</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔗 PR URL セッション復元</h3>
+                    <p><code>/resume</code> 検索ボックスに PR URL を貼り付けて、その PR を作成したセッションを即座に復元。GitHub、GitHub Enterprise、GitLab、Bitbucket に対応</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <h2 class="section-title">改善 4 件</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>/mcp 重複コネクタ表示</h3>
+                        <p>手動追加サーバーと同じ URL の claude.ai コネクタが隠されている場合に表示。削除ヒントも提供</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>/mcp 認証メッセージ改善</h3>
+                        <p>ブラウザサインイン後も MCP サーバーが未認可の場合のメッセージを明確化</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>OpenTelemetry 数値属性の型修正</h3>
+                        <p><code>api_request</code> / <code>api_error</code> の数値属性が文字列ではなく数値として出力。監視ツールでの集計が正確に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>OpenTelemetry at_mention イベント追加</h3>
+                        <p><code>claude_code.at_mention</code> ログイベントで @ メンション解決の監視・分析が可能に</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 12 件</h2>
+
+            <div class="bugfix-group">
+                <div class="bugfix-group-title">💾 セッション / コマンド <span class="count">3</span></div>
+                <ul class="bugfix-list">
+                    <li><code>/branch</code> で巻き戻し済みタイムラインのエントリを含むセッションからフォークすると失敗する問題を修正</li>
+                    <li><code>/model</code> が Bedrock 推論プロファイル ARN に対して Effort オプションを表示しない問題を修正</li>
+                    <li><code>!exit</code> / <code>!quit</code> が bash モードで CLI 自体を終了してしまう問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-group">
+                <div class="bugfix-group-title">☁️ Vertex AI / Bedrock <span class="count">2</span></div>
+                <ul class="bugfix-list">
+                    <li>Vertex AI / Bedrock で構造化出力クエリ時に <code>invalid_request_error</code> が返される問題を修正</li>
+                    <li>プロキシゲートウェイ経由で Vertex AI の <code>count_tokens</code> が 400 エラーを返す問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-group">
+                <div class="bugfix-group-title">🔌 MCP / ツール <span class="count">2</span></div>
+                <ul class="bugfix-list">
+                    <li>nonblocking モードでセッション開始後に接続した MCP ツールが ToolSearch で検出されない問題を修正</li>
+                    <li><code>spinnerTipsOverride.excludeDefault</code> が時間ベースのスピナーティップスを抑制しない問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-group">
+                <div class="bugfix-group-title">🎨 UI / 表示 <span class="count">3</span></div>
+                <ul class="bugfix-list">
+                    <li>画像が正しい最大値 2000px ではなく <strong>2576px</strong> にリサイズされていた問題を修正 (トークン消費の削減)</li>
+                    <li>リモートコントロールセッションのアイドルステータスが毎秒 2 回再描画される問題を修正 (<code>tmux -CC</code> パイプ溢れ対策)</li>
+                    <li>古いビュー設定によりアシスタントメッセージが空白表示される問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-group">
+                <div class="bugfix-group-title">⚙️ 設定 / 音声 <span class="count">2</span></div>
+                <ul class="bugfix-list">
+                    <li><code>settings.json</code> の不正な hooks エントリがファイル全体を無効化していた問題を修正</li>
+                    <li>音声モードで Caps Lock キーバインドに対するエラー表示を追加 (ターミナルは Caps Lock をキーイベントとして配信しないため)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Code Examples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Bedrock サービスティアの設定</span>
+                </div>
+                <pre><code class="language-bash"># コスト最適化ティア (バッチ処理向け)
+export ANTHROPIC_BEDROCK_SERVICE_TIER=flex
+
+# 優先ティア (低レイテンシ、リアルタイム向け)
+export ANTHROPIC_BEDROCK_SERVICE_TIER=priority
+
+# デフォルトティア (明示的に指定)
+export ANTHROPIC_BEDROCK_SERVICE_TIER=default
+
+# AWS プロファイルと組み合わせて使用
+AWS_PROFILE=my-bedrock-profile ANTHROPIC_BEDROCK_SERVICE_TIER=priority claude</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">PR URL からセッションを復元</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 起動後、/resume コマンドを使用
+# 検索ボックスに PR URL を貼り付け
+
+/resume
+# → https://github.com/myorg/myrepo/pull/123 を貼り付け
+# → その PR を作成したセッションが検索結果に表示される
+
+# 対応プラットフォーム:
+# GitHub:     https://github.com/{owner}/{repo}/pull/{number}
+# GitLab:     https://gitlab.com/{group}/{project}/-/merge_requests/{number}
+# Bitbucket:  https://bitbucket.org/{workspace}/{repo}/pull-requests/{number}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデート方法</span>
+                </div>
+                <pre><code class="language-bash"># npm でアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でアップデート
+brew upgrade claude-code
+
+# バージョン確認
+claude --version
+# Claude Code v2.1.122</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">v2.1.122 変更の全体像</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["🖥️ Claude Code v2.1.122"]
+        subgraph NewFeatures["✨ 新機能 2 件"]
+            direction LR
+            ServiceTier["☁️ Bedrock<br/>サービスティア選択"]
+            ResumeURL["🔗 /resume<br/>PR URL 検索"]
+            ServiceTier ~~~ ResumeURL
+        end
+
+        subgraph Improvements["🔧 改善 4 件"]
+            direction LR
+            MCPDup["🔌 /mcp<br/>重複コネクタ表示"]
+            MCPAuth["🔑 /mcp<br/>認証メッセージ改善"]
+            OTelNum["📊 OpenTelemetry<br/>数値属性修正"]
+            OTelMention["📊 OpenTelemetry<br/>at_mention イベント"]
+            MCPDup ~~~ MCPAuth ~~~ OTelNum ~~~ OTelMention
+        end
+
+        subgraph BugFixes["🐛 バグ修正 12 件"]
+            direction LR
+            SessionFixes["💾 セッション/コマンド<br/>3 件"]
+            CloudFixes["☁️ Vertex AI/Bedrock<br/>2 件"]
+            MCPFixes["🔌 MCP/ツール<br/>2 件"]
+            UIFixes["🎨 UI/表示<br/>3 件"]
+            OtherFixes["⚙️ 設定/音声<br/>2 件"]
+            SessionFixes ~~~ CloudFixes ~~~ MCPFixes ~~~ UIFixes ~~~ OtherFixes
+        end
+    end
+
+    User(["👤 ユーザー"]) --> ClaudeCode
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef improvement fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef fix fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class ClaudeCode platform
+    class NewFeatures,Improvements,BugFixes layer
+    class ServiceTier,ResumeURL feature
+    class MCPDup,MCPAuth,OTelNum,OTelMention improvement
+    class SessionFixes,CloudFixes,MCPFixes,UIFixes,OtherFixes fix
+    class User user
+                </pre>
+            </div>
+        </section>
+
+        <!-- Bedrock Service Tier Flow -->
+        <section class="section">
+            <h2 class="section-title">Bedrock サービスティア選択フロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Config["⚙️ 設定"]
+        EnvVar["🔑 ANTHROPIC_BEDROCK_SERVICE_TIER<br/>環境変数"]
+    end
+
+    subgraph TierSelection["🔍 ティア選択"]
+        CheckTier{"ティア値の判定"}
+    end
+
+    subgraph Tiers["☁️ サービスティア"]
+        direction LR
+        Default["📋 default<br/>標準スループット"]
+        Flex["💰 flex<br/>コスト最適化"]
+        Priority["⚡ priority<br/>低レイテンシ"]
+        Default ~~~ Flex ~~~ Priority
+    end
+
+    subgraph Request["📨 API リクエスト"]
+        Header["X-Amzn-Bedrock-Service-Tier<br/>ヘッダー付与"]
+    end
+
+    subgraph Bedrock["☁️ Amazon Bedrock"]
+        Inference["🤖 推論実行"]
+    end
+
+    EnvVar --> CheckTier
+    CheckTier -->|"default"| Default
+    CheckTier -->|"flex"| Flex
+    CheckTier -->|"priority"| Priority
+    Default --> Header
+    Flex --> Header
+    Priority --> Header
+    Header --> Inference
+
+    classDef config fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef tier fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef request fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef cloud fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+
+    class EnvVar config
+    class CheckTier decision
+    class Default,Flex,Priority tier
+    class Header request
+    class Inference cloud
+                </pre>
+            </div>
+        </section>
+
+        <!-- PR URL Session Restore Flow -->
+        <section class="section">
+            <h2 class="section-title">PR URL セッション復元フロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant U as 👤 ユーザー
+    participant CC as 🖥️ Claude Code
+    participant H as 📚 セッション履歴
+
+    U->>CC: /resume を実行
+    CC-->>U: 検索ボックスを表示
+
+    U->>CC: PR URL を貼り付け
+    Note over CC: URL パターンを解析<br/>GitHub / GitLab / Bitbucket
+
+    CC->>H: PR URL でセッション検索
+    H-->>CC: 一致するセッションを返却
+
+    alt セッション発見
+        CC-->>U: セッション一覧を表示
+        U->>CC: セッションを選択
+        CC-->>U: セッション復元完了
+    else セッション未発見
+        CC-->>U: 該当セッションなし
+    end
+                </pre>
+            </div>
+        </section>
+
+        <!-- Target Users -->
+        <section class="section">
+            <h2 class="section-title">対象ユーザー</h2>
+            <div class="use-case">
+                <h4>☁️ Bedrock ユーザー</h4>
+                <p>新しい <code>ANTHROPIC_BEDROCK_SERVICE_TIER</code> でコストとパフォーマンスのバランスを最適化。推論プロファイル ARN の Effort オプション表示と構造化出力エラーも修正</p>
+            </div>
+            <div class="use-case">
+                <h4>🖥️ 全ての Claude Code ユーザー</h4>
+                <p>画像リサイズ修正でトークン消費が適正化。<code>/branch</code> のフォーク失敗やアシスタントメッセージの空白表示も修正</p>
+            </div>
+            <div class="use-case">
+                <h4>🌐 Vertex AI ユーザー</h4>
+                <p><code>count_tokens</code> エンドポイントのプロキシゲートウェイ対応と構造化出力エラーの修正</p>
+            </div>
+            <div class="use-case">
+                <h4>🔌 MCP サーバー利用者</h4>
+                <p>nonblocking モードでの MCP ツール検出漏れ修正と <code>/mcp</code> の重複コネクタ表示改善</p>
+            </div>
+            <div class="use-case">
+                <h4>📊 OpenTelemetry 監視利用者</h4>
+                <p>数値属性の型修正と @ メンションイベントの追加で監視データの精度と範囲が向上</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 16px;">
+                Claude Code v2.1.122 は、<strong>新機能 2 件、改善 4 件、バグ修正 12 件</strong> を含むリリースです。<code>ANTHROPIC_BEDROCK_SERVICE_TIER</code> 環境変数による Bedrock サービスティア選択と、<code>/resume</code> に PR URL を貼り付けてセッションを復元する機能が新たに追加されました。
+            </p>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 16px;">
+                バグ修正では、画像リサイズの最大値が 2576px から正しい <strong>2000px</strong> に修正され、不要なトークン消費が削減されます。Vertex AI / Bedrock の構造化出力エラー、<code>/branch</code> のフォーク失敗、<code>settings.json</code> の hooks エントリ問題など、幅広い領域で安定性が改善されました。
+            </p>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8;">
+                全ての Claude Code ユーザーに対してアップデートを推奨します。特に <strong>Bedrock ユーザー</strong> は新しいサービスティア機能の活用を検討してください。
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連:</strong> <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">npm パッケージ</a> | <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">GitHub リポジトリ</a> | <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">ドキュメント</a></p>
+            <p style="margin-top: 8px; font-size: 11px;">Generated: 2026-04-29 | Anthropic News Summary</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
