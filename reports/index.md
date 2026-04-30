@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-04-29](2026/2026-04-29-claude-code-v2-1-123.md) - Claude Code v2.1.123 リリース: OAuth 認証の 401 リトライループ修正
 - [2026-04-28](2026/2026-04-28-claude-for-creative-work.md) - Claude for Creative Work -- クリエイティブ業界向け MCP コネクタ群を主要パートナーと共同リリース
 - [2026-04-28](2026/2026-04-28-claude-code-v2-1-122.md) - Claude Code v2.1.122 リリース: Bedrock サービスティア選択、PR URL からのセッション復元、画像リサイズ修正など多数のバグ修正
 - [2026-04-28](2026/2026-04-28-claude-code-v2-1-121.md) - Claude Code v2.1.121 リリース: MCP alwaysLoad オプション、プラグイン管理の強化、重大メモリリーク修正、MCP 信頼性向上
