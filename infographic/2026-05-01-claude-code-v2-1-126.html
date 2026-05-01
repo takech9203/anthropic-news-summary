@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.126 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --danger: #EF4444;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .security-badge {
+            display: inline-block;
+            background: var(--danger);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 8px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card.security {
+            border-color: var(--danger);
+            background: linear-gradient(135deg, #FFF5F5 0%, #FEE2E2 100%);
+        }
+
+        .bugfix-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .bugfix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .bugfix-item .bugfix-icon {
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .bugfix-category {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-top: 20px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .bugfix-category:first-child {
+            margin-top: 0;
+        }
+
+        .windows-badge {
+            display: inline-block;
+            background: #E0E7FF;
+            color: #4338CA;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .alert-box {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border: 2px solid var(--warning);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .alert-box .alert-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .alert-box .alert-content {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <span class="security-badge">Security Fix</span>
+                <h1>⚡ Claude Code v2.1.126</h1>
+                <p class="date">2026-05-01 | ゲートウェイモデル選択、プロジェクトパージ、Windows 強化</p>
+            </div>
+        </header>
+
+        <!-- Alert -->
+        <div class="alert-box">
+            <span class="alert-icon">🔒</span>
+            <div class="alert-content">
+                <strong>セキュリティ修正を含む:</strong> allowManagedDomainsOnly / allowManagedReadPathsOnly の制限がバイパスされる問題が修正されました。マネージド設定を使用する環境では速やかなアップデートを推奨します。
+            </div>
+        </div>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-content">
+                        <h3>ゲートウェイモデルピッカー</h3>
+                        <p>/model コマンドが ANTHROPIC_BASE_URL で指定されたゲートウェイから利用可能なモデル一覧を動的に取得</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗑️</div>
+                    <div class="key-point-content">
+                        <h3>claude project purge コマンド</h3>
+                        <p>プロジェクト状態 (トランスクリプト、タスク、ファイル履歴、設定) を完全削除する新コマンド</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🪟</div>
+                    <div class="key-point-content">
+                        <h3>Windows 対応強化</h3>
+                        <p>PowerShell 7 検出改善、プライマリシェル化、クリップボードセキュリティ、CJK 文字化け修正</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>OAuth 認証改善</h3>
+                        <p>WSL2、SSH、コンテナなど localhost 到達不可環境で OAuth コード手動入力に対応</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">リリース内訳</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">セキュリティ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">21</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Windows 改善</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能ハイライト</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🌐 ゲートウェイモデル選択</h3>
+                    <p>ANTHROPIC_BASE_URL のゲートウェイ /v1/models エンドポイントからモデル一覧を自動取得。エンタープライズ環境で利用可能なモデルを直接選択可能に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🗑️ project purge</h3>
+                    <p>プロジェクトの全状態を一括削除。--dry-run、--yes、--interactive、--all オプション対応。CI/CD パイプラインのクリーンアップに最適。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔓 skip-permissions 拡張</h3>
+                    <p>--dangerously-skip-permissions が .claude/、.git/、.vscode/ への書き込みもバイパス。壊滅的削除は安全対策として維持。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔑 OAuth 手動コード入力</h3>
+                    <p>claude auth login でブラウザコールバック不可環境 (WSL2、SSH、コンテナ) でのコード貼り付け認証に対応。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 OTEL スキルイベント</h3>
+                    <p>claude_code.skill_activated が全スラッシュコマンドで発火。invocation_trigger 属性で発火元を識別可能。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔴 Auto モード改善</h3>
+                    <p>権限チェック停滞時にスピナーが赤色に変化。ツール実行中との混同を防止。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Fix -->
+        <section class="section">
+            <h2 class="section-title">セキュリティ修正</h2>
+            <div class="feature-card security" style="margin: 0;">
+                <h3>🔒 マネージド設定のサンドボックス制限修正</h3>
+                <p>優先度の高いマネージド設定ソースに sandbox ブロックが含まれていない場合、allowManagedDomainsOnly / allowManagedReadPathsOnly が無視される問題を修正。マルチテナント環境でのセキュリティポリシーの一貫性が確保されます。<strong>マネージド設定を使用する環境では速やかなアップデートを推奨。</strong></p>
+            </div>
+        </section>
+
+        <!-- Windows Improvements -->
+        <section class="section">
+            <h2 class="section-title">Windows 対応改善</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🪟 PowerShell 7 検出</h3>
+                    <p>Microsoft Store、PATH なし MSI、.NET グローバルツールでインストールされた PowerShell 7 を自動検出。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ PowerShell 優先シェル</h3>
+                    <p>PowerShell ツール有効時、Bash の代わりに PowerShell がプライマリシェルとして使用されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 クリップボードセキュリティ</h3>
+                    <p>コピー内容がプロセスコマンドライン引数に露出する問題を修正。EDR/SIEM テレメトリ対策。22KB 超のクリップボードも対応。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🇯🇵 CJK 文字化け修正</h3>
+                    <p>Windows の no-flicker モードで日本語、韓国語、中国語がガーブル表示される問題を修正。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes Summary -->
+        <section class="section">
+            <h2 class="section-title">主なバグ修正 (21 件)</h2>
+
+            <div class="bugfix-category">🔌 接続・認証</div>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>OAuth タイムアウト (低速接続、プロキシ、IPv6 devcontainer) を修正</span>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>並行資格情報書き込みでリフレッシュトークンが消失するレースコンディションを修正</span>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>claude.ai MCP コネクタが needs-auth サーバーで抑制される問題を修正</span>
+                </div>
+            </div>
+
+            <div class="bugfix-category">⏱️ タイムアウト・安定性</div>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>Mac スリープ復帰時の「Stream idle timeout」エラーを修正</span>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>バックグラウンド/リモートセッションの長時間思考中の誤タイムアウトを修正</span>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>空ターン後に出力が表示されないハングを修正</span>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>API リトライカウントダウンが「0s」で停止する表示バグを修正</span>
+                </div>
+            </div>
+
+            <div class="bugfix-category">🖥️ UI・表示</div>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>2000px 超画像ペースト時のセッション破損を修正 (自動ダウンスケール対応)</span>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>Ctrl+L がプロンプトをクリアする問題を修正 (画面再描画のみに変更)</span>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>Cursor / VS Code 1.92-1.104 の統合ターミナルでの高速トラックパッドスクロールを修正</span>
+                </div>
+            </div>
+
+            <div class="bugfix-category">🔧 ツール・プラグイン</div>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>context: fork スキルやサブエージェントで Deferred ツールが初回ターンで利用不可になる問題を修正</span>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>--channels セッションで Plan モードツールが利用不可になる問題を修正</span>
+                </div>
+                <div class="bugfix-item">
+                    <span class="bugfix-icon">✅</span>
+                    <span>Agent SDK で不正なツール名を含む並列呼び出しバッチでハングする問題を修正</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Client["🖥️ Claude Code CLI"]
+        direction LR
+        ModelPicker["/model ピッカー"]
+        PurgeCmd["project purge"]
+        AuthLogin["auth login"]
+        ModelPicker ~~~ PurgeCmd ~~~ AuthLogin
+    end
+
+    subgraph Gateway["🌐 ゲートウェイ"]
+        ModelsAPI["📋 /v1/models"]
+        MessagesAPI["📨 /v1/messages"]
+    end
+
+    subgraph LocalState["🗄️ プロジェクト状態"]
+        direction LR
+        Transcripts["📝 トランスクリプト"]
+        Tasks["✅ タスク"]
+        FileHistory["📁 ファイル履歴"]
+        Config["⚙️ 設定"]
+        Transcripts ~~~ Tasks ~~~ FileHistory ~~~ Config
+    end
+
+    subgraph Auth["🔐 認証"]
+        Browser["🌍 ブラウザ"]
+        ManualCode["📋 手動コード入力"]
+    end
+
+    ModelPicker --> ModelsAPI
+    ModelPicker --> MessagesAPI
+    PurgeCmd --> LocalState
+    AuthLogin --> Browser
+    AuthLogin -.-> ManualCode
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Examples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">claude project purge の使用例</span>
+                </div>
+                <pre><code class="language-bash"># プロジェクト状態のパージ（ドライラン - 実際には削除しない）
+claude project purge /path/to/project --dry-run
+
+# プロジェクト状態のパージ（確認なし）
+claude project purge /path/to/project --yes
+
+# インタラクティブモードでパージ（削除対象を選択）
+claude project purge /path/to/project --interactive
+
+# 全プロジェクトの状態をパージ
+claude project purge --all</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ゲートウェイ連携の設定例</span>
+                </div>
+                <pre><code class="language-bash"># カスタムゲートウェイを設定
+export ANTHROPIC_BASE_URL="https://gateway.example.com/api"
+
+# Claude Code を起動
+claude
+
+# /model コマンドでゲートウェイのモデル一覧が表示される</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">WSL2/SSH 環境での OAuth ログイン</span>
+                </div>
+                <pre><code class="language-bash"># WSL2、SSH、コンテナ環境での認証
+claude auth login
+# ブラウザが開くが localhost に到達できない場合、
+# ターミナルに OAuth コードを貼り付けて認証を完了</code></pre>
+            </div>
+        </section>
+
+        <!-- Impact / Use Cases -->
+        <section class="section">
+            <h2 class="section-title">影響を受けるユーザー</h2>
+            <div class="use-case">
+                <h4>🏢 エンタープライズ環境</h4>
+                <p>ゲートウェイモデルピッカーにより、カスタムゲートウェイ経由のモデル選択が動的に。マネージド設定のセキュリティ修正も含むため、速やかなアップデートを推奨。</p>
+            </div>
+            <div class="use-case">
+                <h4>🪟 Windows 開発者</h4>
+                <p>PowerShell 7 検出改善、プライマリシェル化、CJK 文字化け修正、クリップボードセキュリティ改善により、Windows 環境での使用体験が大幅に向上。</p>
+            </div>
+            <div class="use-case">
+                <h4>🐳 WSL2 / SSH / コンテナユーザー</h4>
+                <p>OAuth コード手動入力対応により、localhost 到達不可環境でもスムーズに認証が完了。</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 CI/CD パイプライン</h4>
+                <p>claude project purge と --dangerously-skip-permissions 拡張により、自動化スクリプトの管理が容易に。</p>
+            </div>
+        </section>
+
+        <!-- Update Instructions -->
+        <section class="section">
+            <h2 class="section-title">アップデート方法</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">v2.1.126 へのアップデート</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# バージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連:</strong> <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub</a> | <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">npm パッケージ</a></p>
+            <p style="margin-top: 12px; font-size: 11px; opacity: 0.7;">Generated by Anthropic News Summary | 2026-05-01</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
