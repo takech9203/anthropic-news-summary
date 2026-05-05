@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-04](2026/2026-05-04-enterprise-ai-services-company.md) - Blackstone、Hellman & Friedman、Goldman Sachs と共同でエンタープライズ AI サービス企業を設立
+- [2026-05-04](2026/2026-05-04-claude-code-v2-1-128.md) - Claude Code v2.1.128 リリース: MCP 改善、プラグイン ZIP 対応、Auto モード強化
 - [2026-05-01](2026/2026-05-01-claude-code-v2-1-126.md) - Claude Code v2.1.126 リリース: ゲートウェイモデル選択、プロジェクト状態パージ、Windows 対応強化
 - [2026-04-30](2026/2026-04-30-long-term-benefit-trust.md) - Anthropic の Long-Term Benefit Trust (LTBT) - 独立ガバナンス機構の詳細公開
 - [2026-04-30](2026/2026-04-30-1m-context-window-beta-retired.md) - Claude Sonnet 4.5 / Sonnet 4 の 1M トークンコンテキストウィンドウベータが廃止
