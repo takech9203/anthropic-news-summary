@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-06](2026/2026-05-06-claude-code-v2-1-129.md) - Claude Code v2.1.129 リリース: プラグイン URL 読み込み、自動アップデート機能、多数のバグ修正
+- [2026-05-05](2026/2026-05-05-finance-agents.md) - 金融サービス向けエージェント - 10 種の新プラグインと Microsoft 365 統合
 - [2026-05-04](2026/2026-05-04-enterprise-ai-services-company.md) - Blackstone、Hellman & Friedman、Goldman Sachs と共同でエンタープライズ AI サービス企業を設立
 - [2026-05-04](2026/2026-05-04-claude-code-v2-1-128.md) - Claude Code v2.1.128 リリース: MCP 改善、プラグイン ZIP 対応、Auto モード強化
 - [2026-05-01](2026/2026-05-01-claude-code-v2-1-126.md) - Claude Code v2.1.126 リリース: ゲートウェイモデル選択、プロジェクト状態パージ、Windows 対応強化
