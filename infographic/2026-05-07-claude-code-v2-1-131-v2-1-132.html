@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.131 / v2.1.132 - 安定性改善とバグ修正 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .fix-category {
+            margin-bottom: 24px;
+        }
+
+        .fix-category h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fix-category h3 .count-badge {
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .fix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .fix-list li {
+            padding: 10px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .fix-list li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .env-var-card {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+        }
+
+        .env-var-card code {
+            background: rgba(212, 165, 116, 0.2);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        .env-var-card h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .env-var-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.131 / v2.1.132<br>安定性改善とバグ修正</h1>
+                <p class="date">2026-05-07</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>30 件以上のバグ修正</h3>
+                        <p>ターミナル処理、MCP サーバー、IDE 互換性を中心に、安定性とユーザー体験を大幅に向上</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🆕</div>
+                    <div class="key-point-content">
+                        <h3>新しい環境変数</h3>
+                        <p><code>CLAUDE_CODE_SESSION_ID</code> と <code>CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN</code> の追加</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>MCP メモリリーク解消</h3>
+                        <p>stdio MCP サーバーの非プロトコルデータによる 10GB 以上のメモリ使用量問題を修正</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💻</div>
+                    <div class="key-point-content">
+                        <h3>IDE 互換性向上</h3>
+                        <p>VS Code、Cursor、JetBrains IDE 2025.2 でのスクロール・入力問題を修正</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るリリース</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">新機能・環境変数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">ターミナル修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">UI/UX 修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">MCP 修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能・環境変数</h2>
+            <div class="env-var-card">
+                <h4>🆔 <code>CLAUDE_CODE_SESSION_ID</code></h4>
+                <p>Bash ツールのサブプロセス環境に設定されるセッション ID。フックに渡される <code>session_id</code> と一致し、サブプロセスからセッションを識別可能に</p>
+            </div>
+            <div class="env-var-card">
+                <h4>🖥️ <code>CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1</code></h4>
+                <p>フルスクリーンの代替画面レンダラーをオプトアウトし、ターミナルのネイティブスクロールバックに会話を保持</p>
+            </div>
+            <div class="env-var-card">
+                <h4>📋 「Pasting...」フッターヒント</h4>
+                <p>Ctrl+V で画像を貼り付ける際、クリップボードから読み取り中であることを示すフッターヒントが表示</p>
+            </div>
+        </section>
+
+        <!-- Fix Categories -->
+        <section class="section">
+            <h2 class="section-title">主要なバグ修正カテゴリ</h2>
+
+            <div class="fix-category">
+                <h3>⌨️ ターミナル・入力処理 <span class="count-badge">10 件</span></h3>
+                <ul class="fix-list">
+                    <li>外部 SIGINT でのグレースフルシャットダウン復元</li>
+                    <li>SSH 切断時の未キャッチ例外解消</li>
+                    <li>スリープ復帰後のフルスクリーン空白画面修正</li>
+                    <li>Indic 結合文字・ZWJ 絵文字のカーソル位置修正</li>
+                    <li>Vim オペレータの NFD アクセント文字処理修正</li>
+                    <li>/ で始まるペーストの入力消失修正</li>
+                    <li>ペースト時のエスケープシーケンス混入修正</li>
+                    <li>Cursor / VS Code でのマウスホイール速度修正</li>
+                    <li>JetBrains IDE 2025.2 でのスクロール修正</li>
+                    <li>Windows でのキーボード入力停止修正</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <h3>🎨 UI/UX <span class="count-badge">8 件</span></h3>
+                <ul class="fix-list">
+                    <li>/usage Ctrl+S のクリップボードハング修正</li>
+                    <li>/terminal-setup の Windows Terminal エラー修正</li>
+                    <li>/effort ピッカーの環境変数反映修正</li>
+                    <li>/status のデフォルトモデル表示修正</li>
+                    <li>スラッシュコマンド補完のスケーリング修正</li>
+                    <li>ステータスラインのトークン数表示修正</li>
+                    <li>macOS での Alt+T thinking トグル修正</li>
+                    <li>ダイアログスペーシングの視覚的一貫性改善</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <h3>🔌 MCP サーバー <span class="count-badge">3 件</span></h3>
+                <ul class="fix-list">
+                    <li>非プロトコルデータによる 10GB+ メモリリーク修正</li>
+                    <li>tools/list 失敗時のリトライと状態表示追加</li>
+                    <li>未認証コネクターの表示修正とリトライ制御</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <h3>📦 セッション・その他 <span class="count-badge">5 件</span></h3>
+                <ul class="fix-list">
+                    <li>--resume のサロゲートペア処理修正</li>
+                    <li>--permission-mode フラグの復元修正</li>
+                    <li>Bedrock / Vertex の ENABLE_PROMPT_CACHING_1H 修正</li>
+                    <li>VS Code 拡張機能の Windows アクティベーション修正</li>
+                    <li>Mantle エンドポイント認証修正</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Technical Details Architecture -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph MCPFix["MCP Memory Leak Fix"]
+        direction LR
+        MCPServer["MCP Server<br/>stdio"]
+        Buffer["Input Buffer"]
+        Detect["Protocol Check"]
+        MCPServer -->|"non-protocol data"| Buffer
+        Buffer --> Detect
+        Detect -->|"discard"| Cleanup["Buffer Cleanup"]
+    end
+
+    subgraph SessionFix["Session Resume Fix"]
+        direction LR
+        Load["Load Session"]
+        Sanitize["UTF-16 Sanitize"]
+        Resume["Resume OK"]
+        Load --> Sanitize
+        Sanitize --> Resume
+    end
+
+    subgraph ScreenFix["Fullscreen Recovery"]
+        direction LR
+        Signal["SIGCONT"]
+        Redraw["Full Redraw"]
+        Display["Display Restored"]
+        Signal --> Redraw
+        Redraw --> Display
+    end
+
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef success fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class MCPFix,SessionFix,ScreenFix platform
+    class MCPServer,Buffer,Detect,Load,Sanitize,Signal,Redraw process
+    class Cleanup,Resume,Display success
+                </pre>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🧠 MCP メモリリーク</h3>
+                    <p>stdio MCP サーバーが非プロトコルデータを stdout に書き込むと、バッファが無制限に蓄積。v2.1.132 で非プロトコルデータを検知時にバッファを破棄</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 セッション復元</h3>
+                    <p>絵文字のサロゲートペア分割による不正 UTF-16 を読み込み時にサニタイズし、--resume の信頼性を向上</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🖥️ フルスクリーン復帰</h3>
+                    <p>SIGCONT シグナルハンドラーで画面全体を即座に再描画。スリープ復帰時のブランク画面を解消</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎮 JetBrains 互換性</h3>
+                    <p>IDE 2025.2 のターミナルエミュレータを識別し、スクロールイベントの解釈を適切に調整</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">新しい環境変数の使用例</span>
+                </div>
+                <pre><code class="language-bash"># 代替画面レンダラーをオプトアウト
+export CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1
+claude
+
+# フックスクリプトでセッション ID を活用
+#!/bin/bash
+echo "Current session: $CLAUDE_CODE_SESSION_ID"
+# セッション固有のログに記録
+echo "$(date): action" >> "/tmp/claude-$CLAUDE_CODE_SESSION_ID.log"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデート方法</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Affected Users -->
+        <section class="section">
+            <h2 class="section-title">影響を受けるユーザー</h2>
+            <div class="use-case">
+                <h4>💻 VS Code / Cursor ユーザー</h4>
+                <p>マウスホイールスクロール速度の正常化。xterm.js バグの回避策が適用され、スムーズなスクロールが復元</p>
+            </div>
+            <div class="use-case">
+                <h4>🔨 JetBrains IDE 2025.2 ユーザー</h4>
+                <p>スクロールホイールの方向逆転・暴走加速が修正され、正常なターミナル操作が可能に</p>
+            </div>
+            <div class="use-case">
+                <h4>🪟 Windows ユーザー</h4>
+                <p>VS Code 拡張機能のアクティベーション修正、キーボード入力停止の解消</p>
+            </div>
+            <div class="use-case">
+                <h4>🍎 macOS ユーザー</h4>
+                <p>iTerm2 / Terminal.app で Alt+T thinking トグルが動作するように</p>
+            </div>
+            <div class="use-case">
+                <h4>🔌 MCP サーバー利用者</h4>
+                <p>10GB+ メモリリークの解消、接続エラーハンドリングの改善、ツールフェッチ失敗の可視化</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>バージョン:</strong> v2.1.131, v2.1.132</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
