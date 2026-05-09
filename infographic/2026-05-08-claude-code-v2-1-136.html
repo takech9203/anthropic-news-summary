@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.136 - MCP 接続安定性の大幅改善と 52 件のバグ修正</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Bug fix categories */
+        .fix-category {
+            margin-bottom: 20px;
+        }
+
+        .fix-category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--anthropic-cream);
+        }
+
+        .fix-category-header .icon {
+            font-size: 20px;
+        }
+
+        .fix-category-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .fix-category-header .count {
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 12px;
+        }
+
+        .fix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .fix-list li {
+            padding: 8px 0 8px 24px;
+            position: relative;
+            font-size: 14px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(212, 165, 116, 0.08);
+        }
+
+        .fix-list li:last-child {
+            border-bottom: none;
+        }
+
+        .fix-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            padding: 4px 0;
+            font-size: 14px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.136: MCP 接続安定性の大幅改善と 52 件のバグ修正</h1>
+                <p class="date">2026-05-08</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るリリース</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">52</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">動作変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">修正カテゴリ</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>MCP 接続安定性の大幅向上</h3>
+                        <p>/clear 後のサーバー消失、OAuth リフレッシュトークン並行処理問題、ツール結果表示問題を修正。複数リモート MCP サーバー利用者は日次再認証が不要に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>エンタープライズセキュリティ強化</h3>
+                        <p>settings.autoMode.hard_deny により、ユーザー意図に関わらず特定操作を無条件ブロック。組織セキュリティポリシーの厳格な適用が可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎨</div>
+                    <div class="key-point-content">
+                        <h3>UI/UX の大幅改善 (16 件)</h3>
+                        <p>CJK ターミナル表示修正、ダイアログの視覚的一貫性、カラー表示位置修正など、日常的な開発体験を向上</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>OTEL フィードバック調査の再有効化</h3>
+                        <p>CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL 環境変数で、OpenTelemetry 環境でのセッション品質サーベイを再有効化可能に</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📊 OTEL サーベイ再有効化</h3>
+                    <p>CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL 環境変数を設定することで、OpenTelemetry 経由でレスポンスをキャプチャしているエンタープライズ環境でセッション品質サーベイを再有効化できます</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ autoMode.hard_deny</h3>
+                    <p>自動モード分類ルールで、ユーザーの意図や許可例外に関わらず無条件でブロックする hard_deny ルールを追加。本番デプロイやデータベース削除など組織ポリシーで禁止された操作を確実にブロックします</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After: MCP -->
+        <section class="section">
+            <h2 class="section-title">Before / After: MCP 接続</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>/clear 実行後に MCP サーバーがサイレントに消失</li>
+                        <li>複数 MCP サーバーで日次再認証が必要</li>
+                        <li>OAuth トークン並行リフレッシュでトークン消失</li>
+                        <li>MCP ツール結果が不可視になる場合あり</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>/clear 後も MCP サーバー接続が維持される</li>
+                        <li>日次再認証が不要に</li>
+                        <li>リフレッシュ操作の直列化で安定動作</li>
+                        <li>コンテンツブロック付きツール結果が正常表示</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes by Category -->
+        <section class="section">
+            <h2 class="section-title">バグ修正カテゴリ別サマリー</h2>
+
+            <div class="fix-category">
+                <div class="fix-category-header">
+                    <span class="icon">🔌</span>
+                    <h3>MCP 関連</h3>
+                    <span class="count">4 件</span>
+                </div>
+                <ul class="fix-list">
+                    <li>/clear 後の MCP サーバー消失 (VS Code, JetBrains, Agent SDK)</li>
+                    <li>OAuth リフレッシュトークンの並行消失</li>
+                    <li>MCP ツール結果がコンテンツブロック付きで不可視</li>
+                    <li>/doctor の MCP スキーマエラー表示改善</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <div class="fix-category-header">
+                    <span class="icon">🔑</span>
+                    <h3>認証・セッション管理</h3>
+                    <span class="count">5 件</span>
+                </div>
+                <ul class="fix-list">
+                    <li>OAuth トークンローテーション時のログインループ</li>
+                    <li>アンダースコア含むパスでの --resume / --continue 失敗</li>
+                    <li>/clear &lt;name&gt; のセッションラベル</li>
+                    <li>CLAUDE_ENV_FILE 環境変数の鮮度管理</li>
+                    <li>/branch の複数行タイトル問題</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <div class="fix-category-header">
+                    <span class="icon">🎨</span>
+                    <h3>UI/UX</h3>
+                    <span class="count">16 件</span>
+                </div>
+                <ul class="fix-list">
+                    <li>スラッシュコマンドダイアログの視覚的一貫性</li>
+                    <li>Bash 出力カラー位置修正</li>
+                    <li>CJK ウェルカムバナーのカラムオーバーフロー</li>
+                    <li>マークダウンテーブルの描画残留</li>
+                    <li>キーボードショートカットヒントの反映</li>
+                    <li>その他 11 件の表示・操作修正</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <div class="fix-category-header">
+                    <span class="icon">🧩</span>
+                    <h3>プラグインシステム</h3>
+                    <span class="count">5 件</span>
+                </div>
+                <ul class="fix-list">
+                    <li>Stop/UserPromptSubmit フックのキャッシュ競合</li>
+                    <li>skills ディレクトリの隠蔽問題</li>
+                    <li>プラグインスラッグの大文字小文字マッチング</li>
+                    <li>スペース含むスラッシュコマンドの解決</li>
+                    <li>削除キーを d に統一 (r から変更)</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <div class="fix-category-header">
+                    <span class="icon">⌨️</span>
+                    <h3>入力・キーボード</h3>
+                    <span class="count">5 件</span>
+                </div>
+                <ul class="fix-list">
+                    <li>WSL2 画像ペースト PowerShell フォールバック対応</li>
+                    <li>Backspace/Ctrl+Backspace 入れ替わり</li>
+                    <li>貼り付けテキストのサイレントドロップ</li>
+                    <li>プロンプトサジェスチョンの Enter 自動送信</li>
+                    <li>入力途中のスラッシュコマンド補完</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <div class="fix-category-header">
+                    <span class="icon">📁</span>
+                    <h3>ファイルピッカー・Worktree・その他</h3>
+                    <span class="count">17 件</span>
+                </div>
+                <ul class="fix-list">
+                    <li>@ ファイルピッカー: セッション中作成ファイルの検出</li>
+                    <li>@ ファイルピッカー: 100 エントリ超ディレクトリ対応</li>
+                    <li>Worktree 退出ダイアログの警告先修正</li>
+                    <li>拡張思考リダクトブロックの 400 エラー</li>
+                    <li>その他 13 件の安定性修正</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>MCP サーバー消失問題の原因</h3>
+                        <p>/clear 実行時にセッション状態がリセットされる際、MCP サーバーの接続情報が再初期化されないまま破棄されていた。修正後は /clear 後のセッション再構築時に .mcp.json、プラグイン、コネクタの設定を再ロード</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔐</div>
+                    <div class="key-point-content">
+                        <h3>OAuth 並行リフレッシュの直列化</h3>
+                        <p>複数 MCP サーバーのトークン有効期限が同時に到来した際、最初のリフレッシュ成功でリフレッシュトークン自体が無効化され後続が失敗。リフレッシュ操作を直列化し単一のトークンローテーションを共有する仕組みを導入</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>拡張思考リダクトブロック対応</h3>
+                        <p>ツールコール直後にリダクトされた思考ブロックが出力された場合、メッセージ構造が API スキーマに合致せず 400 エラー。リダクトブロックの位置を適切にハンドリングし API リクエスト構造を正規化</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ: 修正カテゴリ全体像</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph NewFeatures["🆕 新機能"]
+        direction LR
+        OTEL["📊 OTEL Survey<br/>エンタープライズ向け"]
+        HardDeny["🛡️ hard_deny<br/>無条件ブロック"]
+        OTEL ~~~ HardDeny
+    end
+
+    subgraph MCPFixes["🔌 MCP 修正"]
+        direction LR
+        ClearFix["💾 /clear 後の<br/>サーバー維持"]
+        OAuthFix["🔑 OAuth<br/>並行リフレッシュ"]
+        ResultFix["📋 ツール結果<br/>表示修正"]
+        ClearFix ~~~ OAuthFix ~~~ ResultFix
+    end
+
+    subgraph UIFixes["🎨 UI/UX 修正"]
+        direction LR
+        CJK["🇯🇵 CJK<br/>表示修正"]
+        Dialog["📐 ダイアログ<br/>一貫性"]
+        Input["⌨️ 入力<br/>操作修正"]
+        CJK ~~~ Dialog ~~~ Input
+    end
+
+    subgraph PluginFixes["🧩 プラグイン修正"]
+        direction LR
+        Hooks["🪝 フック<br/>安定性"]
+        Skills["📁 スキル<br/>ディレクトリ"]
+        Commands["⚡ コマンド<br/>解決"]
+        Hooks ~~~ Skills ~~~ Commands
+    end
+
+    NewFeatures --> MCPFixes
+    MCPFixes --> UIFixes
+    UIFixes --> PluginFixes
+
+    classDef newFeature fill:#E8F5E9,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef mcpFix fill:#E3F2FD,stroke:#42A5F5,stroke-width:2px,color:#333333
+    classDef uiFix fill:#FFF3E0,stroke:#FFA726,stroke-width:2px,color:#333333
+    classDef pluginFix fill:#F3E5F5,stroke:#AB47BC,stroke-width:2px,color:#333333
+
+    class NewFeatures newFeature
+    class MCPFixes mcpFix
+    class UIFixes uiFix
+    class PluginFixes pluginFix
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings.autoMode.hard_deny 設定例</span>
+                </div>
+                <pre><code class="language-json">{
+  "autoMode": {
+    "hard_deny": [
+      "production deploy without approval",
+      "force push to main branch",
+      "delete protected resources",
+      "modify authentication configuration"
+    ]
+  }
+}</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">OTEL フィードバック調査の有効化</span>
+                </div>
+                <pre><code class="language-bash"># エンタープライズ向け: OTEL フィードバック調査の有効化
+export CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL=1
+claude
+
+# バージョン確認
+claude --version
+# Expected: 2.1.136</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">影響を受けるユースケース</h2>
+            <div class="use-case">
+                <h4>🔌 MCP サーバー利用者</h4>
+                <p>/clear 後のサーバー消失修正、OAuth リフレッシュトークン消失修正により、複数のリモート MCP サーバーを安定して利用可能に。日次再認証が不要になり開発フローが中断されなくなります</p>
+            </div>
+            <div class="use-case">
+                <h4>🏢 エンタープライズ管理者</h4>
+                <p>hard_deny ルールにより、本番環境への直接デプロイやデータベース削除など、組織ポリシーで禁止された操作をユーザーの意図に関わらず確実にブロック可能に</p>
+            </div>
+            <div class="use-case">
+                <h4>🇯🇵 CJK ターミナルユーザー</h4>
+                <p>ウェルカムバナーのカラムオーバーフロー、「Jump to bottom」オーバーレイのカラーアーティファクト、折り返しテキストの先頭スペース問題が修正され、日本語環境での表示品質が向上</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連:</strong> <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">npm: @anthropic-ai/claude-code</a> | <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">GitHub リポジトリ</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

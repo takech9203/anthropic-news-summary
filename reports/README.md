@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-09](2026/2026-05-09-claude-code-v2-1-137.md) - Claude Code v2.1.137 リリース: Windows 向け VS Code 拡張機能のアクティベーション修正
+- [2026-05-08](2026/2026-05-08-claude-code-v2-1-136.md) - Claude Code v2.1.136 リリース: MCP 接続安定性の大幅改善と 52 件のバグ修正
 - [2026-05-07](2026/2026-05-07-claude-code-v2-1-133.md) - Claude Code v2.1.133 リリース: Worktree 設定の柔軟化とプロキシ/セッション修正
 - [2026-05-07](2026/2026-05-07-claude-code-v2-1-131-v2-1-132.md) - Claude Code v2.1.131 / v2.1.132 リリース: 安定性改善とバグ修正
 - [2026-05-06](2026/2026-05-06-managed-agents-multiagent-webhooks.md) - Claude Managed Agents -- マルチエージェントセッション、Outcomes、Webhooks がパブリックベータに昇格
