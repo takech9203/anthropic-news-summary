@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-11](2026/2026-05-11-claude-platform-on-aws.md) - Claude Platform on AWS の提供開始
+- [2026-05-11](2026/2026-05-11-claude-code-v2-1-139.md) - Claude Code v2.1.139 リリース: Agent View と /goal コマンドによるマルチターン自律実行の実現
 - [2026-05-09](2026/2026-05-09-claude-code-v2-1-138.md) - Claude Code v2.1.138 リリース: 内部修正
 - [2026-05-09](2026/2026-05-09-claude-code-v2-1-137.md) - Claude Code v2.1.137 リリース: Windows 向け VS Code 拡張機能のアクティベーション修正
 - [2026-05-08](2026/2026-05-08-claude-code-v2-1-136.md) - Claude Code v2.1.136 リリース: MCP 接続安定性の大幅改善と 52 件のバグ修正

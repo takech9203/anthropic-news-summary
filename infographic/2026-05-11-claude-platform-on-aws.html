@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Platform on AWS の提供開始 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212,165,116,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .header-content { position: relative; z-index: 1; }
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        .header .date { font-size: 14px; opacity: 0.8; }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212,165,116,0.1);
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points { display: grid; gap: 16px; }
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212,165,116,0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212,165,116,0.15);
+        }
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 600px) {
+            .comparison { grid-template-columns: 1fr; }
+        }
+        .comparison-card { padding: 24px; border-radius: 16px; }
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .comparison-card ul li {
+            padding: 4px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .comparison-card.before ul li::before { content: '✗'; position: absolute; left: 0; color: #DC2626; }
+        .comparison-card.after ul li::before { content: '✓'; position: absolute; left: 0; color: #059669; }
+
+        /* Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 16px;
+        }
+        .comparison-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 12px;
+        }
+        .comparison-table th:first-child { border-radius: 8px 0 0 0; }
+        .comparison-table th:last-child { border-radius: 0 8px 0 0; }
+        .comparison-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(212,165,116,0.15);
+            vertical-align: top;
+        }
+        .comparison-table tr:nth-child(even) { background: var(--anthropic-cream); }
+        .comparison-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+        .comparison-table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+        .highlight-col { background: rgba(212,165,116,0.1) !important; font-weight: 500; }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--anthropic-coral); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre { margin: 0; padding: 0; }
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212,165,116,0.2);
+            overflow-x: auto;
+        }
+        .mermaid { display: flex; justify-content: center; }
+
+        /* Setup Steps */
+        .setup-steps { display: grid; gap: 16px; }
+        .setup-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: var(--anthropic-coral);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .step-content h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+        .step-content p { font-size: 13px; color: var(--text-secondary); }
+
+        /* Warning box */
+        .warning-box {
+            background: #FFF7ED;
+            border: 2px solid #FB923C;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .warning-box .icon { font-size: 24px; flex-shrink: 0; }
+        .warning-box p { font-size: 14px; color: var(--text-secondary); }
+        .warning-box strong { color: var(--text-primary); }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .footer a:hover { text-decoration: underline; }
+        .footer ul { list-style: none; padding: 0; margin-top: 8px; }
+        .footer ul li { padding: 2px 0; }
+
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API / プラットフォーム</span>
+                <h1>☁️ Claude Platform on AWS の提供開始</h1>
+                <p class="date">📅 2026-05-11</p>
+            </div>
+        </header>
+
+        <!-- 概要 -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🏢</div>
+                    <div class="key-point-content">
+                        <h3>Anthropic 運用のインフラを AWS 経由で利用</h3>
+                        <p>Claude Platform on AWS は、Anthropic が推論スタックを運用しつつ、AWS IAM 認証と AWS Marketplace 課金でアクセスできる第 3 の統合オプションです。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>フルプラットフォーム体験を即日提供</h3>
+                        <p>Messages API、Files API、Message Batches API、Claude Managed Agents、Agent Skills、コード実行など、Anthropic プラットフォームの全機能にアクセス可能。ベータヘッダーも対応。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>AWS 認証・課金でシームレスに統合</h3>
+                        <p>SigV4 または API キー認証、IAM ベースのアクセス制御、AWS Marketplace 経由の課金に対応。既存の AWS 管理フローをそのまま活用できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>独立キャパシティと PrivateLink 対応</h3>
+                        <p>ファーストパーティ API とも Bedrock とも別のキャパシティプールで動作。AWS PrivateLink によるプライベートネットワーク接続にも対応。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before / After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>❌ Before: Bedrock のみ</h4>
+                    <ul>
+                        <li>AWS がインフラを運用・管理</li>
+                        <li>新機能は Bedrock リリース待ち</li>
+                        <li>ベータヘッダー非対応</li>
+                        <li>Files API / Managed Agents 利用不可</li>
+                        <li>Agent Skills 利用不可</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>✅ After: Platform on AWS</h4>
+                    <ul>
+                        <li>Anthropic が推論スタックを運用</li>
+                        <li>最新機能に通常即日アクセス</li>
+                        <li>ベータヘッダー完全対応</li>
+                        <li>Files API / Managed Agents 対応</li>
+                        <li>Agent Skills / コード実行対応</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 主な機能 -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📨 Messages API</h3>
+                    <p>Anthropic ファーストパーティと同一の <code>/v1/messages</code> エンドポイント。SDK の <code>AnthropicAWS</code> クライアントで接続。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📁 Files API</h3>
+                    <p>ファイルのアップロードと Messages API での参照。PDF、画像、テキストドキュメントの処理が可能。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 Message Batches API</h3>
+                    <p>大量メッセージの非同期バッチ処理。標準 API の 50% のコストで大規模処理を実行。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 Claude Managed Agents</h3>
+                    <p>完全マネージドなエージェントハーネス。セキュアなサンドボックス、ビルトインツール、SSE ストリーミング。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 Agent Skills</h3>
+                    <p>PowerPoint、Excel、Word、PDF 操作などのプリビルトスキル。カスタムスキルも API 経由でアップロード可能。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧪 ベータ機能アクセス</h3>
+                    <p><code>anthropic-beta</code> ヘッダーで最新ベータ機能を即日利用。Bedrock では非対応のベータ機能にもアクセス可能。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技術詳細: 比較表 -->
+        <section class="section">
+            <h2 class="section-title">AWS 上の 3 つの統合オプション比較</h2>
+            <div style="overflow-x: auto;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th class="highlight-col">Claude Platform on AWS</th>
+                            <th>Claude in Amazon Bedrock</th>
+                            <th>Bedrock レガシー</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>運用者</strong></td>
+                            <td class="highlight-col">🏢 Anthropic</td>
+                            <td>☁️ AWS</td>
+                            <td>☁️ AWS</td>
+                        </tr>
+                        <tr>
+                            <td><strong>API</strong></td>
+                            <td class="highlight-col"><code>/v1/messages</code></td>
+                            <td><code>/anthropic/v1/messages</code></td>
+                            <td>Converse / InvokeModel</td>
+                        </tr>
+                        <tr>
+                            <td><strong>機能提供速度</strong></td>
+                            <td class="highlight-col">⚡ 通常即日</td>
+                            <td>Bedrock スケジュール</td>
+                            <td>Bedrock スケジュール</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ベータヘッダー</strong></td>
+                            <td class="highlight-col">✅ 対応</td>
+                            <td>❌ 非対応</td>
+                            <td>❌ 非対応</td>
+                        </tr>
+                        <tr>
+                            <td><strong>認証</strong></td>
+                            <td class="highlight-col">IAM / SigV4 / API キー</td>
+                            <td>IAM / SigV4</td>
+                            <td>IAM / SigV4 / ベアラー</td>
+                        </tr>
+                        <tr>
+                            <td><strong>課金</strong></td>
+                            <td class="highlight-col">AWS Marketplace</td>
+                            <td>AWS ネイティブ</td>
+                            <td>AWS ネイティブ</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SDK クライアント</strong></td>
+                            <td class="highlight-col"><code>AnthropicAWS</code></td>
+                            <td><code>AnthropicBedrockMantle</code></td>
+                            <td><code>AnthropicBedrock</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>データプロセッサ</strong></td>
+                            <td class="highlight-col">Anthropic</td>
+                            <td>AWS</td>
+                            <td>AWS</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- セットアップ -->
+        <section class="section">
+            <h2 class="section-title">セットアップ手順</h2>
+            <div class="setup-steps">
+                <div class="setup-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>AWS Console でサインアップ</h4>
+                        <p>Claude Platform on AWS サービスページから利用規約に同意し、AWS Marketplace サブスクリプションを開始</p>
+                    </div>
+                </div>
+                <div class="setup-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Anthropic 組織セットアップ</h4>
+                        <p>AWS アカウントに紐づく新しい Anthropic 組織を構成。既存のプライベートオファーがある場合は自動検出</p>
+                    </div>
+                </div>
+                <div class="setup-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>ワークスペース ID を記録</h4>
+                        <p>AWS Console または Claude Console でワークスペース ID を確認。リージョン、IAM スコープの設定</p>
+                    </div>
+                </div>
+                <div class="setup-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Claude Console にサインイン</h4>
+                        <p>AWS IAM 経由のフェデレーテッドアクセスで Claude Console にログイン。<code>aws-external-anthropic:AssumeConsole</code> 権限が必要</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- アーキテクチャ図 -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Developer["👤 開発者"]
+        App["📱 アプリケーション"]
+    end
+
+    subgraph SDKLayer["📦 Anthropic SDK"]
+        direction LR
+        AWSclient["🆕 AnthropicAWS<br/>Claude Platform on AWS"]
+        BedrockMantle["🔧 AnthropicBedrockMantle<br/>Claude in Amazon Bedrock"]
+        BedrockLegacy["📦 AnthropicBedrock<br/>Bedrock レガシー"]
+        AWSclient ~~~ BedrockMantle ~~~ BedrockLegacy
+    end
+
+    subgraph AWSInfra["☁️ AWS"]
+        subgraph Auth["🔐 認証・課金"]
+            IAM["🔑 IAM / SigV4"]
+            Marketplace["💳 AWS Marketplace"]
+        end
+
+        subgraph BedrockPath["🔶 Amazon Bedrock"]
+            BedrockAPI["📡 /anthropic/v1/messages<br/>AWS 運用"]
+            BedrockModels["🤖 Claude モデル<br/>AWS マネージド"]
+        end
+    end
+
+    subgraph AnthropicInfra["🏢 Anthropic インフラ"]
+        subgraph Platform["🟢 Claude Platform on AWS"]
+            MessagesAPI["📨 /v1/messages<br/>Anthropic 運用"]
+            FilesAPI["📁 Files API"]
+            BatchAPI["📋 Message Batches API"]
+            Agents["🤖 Managed Agents"]
+        end
+
+        subgraph Models["⭐ Claude モデル"]
+            Claude["🧠 Opus / Sonnet / Haiku<br/>Anthropic マネージド"]
+        end
+    end
+
+    App --> SDKLayer
+    AWSclient --> IAM
+    IAM --> MessagesAPI
+    Marketplace -.-> Platform
+    BedrockMantle --> BedrockAPI
+    BedrockLegacy --> BedrockAPI
+    BedrockAPI --> BedrockModels
+    MessagesAPI --> Claude
+    FilesAPI --> Claude
+    BatchAPI --> Claude
+    Agents --> Claude
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef sdk fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef auth fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef newapi fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef bedrock fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef model fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef anthropic fill:none,stroke:#7B61FF,stroke-width:2px,color:#666666
+
+    class Developer platform
+    class App user
+    class SDKLayer platform
+    class AWSclient,BedrockMantle,BedrockLegacy sdk
+    class AWSInfra platform
+    class Auth platform
+    class IAM,Marketplace auth
+    class BedrockPath platform
+    class BedrockAPI,BedrockModels bedrock
+    class AnthropicInfra anthropic
+    class Platform platform
+    class MessagesAPI,FilesAPI,BatchAPI,Agents newapi
+    class Models platform
+    class Claude model
+                </pre>
+            </div>
+        </section>
+
+        <!-- コードサンプル -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">基本的な Messages API リクエスト</span>
+                </div>
+                <pre><code class="language-python">from anthropic import AnthropicAWS
+
+# Claude Platform on AWS クライアント (ベータ)
+client = AnthropicAWS(
+    aws_region="us-east-1",
+    # AWS 認証情報は環境変数または IAM ロールから自動取得
+)
+
+# Messages API の呼び出し
+message = client.messages.create(
+    model="claude-opus-4-6-20250410",
+    max_tokens=1024,
+    messages=[
+        {"role": "user", "content": "Hello, Claude on AWS!"}
+    ],
+)
+print(message.content[0].text)</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">ベータ機能 + Files API の利用</span>
+                </div>
+                <pre><code class="language-python">from anthropic import AnthropicAWS
+
+client = AnthropicAWS(aws_region="us-east-1")
+
+# ファイルのアップロード
+with open("document.pdf", "rb") as f:
+    file = client.files.create(file=f, purpose="messages")
+
+# ファイルを参照してメッセージ送信
+message = client.messages.create(
+    model="claude-opus-4-6-20250410",
+    max_tokens=2048,
+    messages=[{
+        "role": "user",
+        "content": [
+            {"type": "file", "source": {"type": "file", "file_id": file.id}},
+            {"type": "text", "text": "Summarize this document."},
+        ],
+    }],
+)
+print(message.content[0].text)</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">curl での直接リクエスト</span>
+                </div>
+                <pre><code class="language-bash">curl https://api.anthropic.com/v1/messages \
+  --aws-sigv4 "aws:amz:us-east-1:anthropic" \
+  --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
+  -H "x-amz-security-token: $AWS_SESSION_TOKEN" \
+  -H "content-type: application/json" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-opus-4-6-20250410",
+    "max_tokens": 1024,
+    "messages": [
+      {"role": "user", "content": "Hello, Claude Platform on AWS!"}
+    ]
+  }'</code></pre>
+            </div>
+        </section>
+
+        <!-- データとセキュリティ -->
+        <section class="section">
+            <h2 class="section-title">データ処理とセキュリティ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>データプロセッサ: Anthropic</h3>
+                        <p>推論の入出力データは Anthropic がデータプロセッサとして処理。AWS は課金・ID メタデータのみを処理。Anthropic のデータ使用規約が適用されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-content">
+                        <h3>データレジデンシの注意点</h3>
+                        <p>データは AWS 内に留まるとは限りません。推論は Anthropic のプライマリクラウドにルーティングされる場合があり、サブサービスは予告なく変更される可能性があります。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔐</div>
+                    <div class="key-point-content">
+                        <h3>AWS PrivateLink 対応</h3>
+                        <p>VPC からプライベートネットワーク経由で Claude Platform on AWS エンドポイントに接続可能。パブリックインターネットを経由しないセキュアな通信が実現します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <div class="icon">⚠️</div>
+                <div>
+                    <p><strong>Bedrock を選択すべきケース:</strong> FedRAMP High、IL4、IL5、HIPAA など規制産業で AWS を唯一のデータプロセッサとする必要がある場合は、引き続き Amazon Bedrock を使用してください。Bedrock は全て AWS 管理インフラで動作します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ユースケース -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🏢 エンタープライズ: AWS 課金でフル機能を活用</h4>
+                <p>AWS Marketplace を通じた一元課金で、Files API、Message Batches API、Claude Managed Agents、Agent Skills をフル活用。既存の AWS アカウント管理フローをそのまま維持しながら、Anthropic プラットフォームの全機能にアクセスできます。</p>
+            </div>
+            <div class="use-case">
+                <h4>⚡ 先進的開発チーム: ベータ機能への即日アクセス</h4>
+                <p><code>anthropic-beta</code> ヘッダーで最新機能を即日利用可能。Bedrock では提供スケジュールが遅れる機能も、Claude Platform on AWS なら通常即日アクセスできるため、競争優位性を確保できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 エージェント構築: Managed Agents + Agent Skills</h4>
+                <p>これまで Bedrock では利用できなかった Claude Managed Agents と Agent Skills が利用可能に。サンドボックス化されたコード実行環境でエージェントを安全に運用し、PowerPoint、Excel、PDF 操作なども実行できます。</p>
+            </div>
+        </section>
+
+        <!-- 移行ガイド -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📡 ファーストパーティ API からの移行</h3>
+                    <p>クライアントクラスを <code>Anthropic</code> → <code>AnthropicAWS</code> に変更。認証を AWS 認証に切り替え。リクエストボディ・レスポンス処理は変更不要。全機能がそのまま利用可能。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>☁️ Amazon Bedrock からの移行</h3>
+                    <p>クライアントを <code>AnthropicBedrock</code> / <code>AnthropicBedrockMantle</code> → <code>AnthropicAWS</code> に変更。ベータヘッダー利用が可能に。Files API、Batches API、Managed Agents が新たに利用可能。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <ul>
+                <li>📄 <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude API Release Notes</a></li>
+                <li>📘 <a href="https://platform.claude.com/docs/en/build-with-claude/claude-platform-on-aws" target="_blank" rel="noopener noreferrer">Claude Platform on AWS ドキュメント</a></li>
+                <li>📗 <a href="https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock" target="_blank" rel="noopener noreferrer">Claude in Amazon Bedrock ドキュメント</a></li>
+                <li>📦 <a href="https://platform.claude.com/docs/en/api/client-sdks" target="_blank" rel="noopener noreferrer">Anthropic Client SDK</a></li>
+            </ul>
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

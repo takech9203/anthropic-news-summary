@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.139 - Agent View と /goal コマンド - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212,165,116,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .header-content { position: relative; z-index: 1; }
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .header h1 {
+            font-size: 1.85rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        .header .date { font-size: 14px; opacity: 0.8; }
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212,165,116,0.1);
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--anthropic-coral); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        /* Key Points */
+        .key-points { display: grid; gap: 16px; }
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212,165,116,0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212,165,116,0.15);
+        }
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+        .feature-card.headline {
+            border-color: var(--anthropic-coral);
+            background: linear-gradient(135deg, #FFF8F0 0%, #F5EDE4 100%);
+        }
+        .feature-card code {
+            background: rgba(212,165,116,0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* Bug fix categories */
+        .bugfix-category {
+            margin-bottom: 20px;
+        }
+        .bugfix-category h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .bugfix-list {
+            list-style: none;
+            padding: 0;
+        }
+        .bugfix-list li {
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: var(--anthropic-cream);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .bugfix-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+        .badge-security { background: #FEE2E2; color: #DC2626; }
+        .badge-mcp { background: #E0E7FF; color: #4338CA; }
+        .badge-ui { background: #D1FAE5; color: #059669; }
+        .badge-other { background: #FEF3C7; color: #D97706; }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre { margin: 0; padding: 0; }
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Improvement list */
+        .improvement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        .improvement-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 13px;
+        }
+        .improvement-item .icon { font-size: 18px; flex-shrink: 0; }
+        .improvement-item p { color: var(--text-secondary); line-height: 1.5; }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212,165,116,0.2);
+            overflow-x: auto;
+        }
+        .mermaid { display: flex; justify-content: center; }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Migration note */
+        .migration-note {
+            background: #FFF7ED;
+            border: 2px solid #FB923C;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 16px;
+        }
+        .migration-note h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        .migration-note ul {
+            list-style: none;
+            padding: 0;
+        }
+        .migration-note ul li {
+            padding: 6px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding-left: 20px;
+            position: relative;
+        }
+        .migration-note ul li::before {
+            content: '⚠';
+            position: absolute;
+            left: 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .footer a:hover { text-decoration: underline; }
+        .footer ul { list-style: none; padding: 0; margin-top: 8px; }
+        .footer ul li { padding: 2px 0; }
+
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid, .improvement-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code アップデート</span>
+                <h1>🖥️ Claude Code v2.1.139: Agent View と /goal コマンドによるマルチターン自律実行</h1>
+                <p class="date">📅 2026-05-11</p>
+                <span class="version-badge">v2.1.139 | npm: @anthropic-ai/claude-code</span>
+            </div>
+        </header>
+
+        <!-- 数字で見る -->
+        <section class="section">
+            <h2 class="section-title">リリースの規模</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">16</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">30+</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">セキュリティ修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 概要 -->
+        <section class="section">
+            <h2 class="section-title">ハイライト</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🎯</div>
+                    <div class="key-point-content">
+                        <h3>Agent View: 全セッションの一元管理</h3>
+                        <p>Research Preview として導入。<code>claude agents</code> で全 Claude Code セッション (実行中・入力待ち・完了) を一覧表示。複数の長時間タスクを並行管理するダッシュボード。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏁</div>
+                    <div class="key-point-content">
+                        <h3>/goal コマンド: 完了条件による自律実行</h3>
+                        <p>完了条件を宣言すると、Claude が条件達成まで複数ターンにわたり自律的に作業を継続。インタラクティブ、<code>-p</code> フラグ、Remote Control の全モードで動作。リアルタイムでオーバーレイ表示。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🪝</div>
+                    <div class="key-point-content">
+                        <h3>Hook システムの強化</h3>
+                        <p><code>args: string[]</code> によるシェルレス実行と <code>continueOnBlock</code> による柔軟なブロック制御。ガードレール付き自律実行の基盤が強化されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔗</div>
+                    <div class="key-point-content">
+                        <h3>サブエージェントのトレーサビリティ</h3>
+                        <p>API リクエストに <code>x-claude-code-agent-id</code> / <code>x-claude-code-parent-agent-id</code> ヘッダーを追加。OTEL スパンにもエージェント ID 属性を含み、マルチエージェント構成のデバッグが容易に。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 新機能 -->
+        <section class="section">
+            <h2 class="section-title">新機能 - 7 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card headline">
+                    <h3>🎯 Agent View</h3>
+                    <p>全セッションを単一リストで管理するダッシュボード。Running / Blocked / Done のステータスを一覧表示。<code>claude agents</code> で起動。</p>
+                </div>
+                <div class="feature-card headline">
+                    <h3>🏁 /goal コマンド</h3>
+                    <p>完了条件を設定して複数ターンの自律実行。経過時間・ターン数・トークン数をオーバーレイでリアルタイム表示。Ctrl+C で中断可能。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🖱️ /scroll-speed</h3>
+                    <p>マウスホイールのスクロール速度をライブプレビュー付きで調整。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 plugin details</h3>
+                    <p><code>claude plugin details &lt;name&gt;</code> でコンポーネント構成と推定トークンコストを表示。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📖 Transcript ナビゲーション</h3>
+                    <p><code>?</code> でショートカット表示、<code>{</code>/<code>}</code> でプロンプト間ジャンプ、<code>v</code> でパネル切替。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🪝 Hook args フィールド</h3>
+                    <p>exec 形式 (<code>args: string[]</code>) でシェルを経由せずコマンド実行。パスのクォートが不要に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 continueOnBlock</h3>
+                    <p><code>PostToolUse</code> フックに設定すると、拒否理由を Claude にフィードバックしてターンを継続。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- /goal コマンドのシーケンス図 -->
+        <section class="section">
+            <h2 class="section-title">/goal コマンドの動作フロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant U as 👤 User
+    participant CC as 🖥️ Claude Code
+    participant C as 🤖 Claude
+    participant T as 🔧 Tools
+
+    U->>CC: /goal "全テストが通ること"
+    CC->>C: 完了条件を設定して作業開始
+    loop 条件未達の間
+        C->>T: ツール実行
+        T-->>C: 結果
+        C->>C: 完了条件を評価
+        Note over CC: オーバーレイ:<br/>経過時間/ターン数/トークン数
+    end
+    C-->>CC: 完了条件達成
+    CC-->>U: 結果報告
+                </pre>
+            </div>
+        </section>
+
+        <!-- 改善 -->
+        <section class="section">
+            <h2 class="section-title">改善 - 16 件</h2>
+            <div class="improvement-grid">
+                <div class="improvement-item">
+                    <div class="icon">🔌</div>
+                    <p>MCP stdio サーバーへの <code>CLAUDE_PROJECT_DIR</code> 環境変数の提供</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">🗜️</div>
+                    <p>Compaction プロンプトがユーザーの重要な指示を保持するよう最適化</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">🔄</div>
+                    <p><code>/mcp</code> Reconnect が <code>.mcp.json</code> 編集を再起動なしで反映</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">📏</div>
+                    <p><code>/context all</code> のトークン見積もりがトークナイザーを考慮した正確な値に</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">📦</div>
+                    <p><code>plugin install</code> のマーケットプレイス自動リフレッシュ・リトライ追加</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">🏷️</div>
+                    <p><code>/plugin</code> 詳細にフックイベント名と MCP サーバー名を表示</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">🔗</div>
+                    <p>サブエージェントの API ヘッダーに agent ID を追加、OTEL 対応</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">🌐</div>
+                    <p>リモート MCP サーバーの再接続リトライを全ユーザーに有効化</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">🔍</div>
+                    <p><code>/context</code> にプラグインソースのスキル名を表示</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">🔐</div>
+                    <p>API キー設定時に Remote Control / 通知設定を無効化</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">📋</div>
+                    <p><code>/resume</code> フィルターにプロジェクト・ブランチ名を表示</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">📐</div>
+                    <p>フッターインジケーターのレイアウト改善</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">📑</div>
+                    <p><code>/agents</code> をタブレイアウトに刷新</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">🔃</div>
+                    <p><code>/reload-plugins</code> でスキルを再起動なしで反映</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">⌨️</div>
+                    <p>Vim モードの各種操作改善</p>
+                </div>
+                <div class="improvement-item">
+                    <div class="icon">✅</div>
+                    <p>Accept Edits で安全な env 変数付きコマンドを自動承認</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- バグ修正 -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 - 30 件以上</h2>
+
+            <div class="bugfix-category">
+                <h3>🛡️ セキュリティ / 権限 - 7 件</h3>
+                <ul class="bugfix-list">
+                    <li><span class="bugfix-badge badge-security">重要</span>認証デッドロックの修正: 期限切れ資格情報 + <code>forceRemoteSettingsRefresh</code> で回復不能になる問題</li>
+                    <li><span class="bugfix-badge badge-security">重要</span><code>--dangerously-skip-permissions</code> が accept-edits モードにサイレントダウングレードされる問題</li>
+                    <li><span class="bugfix-badge badge-security">修正</span><code>autoAllowBashIfSandboxed</code> が <code>$VAR</code> / <code>$(cmd)</code> 含むコマンドを自動承認しない問題</li>
+                    <li><span class="bugfix-badge badge-security">修正</span>Bash ツールの権限バイパス、複合コマンド、<code>/dev/tcp</code> リダイレクト等の修正</li>
+                    <li><span class="bugfix-badge badge-security">修正</span><code>Skill(name *)</code> ワイルドカードがプレフィックスマッチとして正しく動作</li>
+                    <li><span class="bugfix-badge badge-security">修正</span>管理者が削除した許可ルールがセッション中に残留する問題</li>
+                    <li><span class="bugfix-badge badge-security">修正</span><code>permissions.additionalDirectories</code> 変更のセッション中即時反映</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>🔌 MCP / プラグイン - 2 件</h3>
+                <ul class="bugfix-list">
+                    <li><span class="bugfix-badge badge-mcp">修正</span>HTTP/SSE MCP サーバーのメモリリーク修正 (SSE フレームあたり 16 MB キャップ導入)</li>
+                    <li><span class="bugfix-badge badge-mcp">修正</span>切断された MCP サーバーのリソースが <code>@server:</code> オートコンプリートに残留</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>🎨 UI / UX - 10 件</h3>
+                <ul class="bugfix-list">
+                    <li><span class="bugfix-badge badge-ui">修正</span>フックがターミナルに書き込んでプロンプトが破損する問題 (ターミナルアクセス無効化)</li>
+                    <li><span class="bugfix-badge badge-ui">修正</span>レスポンス完了後 5 分のストリームアイドルタイムアウト誤検知</li>
+                    <li><span class="bugfix-badge badge-ui">修正</span>複数画像の貼り付け/ドロップで最後の 1 枚のみ挿入される問題</li>
+                    <li><span class="bugfix-badge badge-ui">修正</span>ダークテーマでハイパーリンクが読みにくいダークネイビー色になる問題</li>
+                    <li><span class="bugfix-badge badge-ui">修正</span>Cursor / VS Code 1.92-1.104 でのマウスホイールスクロール速度</li>
+                    <li><span class="bugfix-badge badge-ui">修正</span>Windows Terminal / VS Code でバックグラウンドセッション接続時のスクロール</li>
+                    <li><span class="bugfix-badge badge-ui">修正</span>xterm / VS Code ターミナルで大文字が小文字に変換される問題</li>
+                    <li><span class="bugfix-badge badge-ui">修正</span>macOS テキスト置換でトリガーワードが削除される問題</li>
+                    <li><span class="bugfix-badge badge-ui">修正</span>シンボリックリンクされた <code>settings.json</code> の変更検知</li>
+                    <li><span class="bugfix-badge badge-ui">新機能</span>[VS Code] Cmd/Ctrl+Shift+T で閉じたセッションタブを復元</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>🔧 その他 - 3 件</h3>
+                <ul class="bugfix-list">
+                    <li><span class="bugfix-badge badge-other">修正</span>バックグラウンドサブエージェントのエラー時に部分進捗が親に報告されない問題</li>
+                    <li><span class="bugfix-badge badge-other">修正</span>カーソル点滅、CJK/絵文字テキスト、プログレスバー等の各種 UI 修正</li>
+                    <li><span class="bugfix-badge badge-other">修正</span>10 以上の MCP サーバー設定時にキャッシュディレクトリ書き込み不可でサイレント終了</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- コードサンプル -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Agent View の起動</span>
+                </div>
+                <pre><code class="language-bash"># Agent View の起動 - 全セッションを一覧表示
+claude agents</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/goal コマンドの使用例</span>
+                </div>
+                <pre><code class="language-bash"># インタラクティブモードで完了条件を設定
+claude
+> /goal すべてのテストが通り、リンターエラーがゼロになること
+
+# -p フラグとの組み合わせ (CI/CD 向け)
+claude -p "このプロジェクトのテストを全て通してください" \
+  --goal "全テストが通り、カバレッジが80%以上であること"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">Hook args フィールド + continueOnBlock</span>
+                </div>
+                <pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "args": ["python3", "/path/to/lint_check.py", "$CLAUDE_FILE_PATH"],
+        "continueOnBlock": true
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">MCP 設定での CLAUDE_PROJECT_DIR 活用</span>
+                </div>
+                <pre><code class="language-json">{
+  "mcpServers": {
+    "my-server": {
+      "command": "${CLAUDE_PROJECT_DIR}/tools/my-mcp-server",
+      "args": ["--config", "${CLAUDE_PROJECT_DIR}/.config/mcp.json"]
+    }
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- アーキテクチャ図 -->
+        <section class="section">
+            <h2 class="section-title">リリース全体像</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph AgentView["🎯 Agent View - セッション管理"]
+        direction LR
+        Running["🟢 Running<br/>実行中"]
+        Blocked["🟡 Blocked<br/>入力待ち"]
+        Done["✅ Done<br/>完了"]
+        Running ~~~ Blocked ~~~ Done
+    end
+
+    subgraph GoalCommand["🏁 /goal コマンド - 自律実行"]
+        direction LR
+        SetGoal["📋 完了条件<br/>設定"]
+        Execute["⚡ 自律的<br/>ターン実行"]
+        Evaluate["🔍 条件<br/>評価"]
+        SetGoal ~~~ Execute ~~~ Evaluate
+    end
+
+    subgraph HookEnhancements["🪝 Hook 強化"]
+        direction LR
+        ArgsField["📝 args フィールド<br/>シェルレス実行"]
+        ContinueOnBlock["🔄 continueOnBlock<br/>柔軟なブロック制御"]
+        ArgsField ~~~ ContinueOnBlock
+    end
+
+    subgraph Improvements["📈 改善"]
+        direction LR
+        MCPEnv["🔌 MCP<br/>PROJECT_DIR"]
+        Compaction["🗜️ Compaction<br/>指示保持"]
+        SubAgent["🔗 サブエージェント<br/>トレーサビリティ"]
+        MCPEnv ~~~ Compaction ~~~ SubAgent
+    end
+
+    subgraph BugFixes["🐛 バグ修正"]
+        direction LR
+        Security["🛡️ セキュリティ<br/>権限 7 件"]
+        UIUX["🎨 UI/UX<br/>10 件"]
+        Other["🔧 MCP/その他<br/>5 件"]
+        Security ~~~ UIUX ~~~ Other
+    end
+
+    AgentView --> GoalCommand
+    GoalCommand --> HookEnhancements
+    HookEnhancements --> Improvements
+    Improvements --> BugFixes
+
+    classDef headline fill:#E8F5E9,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef hook fill:#E3F2FD,stroke:#42A5F5,stroke-width:2px,color:#333333
+    classDef improvement fill:#FFF3E0,stroke:#FFA726,stroke-width:2px,color:#333333
+    classDef bugfix fill:#FFEBEE,stroke:#EF5350,stroke-width:2px,color:#333333
+
+    class AgentView,GoalCommand headline
+    class HookEnhancements hook
+    class Improvements improvement
+    class BugFixes bugfix
+                </pre>
+            </div>
+        </section>
+
+        <!-- ユースケース -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🤖 マルチセッション並行管理</h4>
+                <p>Agent View で複数のタスクを並行して走らせ、各セッションの進捗を一目で把握。入力待ちのセッションにはワンクリックで応答し、完了したセッションの結果をすぐに確認できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>⚙️ CI/CD パイプラインでの自律タスク</h4>
+                <p><code>/goal</code> と <code>-p</code> フラグの組み合わせで、「全テストが通り、カバレッジ 80% 以上」のような完了条件を宣言的に指定。Claude が自律的にコードを修正し、条件達成まで作業を継続します。</p>
+            </div>
+            <div class="use-case">
+                <h4>🛡️ ガードレール付き自律実行</h4>
+                <p>Hook の <code>continueOnBlock</code> を活用して、セキュリティポリシー違反時にブロックせずフィードバック。Claude が代替アプローチを自動で試行し、ポリシーに準拠したコードを生成します。</p>
+            </div>
+        </section>
+
+        <!-- 動作変更の注意 -->
+        <section class="section">
+            <h2 class="section-title">動作変更の注意事項</h2>
+            <div class="migration-note">
+                <h4>⚠️ アップデート時に確認すべき点</h4>
+                <ul>
+                    <li><code>ANTHROPIC_API_KEY</code> 等が設定されていると、Claude.ai ログインがあっても Remote Control / <code>/schedule</code> / 通知が無効化されます</li>
+                    <li>フックはターミナルアクセスなしで実行されます。ターミナルに出力していたフックはファイル/ログへの書き込みに変更が必要です</li>
+                    <li>既存の <code>command</code> フィールドは動作しますが、パスにスペース/特殊文字がある場合は <code>args</code> フィールドへの移行を推奨します</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- アップデート方法 -->
+        <section class="section">
+            <h2 class="section-title">アップデート方法</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">最新バージョンへの更新</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# バージョン確認
+claude --version
+
+# Agent View を試す
+claude agents</code></pre>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <ul>
+                <li>📄 <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></li>
+                <li>🎯 <a href="https://code.claude.com/docs/en/agent-view" target="_blank" rel="noopener noreferrer">Agent View ドキュメント</a></li>
+                <li>📦 <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">npm: @anthropic-ai/claude-code</a></li>
+                <li>🐙 <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+            </ul>
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
