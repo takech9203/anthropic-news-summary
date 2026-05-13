@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast mode が Claude Opus 4.7 をサポート - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            padding: 6px 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code {
+            background: rgba(26, 26, 46, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Limitations */
+        .limitations-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .limitations-list li {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: #FFF3E0;
+            border-left: 4px solid #FF9800;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 12px;
+        }
+
+        .footer ul li {
+            margin-bottom: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API UPDATE</span>
+                <h1>Fast mode が Claude Opus 4.7 をサポート</h1>
+                <p class="date">2026-05-12</p>
+            </div>
+        </header>
+
+        <!-- 概要 -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x26A1;</div>
+                    <div class="key-point-content">
+                        <h3>Fast mode が Opus 4.7 に対応</h3>
+                        <p>Research preview として提供されていた Fast mode が、最新の Claude Opus 4.7 モデルをサポート</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F527;</div>
+                    <div class="key-point-content">
+                        <h3>有効化方法</h3>
+                        <p><code>speed: "fast"</code> パラメータと <code>fast-mode-2026-02-01</code> ベータヘッダーで有効化</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F680;</div>
+                    <div class="key-point-content">
+                        <h3>最大 2.5 倍の高速化</h3>
+                        <p>出力トークン生成速度 (OTPS) が最大 2.5 倍に向上。同一モデルウェイトを使用</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4B0;</div>
+                    <div class="key-point-content">
+                        <h3>料金体系</h3>
+                        <p>標準 Opus の 6 倍の料金: $30/MTok 入力、$150/MTok 出力。キャッシュやデータレジデンシーの乗数と併用可能</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4C5;</div>
+                    <div class="key-point-content">
+                        <h3>段階的な拡張</h3>
+                        <p>2026 年 2 月に Opus 4.6 向けに初リリース。今回 Opus 4.7 にサポートを拡張</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>&#x1F4CC; Fast mode は Opus 4.6 のみ対応</li>
+                        <li>&#x1F4CC; 単一モデルでの提供</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>&#x2705; Opus 4.6 + Opus 4.7 の両方に対応</li>
+                        <li>&#x2705; 最新モデルで高速推論が可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 統計情報 -->
+        <section class="section">
+            <h2 class="section-title">統計情報</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">2.5x</div>
+                    <div class="stat-label">出力トークン生成速度</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$30</div>
+                    <div class="stat-label">入力 /MTok</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$150</div>
+                    <div class="stat-label">出力 /MTok</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6x</div>
+                    <div class="stat-label">標準料金比</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 主な機能 -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x1F3CE;&#xFE0F; speed パラメータ</h3>
+                    <p>Messages API に <code>speed: "fast"</code> を指定して Fast mode を有効化。シンプルなインターフェースで高速推論にアクセス</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4E6; ベータヘッダー</h3>
+                    <p><code>fast-mode-2026-02-01</code> をベータヘッダーに含めることで機能を有効化。SDK の betas パラメータで指定</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4CA; 専用レート制限</h3>
+                    <p>Fast mode 専用のレート制限が設定。標準モードとは独立して管理。レスポンスヘッダーで確認可能</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4AC; 速度フィールド</h3>
+                    <p>レスポンスの <code>usage.speed</code> フィールドで、実際に Fast mode が適用されたか確認可能</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技術詳細/アーキテクチャ -->
+        <section class="section">
+            <h2 class="section-title">技術詳細 / アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Client["&#x1F464; クライアントアプリケーション"]
+        App["&#x1F4F1; アプリケーション"]
+        SDK["&#x1F527; Anthropic SDK"]
+    end
+
+    subgraph API["&#x1F50C; Messages API"]
+        Request["&#x1F4E8; リクエスト処理&lt;br/&gt;speed: fast&lt;br/&gt;beta: fast-mode-2026-02-01"]
+        Router["&#x1F500; ルーティング"]
+    end
+
+    subgraph Inference["&#x26A1; Fast 推論基盤"]
+        FastConfig["&#x1F680; Fast mode 設定&lt;br/&gt;最大 2.5x OTPS"]
+        Opus47["&#x1F916; Claude Opus 4.7"]
+    end
+
+    subgraph Response["&#x1F4E4; レスポンス"]
+        Usage["&#x1F4CA; usage.speed: fast"]
+        Output["&#x1F4AC; 生成テキスト"]
+    end
+
+    App --> SDK
+    SDK --> Request
+    Request --> Router
+    Router --> FastConfig
+    FastConfig --> Opus47
+    Opus47 --> Usage
+    Usage --> Output
+    Output --> App
+
+    classDef client fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef inference fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef response fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class App,SDK client
+    class Request,Router api
+    class FastConfig,Opus47 inference
+    class Usage,Output response
+    class Client,API,Inference,Response platform
+                </pre>
+            </div>
+        </section>
+
+        <!-- コードサンプル -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">Fast mode 基本実装</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+response = client.beta.messages.create(
+    model="claude-opus-4-7",
+    max_tokens=4096,
+    speed="fast",
+    betas=["fast-mode-2026-02-01"],
+    messages=[
+        {"role": "user", "content": "Refactor this module to use dependency injection"}
+    ],
+)
+
+print(response.content[0].text)</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">Fast mode フォールバックパターン</span>
+                </div>
+                <pre><code class="language-python">def create_message_with_fast_fallback(max_retries=None, max_attempts=3, **params):
+    try:
+        return client.beta.messages.create(**params, max_retries=max_retries)
+    except anthropic.RateLimitError:
+        if params.get("speed") == "fast":
+            del params["speed"]
+            return create_message_with_fast_fallback(**params)
+        raise</code></pre>
+            </div>
+        </section>
+
+        <!-- 制限事項 -->
+        <section class="section">
+            <h2 class="section-title">制限事項</h2>
+            <ul class="limitations-list">
+                <li>&#x26A0;&#xFE0F; speed パラメータを切り替えるとキャッシュが無効化される</li>
+                <li>&#x26A0;&#xFE0F; Batch API では利用不可</li>
+                <li>&#x26A0;&#xFE0F; Priority Tier では利用不可</li>
+                <li>&#x26A0;&#xFE0F; Claude Platform on AWS では利用不可</li>
+            </ul>
+        </section>
+
+        <!-- ユースケース -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>&#x1F916; エージェントワークフロー</h4>
+                <p>自律型エージェントがツール呼び出しを繰り返す際の高速応答。反復的な推論ステップの待ち時間を大幅に短縮</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4AC; リアルタイムアプリケーション</h4>
+                <p>チャットや IDE 統合での低レイテンシ応答。ユーザー体験の向上に直結する高速レスポンス</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4BB; コードリファクタリング</h4>
+                <p>大量の出力トークンを高速に生成。大規模なコード変換やリファクタリングタスクで威力を発揮</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <ul>
+                <li><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/fast-mode" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/build-with-claude/fast-mode</a></li>
+                <li><a href="https://platform.claude.com/docs/en/about-claude/pricing#fast-mode-pricing" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/about-claude/pricing#fast-mode-pricing</a></li>
+                <li><a href="https://platform.claude.com/docs/en/api/rate-limits" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/api/rate-limits</a></li>
+                <li><a href="https://claude.com/fast-mode" target="_blank" rel="noopener noreferrer">https://claude.com/fast-mode</a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

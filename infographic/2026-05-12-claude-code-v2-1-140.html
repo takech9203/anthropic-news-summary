@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.140 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212,165,116,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .header-content { position: relative; z-index: 1; }
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .header h1 {
+            font-size: 1.85rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        .header .date { font-size: 14px; opacity: 0.8; }
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212,165,116,0.1);
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--anthropic-coral); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        /* Key Points */
+        .key-points { display: grid; gap: 16px; }
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212,165,116,0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212,165,116,0.15);
+        }
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+        .feature-card.headline {
+            border-color: var(--anthropic-coral);
+            background: linear-gradient(135deg, #FFF8F0 0%, #F5EDE4 100%);
+        }
+        .feature-card code {
+            background: rgba(212,165,116,0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* Bug fix categories */
+        .bugfix-category {
+            margin-bottom: 20px;
+        }
+        .bugfix-category:last-child {
+            margin-bottom: 0;
+        }
+        .bugfix-category h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .bugfix-list {
+            list-style: none;
+            padding: 0;
+        }
+        .bugfix-list li {
+            padding: 10px 14px;
+            margin-bottom: 6px;
+            background: var(--anthropic-cream);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .bugfix-list li:last-child {
+            margin-bottom: 0;
+        }
+        .bugfix-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+        .badge-bg { background: #E0E7FF; color: #4338CA; }
+        .badge-settings { background: #FEF3C7; color: #D97706; }
+        .badge-ui { background: #D1FAE5; color: #059669; }
+        .badge-windows { background: #DBEAFE; color: #1D4ED8; }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #E8C9A8;
+        }
+
+        /* Plugin section */
+        .plugin-note {
+            background: linear-gradient(135deg, #EDE9FE 0%, #F3E8FF 100%);
+            border: 2px solid #C4B5FD;
+            border-radius: 16px;
+            padding: 24px;
+        }
+        .plugin-note h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .plugin-note p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .footer a:hover { text-decoration: underline; }
+        .footer ul { list-style: none; padding: 0; margin-top: 8px; }
+        .footer ul li { padding: 2px 0; }
+
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE</span>
+                <h1>Claude Code v2.1.140 リリース</h1>
+                <p class="date">2026-05-12</p>
+                <span class="version-badge">v2.1.140 | npm: @anthropic-ai/claude-code</span>
+            </div>
+        </header>
+
+        <!-- 概要 -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔍</div>
+                    <div class="key-point-content">
+                        <h3>subagent_type マッチングの改善</h3>
+                        <p>Agent ツールの <code>subagent_type</code> マッチングが大文字小文字・セパレータの違いを吸収するように改善。例: <code>"Code Reviewer"</code> が <code>code-reviewer</code> にマッチ。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎨</div>
+                    <div class="key-point-content">
+                        <h3>エージェントカラーパレットの更新</h3>
+                        <p>エージェントの視覚的な識別を改善するカラーパレットが更新されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🐛</div>
+                    <div class="key-point-content">
+                        <h3>10 件のバグ修正</h3>
+                        <p>バックグラウンドサービス、Windows、設定関連など多岐にわたるバグ修正で安定性が大幅に向上。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>プラグインシステムの警告機能追加</h3>
+                        <p>デフォルトコンポーネントフォルダが <code>plugin.json</code> の設定によりサイレントに無視される場合に警告を表示。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 統計情報 -->
+        <section class="section">
+            <h2 class="section-title">統計情報</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">機能改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">プラグイン改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">13</div>
+                    <div class="stat-label">合計変更</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 機能改善 -->
+        <section class="section">
+            <h2 class="section-title">機能改善 - 2 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card headline">
+                    <h3>🔍 subagent_type マッチング強化</h3>
+                    <p>Agent ツールの <code>subagent_type</code> パラメータが、大文字小文字およびセパレータ (スペース、ハイフン、アンダースコア) の違いを吸収するようになりました。<code>"Code Reviewer"</code> と <code>code-reviewer</code> が同一として認識されます。</p>
+                </div>
+                <div class="feature-card headline">
+                    <h3>🎨 エージェントカラーパレット更新</h3>
+                    <p>複数エージェントを同時に使用する際の視覚的識別性が向上。新しいカラーパレットにより、各エージェントを直感的に区別しやすくなりました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- バグ修正 -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 - 10 件</h2>
+
+            <div class="bugfix-category">
+                <h3>🔄 バックグラウンドサービス - 3 件</h3>
+                <ul class="bugfix-list">
+                    <li><span class="bugfix-badge badge-bg">修正</span><code>claude --bg</code> がバックグラウンドサービスのアイドル終了直前に "connection dropped mid-request" で失敗する問題</li>
+                    <li><span class="bugfix-badge badge-bg">修正</span>エンタープライズエンドポイントセキュリティが導入されたマシンでバックグラウンドサービスの起動が失敗する問題</li>
+                    <li><span class="bugfix-badge badge-bg">修正</span><code>/loop</code> がバックグラウンドタスクに対して冗長なウェイクアップをスケジュールする問題</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>⚙️ 設定・権限 - 3 件</h3>
+                <ul class="bugfix-list">
+                    <li><span class="bugfix-badge badge-settings">修正</span>設定ホットリロードのリグレッション: シンボリックリンクされた設定ファイルが誤った変更イベントを発生させる問題</li>
+                    <li><span class="bugfix-badge badge-settings">修正</span>リモートマネージド設定が 401 エラー時にリトライしない問題</li>
+                    <li><span class="bugfix-badge badge-settings">修正</span>マネージド <code>extraKnownMarketplaces</code> の自動更新ポリシーが永続化されない問題</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>🖥️ UI/UX - 3 件</h3>
+                <ul class="bugfix-list">
+                    <li><span class="bugfix-badge badge-ui">修正</span><code>/goal</code> が <code>disableAllHooks</code> または <code>allowManagedHooksOnly</code> 設定時にサイレントにハングする問題</li>
+                    <li><span class="bugfix-badge badge-ui">修正</span><code>Read</code> ツールの検証で、空白パディングまたは <code>+</code> プレフィックス付き offset が失敗する問題</li>
+                    <li><span class="bugfix-badge badge-ui">修正</span>ネイティブターミナルでフォーカスを失った際にカーソルが入力キャレットの位置に留まらない問題</li>
+                </ul>
+            </div>
+
+            <div class="bugfix-category">
+                <h3>🪟 Windows - 1 件</h3>
+                <ul class="bugfix-list">
+                    <li><span class="bugfix-badge badge-windows">修正</span>実行ファイルが見つからない場合に同期的な <code>where.exe</code> の再スポーンが発生し、イベントループが停止する問題</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- プラグインシステム -->
+        <section class="section">
+            <h2 class="section-title">プラグインシステム</h2>
+            <div class="plugin-note">
+                <h3>⚠️ デフォルトフォルダ無視時の警告表示</h3>
+                <p>プラグインのデフォルトコンポーネントフォルダ (例: <code>commands/</code>) が、<code>plugin.json</code> で同じキーが明示的に設定されているためにサイレントに無視される場合、警告メッセージが表示されるようになりました。設定の意図しない競合を早期に発見できます。</p>
+            </div>
+        </section>
+
+        <!-- ユースケース -->
+        <section class="section">
+            <h2 class="section-title">ユースケース / 影響</h2>
+            <div class="use-case">
+                <h4>🔄 バックグラウンドモード利用者</h4>
+                <p><code>--bg</code> フラグの接続安定性が向上。サービスのアイドル終了タイミングでの接続切断が解消され、長時間のバックグラウンドタスクが確実に完了するようになりました。</p>
+            </div>
+            <div class="use-case">
+                <h4>🪟 Windows ユーザー</h4>
+                <p>イベントループ停止問題の解消により、実行ファイル検索時のパフォーマンスが改善。<code>where.exe</code> の同期的再スポーンによるフリーズが発生しなくなりました。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏢 エンタープライズ環境</h4>
+                <p>エンドポイントセキュリティソフトウェアとの互換性が向上し、マネージド設定のリトライ処理や自動更新ポリシーの永続化により、企業環境での信頼性が大幅に改善されました。</p>
+            </div>
+        </section>
+
+        <!-- アップデート方法 -->
+        <section class="section">
+            <h2 class="section-title">アップデート方法</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Shell</span>
+                    <span class="code-title">最新バージョンへの更新</span>
+                </div>
+                <pre><code>npm install -g @anthropic-ai/claude-code@latest</code></pre>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <ul>
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></li>
+                <li><a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">npm: @anthropic-ai/claude-code</a></li>
+                <li><a href="https://code.claude.com" target="_blank" rel="noopener noreferrer">Claude Code</a></li>
+            </ul>
+        </footer>
+
+    </div>
+</body>
+</html>

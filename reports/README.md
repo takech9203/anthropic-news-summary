@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-12](2026/2026-05-12-fast-mode-opus-4-7.md) - Fast mode が Claude Opus 4.7 をサポート
+- [2026-05-12](2026/2026-05-12-claude-code-v2-1-140.md) - Claude Code v2.1.140 リリース
 - [2026-05-11](2026/2026-05-11-claude-platform-on-aws.md) - Claude Platform on AWS の提供開始
 - [2026-05-11](2026/2026-05-11-claude-code-v2-1-139.md) - Claude Code v2.1.139 リリース: Agent View と /goal コマンドによるマルチターン自律実行の実現
 - [2026-05-09](2026/2026-05-09-claude-code-v2-1-138.md) - Claude Code v2.1.138 リリース: 内部修正
