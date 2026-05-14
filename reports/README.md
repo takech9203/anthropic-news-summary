@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-14](2026/2026-05-14-claude-code-v2-1-141.md) - Claude Code v2.1.141 - エージェント機能強化と MCP 信頼性向上
+- [2026-05-13](2026/2026-05-13-claude-for-small-business.md) - Claude for Small Business: 中小企業向け AI ワークフローパッケージの発表
 - [2026-05-12](2026/2026-05-12-fast-mode-opus-4-7.md) - Fast mode が Claude Opus 4.7 をサポート
 - [2026-05-12](2026/2026-05-12-claude-code-v2-1-140.md) - Claude Code v2.1.140 リリース
 - [2026-05-11](2026/2026-05-11-claude-platform-on-aws.md) - Claude Platform on AWS の提供開始

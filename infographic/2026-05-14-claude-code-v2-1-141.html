@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.141 - エージェント機能強化と MCP 信頼性向上 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Bug Fix List */
+        .bug-fix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-fix-list li {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: var(--anthropic-cream);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .bug-fix-list li::before {
+            content: '🔧';
+            flex-shrink: 0;
+        }
+
+        .mcp-fix-list li::before {
+            content: '🔌';
+        }
+
+        /* Sub section title */
+        .sub-section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            margin-top: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.3);
+        }
+
+        .sub-section-title:first-child {
+            margin-top: 0;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE UPDATE</span>
+                <h1>Claude Code v2.1.141 - エージェント機能強化と MCP 信頼性向上</h1>
+                <p class="date">2026-05-14</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>エージェント管理機能の大幅強化</h3>
+                        <p>バックグラウンドエージェントのパーミッションモード保持、--cwd によるディレクトリスコーピング、完了状態管理の改善により、複数プロジェクトでの並行作業が実用的に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>MCP/プラグインエコシステムの信頼性向上</h3>
+                        <p>認証エラーの適切な表示、再接続の安定化、設定検証の改善により、プラグイン利用時のフラストレーションを大幅に低減</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏢</div>
+                    <div class="key-point-content">
+                        <h3>企業環境サポートの強化</h3>
+                        <p>ANTHROPIC_WORKSPACE_ID によるトークンスコーピングと CLAUDE_CODE_PLUGIN_PREFER_HTTPS により、セキュリティポリシーへの準拠が容易に</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">36</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">48</div>
+                    <div class="stat-label">合計変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">MCP 修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+
+            <h3 class="sub-section-title">🤖 エージェント管理の強化</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📂 --cwd スコーピング</h3>
+                    <p><code>claude agents --cwd &lt;path&gt;</code> でディレクトリスコープのセッションリスト表示が可能に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ パーミッションモード保持</h3>
+                    <p>バックグラウンドエージェント (<code>/bg</code> または <code>&lt;&lt;</code>) が現在のパーミッションモードを保持</p>
+                </div>
+                <div class="feature-card">
+                    <h3>✅ 完了状態管理</h3>
+                    <p>完了したエージェントがバックグラウンドシェルを残している場合、Working ではなく Completed に移動</p>
+                </div>
+            </div>
+
+            <h3 class="sub-section-title">🔑 環境変数の追加</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔒 PLUGIN_PREFER_HTTPS</h3>
+                    <p>GitHub プラグインソースを SSH ではなく HTTPS でクローン。CI/CD など SSH キーがない環境に最適</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏢 WORKSPACE_ID</h3>
+                    <p>ワークロード ID フェデレーションでトークンのスコープを特定ワークスペースに限定</p>
+                </div>
+            </div>
+
+            <h3 class="sub-section-title">🎨 UX 改善</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⏪ Summarize up to here</h3>
+                    <p>Rewind メニューにコンテキスト圧縮オプションを追加</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 フィードバック強化</h3>
+                    <p><code>/feedback</code> で過去 24 時間または 7 日間のセッションを含めて送信可能に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 スピナー改善</h3>
+                    <p>10 秒経過後にアンバー色に変化し、思考継続を視覚的にフィードバック</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔐 パーミッション説明</h3>
+                    <p>Auto モードのパーミッションダイアログに <code>permissions.ask</code> ルール由来の説明を表示</p>
+                </div>
+                <div class="feature-card">
+                    <h3>👁️ IDE Diff 表示</h3>
+                    <p>IDE 接続時にファイル編集パーミッションプロンプトで "view diff in your IDE" オプションを復元</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔔 terminalSequence</h3>
+                    <p>Hook の JSON 出力にデスクトップ通知、ウィンドウタイトル、ベル用フィールドを追加</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧭 プラグインメニュー改善</h3>
+                    <p>Tab/矢印キー切替、クリック対応によるナビゲーション改善</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Critical Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">重大なバグ修正</h2>
+            <ul class="bug-fix-list">
+                <li>Bedrock/Vertex/Foundry でのモデルフォールバック修正 - サイドクエリが利用不可能な Haiku モデル ID を送信していた問題</li>
+                <li>Windows デーモンパイプ修正 - <code>claude daemon status</code> と <code>/doctor</code> がパイプキーファイルのロック時にエラーを投げる問題</li>
+                <li>セッション間の閾値干渉修正 - <code>/model</code> コマンドが他の並行セッションの autocompact 閾値を変更してしまう問題</li>
+                <li>Vim モード中の Ctrl+C 修正 - INSERT/VISUAL モードでの実行中断が効かない問題</li>
+                <li>マークダウンテーブル修正 - セル折り返し時に縦レイアウトにフォールバックするリグレッション (v2.1.136) を修正</li>
+                <li>パーミッションプロンプト修正 - プロンプト表示中の Enter キーが入力ボックスにも送信される問題</li>
+                <li>Hook パス修正 - <code>EnterWorktree</code> 後に存在しない <code>transcript_path</code> が Hook に渡される問題</li>
+                <li>カスタムゲートウェイ修正 - カスタム <code>ANTHROPIC_BASE_URL</code> でのバックグラウンドジョブの自動命名失敗を修正</li>
+                <li>エージェントダッシュボード修正 - ラッパー経由起動時にダッシュボードではなくエージェントタイプリストが表示される問題</li>
+                <li>パーミッションモード切替修正 - ツールパーミッションプロンプト表示中のモード切替で自動解除されない問題</li>
+            </ul>
+        </section>
+
+        <!-- MCP/Plugin Fixes -->
+        <section class="section">
+            <h2 class="section-title">MCP/プラグイン修正</h2>
+            <ul class="bug-fix-list mcp-fix-list">
+                <li>HTTP/SSE サーバーの 403 エラーを "failed" ではなく "needs auth" と正しく表示</li>
+                <li>リモート MCP サーバーのオプショナルイベントストリーム再接続失敗時の不要な切断を修正</li>
+                <li>Remote Control MCP のワーカーセッショントークンローテーション時の 401 エラーを修正</li>
+                <li>Remote Control の信頼済みデバイス再登録問題を修正</li>
+                <li>プラグイン詳細ペインで <code>.mcp.json</code> 宣言の MCP サーバーが 0 表示される問題を修正</li>
+                <li>未設定の設定変数を持つ MCP サーバーのエラーメッセージを改善</li>
+                <li>POSIX シェルパラメータ展開が誤って環境変数未設定と判定される問題を修正</li>
+                <li><code>claude plugin install</code> で upstream に <code>ref</code> が存在しない場合の <code>sha</code> ピン留めフォールバックを修正</li>
+            </ul>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">環境変数の設定</span>
+                </div>
+                <pre><code class="language-bash"># GitHub SSH キーがない環境 (CI/CD など) でプラグインを HTTPS クローン
+export CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1
+
+# ワークロード ID フェデレーションのスコーピング
+export ANTHROPIC_WORKSPACE_ID="ws_production_team_01"
+
+# Bedrock 環境でのサイドクエリモデル明示指定 (オプション)
+export ANTHROPIC_SMALL_FAST_MODEL="claude-haiku-4-5-20250415"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">エージェント管理コマンド</span>
+                </div>
+                <pre><code class="language-bash"># 特定プロジェクトのエージェントセッションを表示
+claude agents --cwd ~/projects/my-app
+
+# バックグラウンドエージェントの起動 (パーミッションモード保持)
+# Auto モードで作業中に /bg を使うと、バックグラウンドも Auto モードで動作
+/bg "lint エラーを修正して PR を作成"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">Hook での terminalSequence 活用</span>
+                </div>
+                <pre><code class="language-json">{
+  "hooks": {
+    "tool_result": {
+      "command": "node notify.js",
+      "output": {
+        "terminalSequence": "]9;4;3;100\\"
+      }
+    }
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph AgentEnhancements["🤖 エージェント機能強化"]
+        direction LR
+        CWD["📂 --cwd スコーピング"]
+        BG["⚡ パーミッション保持"]
+        Complete["✅ 完了状態管理"]
+        CWD ~~~ BG ~~~ Complete
+    end
+
+    subgraph EnvVars["🔑 新規環境変数"]
+        direction LR
+        HTTPS["🔒 PLUGIN_PREFER_HTTPS"]
+        WS["🏢 WORKSPACE_ID"]
+        HTTPS ~~~ WS
+    end
+
+    subgraph MCPFixes["🔌 MCP/プラグイン信頼性"]
+        direction LR
+        Auth["🔐 認証エラー改善"]
+        Reconnect["🔄 再接続安定化"]
+        Config["⚙️ 設定検証改善"]
+        Auth ~~~ Reconnect ~~~ Config
+    end
+
+    subgraph PlatformFixes["💻 プラットフォーム修正"]
+        direction LR
+        Bedrock["☁️ Bedrock フォールバック"]
+        Windows["🪟 Windows デーモン"]
+        Linux["🐧 Linux SDK"]
+        Bedrock ~~~ Windows ~~~ Linux
+    end
+
+    subgraph UXImprovements["🎨 UX 改善"]
+        direction LR
+        Spinner["🔄 スピナー改善"]
+        Rewind["⏪ Summarize up to here"]
+        Vim["📝 Vim モード修正"]
+        Spinner ~~~ Rewind ~~~ Vim
+    end
+
+    User(["👤 開発者"]) --> AgentEnhancements
+    User --> EnvVars
+    User --> MCPFixes
+    AgentEnhancements --> PlatformFixes
+    MCPFixes --> PlatformFixes
+    EnvVars --> UXImprovements
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef agent fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef env fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef mcp fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef fix fill:#FFEBEE,stroke:#FFCDD2,stroke-width:2px,color:#B71C1C
+    classDef ux fill:#F3E5F5,stroke:#E1BEE7,stroke-width:2px,color:#4A148C
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class AgentEnhancements agent
+    class EnvVars env
+    class MCPFixes mcp
+    class PlatformFixes fix
+    class UXImprovements ux
+    class User user
+                </pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="use-case">
+                <h4>☁️ Bedrock/Vertex/Foundry ユーザー</h4>
+                <p>v2.1.141 へのアップデートを推奨。サイドクエリのモデルフォールバック問題が修正されており、<code>ANTHROPIC_SMALL_FAST_MODEL</code> を設定していない環境での安定性が大幅に向上</p>
+            </div>
+            <div class="use-case">
+                <h4>🔌 プラグイン開発者</h4>
+                <p><code>.mcp.json</code> 宣言のサーバー表示問題が修正されたため、既存プラグインの再確認は不要。認証エラー表示の改善により、デバッグが容易に</p>
+            </div>
+            <div class="use-case">
+                <h4>🔔 Hook 利用者</h4>
+                <p><code>terminalSequence</code> フィールドを活用したデスクトップ通知の実装が可能に。制御端末がない環境でも通知やウィンドウタイトル変更が実現</p>
+            </div>
+            <div class="use-case">
+                <h4>🏢 企業環境チーム</h4>
+                <p><code>ANTHROPIC_WORKSPACE_ID</code> でワークスペーススコーピングを設定し、セキュリティポリシーに準拠した運用が可能に。SSH キー配布なしにプラグイン管理が実現</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
