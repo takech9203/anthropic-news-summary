@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-14](2026/2026-05-14-pwc-expanded-partnership.md) - Anthropic と PwC の戦略的パートナーシップ拡大 - Claude を活用したエンタープライズ変革
+- [2026-05-14](2026/2026-05-14-gates-foundation-partnership.md) - Anthropic とゲイツ財団が 2 億ドルのパートナーシップを発表 - グローバルヘルス・教育・経済的モビリティに AI を活用
+- [2026-05-14](2026/2026-05-14-claude-code-v2-1-142.md) - Claude Code v2.1.142 - エージェントディスパッチ設定の大幅拡張と Fast Mode の Opus 4.7 移行
 - [2026-05-14](2026/2026-05-14-claude-code-v2-1-141.md) - Claude Code v2.1.141 - エージェント機能強化と MCP 信頼性向上
 - [2026-05-13](2026/2026-05-13-claude-for-small-business.md) - Claude for Small Business: 中小企業向け AI ワークフローパッケージの発表
 - [2026-05-12](2026/2026-05-12-fast-mode-opus-4-7.md) - Fast mode が Claude Opus 4.7 をサポート

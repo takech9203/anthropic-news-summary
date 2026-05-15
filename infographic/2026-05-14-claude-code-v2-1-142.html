@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.142 - エージェントディスパッチ設定の大幅拡張 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            padding: 8px 0;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comparison-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Bug Fix List */
+        .bug-fix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-fix-list li {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: var(--anthropic-cream);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .bug-fix-list li::before {
+            content: '🔧';
+            flex-shrink: 0;
+        }
+
+        .mcp-fix-list li::before {
+            content: '🔌';
+        }
+
+        .ui-fix-list li::before {
+            content: '🎨';
+        }
+
+        /* Sub section title */
+        .sub-section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            margin-top: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.3);
+        }
+
+        .sub-section-title:first-child {
+            margin-top: 0;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE UPDATE</span>
+                <h1>Claude Code v2.1.142 - エージェントディスパッチ設定の大幅拡張</h1>
+                <p class="date">2026-05-14</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🏷️</div>
+                    <div class="key-point-content">
+                        <h3>8 つの新フラグ追加</h3>
+                        <p><code>claude agents</code> コマンドに --add-dir、--settings、--mcp-config、--plugin-dir、--permission-mode、--model、--effort、--dangerously-skip-permissions の 8 フラグを追加し、バックグラウンドセッションの構成を完全に制御可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>Fast Mode Opus 4.7 移行</h3>
+                        <p>Fast Mode のデフォルトモデルが Opus 4.7 に変更。推論品質と速度の両方が向上し、環境変数でのオプトアウトも提供</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📦</div>
+                    <div class="key-point-content">
+                        <h3>プラグインスキル検出簡素化</h3>
+                        <p>ルートレベルに SKILL.md を持つプラグインが skills/ サブディレクトリなしでも自動的にスキルとして検出されるように変更</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>デーモン安定性向上</h3>
+                        <p>macOS スリープ復帰後のセッション消失、バイナリアップグレード後のクラッシュループ、Windows ネットワークドライブでのデッドロックなど包括的に修正</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>合計 26 件の変更</h3>
+                        <p>新機能 5 件、バグ修正 18 件、改善 3 件を含む本リリースは、エージェントワークフローの本番運用における信頼性を大きく向上</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>❌ 限定的なディスパッチ設定</li>
+                        <li>❌ Opus 4.6 Fast Mode</li>
+                        <li>❌ skills/ ディレクトリ必須</li>
+                        <li>❌ スリープ復帰で切断</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>✅ 8 フラグで完全制御</li>
+                        <li>✅ Opus 4.7 Fast Mode</li>
+                        <li>✅ SKILL.md 自動検出</li>
+                        <li>✅ クロックジャンプ検出</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="section">
+            <h2 class="section-title">統計情報</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">新フラグ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">改善</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🏷️ エージェントディスパッチフラグ</h3>
+                    <p><code>claude agents dispatch</code> に 8 つの新フラグを追加。モデル選択、MCP 設定、パーミッションモード、作業ディレクトリなどをディスパッチ時に一括指定可能に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Fast Mode Opus 4.7</h3>
+                    <p>デフォルトモデルが Opus 4.7 に変更。推論速度向上により品質を維持しつつ応答速度も改善。<code>CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE=1</code> で Opus 4.6 に固定可能</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 プラグインスキル検出</h3>
+                    <p>ルートレベルに SKILL.md を持ち skills/ サブディレクトリを持たないプラグインが自動的にスキルとして検出。シンプルなプラグイン構造が可能に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔌 LSP サーバー表示</h3>
+                    <p><code>/plugin</code> 詳細ペインと <code>claude plugin details</code> コマンドでプラグインが提供する LSP サーバーを表示</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚠️ Web セットアップ警告</h3>
+                    <p><code>/web-setup</code> が既存の GitHub App 接続を置換する前に警告を表示。意図しない接続の上書きを防止</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">エージェントディスパッチの新フラグ</span>
+                </div>
+                <pre><code class="language-bash"># カスタム設定でバックグラウンドエージェントをディスパッチ
+claude agents dispatch "テストスイートを実行して結果を報告" \
+  --add-dir /path/to/shared-libs \
+  --settings /team/claude-settings.json \
+  --mcp-config /team/mcp-servers.json \
+  --permission-mode auto \
+  --model opus-4-7 \
+  --effort high
+
+# プラグインディレクトリを指定してディスパッチ
+claude agents dispatch "コードレビューを実施" \
+  --plugin-dir /team/plugins \
+  --model opus-4-7
+
+# CI/CD 環境向け: パーミッションスキップ付きディスパッチ
+claude agents dispatch "ビルドとデプロイを実行" \
+  --dangerously-skip-permissions \
+  --mcp-config ./ci/mcp-config.json \
+  --effort medium</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Fast Mode のモデルオーバーライド</span>
+                </div>
+                <pre><code class="language-bash"># Opus 4.6 に固定する場合
+export CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE=1
+
+# 確認: Fast Mode で使用されるモデル
+claude config get fast_mode_model
+
+# 環境変数を解除して Opus 4.7 に戻す
+unset CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">プラグインのシンプル構造</span>
+                </div>
+                <pre><code class="language-json">// plugin.json - skills/ ディレクトリなしでスキルが認識される
+{
+  "name": "my-simple-plugin",
+  "version": "1.0.0",
+  "description": "A simple plugin with a single skill",
+  "main": "src/index.ts"
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">MCP タイムアウトの設定</span>
+                </div>
+                <pre><code class="language-bash"># MCP ツールタイムアウトを 5 分に設定 (修正前は 60 秒で打ち切られていた)
+export MCP_TOOL_TIMEOUT=300000
+
+# リモート MCP サーバーへの長時間ツール呼び出しが正常に動作
+claude "大規模データセットの分析を実行して"</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph UserLayer["&#128100; ユーザーレイヤー"]
+        CLI["&#9000;&#65039; claude agents dispatch"]
+        Flags["&#127991;&#65039; 設定フラグ"]
+    end
+
+    subgraph FlagOptions["&#128295; ディスパッチオプション"]
+        direction LR
+        AddDir["&#128194; --add-dir"]
+        Settings["&#9881;&#65039; --settings"]
+        MCPConfig["&#128268; --mcp-config"]
+        PluginDir["&#128230; --plugin-dir"]
+        AddDir ~~~ Settings ~~~ MCPConfig ~~~ PluginDir
+    end
+
+    subgraph FlagOptions2["&#127899;&#65039; 実行オプション"]
+        direction LR
+        PermMode["&#128274; --permission-mode"]
+        Model["&#129302; --model"]
+        Effort["&#128170; --effort"]
+        SkipPerms["&#9888;&#65039; --dangerously-skip-permissions"]
+        PermMode ~~~ Model ~~~ Effort ~~~ SkipPerms
+    end
+
+    subgraph Daemon["&#128421;&#65039; デーモンプロセス"]
+        Dispatcher["&#128228; セッションディスパッチャー"]
+        ClockDetect["&#9200; クロックジャンプ検出"]
+        CleanExit["&#128260; クリーン終了処理"]
+    end
+
+    subgraph BackgroundSession["&#127760; バックグラウンドセッション"]
+        Worker["&#9889; ワーカープロセス"]
+        Worktree["&#127795; Git ワークツリー"]
+        MCP["&#128268; MCP サーバー接続"]
+        Browser["&#127760; ブラウザ Shim"]
+    end
+
+    subgraph ModelLayer["&#129302; モデルレイヤー"]
+        direction LR
+        Opus47["&#11088; Opus 4.7 Fast Mode"]
+        Opus46["&#128260; Opus 4.6 Override"]
+        Opus47 ~~~ Opus46
+    end
+
+    CLI --> Flags
+    Flags --> FlagOptions
+    Flags --> FlagOptions2
+    FlagOptions --> Dispatcher
+    FlagOptions2 --> Dispatcher
+    Dispatcher --> Worker
+    Worker --> Worktree
+    Worker --> MCP
+    Worker --> Browser
+    ClockDetect -.-> Dispatcher
+    CleanExit -.-> Dispatcher
+    Worker --> ModelLayer
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef flags fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef daemon fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef session fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef model fill:#F3E5F5,stroke:#E1BEE7,stroke-width:2px,color:#4A148C
+
+    class UserLayer user
+    class FlagOptions,FlagOptions2 flags
+    class Daemon daemon
+    class BackgroundSession session
+    class ModelLayer model
+                </pre>
+            </div>
+        </section>
+
+        <!-- Bug Fixes - Daemon/Background -->
+        <section class="section">
+            <h2 class="section-title">バグ修正</h2>
+
+            <h3 class="sub-section-title">🖥️ デーモン/バックグラウンド (8 件)</h3>
+            <ul class="bug-fix-list">
+                <li>macOS スリープ復帰後の接続問題修正 - デーモンがクロックジャンプを検出するロジックに変更し、スリープ中の経過時間がアイドルタイムとして加算される問題を解消</li>
+                <li>バイナリアップグレード後のクラッシュループ修正 - <code>brew upgrade</code> 後に旧デーモンがクリーンに終了せず、エージェントが削除済みパスで起動を繰り返す問題を修正</li>
+                <li>Git ワークツリー認識問題修正 - バックグラウンドセッションが既存の Git ワークツリーを認識せず、Edit がブロックされる問題を修正</li>
+                <li>Chrome 拡張接続時のクラッシュ修正 - Claude-in-Chrome 拡張が共有タブなしで接続された状態でのクラッシュループを修正</li>
+                <li><code>--dangerously-skip-permissions</code> の永続化修正 - リタイア/ウェイクサイクルでフラグが失われる問題を修正</li>
+                <li>Windows ネットワークドライブでのデッドロック修正 - ネットワークドライブ上で <code>claude agents</code> がデッドロックする問題を修正</li>
+                <li>ヘッドレスブラウザ Shim の修正 - アタッチ済みセッションでバックグラウンドワーカーの Shim が誤って適用される問題を修正</li>
+                <li>エディタ設定の修正 - "v to open in editor" がシェルの <code>$EDITOR</code>/<code>$VISUAL</code> ではなくデーモンのデフォルトエディタを使用する問題を修正</li>
+            </ul>
+
+            <h3 class="sub-section-title">🔌 MCP/プラグイン (4 件)</h3>
+            <ul class="bug-fix-list mcp-fix-list">
+                <li><code>MCP_TOOL_TIMEOUT</code> がリモート HTTP/SSE MCP サーバーのフェッチタイムアウトを引き上げず、60 秒で打ち切られる問題を修正</li>
+                <li><code>skills: ["./"]</code> を使用するプラグインで偽の "path escapes plugin directory" エラーが表示される問題を修正</li>
+                <li>インストールメタデータが存在しない場合にアクティブなプラグインバージョンディレクトリが削除される問題を修正</li>
+                <li>デフォルトフォルダをシャドウする <code>plugin.json</code> キーをすべて名前付きで表示するように修正</li>
+            </ul>
+
+            <h3 class="sub-section-title">🎨 UI/UX (6 件)</h3>
+            <ul class="bug-fix-list ui-fix-list">
+                <li>256 色ターミナルでの背景色ブリード修正 - Apple Terminal などでの <code>claude agents</code> セッションアタッチ時の表示崩れを修正</li>
+                <li>セッションタイトル修正 - 最初のメッセージがリンクの場合にタイトルが URL から派生される問題を修正</li>
+                <li>重複モデルリクエスト修正 - リモートクライアントからの冗長な <code>set_model</code> リクエストが重複ブレッドクラムを挿入する問題を修正</li>
+                <li>プラグインインストール数表示修正 - 新規公開プラグインが "0 installs" と表示される問題を修正</li>
+                <li>リアクティブコンパクション改善 - 最初の要約試行がオーバーフローサイズをシードとして使用し、無駄なリトライを回避</li>
+                <li>コンテキストがほぼ満杯の状態での長時間セッションのコンパクション効率が向上</li>
+            </ul>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="use-case">
+                <h4>⚡ Fast Mode ユーザー</h4>
+                <p>デフォルトモデルが Opus 4.7 に変更されたため動作確認を推奨。Opus 4.6 での動作を維持する場合は <code>CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE=1</code> を設定</p>
+            </div>
+            <div class="use-case">
+                <h4>🍎 macOS ユーザー</h4>
+                <p>v2.1.142 へのアップデートにより、スリープ復帰後のセッション消失問題が解消。速やかなアップデートを推奨</p>
+            </div>
+            <div class="use-case">
+                <h4>🍺 Homebrew ユーザー</h4>
+                <p>バイナリアップグレード後のクラッシュループ問題が修正されたため、<code>brew upgrade</code> を安全に実行可能に</p>
+            </div>
+            <div class="use-case">
+                <h4>🔌 MCP タイムアウト設定利用者</h4>
+                <p><code>MCP_TOOL_TIMEOUT</code> が正しく適用されるようになったため、60 秒以上のツール呼び出しが正常に動作</p>
+            </div>
+            <div class="use-case">
+                <h4>📦 プラグイン開発者</h4>
+                <p>ルートレベルの SKILL.md のみでスキルとして認識されるため、シンプルなプラグイン構造の場合に skills/ ディレクトリが不要に</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
