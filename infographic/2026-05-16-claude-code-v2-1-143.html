@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.143 - プラグイン依存関係管理とバックグラウンドセッション設定永続化 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 4px 0;
+            color: var(--text-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .bug-fix-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .bug-fix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: #FAFAFA;
+            border-radius: 10px;
+            border-left: 3px solid var(--info);
+        }
+
+        .bug-fix-item.critical {
+            border-left-color: #EF4444;
+            background: #FEF2F2;
+        }
+
+        .bug-fix-item.windows {
+            border-left-color: #8B5CF6;
+            background: #F5F3FF;
+        }
+
+        .bug-fix-item.macos {
+            border-left-color: #06B6D4;
+            background: #ECFEFF;
+        }
+
+        .bug-fix-item .icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .bug-fix-item .content {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .bug-fix-item .content strong {
+            color: var(--text-primary);
+        }
+
+        .env-var-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .env-var-table th {
+            background: var(--anthropic-cream);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid var(--anthropic-coral);
+        }
+
+        .env-var-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #EEE;
+        }
+
+        .env-var-table code {
+            background: #F3F4F6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code Update</span>
+                <h1>Claude Code v2.1.143<br>プラグイン依存関係管理とバックグラウンドセッション設定永続化</h1>
+                <p class="date">2026-05-16</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">リリース概要</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">33</div>
+                    <div class="stat-label">変更件数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">19</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">改善</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>プラグイン依存関係の強制管理</h3>
+                        <p>disable/enable 操作時にトランジティブな依存関係を自動検証・解決。依存するプラグインの動作不能を防止</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💾</div>
+                    <div class="key-point-content">
+                        <h3>バックグラウンドセッションの設定永続化</h3>
+                        <p>/bg やデタッチ操作で --mcp-config、--fallback-model、--settings などの設定がフォーク時に保持されるように改善</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>安全機構の強化</h3>
+                        <p>ストップフックの無限ループ防止、ワークツリーの安全なクリーンアップ、認証情報バリデーション改善</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💻</div>
+                    <div class="key-point-content">
+                        <h3>クロスプラットフォーム改善</h3>
+                        <p>Windows PowerShell のデフォルト有効化、macOS TCC 権限継承修正、Windows Terminal での操作不具合修正</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>&#x274C; /bg フォーク時に MCP 設定が失われる</li>
+                        <li>&#x274C; プラグイン無効化で依存先が壊れる</li>
+                        <li>&#x274C; ストップフックが無限ループする</li>
+                        <li>&#x274C; macOS で ~/Documents にアクセス不可</li>
+                        <li>&#x274C; ワークツリー削除で rm -rf にフォールバック</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>&#x2705; 全設定がフォーク/リスポーン時に保持</li>
+                        <li>&#x2705; 依存関係を自動検証しブロック</li>
+                        <li>&#x2705; 8 回でターン終了する安全キャップ</li>
+                        <li>&#x2705; TCC 権限が正しく継承される</li>
+                        <li>&#x2705; git worktree remove のみ使用</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能ハイライト</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔗 プラグイン依存関係</h3>
+                    <p>disable 時に依存チェーンを検証し、コピーペースト可能な一括無効化コマンドを提示。enable 時は推移的依存を自動有効化</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💰 コンテキストコスト表示</h3>
+                    <p>/plugin マーケットプレイスにターンあたり・呼び出しあたりのトークン推定コストを表示</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌳 ワークツリーバイパス</h3>
+                    <p>worktree.bgIsolation: "none" 設定で EnterWorktree なしの直接編集が可能に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ PowerShell 強化</h3>
+                    <p>-ExecutionPolicy Bypass 自動付与。Bedrock/Vertex/Foundry ユーザーでデフォルト有効化</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 設定永続化</h3>
+                    <p>/bg フォーク・デタッチ時に --mcp-config、--fallback-model、--settings が保持される</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎛️ agents フラグ拡張</h3>
+                    <p>claude agents に --add-dir、--settings、--mcp-config、--permission-mode など 8 フラグ追加</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">重要なバグ修正</h2>
+            <div class="bug-fix-list">
+                <div class="bug-fix-item critical">
+                    <span class="icon">🔑</span>
+                    <div class="content">
+                        <strong>認証ハング修正</strong>: .credentials.json の scopes が非配列値の場合に CLI がハングする問題を解消
+                    </div>
+                </div>
+                <div class="bug-fix-item critical">
+                    <span class="icon">♾️</span>
+                    <div class="content">
+                        <strong>ストップフック無限ループ修正</strong>: 8 回連続ブロックでターンを強制終了。CLAUDE_CODE_STOP_HOOK_BLOCK_CAP で調整可能
+                    </div>
+                </div>
+                <div class="bug-fix-item macos">
+                    <span class="icon">🍎</span>
+                    <div class="content">
+                        <strong>macOS Full Disk Access 修正</strong>: バックグラウンドジョブが ~/Documents、~/Desktop、~/Downloads にアクセスできない問題を解消
+                    </div>
+                </div>
+                <div class="bug-fix-item macos">
+                    <span class="icon">😴</span>
+                    <div class="content">
+                        <strong>macOS App Nap 対策</strong>: ホストスリープ後のワーカーストール検出の偽陽性ストームを防止
+                    </div>
+                </div>
+                <div class="bug-fix-item windows">
+                    <span class="icon">🪟</span>
+                    <div class="content">
+                        <strong>Windows Terminal 修正</strong>: 右クリックペースト、ストリーミング中のフリーズ、スクロール時のレンダリング問題を修正
+                    </div>
+                </div>
+                <div class="bug-fix-item">
+                    <span class="icon">🌐</span>
+                    <div class="content">
+                        <strong>バックグラウンドセッション修正</strong>: IDE ファイル参照のサイレントキャプチャ、permissions.defaultMode 無視、デーモンスポーン失敗を修正
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Environment Variables -->
+        <section class="section">
+            <h2 class="section-title">新しい環境変数・設定</h2>
+            <table class="env-var-table">
+                <thead>
+                    <tr>
+                        <th>環境変数 / 設定</th>
+                        <th>説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>CLAUDE_CODE_STOP_HOOK_BLOCK_CAP</code></td>
+                        <td>ストップフックの連続ブロック上限 (デフォルト: 8)</td>
+                    </tr>
+                    <tr>
+                        <td><code>CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY</code></td>
+                        <td>1 に設定で ExecutionPolicy バイパスを無効化</td>
+                    </tr>
+                    <tr>
+                        <td><code>CLAUDE_CODE_USE_POWERSHELL_TOOL</code></td>
+                        <td>0 に設定で PowerShell ツールを無効化</td>
+                    </tr>
+                    <tr>
+                        <td><code>worktree.bgIsolation: "none"</code></td>
+                        <td>バックグラウンドセッションのワークツリー分離を無効化</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">プラグイン依存関係管理</span>
+                </div>
+                <pre><code class="language-bash"># プラグイン B がプラグイン A に依存している場合
+claude plugin disable plugin-a
+# エラー: "plugin-b" depends on "plugin-a"
+# Hint: claude plugin disable plugin-b && claude plugin disable plugin-a
+
+# 依存チェーンを含めて無効化
+claude plugin disable plugin-b && claude plugin disable plugin-a
+
+# プラグインを有効化 (推移的依存を自動有効化)
+claude plugin enable plugin-b
+# "plugin-a" was automatically enabled as a dependency of "plugin-b"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">ワークツリーバイパス設定</span>
+                </div>
+                <pre><code class="language-json">// .claude/settings.json
+{
+  "worktree": {
+    "bgIsolation": "none"
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/bg での設定永続化</span>
+                </div>
+                <pre><code class="language-bash"># MCP 設定とフォールバックモデルを指定して起動
+claude --mcp-config ./my-mcp.json --fallback-model sonnet-4-6
+
+# /bg でバックグラウンドに移行 (設定が保持される)
+/bg テスト実行を続けて
+
+# バックグラウンドセッションは以下を保持:
+# - --mcp-config ./my-mcp.json
+# - --fallback-model sonnet-4-6
+# - --settings, --add-dir, --plugin-dir</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">claude agents のデフォルト設定</span>
+                </div>
+                <pre><code class="language-bash"># モデルとパーミッションモードを指定してエージェントダッシュボードを起動
+claude agents \
+  --model opus-4-7 \
+  --effort high \
+  --permission-mode plan \
+  --mcp-config ./team-mcp.json \
+  --add-dir /shared/libs
+
+# ダッシュボードからディスパッチされるすべてのセッションに
+# これらの設定がデフォルトとして適用される</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph PluginManagement["🔌 プラグイン依存関係管理"]
+        direction LR
+        PluginA["📦 Plugin A"]
+        PluginB["📦 Plugin B"]
+        PluginC["📦 Plugin C"]
+        PluginA ~~~ PluginB ~~~ PluginC
+    end
+
+    subgraph DependencyCheck["🔍 依存関係チェック"]
+        Disable["❌ disable 要求"]
+        DepGraph["🗺️ 依存グラフ検証"]
+        Block["🚫 ブロック + ヒント表示"]
+        Allow["✅ 無効化許可"]
+    end
+
+    subgraph BackgroundSession["🌐 バックグラウンドセッション"]
+        BgFork["/bg フォーク"]
+        Detach["← デタッチ"]
+        AgentsDispatch["agents ディスパッチ"]
+    end
+
+    subgraph PreservedSettings["💾 永続化される設定"]
+        direction LR
+        MCPConfig["🔌 --mcp-config"]
+        FallbackModel["🤖 --fallback-model"]
+        SettingsFile["⚙️ --settings"]
+        Permissions["🔒 --allow-dangerously-skip-permissions"]
+        MCPConfig ~~~ FallbackModel ~~~ SettingsFile ~~~ Permissions
+    end
+
+    subgraph SafetyMechanisms["🛡️ 安全機構"]
+        StopHookCap["⏱️ ストップフック ブロックキャップ"]
+        WorktreeCleanup["🌳 ワークツリー 安全クリーンアップ"]
+        CredentialFix["🔑 認証情報 バリデーション"]
+    end
+
+    subgraph Platform["💻 プラットフォーム対応"]
+        direction LR
+        PowerShell["⚡ PowerShell ツール"]
+        MacOS["🍎 macOS TCC 修正"]
+        WinTerminal["🪟 Windows Terminal 修正"]
+        PowerShell ~~~ MacOS ~~~ WinTerminal
+    end
+
+    PluginB -->|"depends on"| PluginA
+    PluginC -->|"depends on"| PluginB
+    Disable --> DepGraph
+    DepGraph -->|"依存あり"| Block
+    DepGraph -->|"依存なし"| Allow
+
+    BgFork --> PreservedSettings
+    Detach --> PreservedSettings
+    AgentsDispatch --> PreservedSettings
+
+    StopHookCap -.->|"8 回で終了"| BackgroundSession
+    WorktreeCleanup -.->|"rm -rf 禁止"| BackgroundSession
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🏢 チームでのエージェント運用</h4>
+                <p>claude agents に --mcp-config と --permission-mode を指定してダッシュボードを起動。ディスパッチされる全セッションが統一設定で動作し、/bg でバックグラウンドに移行しても設定が維持される。チーム全体で一貫したエージェント動作を保証</p>
+            </div>
+            <div class="use-case">
+                <h4>🔧 プラグインエコシステムの安全な管理</h4>
+                <p>複数のプラグインが連携するワークフローで、依存関係を持つプラグインを安全に管理。無効化時に依存チェーンが自動検証され、意図しないプラグインの動作不能を防止。マーケットプレイスでコンテキストコストを事前確認してインストール判断が可能に</p>
+            </div>
+            <div class="use-case">
+                <h4>🏗️ 大規模モノレポでの開発</h4>
+                <p>ワークツリーの作成に時間がかかる大規模リポジトリで worktree.bgIsolation: "none" を設定し、バックグラウンドセッションが直接作業コピーを編集。サブモジュールやシンボリックリンクが多用される環境で特に有効</p>
+            </div>
+        </section>
+
+        <!-- Developer Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>Windows ユーザー</h3>
+                        <p>PowerShell ツールがデフォルト有効化。不要な場合は CLAUDE_CODE_USE_POWERSHELL_TOOL=0 を設定</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🍎</div>
+                    <div class="key-point-content">
+                        <h3>macOS ユーザー</h3>
+                        <p>~/Documents、~/Desktop、~/Downloads へのアクセス問題が修正。速やかなアップデートを推奨</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>プラグイン開発者</h3>
+                        <p>依存関係が正しく宣言されているか確認。disable 時の挙動が変更されている</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⏱️</div>
+                    <div class="key-point-content">
+                        <h3>ストップフック利用者</h3>
+                        <p>8 回連続ブロックでターン終了する新安全機構を認識。CLAUDE_CODE_STOP_HOOK_BLOCK_CAP で調整可能</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連:</strong> <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a> | <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">GitHub リポジトリ</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
