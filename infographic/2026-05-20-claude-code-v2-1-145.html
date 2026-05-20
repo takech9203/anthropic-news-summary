@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.145 - セキュリティ修正とスクリプティング支援の強化 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-icon.security {
+            background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card.security-accent {
+            border-color: #F44336;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFF5F5 100%);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .comparison-card code {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE</span>
+                <h1>Claude Code v2.1.145<br>セキュリティ修正とスクリプティング支援の強化</h1>
+                <p class="date">2026-05-20</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">主要ポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon security">🔒</div>
+                    <div class="key-point-content">
+                        <h3>セキュリティ修正: パーミッションバイパスの解消</h3>
+                        <p>許可リストに含まれない環境変数への代入が自動承認されてしまう脆弱性を修正。今後は適切にプロンプトが表示されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📋</div>
+                    <div class="key-point-content">
+                        <h3>claude agents --json: スクリプティング向け JSON 出力</h3>
+                        <p>実行中のセッション一覧を JSON 形式で取得可能に。tmux-resurrect、ステータスバー、セッションピッカーとの連携が容易になりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📡</div>
+                    <div class="key-point-content">
+                        <h3>OTEL トレーシング強化</h3>
+                        <p>agent_id / parent_agent_id 属性の追加とサブエージェントのトレース親子関係の修正により、マルチエージェントのデバッグが改善されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>プラグイン UI の改善</h3>
+                        <p>ディスカバー / ブラウズ画面でプラグインの全機能をインストール前に確認可能に。マウスホバー / クリックにも対応しました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌏</div>
+                    <div class="key-point-content">
+                        <h3>Agent Teams 非 ASCII 名エンコーディング修正</h3>
+                        <p>日本語などの非 ASCII 文字を含むエージェント名が正しくエンコードされるようになり、国際チームでの利用が安定しました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">リリース概要</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">改善</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主な機能と修正</h2>
+            <div class="feature-grid">
+                <div class="feature-card security-accent">
+                    <h3>🔒 パーミッションバイパス修正</h3>
+                    <p>許可リスト外の環境変数へのベア代入が自動承認されていた問題を修正。セキュリティプロンプトが正しく表示されるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 claude agents --json</h3>
+                    <p>ライブセッション一覧を JSON で出力。tmux-resurrect、ステータスバー、セッションピッカーなど外部ツールとのスクリプティング統合が可能に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📡 OTEL トレーシング強化</h3>
+                    <p>agent_id / parent_agent_id 属性を追加し、サブエージェントのスパン親子関係を正しくネストするように修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔌 プラグインディスカバー UI</h3>
+                    <p>ディスカバー / ブラウズ画面でプラグインの全ケイパビリティをインストール前に表示。マウスホバーとクリックにも対応。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌏 Agent Teams 非 ASCII 修正</h3>
+                    <p>日本語を含む非 ASCII 文字のエージェント名エンコーディングを修正。国際チームでの安定動作を実現。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📄 Read ツール PARTIAL ビュー</h3>
+                    <p>ファイル読み取りが部分的にしか完了しない場合、PARTIAL ビュー通知でグレースフルに劣化するようになりました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: パーミッションバイパス</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p>許可リスト外の環境変数へのベア代入 (例: <code>SECRET_KEY=value</code>) が<strong>自動承認</strong>されていた。</p>
+                    <p style="margin-top: 12px; font-size: 13px; opacity: 0.8;">ユーザーへの確認なしに実行されるため、意図しない環境変数の変更が発生するリスクがありました。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p>許可リスト外の環境変数への代入時に<strong>確認プロンプトが表示</strong>される。</p>
+                    <p style="margin-top: 12px; font-size: 13px; opacity: 0.8;">ユーザーが明示的に承認しない限り実行されないため、セキュリティが大幅に向上しました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["Claude Code v2.1.145"]
+        subgraph Security["セキュリティ"]
+            direction LR
+            PermFix["パーミッション<br/>バイパス修正"]
+            EnvVar["環境変数代入<br/>の適切な検証"]
+            PermFix ~~~ EnvVar
+        end
+
+        subgraph Scripting["スクリプティング統合"]
+            direction LR
+            AgentsJSON["claude agents --json<br/>セッション一覧"]
+            StatusLine["ステータスライン<br/>GitHub 情報"]
+            TabTitle["タブタイトル<br/>入力待ちカウント"]
+            AgentsJSON ~~~ StatusLine ~~~ TabTitle
+        end
+
+        subgraph Tracing["OTEL トレーシング"]
+            direction LR
+            AgentID["agent_id 属性"]
+            ParentID["parent_agent_id 属性"]
+            Nesting["スパン親子関係<br/>正しいネスト"]
+            AgentID ~~~ ParentID ~~~ Nesting
+        end
+
+        subgraph PluginUI["プラグイン UI"]
+            direction LR
+            Discover["ディスカバー画面<br/>全機能表示"]
+            Mouse["マウス対応<br/>ホバーとクリック"]
+            Discover ~~~ Mouse
+        end
+    end
+
+    User(["開発者"]) --> ClaudeCode
+    ClaudeCode --> API["Claude API"]
+    ClaudeCode --> External["外部ツール<br/>tmux / ステータスバー"]
+    ClaudeCode --> OTELBackend["OTEL バックエンド<br/>Jaeger / Grafana"]
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef security fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef external fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class ClaudeCode platform
+    class Security,Scripting,Tracing,PluginUI layer
+    class AgentsJSON,StatusLine,TabTitle,AgentID,ParentID,Nesting,Discover,Mouse process
+    class PermFix,EnvVar security
+    class User user
+    class API,External,OTELBackend external
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">claude agents --json の活用例</span>
+                </div>
+                <pre><code class="language-bash"># 実行中の Claude セッションを JSON で取得
+claude agents --json
+
+# tmux ステータスバーでの活用例
+claude agents --json | jq '[.[] | select(.status == "awaiting_input")] | length'
+
+# セッションピッカーでの活用例
+claude agents --json | jq -r '.[] | "\(.id)\t\(.status)\t\(.task)"' | fzf | cut -f1</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">on_stop.py - フック入力の新フィールド活用</span>
+                </div>
+                <pre><code class="language-python"># on_stop.py - フック入力の新フィールド活用
+import json
+import sys
+
+hook_input = json.load(sys.stdin)
+
+# v2.1.145 で追加されたフィールド
+background_tasks = hook_input.get("background_tasks", [])
+session_crons = hook_input.get("session_crons", [])
+
+if background_tasks:
+    print(f"実行中のバックグラウンドタスク: {len(background_tasks)} 件")</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>外部スクリプティング統合</h4>
+                <p>claude agents --json とステータスライン JSON の GitHub 情報を組み合わせることで、tmux ステータスバーやカスタムセッションピッカーから Claude Code セッションを直接管理できます。入力待ちのセッション数をリアルタイムで表示し、作業効率を向上させます。</p>
+            </div>
+            <div class="use-case">
+                <h4>マルチエージェントデバッグ</h4>
+                <p>OTEL トレーシングの agent_id / parent_agent_id 属性により、Jaeger や Grafana でサブエージェント間の呼び出し関係を正確に可視化できます。スパンの親子関係が正しくネストされるため、複雑なマルチエージェントワークフローのボトルネック特定が容易になります。</p>
+            </div>
+            <div class="use-case">
+                <h4>国際チームでの Agent Teams 活用</h4>
+                <p>非 ASCII 文字のエンコーディング修正により、日本語や中国語などのエージェント名が正しく処理されます。グローバルに分散したチームで Agent Teams を利用する際の安定性が大幅に向上しました。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;">Generated by Anthropic News Summary - 2026-05-20</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

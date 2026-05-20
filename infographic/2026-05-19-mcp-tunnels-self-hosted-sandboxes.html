@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP トンネル、セルフホストサンドボックス - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding-left: 16px;
+            margin-top: 8px;
+        }
+
+        .feature-card ul li {
+            margin-bottom: 4px;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .comparison-table thead th {
+            background: var(--gradient-header);
+            color: white;
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .comparison-table thead th:first-child {
+            border-radius: 12px 0 0 0;
+        }
+
+        .comparison-table thead th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+        .comparison-table tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .comparison-table tbody tr:nth-child(even) {
+            background: var(--anthropic-cream);
+        }
+
+        .comparison-table tbody tr:last-child td:first-child {
+            border-radius: 0 0 0 12px;
+        }
+
+        .comparison-table tbody tr:last-child td:last-child {
+            border-radius: 0 0 12px 0;
+        }
+
+        /* Security Table */
+        .security-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .security-table thead th {
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .security-table thead th:first-child {
+            border-radius: 12px 0 0 0;
+        }
+
+        .security-table thead th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+        .security-table tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .security-table tbody tr:nth-child(even) {
+            background: rgba(212, 165, 116, 0.05);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .diagram-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+        }
+
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-table {
+                font-size: 12px;
+            }
+
+            .comparison-table thead th,
+            .comparison-table tbody td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API アップデート</span>
+                <h1>MCP トンネル、セルフホストサンドボックス</h1>
+                <p class="date">2026-05-19</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">主要アップデート</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>MCP トンネル (Research Preview)</h3>
+                        <p>プライベートネットワーク内の MCP サーバーへ安全に接続。cloudflared + プロキシスタックによる 3 層セキュリティ、インバウンドポート不要。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏗️</div>
+                    <div class="key-point-content">
+                        <h3>セルフホストサンドボックス</h3>
+                        <p>Anthropic のインフラの代わりに、自社インフラでツール実行を実現。Cloudflare、Daytona、Modal、Vercel に対応。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>動的 MCP 設定更新</h3>
+                        <p>アクティブなセッションを再起動せずに、MCP サーバーやツールの設定をリアルタイムで更新可能。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📄</div>
+                    <div class="key-point-content">
+                        <h3>大規模出力の自動スピル</h3>
+                        <p>100K トークンを超える出力はサンドボックス内のファイルに自動スピル。モデルにはトランケートされたプレビューとファイルパスが提供される。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">機能詳細</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔐 MCP トンネル</h3>
+                    <p>プライベートネットワーク内の MCP サーバーに接続するための安全なトンネル機能。</p>
+                    <ul>
+                        <li>cloudflared + プロキシスタック</li>
+                        <li>3 層セキュリティ構成</li>
+                        <li>インバウンドポート不要</li>
+                        <li>Research Preview 段階</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🖥️ セルフホストサンドボックス</h3>
+                    <p>自社インフラでツール実行環境を運用するパターン。</p>
+                    <ul>
+                        <li>Always-on: ant CLI ポーリング</li>
+                        <li>Always-on: SDK EnvironmentWorker</li>
+                        <li>Webhook トリガー</li>
+                        <li>4 プラットフォーム対応</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 動的 MCP 設定更新</h3>
+                    <p>セッション中の MCP サーバー/ツール設定をライブ更新。再起動なしでサーバー追加、ツール設定変更が可能。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 大規模出力自動スピル</h3>
+                    <p>100K トークンを超える出力を自動的にファイルへ書き出し。モデルはトランケートされたプレビューとファイルパスを取得して後続処理に活用。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After Comparison -->
+        <section class="section">
+            <h2 class="section-title">Cloud vs セルフホスト比較</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>Cloud (Anthropic 管理)</th>
+                        <th>セルフホスト</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ツール実行</strong></td>
+                        <td>Anthropic マネージドコンテナ</td>
+                        <td>ユーザーのインフラ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ネットワーク</strong></td>
+                        <td>Anthropic エグレス制御</td>
+                        <td>ユーザーのネットワークポリシー</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ファイル/リポジトリ</strong></td>
+                        <td>Anthropic 管理</td>
+                        <td>ユーザー管理</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ライフサイクル</strong></td>
+                        <td>Anthropic 管理</td>
+                        <td>ユーザー管理</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Security Layers -->
+        <section class="section">
+            <h2 class="section-title">MCP トンネル 3 層セキュリティ</h2>
+            <table class="security-table">
+                <thead>
+                    <tr>
+                        <th>レイヤー</th>
+                        <th>技術</th>
+                        <th>説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>外部</strong></td>
+                        <td>mTLS</td>
+                        <td>相互 TLS 認証で Anthropic プラットフォームとトンネル間の通信を保護</td>
+                    </tr>
+                    <tr>
+                        <td><strong>内部</strong></td>
+                        <td>TLS</td>
+                        <td>プロキシから MCP サーバーへの内部通信を暗号化</td>
+                    </tr>
+                    <tr>
+                        <td><strong>アプリケーション</strong></td>
+                        <td>OAuth per Server</td>
+                        <td>各 MCP サーバーごとに OAuth 認証を実施し、アクセス制御を実現</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+
+            <p class="diagram-label">MCP トンネル アーキテクチャ</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph PrivateNetwork["🏢 プライベートネットワーク"]
+        direction LR
+        MCP1["🔧 MCP Server 1"]
+        MCP2["🔧 MCP Server 2"]
+        Proxy["🔀 Proxy&#60;br/&#62;内部 TLS 終端 + ルーティング"]
+        Cloudflared["☁️ cloudflared&#60;br/&#62;トンネルエージェント"]
+        MCP1 ~~~ MCP2
+    end
+
+    subgraph Anthropic["🤖 Anthropic Platform"]
+        Edge["🌐 トンネルエッジ"]
+        Orchestrator["⚙️ Managed Agents&#60;br/&#62;オーケストレーター"]
+        Model["🧠 Claude Opus 4.7"]
+    end
+
+    subgraph Transport["🔒 Cloudflare Network"]
+        Tunnel["📡 トランスポート層"]
+    end
+
+    Model --> Orchestrator
+    Orchestrator --> Edge
+    Edge --> Tunnel
+    Tunnel --> Cloudflared
+    Cloudflared --> Proxy
+    Proxy --> MCP1
+    Proxy --> MCP2
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef transport fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef mcp fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class PrivateNetwork,Anthropic platform
+    class Transport platform
+    class Edge,Orchestrator,Model internal
+    class Proxy,Cloudflared process
+    class Tunnel transport
+    class MCP1,MCP2 mcp
+                </pre>
+            </div>
+
+            <p class="diagram-label">セルフホストサンドボックス アーキテクチャ</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph Anthropic["🤖 Anthropic Platform"]
+        Orchestrator["⚙️ オーケストレーター"]
+        Queue["📋 ワークキュー"]
+    end
+
+    subgraph UserInfra["🏢 ユーザーインフラ"]
+        Worker["👷 Environment Worker"]
+        Sandbox["📦 サンドボックス&#60;br/&#62;ツール実行"]
+        Files["📁 /workspace"]
+    end
+
+    Orchestrator --> Queue
+    Queue -->|"ポーリング"| Worker
+    Worker --> Sandbox
+    Sandbox --> Files
+    Worker -->|"結果を返送"| Orchestrator
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Anthropic,UserInfra platform
+    class Orchestrator,Queue internal
+    class Worker,Sandbox process
+    class Files input
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">MCP トンネル経由のツール呼び出し</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+response = client.beta.messages.create(
+    model="claude-opus-4-7",
+    max_tokens=1000,
+    messages=[{"role": "user", "content": "Use the hello tool to greet tunnel."}],
+    mcp_servers=[
+        {
+            "type": "url",
+            "url": "https://echo.YOUR_TUNNEL_DOMAIN_HERE/mcp",
+            "name": "echo",
+        }
+    ],
+    tools=[{"type": "mcp_toolset", "mcp_server_name": "echo"}],
+    betas=["mcp-client-2025-11-20"],
+)</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🏢 エンタープライズ内部システム連携</h4>
+                <p>社内のプライベートネットワークにある既存 MCP サーバー (データベース、CRM、社内ツール) に MCP トンネル経由で安全にアクセス。ファイアウォール設定の変更やポート開放なしに Claude を社内業務に統合可能。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔐 規制対応のセルフホスト環境</h4>
+                <p>金融、医療、政府機関などデータの外部送信が厳しく制限される環境で、セルフホストサンドボックスを使用。ツール実行とデータ処理を完全に自社インフラ内で完結し、コンプライアンス要件を満たす。</p>
+            </div>
+            <div class="use-case">
+                <h4>⚡ 大規模データ処理パイプライン</h4>
+                <p>大量のデータ分析やコード生成タスクで 100K トークンを超える出力が発生する場合、自動スピル機能によりメモリ制限を気にせず処理を継続。ファイルベースで後続ステップに結果を引き渡し可能。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p><strong>関連:</strong> <a href="https://www.anthropic.com/news" target="_blank" rel="noopener noreferrer">Anthropic News</a></p>
+            <p style="margin-top: 12px; font-size: 12px; color: var(--text-muted);">Generated by Anthropic News Summary - 2026-05-19</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

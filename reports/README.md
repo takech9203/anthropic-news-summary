@@ -5,6 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-20](2026/2026-05-20-claude-code-v2-1-145.md) - Claude Code v2.1.145 - セキュリティ修正とスクリプティング支援の強化
+- [2026-05-19](2026/2026-05-19-widening-conversation-ai.md) - フロンティア AI に関する対話の拡大
+- [2026-05-19](2026/2026-05-19-mcp-tunnels-self-hosted-sandboxes.md) - Claude API リリースノート - MCP トンネル、セルフホストサンドボックス
+- [2026-05-19](2026/2026-05-19-kpmg-strategic-alliance.md) - KPMG が Claude を全社導入 -- 276,000 人超の従業員に展開するグローバル戦略的提携
 - [2026-05-19](2026/2026-05-19-claude-code-v2-1-144.md) - Claude Code v2.1.144 - バックグラウンドセッション改善とプラグイン強化
 - [2026-05-18](2026/2026-05-18-web-search-sec-filing-data.md) - Web Search ツールで SEC ファイリングデータの強化
 - [2026-05-18](2026/2026-05-18-anthropic-acquires-stainless.md) - Anthropic が Stainless を買収
