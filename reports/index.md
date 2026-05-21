@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-21](2026/2026-05-21-claude-code-v2-1-146.md) - Claude Code v2.1.146 - コマンドリネーム、Auto モード改善、Windows 安定性修正
 - [2026-05-20](2026/2026-05-20-claude-code-v2-1-145.md) - Claude Code v2.1.145 - セキュリティ修正とスクリプティング支援の強化
 - [2026-05-19](2026/2026-05-19-widening-conversation-ai.md) - フロンティア AI に関する対話の拡大
 - [2026-05-19](2026/2026-05-19-mcp-tunnels-self-hosted-sandboxes.md) - Claude API リリースノート - MCP トンネル、セルフホストサンドボックス

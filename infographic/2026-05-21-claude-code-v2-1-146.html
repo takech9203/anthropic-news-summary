@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.146 - コマンドリネーム、Auto モード改善、Windows 安定性修正 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 6px 0;
+            border-bottom: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .comparison-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .bug-fix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-fix-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .bug-fix-list li .fix-icon {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .platform-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .platform-tag.windows {
+            background: #DBEAFE;
+            color: #1D4ED8;
+        }
+
+        .platform-tag.mcp {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .platform-tag.linux {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .platform-tag.general {
+            background: #F3E8FF;
+            color: #6B21A8;
+        }
+
+        .action-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .action-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+            border-radius: 10px;
+            font-size: 14px;
+            border-left: 3px solid var(--info);
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-links {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-links a {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(212, 165, 116, 0.1);
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLI Tool Update</span>
+                <h1>Claude Code v2.1.146</h1>
+                <p class="date">2026-05-21</p>
+                <span class="version-badge">v2.1.146</span>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>/simplify を /code-review にリネーム</h3>
+                        <p>コマンドの意図をより明確にし、エフォートレベル指定 (low / high) で レビュー深度を制御可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>Auto モードの AskUserQuestion 修正</h3>
+                        <p>スキルやユーザーが明示的に依存している場合、Auto モードでも質問が抑制されなくなった</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🪟</div>
+                    <div class="key-point-content">
+                        <h3>Windows 安定性の大幅改善</h3>
+                        <p>PowerShell リグレッション修正、ストロボ表示、NTFS ジャンクション、GNOME Terminal ペーストなど複数修正</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>MCP ページネーション修正</h3>
+                        <p>resources/list、templates/list、prompts/list で 2 ページ目以降がドロップされる問題を解消</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li><code>/simplify</code> - 単一深度のみ</li>
+                        <li>Auto モードで全ての AskUserQuestion が抑制</li>
+                        <li>MCP ページネーションで 2 ページ目以降消失</li>
+                        <li>winget の pwsh で "command line is invalid"</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li><code>/code-review [low|high]</code> - 深度制御可能</li>
+                        <li>スキル依存時は質問が正しく表示</li>
+                        <li>全ページのアイテムを正しく収集</li>
+                        <li>全インストール方法の pwsh が正常動作</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.146</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">コマンド変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">動作変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">改善</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📝 /code-review コマンド</h3>
+                    <p>/simplify から改名。オプションでエフォートレベルを指定し、レビューの深さを low / high で制御可能</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧠 Auto モード修正</h3>
+                    <p>AskUserQuestion の抑制ロジックを改善。スキルが明示的に依存する場合は抑制しない条件付きロジックを導入</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔌 MCP ページネーション</h3>
+                    <p>resources/list、resources/templates/list、prompts/list で 2 ページ目以降のアイテム取得を修正</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🪟 PowerShell 修正</h3>
+                    <p>winget / Microsoft Store 経由の pwsh で発生していた v2.1.124 リグレッションを解消</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 自動アップデーター強化</h3>
+                    <p>ネットワーク障害時のリトライ対応。即座に失敗する代わりに一時的な障害をリトライ</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ diff パフォーマンス改善</h3>
+                    <p>大規模ファイル編集時の diff レンダリングを高速化。大きな差分表示がスムーズに</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes Detail -->
+        <section class="section">
+            <h2 class="section-title">バグ修正一覧</h2>
+            <ul class="bug-fix-list">
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag windows">Windows</span>PowerShell ツールの "command line is invalid" エラー修正 (winget/Store 経由の pwsh)</span>
+                </li>
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag mcp">MCP</span>resources/list、templates/list、prompts/list のページネーションで 2 ページ目以降がドロップ</span>
+                </li>
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag windows">Windows</span>アタッチされたバックグラウンドセッションでフルスクリーンのストロボ表示</span>
+                </li>
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag general">General</span>自動アップデーターのステータスラインにバージョンが表示されない問題</span>
+                </li>
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag windows">Windows</span>NTFS ジャンクションを辿ってメインリポジトリのファイルを削除する問題</span>
+                </li>
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag general">General</span>/background がスキルやカスタムスラッシュコマンドのみのセッションを拒否</span>
+                </li>
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag general">General</span>バックグラウンドセッションで許可済みツール権限の再プロンプト</span>
+                </li>
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag general">General</span>/theme のカラーエディターが Esc キーに反応しない</span>
+                </li>
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag general">General</span>Agent SDK ストリーミングセッション終了時のキャッチされない例外</span>
+                </li>
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag general">General</span>forceLoginOrgUUID / forceLoginMethod がサードパーティセッションに未適用</span>
+                </li>
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag linux">Linux</span>GNOME Terminal の右クリック/中クリックペーストが動作しない</span>
+                </li>
+                <li>
+                    <span class="fix-icon">🔧</span>
+                    <span><span class="platform-tag general">General</span>CLAUDE_CODE_SUBAGENT_MODEL が子プロセスに転送されない</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/code-review コマンドの使用例</span>
+                </div>
+                <pre><code class="language-bash"># デフォルトのレビュー深度でコードレビューを実行
+/code-review
+
+# 詳細レビュー (再利用性、品質、効率性を網羅的にチェック)
+/code-review high
+
+# 軽量レビュー (明らかな問題のみ)
+/code-review low</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">TypeScript</span>
+                    <span class="code-title">MCP ページネーション - 修正後の動作</span>
+                </div>
+                <pre><code class="language-typescript">// MCP サーバーがページネーションを使用する場合
+// v2.1.146 以降、全ページのアイテムが正しく取得される
+
+server.setRequestHandler(ListResourcesRequestSchema, async (request) => {
+  const page = request.params?.cursor
+    ? parseInt(request.params.cursor) : 0;
+  const pageSize = 10;
+  const resources = getAllResources();
+  const start = page * pageSize;
+  const end = start + pageSize;
+
+  return {
+    resources: resources.slice(start, end),
+    nextCursor: end < resources.length
+      ? String(page + 1) : undefined,
+  };
+});
+
+// Claude Code v2.1.146:
+// 全 100 件が正しく取得される
+// (v2.1.145 以前は最初の 10 件のみ)</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">サブエージェントモデルの環境変数設定</span>
+                </div>
+                <pre><code class="language-bash"># マルチエージェントセッションでサブエージェントのモデルを指定
+export CLAUDE_CODE_SUBAGENT_MODEL="claude-sonnet-4-6"
+
+# v2.1.146 以降、この環境変数が子プロセスに正しく転送される
+claude --agent-mode</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["Claude Code v2.1.146"]
+        subgraph Commands["コマンド改善"]
+            direction LR
+            CodeReview["/code-review<br/>エフォートレベル対応"]
+            AutoMode["Auto モード<br/>AskUserQuestion 修正"]
+            CodeReview ~~~ AutoMode
+        end
+
+        subgraph Windows["Windows 安定性"]
+            direction LR
+            PowerShell["PowerShell 修正<br/>winget/Store 対応"]
+            Strobing["ストロボ表示修正<br/>Background セッション"]
+            NTFS["NTFS ジャンクション<br/>安全な削除"]
+            PowerShell ~~~ Strobing ~~~ NTFS
+        end
+
+        subgraph MCP["MCP 修正"]
+            direction LR
+            Pagination["ページネーション<br/>全ページ取得"]
+            Resources["resources/list<br/>templates/list<br/>prompts/list"]
+            Pagination ~~~ Resources
+        end
+
+        subgraph Reliability["信頼性向上"]
+            direction LR
+            AutoUpdate["自動アップデーター<br/>リトライ対応"]
+            DiffPerf["diff レンダリング<br/>パフォーマンス改善"]
+            AutoUpdate ~~~ DiffPerf
+        end
+    end
+
+    User(["開発者"]) --> ClaudeCode
+    ClaudeCode --> MCPServer["MCP サーバー"]
+    ClaudeCode --> AgentSDK["Agent SDK"]
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef windows fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef external fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class ClaudeCode platform
+    class Commands,Windows,MCP,Reliability layer
+    class CodeReview,AutoMode,Pagination,Resources,AutoUpdate,DiffPerf process
+    class PowerShell,Strobing,NTFS windows
+    class User user
+    class MCPServer,AgentSDK external
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases / Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="use-case">
+                <h4>🎯 /simplify ユーザーへの影響</h4>
+                <p>ドキュメントやチーム手順で <code>/simplify</code> を参照している場合は <code>/code-review</code> に更新が必要。エフォートレベル指定でより柔軟なレビューが可能に。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔌 MCP サーバー開発者への影響</h4>
+                <p>ページネーションを使用する MCP サーバーを運用している場合、アップデート後は全アイテムが正しく取得される。以前欠落していたリソースやプロンプトが表示されるようになる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🪟 Windows 開発者への影響</h4>
+                <p>winget / Microsoft Store 経由で PowerShell をインストールしている場合、v2.1.124 以降のエラーが解消。バックグラウンドセッションのストロボ表示も修正。</p>
+            </div>
+        </section>
+
+        <!-- Required Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <ul class="action-list">
+                <li>
+                    <span>📦</span>
+                    <span><strong>全ユーザー</strong>: <code>claude update</code> で v2.1.146 にアップデート</span>
+                </li>
+                <li>
+                    <span>📝</span>
+                    <span><strong>/simplify ユーザー</strong>: <code>/code-review</code> に移行。エフォートレベルは任意</span>
+                </li>
+                <li>
+                    <span>🪟</span>
+                    <span><strong>Windows + winget/Store ユーザー</strong>: アップデートで PowerShell 問題が解消</span>
+                </li>
+                <li>
+                    <span>🔌</span>
+                    <span><strong>MCP サーバー運用者</strong>: ページネーション対応の確認推奨</span>
+                </li>
+                <li>
+                    <span>🤖</span>
+                    <span><strong>マルチエージェント利用者</strong>: CLAUDE_CODE_SUBAGENT_MODEL の転送が正常化</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <div class="footer-links">
+                <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank">Changelog</a>
+                <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank">Claude Code Docs</a>
+                <a href="https://modelcontextprotocol.io/" target="_blank">MCP Spec</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
