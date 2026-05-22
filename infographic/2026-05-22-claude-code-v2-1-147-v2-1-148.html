@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.147 / v2.1.148 - /code-review 刷新、ピン留めセッション強化 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .version-badges {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(212, 165, 116, 0.4);
+        }
+
+        .version-badge.hotfix {
+            background: rgba(239, 68, 68, 0.15);
+            color: #FCA5A5;
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 4px 0;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li::before {
+            content: '• ';
+            font-weight: bold;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .bug-fix-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .bug-fix-category {
+            margin-bottom: 16px;
+        }
+
+        .bug-fix-category h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bug-fix-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-fix-category ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 6px 0 6px 20px;
+            position: relative;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .bug-fix-category ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .alert-box {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border: 2px solid #F59E0B;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .alert-box h4 {
+            color: #92400E;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-box p {
+            font-size: 14px;
+            color: #78350F;
+        }
+
+        .migration-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .migration-table th {
+            background: var(--anthropic-cream);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid var(--anthropic-coral);
+        }
+
+        .migration-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .migration-table tr:hover td {
+            background: rgba(212, 165, 116, 0.05);
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.147 / v2.1.148<br>/code-review 刷新、ピン留めセッション強化</h1>
+                <p class="date">2026-05-22</p>
+                <div class="version-badges">
+                    <span class="version-badge">v2.1.147 - 機能追加 + バグ修正</span>
+                    <span class="version-badge hotfix">v2.1.148 - 緊急修正パッチ</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔍</div>
+                    <div class="key-point-content">
+                        <h3>/code-review コマンド刷新</h3>
+                        <p>/simplify を /code-review にリネーム。エフォートレベル指定による段階的レビューと --comment での GitHub PR インラインコメント投稿が可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📌</div>
+                    <div class="key-point-content">
+                        <h3>ピン留めバックグラウンドセッション</h3>
+                        <p>Ctrl+T でセッションをピン留め。アイドル時も生存、アップデート時にインプレース再起動、メモリプレッシャー時は最後に回収</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>自動アップデーター改善</h3>
+                        <p>ネットワーク障害時のリトライ、具体的なエラーカテゴリ・OS エラーコードの報告、失敗時の現バージョン表示</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚨</div>
+                    <div class="key-point-content">
+                        <h3>v2.1.148 緊急修正</h3>
+                        <p>v2.1.147 で導入されたリグレッション修正。Bash ツールが全コマンドで exit code 127 を返す問題を解消</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alert Box -->
+        <section class="section">
+            <div class="alert-box">
+                <h4>⚠️ 重要: v2.1.148 へのアップデート推奨</h4>
+                <p>v2.1.147 には Bash ツールが全コマンドで exit code 127 を返すリグレッションが含まれています。必ず v2.1.148 以降にアップデートしてください: <code>claude update</code></p>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">新機能・改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Windows 修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">セキュリティ修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before - /simplify</h4>
+                    <ul>
+                        <li>コードのクリーンアップと修正提案</li>
+                        <li>エフォートレベル指定なし</li>
+                        <li>PR コメント機能なし</li>
+                        <li>簡素化の提案に特化</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After - /code-review</h4>
+                    <ul>
+                        <li>正確性バグの検出に特化</li>
+                        <li>low/medium/high/max レベル指定</li>
+                        <li>--comment で PR にインライン投稿</li>
+                        <li>CI/CD パイプライン統合可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔍 /code-review</h3>
+                    <p>正確性バグ検出に特化した新コマンド。エフォートレベルで検出範囲を制御し、--comment で PR にインラインコメントを直接投稿</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📌 ピン留めセッション</h3>
+                    <p>claude agents で Ctrl+T により重要なセッションを永続化。アイドル中も生存し、アップデート時にはインプレースで再起動</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 自動アップデーター</h3>
+                    <p>ネットワーク障害のリトライ、エラーカテゴリと OS エラーコードの報告。アップデート失敗時に現バージョンも表示</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ diff レンダリング</h3>
+                    <p>大規模ファイル編集時の差分表示パフォーマンスが改善。大きな変更の確認がスムーズに</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 履歴重複排除</h3>
+                    <p>矢印キーで呼び出したプロンプトの再送信時に連続する重複エントリが記録されなくなった</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 ログイン制限強化</h3>
+                    <p>エンタープライズログインポリシーがサードパーティプロバイダーと API キーセッションにも正しく適用</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- /code-review エフォートレベル比較 -->
+        <section class="section">
+            <h2 class="section-title">/code-review エフォートレベル</h2>
+            <table class="migration-table">
+                <thead>
+                    <tr>
+                        <th>レベル</th>
+                        <th>検出対象</th>
+                        <th>ユースケース</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>low / medium</strong></td>
+                        <td>少数の高確信度な正確性バグ</td>
+                        <td>クイックチェック、軽量 CI</td>
+                    </tr>
+                    <tr>
+                        <td><strong>high / max</strong></td>
+                        <td>幅広いカバレッジ (不確実な指摘含む)</td>
+                        <td>重要な PR、リリース前レビュー</td>
+                    </tr>
+                    <tr>
+                        <td><strong>指定なし</strong></td>
+                        <td>バランスの取れた検出</td>
+                        <td>日常的なコードレビュー</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">/code-review ワークフロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph CodeReviewWorkflow["/code-review コマンドワークフロー"]
+        direction TB
+
+        User(["開発者"]) --> InvokeCR["🔍 /code-review 実行"]
+
+        InvokeCR --> EffortSelect{{"エフォートレベル選択"}}
+
+        EffortSelect -->|"low / medium"| LowEffort["少数の高確信度<br/>正確性バグを検出"]
+        EffortSelect -->|"high / max"| HighEffort["幅広いカバレッジ<br/>不確実な指摘を含む"]
+        EffortSelect -->|"指定なし"| DefaultEffort["デフォルト深度<br/>バランスの取れた検出"]
+
+        LowEffort --> Results["📋 バグレポート生成"]
+        HighEffort --> Results
+        DefaultEffort --> Results
+
+        Results --> CommentFlag{{"--comment フラグ?"}}
+
+        CommentFlag -->|"あり"| PostPR["💬 GitHub PR に<br/>インラインコメント投稿"]
+        CommentFlag -->|"なし"| ShowTerminal["🖥️ ターミナルに<br/>結果表示"]
+
+        PostPR --> Done(["完了"])
+        ShowTerminal --> Done
+    end
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef output fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class CodeReviewWorkflow platform
+    class InvokeCR,LowEffort,HighEffort,DefaultEffort,Results process
+    class EffortSelect,CommentFlag decision
+    class PostPR,ShowTerminal output
+    class User,Done user
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/code-review コマンドの使用例</span>
+                </div>
+                <pre><code class="language-bash"># 正確性バグをデフォルトの深度で検出
+/code-review
+
+# 高エフォートレベルで詳細なバグ検出
+/code-review high
+
+# 低エフォートレベル (高確信度の問題のみ)
+/code-review low
+
+# GitHub PR にインラインコメントとして結果を投稿
+/code-review --comment
+
+# 高エフォート + PR コメント投稿の組み合わせ
+/code-review high --comment</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ピン留めセッションと緊急アップデート</span>
+                </div>
+                <pre><code class="language-bash"># claude agents でセッション一覧を表示
+claude agents
+
+# セッション上で Ctrl+T を押下してピン留め
+# → アイドル時も生存
+# → アップデート時にインプレース再起動
+# → メモリプレッシャー時は非ピン留めセッションが先に回収
+
+# v2.1.148 への緊急アップデート
+claude update
+
+# バージョン確認
+claude --version
+# Claude Code v2.1.148</code></pre>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正一覧</h2>
+            <div class="bug-fix-list">
+                <div class="bug-fix-category">
+                    <h4>🪟 Windows / PowerShell (7 件)</h4>
+                    <ul>
+                        <li>PowerShell ツールのデフォルトフォーマッター出力消失修正</li>
+                        <li>「Yes, and don't ask again」ルールマッチング修正</li>
+                        <li>pwsh の winget/Microsoft Store インストール対応</li>
+                        <li>Windows Terminal フルスクリーンストロボ修正</li>
+                        <li>NTFS ジャンクションの安全な削除</li>
+                        <li>CJK 文字によるエージェントビュー表示崩れ修正</li>
+                        <li>スクロール待機時のまれなハング修正</li>
+                    </ul>
+                </div>
+                <div class="bug-fix-category">
+                    <h4>🖥️ コマンド・UI (7 件)</h4>
+                    <ul>
+                        <li>&amp; の HTML エスケープ修正 (URL コピー壊れ)</li>
+                        <li>ヘッドレス/SDK モードで不明コマンドのエラー表示</li>
+                        <li>/help の小画面レンダリング修正</li>
+                        <li>/effort スライダー初期位置修正</li>
+                        <li>/theme ダイアログの Esc キー修正</li>
+                        <li>スラッシュコマンド後のタブ/改行処理修正</li>
+                        <li>各種メニューのレイアウト修正</li>
+                    </ul>
+                </div>
+                <div class="bug-fix-category">
+                    <h4>🔌 プラグイン・MCP・エージェント (5 件)</h4>
+                    <ul>
+                        <li>MCP サーバーページネーション (ページ 2 以降のドロップ) 修正</li>
+                        <li>プラグインの複数 Agent 型宣言修正</li>
+                        <li>コンポーネント数の重複カウント修正</li>
+                        <li>Agent SDK ストリーミングセッション例外修正</li>
+                        <li>CLAUDE_CODE_SUBAGENT_MODEL 環境変数転送修正</li>
+                    </ul>
+                </div>
+                <div class="bug-fix-category">
+                    <h4>🔧 その他 (5 件)</h4>
+                    <ul>
+                        <li>シェルスナップショットのアンダースコア関数修正</li>
+                        <li>Hook の if 条件パターンマッチング修正</li>
+                        <li>Auto モードの AskUserQuestion 抑制修正</li>
+                        <li>ペーストテキストのプレースホルダー問題修正</li>
+                        <li>GNOME Terminal ペースト修正</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🔄 PR レビューパイプラインへの統合</h4>
+                <p>/code-review high --comment を CI/CD パイプラインに組み込み、PR 作成時に自動的にコードレビューコメントを投稿。レビュアーの負担を軽減しつつ、正確性バグの早期検出を実現</p>
+            </div>
+            <div class="use-case">
+                <h4>📌 長時間稼働モニタリングセッション</h4>
+                <p>claude agents でモニタリングセッションをピン留め。アイドル状態でも自動終了されず、Claude Code アップデート時にもインプレースで再起動されるため、手動再構築が不要に</p>
+            </div>
+            <div class="use-case">
+                <h4>🪟 Windows 開発環境の安定利用</h4>
+                <p>7 件の Windows/PowerShell 修正により、winget/Microsoft Store 経由の pwsh、NTFS ジャンクション、CJK 文字環境での安定性が大幅に向上。Windows での Claude Code 体験が改善</p>
+            </div>
+        </section>
+
+        <!-- Migration -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+            <table class="migration-table">
+                <thead>
+                    <tr>
+                        <th>旧コマンド</th>
+                        <th>新コマンド</th>
+                        <th>備考</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/simplify</code></td>
+                        <td><code>/code-review</code></td>
+                        <td>目的が変更: クリーンアップ → バグ検出</td>
+                    </tr>
+                    <tr>
+                        <td><code>/simplify</code> (詳細)</td>
+                        <td><code>/code-review high</code></td>
+                        <td>エフォートレベル指定で範囲制御</td>
+                    </tr>
+                    <tr>
+                        <td>-</td>
+                        <td><code>/code-review --comment</code></td>
+                        <td>新機能: PR インラインコメント</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連:</strong> <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
