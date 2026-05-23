@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.149 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Security Section */
+        .security-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 2px solid rgba(244, 67, 54, 0.2);
+        }
+
+        .security-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #DC2626;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .security-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: #F44336;
+            border-radius: 2px;
+        }
+
+        .security-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .security-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(244, 67, 54, 0.15);
+        }
+
+        .security-item-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .security-item-content h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #991B1B;
+        }
+
+        .security-item-content p {
+            font-size: 14px;
+            color: #7F1D1D;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .comparison-card.before p { color: #7F1D1D; }
+        .comparison-card.after p { color: #065F46; }
+
+        .comparison-pair {
+            margin-bottom: 24px;
+        }
+
+        .comparison-pair:last-child {
+            margin-bottom: 0;
+        }
+
+        .comparison-pair-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section, .security-section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">開発ツール</span>
+                <h1>Claude Code v2.1.149</h1>
+                <p class="date">2026-05-22</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>/usage カテゴリ別使用量内訳表示</h3>
+                        <p>スキル、サブエージェント、プラグイン、MCP サーバーごとのコスト内訳を確認可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>4 件の重大セキュリティ修正</h3>
+                        <p>PowerShell パーミッションバイパス、Git ワークツリーサンドボックス、変数トラッキングなどの脆弱性を修正</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📜</div>
+                    <div class="key-point-content">
+                        <h3>/diff キーボードスクロール対応</h3>
+                        <p>j/k、PgUp/PgDn、Space、Home/End キーによるスクロール操作に対応</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛠️</div>
+                    <div class="key-point-content">
+                        <h3>17 件のバグ修正 + v2.1.148 緊急修正</h3>
+                        <p>find コマンドクラッシュ防止、UI/UX 改善、安定性向上を含む包括的な修正</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るリリース</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">セキュリティ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">17</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">緊急パッチ<br>v2.1.148</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📊 /usage カテゴリ別内訳</h3>
+                    <p>スキル、サブエージェント、プラグイン、MCP サーバーごとのコスト表示が可能に。リソース消費の可視化で最適化を支援</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📜 /diff キーボードスクロール</h3>
+                    <p>j/k、PgUp/PgDn、Space、Home/End キーに対応。大きな差分の閲覧がキーボードのみで快適に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>✅ GFM タスクリスト</h3>
+                    <p>GitHub Flavored Markdown のチェックボックスレンダリングに対応。タスク管理がより視覚的に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏢 allowAllClaudeAiMcps</h3>
+                    <p>エンタープライズ向けクラウド MCP 設定。組織全体で Claude.ai MCP サーバーを一括許可</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Fixes -->
+        <section class="security-section">
+            <h2 class="security-title">セキュリティ修正 (重大)</h2>
+            <div class="security-grid">
+                <div class="security-item">
+                    <div class="security-item-icon">🚨</div>
+                    <div class="security-item-content">
+                        <h3>PowerShell パーミッションバイパス</h3>
+                        <p>cd../cd\/cd~/X: でワークスペース外アクセスが可能だった脆弱性を修正。全 cd 変種を検知しトラッキング</p>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="security-item-icon">🚨</div>
+                    <div class="security-item-content">
+                        <h3>Git ワークツリーサンドボックス</h3>
+                        <p>ワークツリーからメインリポジトリ全体に書き込み許可されていた問題を修正。共有 .git ディレクトリのみに制限</p>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="security-item-icon">🚨</div>
+                    <div class="security-item-content">
+                        <h3>PowerShell ワイルドカードルール</h3>
+                        <p>ネイティブ実行ファイルが未承認で実行可能だった問題を修正</p>
+                    </div>
+                </div>
+                <div class="security-item">
+                    <div class="security-item-icon">🚨</div>
+                    <div class="security-item-content">
+                        <h3>変数トラッキングギャップ</h3>
+                        <p>PWD/OLDPWD/DIRSTACK の stale 値により正確なディレクトリ追跡ができていなかった問題を修正</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+
+            <div class="comparison-pair">
+                <div class="comparison-pair-label">PowerShell パーミッション検知</div>
+                <div class="comparison">
+                    <div class="comparison-card before">
+                        <h4>Before</h4>
+                        <p>PowerShell の cd 関数がパーミッション検知をバイパスし、ワークスペース外にアクセス可能</p>
+                    </div>
+                    <div class="comparison-card after">
+                        <h4>After</h4>
+                        <p>全 cd 変種 (cd..、cd\、cd~、X:) を検知しトラッキング。ワークスペース外アクセスを確実にブロック</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-pair" style="margin-top: 24px;">
+                <div class="comparison-pair-label">Git ワークツリーサンドボックス</div>
+                <div class="comparison">
+                    <div class="comparison-card before">
+                        <h4>Before</h4>
+                        <p>ワークツリーからメインリポジトリ全体に書き込み可能。意図しないファイル変更のリスク</p>
+                    </div>
+                    <div class="comparison-card after">
+                        <h4>After</h4>
+                        <p>共有 .git ディレクトリのみに制限。ワークツリーのサンドボックスが適切に機能</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/usage コマンド出力例</span>
+                </div>
+                <pre><code class="language-bash">/usage
+# Usage breakdown:
+#   Skills:        45%
+#   Subagents:     25%
+#   Plugins:       15%
+#   MCP Servers:   15%
+#     - github:     8%
+#     - filesystem: 7%</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph SecurityFixes["🔒 セキュリティ修正"]
+        direction LR
+        PS["PowerShell<br/>パーミッション"]
+        GW["Git ワークツリー<br/>サンドボックス"]
+        VT["変数<br/>トラッキング"]
+        PS ~~~ GW ~~~ VT
+    end
+
+    subgraph NewFeatures["✨ 新機能"]
+        direction LR
+        Usage["📊 /usage 内訳"]
+        Diff["📜 /diff スクロール"]
+        Task["✅ タスクリスト"]
+        MCP["🏢 MCP 設定"]
+        Usage ~~~ Diff ~~~ Task ~~~ MCP
+    end
+
+    subgraph Stability["🛠️ 安定性修正"]
+        direction LR
+        Find["find クラッシュ"]
+        Ultra["/ultraplan"]
+        UI["UI/UX 修正"]
+        Find ~~~ Ultra ~~~ UI
+    end
+
+    User(["👤 開発者"]) --> NewFeatures
+    User --> SecurityFixes
+    User --> Stability
+
+    classDef security fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef feature fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef stability fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class SecurityFixes,PS,GW,VT security
+    class NewFeatures,Usage,Diff,Task,MCP feature
+    class Stability,Find,Ultra,UI stability
+    class User user
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🛡️ PowerShell ユーザー</h4>
+                <p>セキュリティバイパスの脆弱性修正で安全性向上。ワークスペース外への意図しないアクセスを確実に防止</p>
+            </div>
+            <div class="use-case">
+                <h4>💰 コスト管理</h4>
+                <p>/usage でスキル、プラグイン、MCP サーバーごとのコスト把握。リソース消費の最適化に活用</p>
+            </div>
+            <div class="use-case">
+                <h4>🍎 macOS 開発者</h4>
+                <p>find コマンドによるシステムクラッシュ防止。安定した開発環境を維持</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px; font-size: 12px;">Generated by Anthropic News Summary</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

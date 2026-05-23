@@ -5,7 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-22](2026/2026-05-22-project-glasswing-initial-update.md) - Project Glasswing: 初回アップデート
+- [2026-05-22](2026/2026-05-22-claude-code-v2-1-149.md) - Claude Code v2.1.149 - 使用量カテゴリ別内訳表示、セキュリティ修正、大量バグフィックス
 - [2026-05-22](2026/2026-05-22-claude-code-v2-1-147-v2-1-148.md) - Claude Code v2.1.147 / v2.1.148 - /code-review 刷新、ピン留めセッション強化、Bash ツールリグレッション修正
+- [2026-05-21](2026/2026-05-21-claude-compliance-api-integrations.md) - Claude Compliance API インテグレーション
 - [2026-05-21](2026/2026-05-21-claude-code-v2-1-146.md) - Claude Code v2.1.146 - コマンドリネーム、Auto モード改善、Windows 安定性修正
 - [2026-05-20](2026/2026-05-20-claude-code-v2-1-145.md) - Claude Code v2.1.145 - セキュリティ修正とスクリプティング支援の強化
 - [2026-05-19](2026/2026-05-19-widening-conversation-ai.md) - フロンティア AI に関する対話の拡大
