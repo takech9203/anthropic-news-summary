@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-25](2026/2026-05-25-chris-olah-pope-leo-encyclical.md) - Chris Olah が教皇レオ 14 世の AI 回勅「Magnifica humanitas」発表に際してスピーチ
 - [2026-05-24](2026/2026-05-24-claude-code-v2-1-150.md) - Claude Code v2.1.150 - 内部インフラストラクチャ改善
 - [2026-05-22](2026/2026-05-22-project-glasswing-initial-update.md) - Project Glasswing: 初回アップデート
 - [2026-05-22](2026/2026-05-22-claude-code-v2-1-149.md) - Claude Code v2.1.149 - 使用量カテゴリ別内訳表示、セキュリティ修正、大量バグフィックス
