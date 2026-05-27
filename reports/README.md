@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-27](2026/2026-05-27-claude-code-v2-1-152.md) - Claude Code v2.1.152 — コードレビュー自動修正、スキルの動的管理、セッションフック拡張
+- [2026-05-26](2026/2026-05-26-kiyoung-choi-anthropic-korea.md) - Anthropic、韓国代表取締役に KiYoung Choi を任命 — ソウルオフィス開設に先立ち
 - [2026-05-25](2026/2026-05-25-chris-olah-pope-leo-encyclical.md) - Chris Olah が教皇レオ 14 世の AI 回勅「Magnifica humanitas」発表に際してスピーチ
 - [2026-05-24](2026/2026-05-24-claude-code-v2-1-150.md) - Claude Code v2.1.150 - 内部インフラストラクチャ改善
 - [2026-05-22](2026/2026-05-22-project-glasswing-initial-update.md) - Project Glasswing: 初回アップデート
