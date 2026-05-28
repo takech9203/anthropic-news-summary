@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.153 - バックグラウンドセッション安定化と MCP 修正</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/github-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: #FFF8F0;
+            color: #1a1a2e;
+            line-height: 1.7;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content { position: relative; z-index: 1; }
+
+        .category-badge {
+            display: inline-block;
+            background: #D4A574;
+            color: #1a1a2e;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
+        .header .date { font-size: 14px; opacity: 0.8; }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: #D4A574;
+            border-radius: 2px;
+        }
+
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: #F5EDE4;
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: #4a4a5a; }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, #F5EDE4 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .feature-card p { font-size: 14px; color: #4a4a5a; line-height: 1.6; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: #D4A574; margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) { .comparison { grid-template-columns: 1fr; } }
+
+        .comparison-card { padding: 24px; border-radius: 16px; }
+        .comparison-card.before { background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); border: 2px solid #F87171; }
+        .comparison-card.after { background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border: 2px solid #34D399; }
+        .comparison-card h4 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+        .comparison-card ul { list-style: none; padding: 0; }
+        .comparison-card li { font-size: 14px; padding: 4px 0; }
+
+        .code-block { background: #1a1a2e; border-radius: 12px; overflow: hidden; margin: 20px 0; }
+        .code-header { background: #2d2d44; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .code-lang { color: #D4A574; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre { margin: 0; padding: 0; }
+        .code-block code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; padding: 20px !important; }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid { display: flex; justify-content: center; }
+
+        .use-case {
+            background: linear-gradient(135deg, #F5EDE4 0%, #FFF8F0 100%);
+            border-left: 4px solid #D4A574;
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
+        .use-case p { font-size: 14px; color: #4a4a5a; }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: #F5EDE4;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #6a6a7a;
+        }
+
+        .footer a { color: #D4A574; text-decoration: none; word-break: break-all; }
+        .footer a:hover { text-decoration: underline; }
+
+        .bug-category { margin-bottom: 20px; }
+        .bug-category h4 { font-size: 1rem; font-weight: 700; margin-bottom: 12px; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
+        .bug-list { list-style: none; padding: 0; }
+        .bug-list li { font-size: 14px; color: #4a4a5a; padding: 8px 0; border-bottom: 1px solid rgba(212, 165, 116, 0.1); display: flex; align-items: flex-start; gap: 8px; }
+        .bug-list li::before { content: ''; flex-shrink: 0; }
+        .bug-icon { flex-shrink: 0; }
+
+        .security-badge {
+            display: inline-block;
+            background: #FFEBEE;
+            color: #B71C1C;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">ツールアップデート</span>
+                <h1>Claude Code v2.1.153<br>バックグラウンドセッション安定化と MCP 修正を含む大型アップデート</h1>
+                <p class="date">2026-05-28</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">主要ポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>バックグラウンドセッション安定化</h3>
+                        <p>11 件のバグ修正により、/bg 応答継続、/btw ショートカット、クリップボード、IME、tmux 対応など包括的に改善。バックグラウンドセッションの信頼性が大幅に向上</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>MCP サーバー 5 件の修正</h3>
+                        <p>ステートフル MCP サーバーの再接続ループ修正、認証トークンのルーティング修正 (セキュリティ)、サブエージェント MCP 設定の問題を解消</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🪟</div>
+                    <div class="key-point-content">
+                        <h3>Windows 対応改善</h3>
+                        <p>PowerShell インストーラーの誤報告修正、アップデートロールバック機能、VS Code プロセスの正常終了を実現</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>セキュリティ修正: OAuth トークン誤送信</h3>
+                        <p>カスタム API ゲートウェイにユーザーの Anthropic OAuth 認証情報が誤送信されるリグレッションを修正。該当ユーザーは速やかなアップデートが推奨される</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚙️</div>
+                    <div class="key-point-content">
+                        <h3>/model コマンドの動作変更</h3>
+                        <p>選択したモデルが新規セッションのデフォルトとして保存される動作に変更。キーバインド <code>modelPicker:setAsDefault</code> を <code>modelPicker:thisSessionOnly</code> へ移行が必要</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">変更の統計</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">36</div>
+                    <div class="stat-label">総変更件数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">11</div>
+                    <div class="stat-label">バックグラウンド<br>セッション修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">MCP サーバー<br>修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Windows 固有<br>修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📦 skipLfs オプション</h3>
+                    <p>github/git プラグインのマーケットプレイスソースに <code>skipLfs</code> オプションを追加。クローンおよびアップデート時の Git LFS ダウンロードをスキップ可能に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📢 npm 更新通知</h3>
+                    <p>自動更新ができない npm グローバルインストール環境で、一度だけ通知を表示。/doctor で修正方法を確認可能</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📟 ステータスライン環境変数</h3>
+                    <p>ステータスラインコマンドに COLUMNS と LINES 環境変数を渡し、ターミナル幅に応じた出力サイズ調整が可能に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 agents オートコンプリート</h3>
+                    <p>ディスパッチ入力でネイティブスラッシュコマンドとバンドルスキルを候補に表示。プロジェクトスキルだけでなく全スキルが候補に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 PR カラム表示改善</h3>
+                    <p>claude agents の PR カラムが単一 PR の場合は「PR #N」、複数の場合は「N PRs」と表示されるよう改善</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚙️ /model 動作変更</h3>
+                    <p>選択したモデルが新規セッションのデフォルトとして保存される動作に変更。現在のセッションのみ変更する場合はピッカーで「s」を押す</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🩺 /doctor 更新情報</h3>
+                    <p>前回のアップデート試行結果を表示。更新に失敗した場合の原因特定が容易に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🍎 macOS バックグラウンド改善</h3>
+                    <p>Privacy & Security に "Claude Code" として表示され、アップグレード後もパーミッション付与が維持される</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fix Categories -->
+        <section class="section">
+            <h2 class="section-title">バグ修正カテゴリ</h2>
+
+            <div class="bug-category">
+                <h4>🔄 バックグラウンドセッション (11 件)</h4>
+                <ul class="bug-list">
+                    <li><span class="bug-icon">💤</span> /bg コマンド実行時に応答をドロップせずバックグラウンドで継続するよう修正</li>
+                    <li><span class="bug-icon">⌨️</span> /btw ショートカットがタスク実行中に応答しなくなる問題を修正</li>
+                    <li><span class="bug-icon">📋</span> $CLAUDE_JOB_DIR への一時ファイル書き込み時の "sensitive file" パーミッションプロンプトを修正</li>
+                    <li><span class="bug-icon">📂</span> 削除されたディレクトリを持つエージェントのリカバリ時に明確なエラーメッセージを表示</li>
+                    <li><span class="bug-icon">🌳</span> EnterWorktree が ToolSearch なしで即時利用可能に</li>
+                    <li><span class="bug-icon">🖥️</span> cmd+k で iTerm2/Terminal.app のアタッチ済みセッションが再描画されない問題を修正</li>
+                    <li><span class="bug-icon">🔤</span> Windows IME 候補ウィンドウの位置が画面下部に表示される問題を修正</li>
+                    <li><span class="bug-icon">🎨</span> 256 色ターミナルでの背景色にじみを修正</li>
+                    <li><span class="bug-icon">📎</span> tmux 内での /copy とコピーオンセレクトがシステムクリップボードを更新できない問題を修正</li>
+                    <li><span class="bug-icon">👻</span> Remote Control 使用時のゾンビセッションエントリの残留を修正</li>
+                    <li><span class="bug-icon">✏️</span> /rename がセッションバナーに即座に反映されるよう修正</li>
+                </ul>
+            </div>
+
+            <div class="bug-category">
+                <h4>🔌 MCP サーバー (5 件) <span class="security-badge">SECURITY FIX</span></h4>
+                <ul class="bug-list">
+                    <li><span class="bug-icon">🔁</span> ステートフル MCP サーバーの再接続ループ修正 (v2.1.147 リグレッション)</li>
+                    <li><span class="bug-icon">🔑</span> カスタム API ゲートウェイへの OAuth 認証トークン誤送信を修正 (セキュリティ)</li>
+                    <li><span class="bug-icon">🤖</span> サブエージェントの MCP 設定が --strict-mcp-config やポリシーを無視する問題を修正</li>
+                    <li><span class="bug-icon">🔒</span> --strict-mcp-config でインライン MCP サーバーが削除されなくなり、警告を表示</li>
+                    <li><span class="bug-icon">📊</span> 折り畳みツールビューで MCP ツールの進捗通知がレンダリングされない問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bug-category">
+                <h4>🪟 Windows (3 件)</h4>
+                <ul class="bug-list">
+                    <li><span class="bug-icon">🔧</span> PowerShell インストーラーが失敗時にも "Installation complete!" と報告する問題を修正</li>
+                    <li><span class="bug-icon">↩️</span> アップデート失敗時に元の実行ファイルをコピーで復元し、リカバリ方法を通知</li>
+                    <li><span class="bug-icon">🛑</span> VS Code を閉じた際にプロセスが正常に終了しない問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="bug-category">
+                <h4>🔧 その他 (7 件)</h4>
+                <ul class="bug-list">
+                    <li><span class="bug-icon">📦</span> claude update がリリースチャネルのバージョンを正しくインストールするよう修正</li>
+                    <li><span class="bug-icon">🧠</span> セッション再開時の過剰なメモリ使用量 (数 GB) を修正</li>
+                    <li><span class="bug-icon">👻</span> 古いデーモンでの claude agents と claude --bg の実行問題を修正</li>
+                    <li><span class="bug-icon">⏱️</span> stream-json モードで stdin が EOF なしで閉じられた際のハングを修正</li>
+                    <li><span class="bug-icon">🔗</span> 不正な file:// リンクがターミナルでクリックできない問題を修正</li>
+                    <li><span class="bug-icon">📐</span> 92 カラム未満のターミナルでの --help 表示問題を修正</li>
+                    <li><span class="bug-icon">🌳</span> Agent ツールの一時ワークツリーで gitignored パスへの出力が破棄される問題を修正</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Before/After Comparison -->
+        <section class="section">
+            <h2 class="section-title">/model コマンドの動作変更</h2>
+            <p style="font-size: 14px; color: #4a4a5a; margin-bottom: 20px;">選択したモデルが新規セッションのデフォルトとして保存されるように変更。IDE と同じ動作に統一された。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>変更前 (v2.1.152 以前)</h4>
+                    <ul>
+                        <li>&#x2717; /model で選択 = 現在のセッションのみ</li>
+                        <li>&#x2717; デフォルト保存には「d」キーが必要</li>
+                        <li>&#x2717; キーバインド名: modelPicker:setAsDefault</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>変更後 (v2.1.153)</h4>
+                    <ul>
+                        <li>&#x2713; /model で選択 = デフォルトとして保存</li>
+                        <li>&#x2713; 現在のセッションのみは「s」キー</li>
+                        <li>&#x2713; キーバインド名: modelPicker:thisSessionOnly</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Core["🏠 Claude Code コア"]
+        direction LR
+        CLI["🖥️ CLI"]
+        Daemon["👻 デーモン"]
+        SessionMgr["📋 セッション管理"]
+        CLI ~~~ Daemon ~~~ SessionMgr
+    end
+
+    subgraph BG["🔄 バックグラウンドセッション 11 件修正"]
+        direction LR
+        BGSession["💤 /bg 応答継続"]
+        BTW["⌨️ /btw 修正"]
+        Clipboard["📋 クリップボード"]
+        IME["🔤 IME 修正"]
+        BGSession ~~~ BTW ~~~ Clipboard ~~~ IME
+    end
+
+    subgraph MCP["🔌 MCP サーバー 5 件修正"]
+        direction LR
+        Stateful["🔁 再接続ループ修正"]
+        Auth["🔑 認証トークン修正"]
+        SubAgent["🤖 サブエージェント設定"]
+        Stateful ~~~ Auth ~~~ SubAgent
+    end
+
+    subgraph Platform["💻 プラットフォーム対応"]
+        direction LR
+        Win["🪟 Windows 3 件修正"]
+        Mac["🍎 macOS パーミッション改善"]
+        Terminal["📟 ターミナル表示修正"]
+        Win ~~~ Mac ~~~ Terminal
+    end
+
+    subgraph Agents["🤖 エージェント機能"]
+        direction LR
+        AutoComplete["🔍 オートコンプリート"]
+        PRColumn["📊 PR 表示"]
+        Doctor["🩺 /doctor 改善"]
+        AutoComplete ~~~ PRColumn ~~~ Doctor
+    end
+
+    subgraph Memory["🧠 パフォーマンス"]
+        direction LR
+        MemOpt["📉 メモリ最適化"]
+        StaleD["🔄 古いデーモン修正"]
+        Hang["⏱️ ハング修正"]
+        MemOpt ~~~ StaleD ~~~ Hang
+    end
+
+    Core --> BG
+    Core --> MCP
+    Core --> Platform
+    Core --> Agents
+    Core --> Memory
+
+    classDef core fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef bg fill:#E8F5E9,stroke:#A5D6A7,stroke-width:2px,color:#1B5E20
+    classDef mcp fill:#FFF3E0,stroke:#FFCC80,stroke-width:2px,color:#E65100
+    classDef platform fill:#F3E5F5,stroke:#CE93D8,stroke-width:2px,color:#4A148C
+    classDef agents fill:#E3F2FD,stroke:#90CAF9,stroke-width:2px,color:#0D47A1
+    classDef memory fill:#FFEBEE,stroke:#EF9A9A,stroke-width:2px,color:#B71C1C
+
+    class Core core
+    class BG bg
+    class MCP mcp
+    class Platform platform
+    class Agents agents
+    class Memory memory
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド: キーバインド変更</h2>
+            <p style="font-size: 14px; color: #4a4a5a; margin-bottom: 16px;"><code>modelPicker:setAsDefault</code> をカスタマイズしていた場合、以下の変更が必要です。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">keybindings.json - 変更前</span>
+                </div>
+                <pre><code class="language-json">{
+  "modelPicker:setAsDefault": "d"
+}</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">keybindings.json - 変更後</span>
+                </div>
+                <pre><code class="language-json">{
+  "modelPicker:thisSessionOnly": "s"
+}</code></pre>
+            </div>
+            <p style="font-size: 14px; color: #4a4a5a; margin-top: 16px;">アップデートコマンド:</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">BASH</span>
+                    <span class="code-title">v2.1.153 へのアップデート</span>
+                </div>
+                <pre><code class="language-bash">claude update</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響とユースケース</h2>
+
+            <div class="use-case">
+                <h4>バックグラウンドセッション利用者</h4>
+                <p>claude --bg や /bg を活用している開発者にとって、応答継続・クリップボード・IME・tmux 対応など 11 件の修正により、安定したバックグラウンド作業が可能に。特に macOS では Privacy & Security でのパーミッション管理が改善された。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>エンタープライズ・カスタム API ゲートウェイ利用者</h4>
+                <p>OAuth 認証トークンがサードパーティのゲートウェイに誤送信されるセキュリティ問題が修正された。カスタム API ゲートウェイを使用している組織は、速やかに v2.1.153 へのアップデートが推奨される。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>MCP サーバー開発者</h4>
+                <p>ステートフル MCP サーバーの再接続ループ (v2.1.147 リグレッション) が修正され、サブエージェントの MCP 設定が --strict-mcp-config やエンタープライズポリシーを正しく尊重するようになった。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>Windows 環境の開発者</h4>
+                <p>PowerShell インストーラーの誤報告修正、アップデート失敗時のロールバック機能追加、VS Code プロセスの正常終了により、Windows 環境での開発体験が大幅に向上した。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>大規模セッションを運用する開発者</h4>
+                <p>セッション再開時の数 GB レベルのメモリ消費が解消され、多数のセッションを持つマシンでもスムーズな操作が可能に。古いデーモンの問題やハング修正も含まれる。</p>
+            </div>
+
+            <div class="use-case">
+                <h4>/model コマンドをカスタマイズしていた開発者</h4>
+                <p>キーバインド名が変更されたため、keybindings.json の更新が必要。modelPicker:setAsDefault を modelPicker:thisSessionOnly にリネームすること。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-05-28 | カテゴリ: ツールアップデート | バージョン: v2.1.153</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
