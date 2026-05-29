@@ -5,8 +5,12 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-05-29](2026/2026-05-29-claude-code-v2-1-154.md) - Claude Code v2.1.154 - Opus 4.8 対応 & ダイナミックワークフロー
+- [2026-05-28](2026/2026-05-28-claude-opus-4-8.md) - Claude Opus 4.8: より効果的なコラボレーターへの進化
 - [2026-05-28](2026/2026-05-28-claude-code-v2-1-153.md) - Claude Code v2.1.153: バックグラウンドセッション安定化と MCP 修正を含む大型アップデート
+- [2026-05-28](2026/2026-05-28-anthropic-series-h-funding.md) - Anthropic Series H 資金調達: 650 億ドルの大型ラウンド完了
 - [2026-05-27](2026/2026-05-27-claude-code-v2-1-152.md) - Claude Code v2.1.152 — コードレビュー自動修正、スキルの動的管理、セッションフック拡張
+- [2026-05-27](2026/2026-05-27-anthropic-milan-office.md) - Anthropic ミラノオフィス開設 - 欧州 6 拠点目としてイタリア市場に本格参入
 - [2026-05-26](2026/2026-05-26-kiyoung-choi-anthropic-korea.md) - Anthropic、韓国代表取締役に KiYoung Choi を任命 — ソウルオフィス開設に先立ち
 - [2026-05-25](2026/2026-05-25-chris-olah-pope-leo-encyclical.md) - Chris Olah が教皇レオ 14 世の AI 回勅「Magnifica humanitas」発表に際してスピーチ
 - [2026-05-24](2026/2026-05-24-claude-code-v2-1-150.md) - Claude Code v2.1.150 - 内部インフラストラクチャ改善
