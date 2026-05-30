@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.157 / v2.1.158 - プラグイン自動ロード & Auto モード拡張 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(ellipse, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-content h1 {
+            color: #FFFFFF;
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .header-content .date {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .section {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 2rem 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--anthropic-coral);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .key-points {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .key-point-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .key-point-text {
+            flex: 1;
+        }
+
+        .key-point-text strong {
+            color: var(--text-primary);
+        }
+
+        .key-point-text p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 0.25rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .feature-card {
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .comparison-card {
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .comparison-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            border-radius: 12px;
+            padding: 1.75rem 1.5rem;
+            text-align: center;
+            color: #FFFFFF;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.5rem;
+        }
+
+        .code-block {
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .code-header {
+            background: #2d2d44;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.6rem 1.25rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-block pre {
+            margin: 0;
+            border-radius: 0;
+        }
+
+        .code-block pre code {
+            font-size: 0.85rem;
+            line-height: 1.7;
+            padding: 1.25rem !important;
+        }
+
+        .use-case {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .use-case-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .use-case-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .use-case-content p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .bug-fix-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .bug-fix-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1rem;
+            background: var(--anthropic-light);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .bug-fix-item::before {
+            content: '\2714';
+            color: #66BB6A;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .footer {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .footer p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 2rem 1.5rem;
+                border-radius: 14px;
+            }
+
+            .header-content h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+                border-radius: 12px;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bug-fix-list {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code アップデート</span>
+                <h1>Claude Code v2.1.157 / v2.1.158<br>プラグイン自動ロード & Auto モード拡張</h1>
+                <p class="date">2026-05-30</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <span class="key-point-icon">&#x1F50C;</span>
+                    <div class="key-point-text">
+                        <strong>プラグイン自動ロード</strong>
+                        <p><code>.claude/skills</code> ディレクトリのプラグインがマーケットプレイス不要で自動認識</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <span class="key-point-icon">&#x1F916;</span>
+                    <div class="key-point-text">
+                        <strong>Auto モード拡張</strong>
+                        <p>Bedrock / Vertex / Foundry で Opus 4.7 / 4.8 に対応 (<code>CLAUDE_CODE_ENABLE_AUTO_MODE=1</code>)</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <span class="key-point-icon">&#x1F6E0;</span>
+                    <div class="key-point-text">
+                        <strong><code>claude plugin init</code></strong>
+                        <p>新規プラグインのスキャフォールディングコマンド</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <span class="key-point-icon">&#x1F333;</span>
+                    <div class="key-point-text">
+                        <strong>Worktree 改善</strong>
+                        <p><code>EnterWorktree</code> でセッション中の切り替え対応、完了時の自動アンロック</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <span class="key-point-icon">&#x1F41B;</span>
+                    <div class="key-point-text">
+                        <strong>16+ バグ修正</strong>
+                        <p>WSL 画像ペースト、tmux クリップボード、IDE ペースト重複など解消</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Features -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-card-icon">&#x1F4C2;</div>
+                    <h3>プラグイン自動ロード</h3>
+                    <p>.claude/skills 配置で自動認識。Git コミットだけでチーム共有</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">&#x26A1;</div>
+                    <h3>Auto モード拡張</h3>
+                    <p>Bedrock / Vertex / Foundry で Opus 4.7 & 4.8 に対応。環境変数 1 つで有効化</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">&#x1F3D7;</div>
+                    <h3>claude plugin init</h3>
+                    <p>テンプレート生成でプラグイン開発のハードルを削減</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">&#x1F3AF;</div>
+                    <h3>claude agents 改善</h3>
+                    <p>settings.json の agent フィールド尊重。--agent オプション追加</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">&#x1F500;</div>
+                    <h3>Worktree ライフサイクル</h3>
+                    <p>セッション中の切り替え対応。完了時に自動アンロックで git worktree remove 可能に</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">&#x1F4CA;</div>
+                    <h3>テレメトリ詳細化</h3>
+                    <p>OTEL_LOG_TOOL_DETAILS=1 で tool_parameters 記録。エンタープライズ監査対応</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ概要</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Startup["&#x1F680; Claude Code 起動"]
+        direction LR
+        Scan["&#x1F4C2; .claude/skills&lt;br/&gt;スキャン"]
+        Load["&#x26A1; プラグイン&lt;br/&gt;自動ロード"]
+        Scan ~~~ Load
+    end
+
+    subgraph Plugins["&#x1F50C; プラグインソース"]
+        direction LR
+        Local["&#x1F4C1; .claude/skills&lt;br/&gt;ローカル"]
+        Market["&#x1F3EA; マーケット&lt;br/&gt;プレイス"]
+        Init["&#x1F6E0; claude plugin init&lt;br/&gt;スキャフォールド"]
+        Local ~~~ Market ~~~ Init
+    end
+
+    subgraph Providers["&#x2601; プロバイダー"]
+        direction LR
+        Direct["&#x1F517; Anthropic&lt;br/&gt;直接接続"]
+        Bedrock["&#x1F3E2; AWS&lt;br/&gt;Bedrock"]
+        Vertex["&#x1F310; Google&lt;br/&gt;Vertex"]
+        Foundry["&#x1F3ED; Azure&lt;br/&gt;Foundry"]
+        Direct ~~~ Bedrock ~~~ Vertex ~~~ Foundry
+    end
+
+    subgraph AutoMode["&#x1F916; Auto モード"]
+        direction LR
+        Opus47["&#x2B50; Opus 4.7"]
+        Opus48["&#x2B50; Opus 4.8"]
+        Opus47 ~~~ Opus48
+    end
+
+    subgraph Worktree["&#x1F333; Worktree 管理"]
+        direction LR
+        Enter["&#x1F500; EnterWorktree&lt;br/&gt;切り替え"]
+        Unlock["&#x1F513; 完了時&lt;br/&gt;アンロック"]
+        Cleanup["&#x1F9F9; git worktree&lt;br/&gt;remove / prune"]
+        Enter ~~~ Unlock ~~~ Cleanup
+    end
+
+    Init -->|"生成"| Local
+    Local -->|"自動検出"| Scan
+    Market -->|"インストール"| Load
+    Scan --> Load
+
+    Providers -->|"CLAUDE_CODE_ENABLE_AUTO_MODE=1"| AutoMode
+    AutoMode -->|"ツール自動実行"| Worktree
+
+    classDef startup fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef plugin fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef provider fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef auto fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef worktree fill:#F3E5F5,stroke:#CE93D8,stroke-width:2px,color:#4A148C
+
+    class Startup startup
+    class Plugins plugin
+    class Providers provider
+    class AutoMode auto
+    class Worktree worktree
+    class Scan,Load startup
+    class Local,Market,Init plugin
+    class Direct,Bedrock,Vertex,Foundry provider
+    class Opus47,Opus48 auto
+    class Enter,Unlock,Cleanup worktree
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Example -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>bash</span>
+                </div>
+                <pre><code class="language-bash"># 新規プラグインのスキャフォールディング
+claude plugin init code-review-helper
+# -> .claude/skills/code-review-helper/ が生成される
+
+# Auto モードの有効化 (Bedrock)
+export CLAUDE_CODE_ENABLE_AUTO_MODE=1
+export AWS_REGION=us-east-1
+export CLAUDE_CODE_USE_BEDROCK=1
+claude
+
+# claude agents でエージェント指定
+claude agents --agent my-review-agent
+
+# テレメトリ詳細の有効化
+export OTEL_LOG_TOOL_DETAILS=1
+claude</code></pre>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">&#x1F41B; バグ修正 (16+)</h2>
+            <div class="bug-fix-list">
+                <div class="bug-fix-item">処理不能画像によるクラッシュ修正</div>
+                <div class="bug-fix-item">サンドボックスネットワーク権限プロンプト表示問題</div>
+                <div class="bug-fix-item">claude agents の完了セッション退役問題</div>
+                <div class="bug-fix-item">Esc キーの "opening..." キャンセル修正</div>
+                <div class="bug-fix-item">worktree の 30 日保持後の孤立問題</div>
+                <div class="bug-fix-item">スリープ後の日付不正</div>
+                <div class="bug-fix-item">tmux copy-on-select クリップボード問題</div>
+                <div class="bug-fix-item">--resume のバックグラウンドサブエージェント未報告</div>
+                <div class="bug-fix-item">--worktree のディレクトリ復帰問題</div>
+                <div class="bug-fix-item">/model ピッカーの不正ヒント</div>
+                <div class="bug-fix-item">フルスクリーンのマークダウンマーカー表示</div>
+                <div class="bug-fix-item">マネージド設定ダイアログ後のフリーズ</div>
+                <div class="bug-fix-item">VS Code / Cursor / Windsurf の右クリックペースト重複</div>
+                <div class="bug-fix-item">WSL: 画像ペースト、スクリーンショットペースト対応</div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース / 開発者への影響</h2>
+            <div class="use-case">
+                <span class="use-case-icon">&#x1F3E2;</span>
+                <div class="use-case-content">
+                    <h3>エンタープライズ自動化</h3>
+                    <p>Bedrock / Vertex / Foundry での Auto モードにより CI/CD パイプラインでの自動実行が可能に</p>
+                </div>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">&#x1F465;</span>
+                <div class="use-case-content">
+                    <h3>チーム開発効率化</h3>
+                    <p>.claude/skills への配置で Git を通じたスキル共有。マーケットプレイス公開不要</p>
+                </div>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">&#x1F5A5;</span>
+                <div class="use-case-content">
+                    <h3>WSL / クロスプラットフォーム</h3>
+                    <p>画像ペースト、スクリーンショット、Windows Explorer ドラッグが WSL で動作</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">改善数値</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">16+</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">プロバイダー対応 (Auto モード)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Source</p>
+            <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a>
+            <p style="margin-top: 1rem;">Generated by Anthropic News Summary - 2026-05-30</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme:'base', themeVariables:{primaryColor:'#D4A574',primaryTextColor:'#1a1a2e',primaryBorderColor:'#D4A574',lineColor:'#D4A574',background:'#FFFFFF',mainBkg:'#FFF8F0',nodeBorder:'#D4A574',clusterBkg:'#FFF8F0',clusterBorder:'#D4A574',edgeLabelBackground:'#FFFFFF',textColor:'#1a1a2e'}});</script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

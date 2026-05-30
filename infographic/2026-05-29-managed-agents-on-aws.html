@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Managed Agents の Webhooks、マルチエージェント、セルフホストサンドボックスが Claude Platform on AWS で利用可能に - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        .header {
+            background: var(--gradient-header);
+            border-radius: 16px;
+            padding: 48px 40px;
+            margin-bottom: 32px;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .header-category {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+        .header-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+        .header-date {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .section {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(212, 165, 116, 0.15);
+        }
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--anthropic-coral);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title-icon {
+            font-size: 1.4rem;
+        }
+        .key-points {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px;
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+        .key-point-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .key-point-content {
+            flex: 1;
+        }
+        .key-point-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+        .key-point-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .feature-card {
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(212, 165, 116, 0.15);
+        }
+        .feature-card-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .feature-card-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        .feature-card-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .code-block {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .code-header {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 10px 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #3e4451;
+        }
+        .code-header-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .code-header-dot.red { background: #ff5f56; }
+        .code-header-dot.yellow { background: #ffbd2e; }
+        .code-header-dot.green { background: #27c93f; }
+        .code-block pre {
+            margin: 0;
+            padding: 20px;
+            background: #282c34;
+            overflow-x: auto;
+        }
+        .code-block pre code {
+            font-size: 0.82rem;
+            line-height: 1.6;
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+        .mermaid-container {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 24px;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+        .mermaid-container .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        .comparison {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 8px;
+        }
+        .comparison th {
+            background: var(--gradient-header);
+            color: #ffffff;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 500;
+        }
+        .comparison th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+        .comparison th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+        .comparison td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--anthropic-cream);
+        }
+        .comparison tr:nth-child(even) td {
+            background: var(--anthropic-light);
+        }
+        .comparison tr:last-child td:first-child {
+            border-radius: 0 0 0 8px;
+        }
+        .comparison tr:last-child td:last-child {
+            border-radius: 0 0 8px 0;
+        }
+        .use-case {
+            padding: 16px;
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+        .use-case-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .use-case-desc {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 8px;
+        }
+        .stat-card {
+            text-align: center;
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            padding: 20px 12px;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+        }
+        .stat-card-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 4px;
+        }
+        .stat-card-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .footer {
+            text-align: center;
+            padding: 32px 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .footer-brand {
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+            .header {
+                padding: 32px 24px;
+            }
+            .header-title {
+                font-size: 1.3rem;
+            }
+            .section {
+                padding: 24px 20px;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .comparison {
+                font-size: 0.78rem;
+            }
+            .comparison th,
+            .comparison td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-category">プラットフォームアップデート</div>
+            <h1 class="header-title">Claude Managed Agents の Webhooks、マルチエージェント、セルフホストサンドボックスが Claude Platform on AWS で利用可能に</h1>
+            <div class="header-date">2026-05-29</div>
+        </header>
+
+        <section class="section">
+            <h2 class="section-title"><span class="section-title-icon">📋</span>概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <span class="key-point-icon">🔔</span>
+                    <div class="key-point-content">
+                        <div class="key-point-title">Webhooks</div>
+                        <div class="key-point-desc">ポーリング不要のイベント通知。セッションと Vault のライフサイクルイベントを受信</div>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <span class="key-point-icon">👥</span>
+                    <div class="key-point-content">
+                        <div class="key-point-title">マルチエージェント</div>
+                        <div class="key-point-desc">コーディネーターエージェントが最大 25 スレッドでサブエージェントを並列オーケストレーション</div>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <span class="key-point-icon">🖥️</span>
+                    <div class="key-point-content">
+                        <div class="key-point-title">セルフホストサンドボックス</div>
+                        <div class="key-point-desc">ツール実行を自社インフラで実行。AnthropicSelfHostedEnvironmentAccess マネージドポリシーで IAM 認証</div>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <span class="key-point-icon">🔐</span>
+                    <div class="key-point-content">
+                        <div class="key-point-title">AWS IAM ネイティブ認証</div>
+                        <div class="key-point-desc">SigV4 / API キーによるアクセス制御、環境キー管理が不要に</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title"><span class="section-title-icon">🔢</span>主要スペック</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-value">25</div>
+                    <div class="stat-card-label">最大並列スレッド数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">15</div>
+                    <div class="stat-card-label">Webhook イベント種別</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">6h</div>
+                    <div class="stat-card-label">自律セッション上限</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title"><span class="section-title-icon">✨</span>新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-card-icon">📡</div>
+                    <div class="feature-card-title">Webhook イベント通知</div>
+                    <div class="feature-card-desc">セッションイベント (8 種) と Vault イベント (7 種) をリアルタイム配信。署名検証で安全性確保</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">🎯</div>
+                    <div class="feature-card-title">マルチエージェント</div>
+                    <div class="feature-card-desc">コーディネーターが複数サブエージェントに委任。スレッドでコンテキスト分離。サンドボックスとファイルシステムは共有</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">🏠</div>
+                    <div class="feature-card-title">セルフホスト実行</div>
+                    <div class="feature-card-desc">ワークキューパターンで動作。Anthropic がオーケストレーション、ツール実行は自社環境</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">🔑</div>
+                    <div class="feature-card-title">IAM 統合</div>
+                    <div class="feature-card-desc">AnthropicSelfHostedEnvironmentAccess マネージドポリシーで最小権限を一括付与</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title"><span class="section-title-icon">💻</span>コード例: Webhook 署名検証</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-header-dot red"></span>
+                    <span class="code-header-dot yellow"></span>
+                    <span class="code-header-dot green"></span>
+                    Python - Webhook Verification
+                </div>
+                <pre><code class="language-python">from flask import Flask, request
+import anthropic
+
+client = anthropic.Anthropic()  # reads ANTHROPIC_WEBHOOK_SIGNING_KEY from env
+app = Flask(__name__)
+
+@app.route("/webhook", methods=["POST"])
+def webhook():
+    try:
+        event = client.beta.webhooks.unwrap(
+            request.get_data(as_text=True),
+            headers=dict(request.headers),
+        )
+    except Exception:
+        return "invalid signature", 400
+
+    if event.data.type == "session.status_idled":
+        session = client.beta.sessions.retrieve(event.data.id)
+        print(f"session idled: {session.id}")
+    elif event.data.type == "session.thread_created":
+        print(f"new thread created: {event.data.id}")
+
+    return "", 200</code></pre>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title"><span class="section-title-icon">🤖</span>コード例: マルチエージェント on AWS</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-header-dot red"></span>
+                    <span class="code-header-dot yellow"></span>
+                    <span class="code-header-dot green"></span>
+                    Python - Multi-Agent Coordinator
+                </div>
+                <pre><code class="language-python">from anthropic import AnthropicAWS
+
+client = AnthropicAWS()  # SigV4 認証を自動処理
+
+reviewer = client.beta.agents.create(
+    name="Code Reviewer",
+    model="claude-opus-4-8",
+    system="You review code for bugs and security issues.",
+    tools=[{"type": "agent_toolset_20260401"}],
+)
+
+coordinator = client.beta.agents.create(
+    name="Engineering Lead",
+    model="claude-opus-4-8",
+    system="You coordinate engineering work.",
+    tools=[{"type": "agent_toolset_20260401"}],
+    multiagent={
+        "type": "coordinator",
+        "agents": [{"type": "agent", "id": reviewer.id}],
+    },
+)</code></pre>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title"><span class="section-title-icon">🏗️</span>アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <div class="mermaid">
+flowchart TD
+    subgraph AWS["🏢 AWS アカウント"]
+        subgraph IAM["🔐 IAM レイヤー"]
+            SigV4["🔑 SigV4 認証"]
+            Policy["📋 マネージドポリシー<br/>AnthropicSelfHostedEnvironmentAccess"]
+        end
+        subgraph Worker["🖥️ セルフホストワーカー"]
+            ToolExec["🔧 ツール実行"]
+            Queue["📬 ワークキュー<br/>ポーリング"]
+        end
+        Billing["💳 AWS Marketplace<br/>課金"]
+    end
+
+    subgraph Anthropic["🤖 Anthropic マネージドインフラ"]
+        subgraph Platform["🌐 Claude Platform on AWS"]
+            API["📨 Messages API<br/>aws-external-anthropic.region.api.aws"]
+            Agents["🎯 Managed Agents<br/>オーケストレーション"]
+        end
+        subgraph Webhooks["🔔 Webhook 配信"]
+            Events["📡 イベント通知"]
+        end
+        subgraph Multi["👥 マルチエージェント"]
+            direction LR
+            Coord["🎯 コーディネーター"]
+            Sub1["🤖 Agent A"]
+            Sub2["🤖 Agent B"]
+            Coord ~~~ Sub1 ~~~ Sub2
+        end
+    end
+
+    subgraph Client["👤 開発者"]
+        App["📱 アプリケーション"]
+        Endpoint["🌐 Webhook<br/>エンドポイント"]
+    end
+
+    App -->|"SigV4 署名付きリクエスト"| API
+    SigV4 -->|"認証"| API
+    API --> Agents
+    Agents -->|"ワーク投入"| Queue
+    Queue -->|"アイテム取得"| ToolExec
+    ToolExec -->|"結果返却"| Agents
+    Agents --> Multi
+    Coord -->|"委任"| Sub1
+    Coord -->|"委任"| Sub2
+    Events -->|"HTTPS POST"| Endpoint
+    Policy -.->|"権限付与"| Worker
+    API -.->|"使用量"| Billing
+
+    classDef aws fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#E65100
+    classDef anthropic fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef client fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class AWS aws
+    class Anthropic anthropic
+    class Client client
+    class IAM,Worker,Platform,Webhooks,Multi platform
+    class SigV4,Policy,ToolExec,Queue,Billing aws
+    class API,Agents,Events,Coord,Sub1,Sub2 anthropic
+    class App,Endpoint client
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title"><span class="section-title-icon">🔄</span>移行比較</h2>
+            <table class="comparison">
+                <thead>
+                    <tr>
+                        <th>Before (ファーストパーティ API)</th>
+                        <th>After (Claude Platform on AWS)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ベース URL: api.anthropic.com</td>
+                        <td>aws-external-anthropic.{region}.api.aws</td>
+                    </tr>
+                    <tr>
+                        <td>認証: API キーのみ</td>
+                        <td>SigV4 または API キー</td>
+                    </tr>
+                    <tr>
+                        <td>セルフホスト認証: 環境キー</td>
+                        <td>IAM / SigV4 (環境キー不要)</td>
+                    </tr>
+                    <tr>
+                        <td>自律セッション: 制限なし</td>
+                        <td>6 時間</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title"><span class="section-title-icon">🎯</span>ユースケースと開発者インパクト</h2>
+            <div class="use-case">
+                <div class="use-case-title">🏭 エンタープライズイベント駆動アーキテクチャ</div>
+                <div class="use-case-desc">Webhooks でポーリング不要のエージェント監視。セッション状態変化を即座に検知し自動対応</div>
+            </div>
+            <div class="use-case">
+                <div class="use-case-title">🔒 規制産業での活用</div>
+                <div class="use-case-desc">セルフホストサンドボックスでデータ主権を確保。ツール実行が自社インフラ内で完結</div>
+            </div>
+            <div class="use-case">
+                <div class="use-case-title">🤖 複雑なワークフロー自動化</div>
+                <div class="use-case-desc">マルチエージェントでコードレビュー、テスト、デプロイを並列実行</div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-brand">Anthropic News Summary</div>
+            <p>ソース: <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
