@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-06-01](2026/2026-06-01-claude-code-v2-1-159-v2-1-160.md) - Claude Code v2.1.159 / v2.1.160 - セキュリティ強化とバックグラウンドエージェント安定化
+- [2026-06-01](2026/2026-06-01-anthropic-confidential-s1-sec.md) - Anthropic、SEC に S-1 登録届出書のドラフトを非公開提出 - IPO への道筋
 - [2026-05-30](2026/2026-05-30-claude-code-v2-1-157-v2-1-158.md) - Claude Code v2.1.157 / v2.1.158 - プラグイン自動ロード & Auto モード拡張
 - [2026-05-29](2026/2026-05-29-managed-agents-on-aws.md) - Claude Managed Agents の Webhooks、マルチエージェント、セルフホストサンドボックスが Claude Platform on AWS で利用可能に
 - [2026-05-29](2026/2026-05-29-claude-code-v2-1-154.md) - Claude Code v2.1.154 - Opus 4.8 対応 & ダイナミックワークフロー
