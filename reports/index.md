@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-06-02](2026/2026-06-02-expanding-project-glasswing.md) - Expanding Project Glasswing: Anthropic のサイバーセキュリティイニシアチブが 150 以上の組織に拡大
+- [2026-06-02](2026/2026-06-02-claude-code-v2-1-161.md) - Claude Code v2.1.161: OTEL メトリクス改善、並列ツール呼び出しの安定性向上、多数のバグ修正
+- [2026-06-02](2026/2026-06-02-advisor-tool-max-tokens-refusal-billing.md) - Claude API アップデート: Advisor Tool の max_tokens パラメータと Refusal 課金の廃止
 - [2026-06-01](2026/2026-06-01-claude-code-v2-1-159-v2-1-160.md) - Claude Code v2.1.159 / v2.1.160 - セキュリティ強化とバックグラウンドエージェント安定化
 - [2026-06-01](2026/2026-06-01-anthropic-confidential-s1-sec.md) - Anthropic、SEC に S-1 登録届出書のドラフトを非公開提出 - IPO への道筋
 - [2026-05-30](2026/2026-05-30-claude-code-v2-1-157-v2-1-158.md) - Claude Code v2.1.157 / v2.1.158 - プラグイン自動ロード & Auto モード拡張

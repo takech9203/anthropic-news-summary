@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.161: OTEL メトリクス改善、並列ツール呼び出しの安定性向上 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .comparison-card .icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Bug Fix Categories */
+        .bugfix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .bugfix-card {
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .bugfix-card h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+        }
+
+        .bugfix-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bugfix-card ul li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .bugfix-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .bugfix-card ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--anthropic-coral);
+            border-radius: 50%;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Performance Section */
+        .performance-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .performance-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #EDE9FE 0%, #F3E8FF 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .performance-item .perf-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .performance-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Developer Actions */
+        .action-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            border: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .action-number {
+            width: 28px;
+            height: 28px;
+            background: var(--anthropic-coral);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .action-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-top: 3px;
+        }
+
+        .action-item code {
+            background: rgba(212, 165, 116, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bugfix-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE</span>
+                <h1>Claude Code v2.1.161: OTEL メトリクス改善、並列ツール呼び出しの安定性向上、多数のバグ修正</h1>
+                <p class="date">2026-06-02</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>OTEL カスタムディメンション</h3>
+                        <p>OTEL_RESOURCE_ATTRIBUTES の値がメトリクスデータポイントのラベルとして反映され、カスタムディメンションで使用量をスライス可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>並列ツール呼び出しの安定性</h3>
+                        <p>並列ツール呼び出しで、失敗した Bash コマンドが他のツールをキャンセルしなくなった</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🐛</div>
+                    <div class="key-point-content">
+                        <h3>15 件以上のバグ修正</h3>
+                        <p>セキュリティ、安定性、UI に関する幅広いバグ修正を実施</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>パフォーマンス改善</h3>
+                        <p>ターミナルレンダリングパフォーマンスの改善、レイアウトエンジンの JIT コンパイルプロファイル安定化</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">機能改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">15+</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">パフォーマンス改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">VSCode 改善</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: 並列ツール呼び出し</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <div class="icon">❌</div>
+                    <h4>Before</h4>
+                    <p>1 つの Bash コマンドが失敗すると、同じバッチの他ツールもキャンセルされる</p>
+                </div>
+                <div class="comparison-card after">
+                    <div class="icon">✅</div>
+                    <h4>After</h4>
+                    <p>各ツールが独立して実行・完了。1 つの失敗が他に波及しない</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">機能改善</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📊 OTEL メトリクス</h3>
+                    <p>カスタムディメンション対応。team, repo 等のラベルで使用量をスライス可能に</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📈 エージェント進捗表示</h3>
+                    <p>claude agents の進捗が done/total 形式で表示されるようになった</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📂 MCP コネクタ折りたたみ</h3>
+                    <p>/mcp コマンドで未使用のコネクタが自動的に折りたたまれ、視認性が向上</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 並列ツール独立性</h3>
+                    <p>並列ツール呼び出しで各ツールが独立して動作。1 つの失敗が他に波及しない</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正</h2>
+            <div class="bugfix-grid">
+                <div class="bugfix-card">
+                    <h4>🖥️ プラットフォーム固有</h4>
+                    <ul>
+                        <li>Linux クリップボード対応 (wl-copy/xclip/xsel)</li>
+                        <li>Windows フック修正</li>
+                        <li>EADDRINUSE エラー修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-card">
+                    <h4>⚙️ バックグラウンドセッション</h4>
+                    <ul>
+                        <li>stdout 破損修正 (claude -p)</li>
+                        <li>Workflow エージェント worktree isolation 修正</li>
+                        <li>古いモデルでの起動修正</li>
+                        <li>完了サブエージェントの表示修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-card">
+                    <h4>🎨 UI/UX</h4>
+                    <ul>
+                        <li>Reduce motion 設定の尊重</li>
+                        <li>/usage-credits 再ログイン問題</li>
+                        <li>--resume ピッカー修正</li>
+                        <li>Write ツールクラッシュ修正</li>
+                    </ul>
+                </div>
+                <div class="bugfix-card">
+                    <h4>🔒 認証/セキュリティ</h4>
+                    <ul>
+                        <li>forceLoginOrgUUID サードパーティブロック修正 (v2.1.146 リグレッション)</li>
+                        <li>MCP シークレット漏洩修正</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">OTEL カスタムディメンションの設定例</span>
+                </div>
+                <pre><code class="language-bash"># OTEL カスタムディメンションの設定例
+export OTEL_RESOURCE_ATTRIBUTES="team=platform,repo=my-service"
+claude
+# -> メトリクスに team=platform, repo=my-service ラベルが付与される</code></pre>
+            </div>
+        </section>
+
+        <!-- Performance -->
+        <section class="section">
+            <h2 class="section-title">パフォーマンス改善</h2>
+            <div class="performance-list">
+                <div class="performance-item">
+                    <span class="perf-icon">🚀</span>
+                    <p>レイアウトエンジンの JIT コンパイルプロファイル安定化</p>
+                </div>
+                <div class="performance-item">
+                    <span class="perf-icon">📝</span>
+                    <p>大きなファイル書き込みのレンダリング改善</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🏢 企業メトリクス管理</h4>
+                <p>OTEL カスタムディメンションでチーム別/リポジトリ別の使用量ダッシュボードを構築</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 信頼性の高いエージェントワークフロー</h4>
+                <p>並列ツール呼び出しの独立性により、複数タスクの同時実行が安定</p>
+            </div>
+            <div class="use-case">
+                <h4>🔐 セキュアな MCP 管理</h4>
+                <p>シークレット漏洩修正により安全に MCP サーバーを管理</p>
+            </div>
+        </section>
+
+        <!-- Developer Actions -->
+        <section class="section">
+            <h2 class="section-title">開発者向けアクション</h2>
+            <div class="action-list">
+                <div class="action-item">
+                    <span class="action-number">1</span>
+                    <p><code>npm update -g @anthropic-ai/claude-code</code> でアップデート</p>
+                </div>
+                <div class="action-item">
+                    <span class="action-number">2</span>
+                    <p><code>OTEL_RESOURCE_ATTRIBUTES</code> 設定でカスタムディメンション活用</p>
+                </div>
+                <div class="action-item">
+                    <span class="action-number">3</span>
+                    <p>Windows フックの動作確認</p>
+                </div>
+                <div class="action-item">
+                    <span class="action-number">4</span>
+                    <p>MCP シークレット漏洩の確認 (ターミナル履歴の確認)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;">Claude Code Changelog | 2026-06-02</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
