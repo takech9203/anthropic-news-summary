@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-06-03](2026/2026-06-03-services-track-partner-hub.md) - Claude Partner Network: Services Track と Partner Hub の発表
+- [2026-06-03](2026/2026-06-03-claude-code-v2-1-162.md) - Claude Code v2.1.162: エージェントダッシュボード強化、起動安定性の大幅改善、Windows パス対応の修正
+- [2026-06-03](2026/2026-06-03-ai-enabled-cyber-threats-mitre-attack.md) - AI を活用したサイバー脅威の 1 年間の分析 - MITRE ATT&CK マッピング
 - [2026-06-02](2026/2026-06-02-expanding-project-glasswing.md) - Expanding Project Glasswing: Anthropic のサイバーセキュリティイニシアチブが 150 以上の組織に拡大
 - [2026-06-02](2026/2026-06-02-claude-code-v2-1-161.md) - Claude Code v2.1.161: OTEL メトリクス改善、並列ツール呼び出しの安定性向上、多数のバグ修正
 - [2026-06-02](2026/2026-06-02-advisor-tool-max-tokens-refusal-billing.md) - Claude API アップデート: Advisor Tool の max_tokens パラメータと Refusal 課金の廃止
