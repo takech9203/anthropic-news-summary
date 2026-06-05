@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.163 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 6px 0;
+            border-bottom: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .comparison-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .bug-fix-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .bug-fix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            border-left: 3px solid var(--success);
+        }
+
+        .bug-fix-item.critical {
+            border-left-color: #EF4444;
+        }
+
+        .bug-fix-item.security {
+            border-left-color: var(--warning);
+        }
+
+        .bug-fix-item .fix-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .bug-fix-item .fix-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .bug-fix-item .fix-content strong {
+            color: var(--text-primary);
+        }
+
+        .action-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .action-item .action-number {
+            width: 28px;
+            height: 28px;
+            background: var(--info);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .action-item .action-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-item .action-content strong {
+            color: var(--text-primary);
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .links-list {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .footer .links-list a {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.163: エンタープライズバージョン管理、プラグイン強化、CI/CD 修正</h1>
+                <p class="date">2026-06-05</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🏢</div>
+                    <div class="key-point-content">
+                        <h3>エンタープライズバージョン管理</h3>
+                        <p><code>requiredMinimumVersion</code> / <code>requiredMaximumVersion</code> マネージド設定により、組織は承認済みバージョン範囲を強制可能。範囲外では起動を拒否</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>プラグイン管理の強化</h3>
+                        <p><code>/plugin list</code> コマンドで <code>--enabled</code> / <code>--disabled</code> フィルター対応。インストール済みプラグインの状態を一目で確認可能</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🪝</div>
+                    <div class="key-point-content">
+                        <h3>フックシステム拡張</h3>
+                        <p>Stop/SubagentStop フックが <code>additionalContext</code> を返却可能に。エラーではなくフィードバックとして Claude にコンテキストを伝えてターンを継続</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>CI/CD パイプライン修正</h3>
+                        <p><code>claude -p</code> のハング、Bedrock/Vertex/Foundry 認証エラー、<code>$TMPDIR</code> リグレッションなど致命的な問題を修正</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🖥️</div>
+                    <div class="key-point-content">
+                        <h3>クロスプラットフォーム修正</h3>
+                        <p>Windows OneDrive 環境での EEXIST エラー、<code>$HOME</code> 参照による deny ルールのバイパスを修正</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るリリース</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">新機能追加</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">UX 改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">CI/CD 致命的修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔒 バージョン範囲強制</h3>
+                    <p><code>requiredMinimumVersion</code> / <code>requiredMaximumVersion</code> マネージド設定で、セキュリティパッチ未適用や未検証バージョンの使用を防止</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 /plugin list</h3>
+                    <p>インストール済みプラグインの一覧表示。<code>--enabled</code> / <code>--disabled</code> フィルターでステータス別に絞り込み</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 "c to copy" ショートカット</h3>
+                    <p><code>/btw</code> の回答を Raw Markdown でクリップボードにコピー。ペースト先でフォーマットが保持される</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🪝 additionalContext</h3>
+                    <p>Stop/SubagentStop フックがフィードバックを返却してターンを継続可能に。品質ゲートの実装に最適</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💲 \$ エスケープ構文</h3>
+                    <p>Skills のコマンドボディで数字の前にリテラルな <code>$</code> を記述するための <code>\$</code> エスケープをサポート</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔗 MCP セッション ID</h3>
+                    <p><code>--resume</code> 使用時に stdio MCP サーバーがフック/Bash と同じ <code>CLAUDE_CODE_SESSION_ID</code> を受信</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before v2.1.163</h4>
+                    <ul>
+                        <li><code>claude -p</code> がバックグラウンドプロセスで永久にハング</li>
+                        <li>Bedrock/Vertex で CI=true 時に認証エラー</li>
+                        <li><code>$TMPDIR</code> が全コマンドでオーバーライド</li>
+                        <li>フックの Stop は「成功 or エラー」の二択</li>
+                        <li>バージョン管理はユーザー任せ</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After v2.1.163</h4>
+                    <ul>
+                        <li>stdin クローズ後 ~5 秒でバックグラウンドシェル停止</li>
+                        <li>Bedrock/Vertex/Foundry で API キー不要</li>
+                        <li><code>$TMPDIR</code> はサンドボックスのみ</li>
+                        <li>フックから additionalContext でフィードバック可能</li>
+                        <li>マネージド設定でバージョン範囲を強制</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">主なバグ修正</h2>
+            <div class="bug-fix-list">
+                <div class="bug-fix-item critical">
+                    <span class="fix-icon">🚨</span>
+                    <div class="fix-content">
+                        <strong>claude -p ハング</strong>: バックグラウンドコマンドが終了しない場合に永久にハングする問題。stdin クローズ後 約 5 秒で停止するように修正
+                    </div>
+                </div>
+                <div class="bug-fix-item critical">
+                    <span class="fix-icon">🚨</span>
+                    <div class="fix-content">
+                        <strong>Bedrock/Vertex/Foundry 認証</strong>: <code>CI=true</code> かつ Anthropic API キー未設定時に "ANTHROPIC_API_KEY required" で失敗する問題を修正
+                    </div>
+                </div>
+                <div class="bug-fix-item critical">
+                    <span class="fix-icon">🚨</span>
+                    <div class="fix-content">
+                        <strong>$TMPDIR リグレッション</strong>: v2.1.154 で全 Bash コマンドに <code>$TMPDIR</code> オーバーライドが適用されていた問題。Bazel/EDR 保護環境の Go ワークフローが影響を受けていた
+                    </div>
+                </div>
+                <div class="bug-fix-item security">
+                    <span class="fix-icon">🔐</span>
+                    <div class="fix-content">
+                        <strong>deny ルールの $HOME バイパス</strong>: <code>Read(~/Desktop/**)</code> の deny ルールが <code>$HOME</code> 経由の Bash コマンドをブロックしない問題を修正
+                    </div>
+                </div>
+                <div class="bug-fix-item security">
+                    <span class="fix-icon">🔐</span>
+                    <div class="fix-content">
+                        <strong>org マネージド権限ルール</strong>: 新規設定ディレクトリで起動中にフェッチが完了した場合、セッション全体に権限ルールが適用されない問題を修正
+                    </div>
+                </div>
+                <div class="bug-fix-item">
+                    <span class="fix-icon">🖥️</span>
+                    <div class="fix-content">
+                        <strong>Windows EEXIST エラー</strong>: セッション環境ディレクトリに読み取り専用属性がある場合、または OneDrive 内にある場合の Bash コマンド失敗を修正
+                    </div>
+                </div>
+                <div class="bug-fix-item">
+                    <span class="fix-icon">⌨️</span>
+                    <div class="fix-content">
+                        <strong>キーボード無応答</strong>: ペースト操作の終了マーカーがドロップされた場合にキーボード入力が永久に無応答になる問題を修正
+                    </div>
+                </div>
+                <div class="bug-fix-item">
+                    <span class="fix-icon">🪝</span>
+                    <div class="fix-content">
+                        <strong>フック条件の誤発火</strong>: <code>if: "Bash(...)"</code> が <code>$()</code> や <code>$VAR</code> を含む全コマンドで発火する問題を修正
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details: Code Examples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">マネージド設定 - バージョン範囲の強制</span>
+                </div>
+                <pre><code class="language-json">{
+  "managedSettings": {
+    "requiredMinimumVersion": "2.1.160",
+    "requiredMaximumVersion": "2.1.170"
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">Stop フックで additionalContext を返却</span>
+                </div>
+                <pre><code class="language-json">{
+  "hooks": {
+    "Stop": [
+      {
+        "command": "python3 check_quality.py"
+      }
+    ]
+  }
+}
+
+// check_quality.py の出力:
+{
+  "hookSpecificOutput": {
+    "additionalContext": "コードにハードコードされた認証情報があります。環境変数を使用してください。"
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">CI/CD での Bedrock 使用例</span>
+                </div>
+                <pre><code class="language-bash"># API キー不要で Bedrock 経由で実行
+CI=true AWS_REGION=us-east-1 claude -p "テストを実行してください"
+
+# プラグイン状態の確認
+claude
+# /plugin list --enabled
+# /plugin list --disabled
+
+# バージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Enterprise["🏢 エンタープライズバージョン管理"]
+        direction LR
+        MinVer["📋 requiredMinimumVersion"]
+        MaxVer["📋 requiredMaximumVersion"]
+        Policy["🔒 バージョンポリシー強制"]
+        MinVer ~~~ MaxVer ~~~ Policy
+    end
+
+    subgraph Hooks["🪝 フックシステム強化"]
+        direction LR
+        Stop["⛔ Stop フック"]
+        Context["💬 additionalContext"]
+        Continue["▶️ ターン継続"]
+        Stop ~~~ Context ~~~ Continue
+    end
+
+    subgraph CICD["🔄 CI/CD 修正"]
+        direction LR
+        Pipe["📡 claude -p ハング修正"]
+        Auth["🔑 Bedrock/Vertex 認証"]
+        TmpDir["📁 TMPDIR リグレッション"]
+        Pipe ~~~ Auth ~~~ TmpDir
+    end
+
+    subgraph Plugin["🧩 プラグイン管理"]
+        direction LR
+        List["📜 /plugin list"]
+        Filter["🔍 --enabled/--disabled"]
+        List ~~~ Filter
+    end
+
+    subgraph Platform["🖥️ クロスプラットフォーム"]
+        direction LR
+        Windows["🪟 Windows EEXIST 修正"]
+        Security["🔐 deny ルール強化"]
+        Windows ~~~ Security
+    end
+
+    Admin(["👔 IT 管理者"]) --> Enterprise
+    Enterprise --> |"バージョン範囲外で起動拒否"| User
+    User(["👤 開発者"]) --> Plugin
+    User --> Hooks
+    Hooks --> |"フィードバックで修正促進"| Continue
+    DevOps(["⚙️ DevOps"]) --> CICD
+    CICD --> |"パイプライン安定化"| User
+    User --> Platform
+
+    classDef enterprise fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef hooks fill:#FFF3E0,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef cicd fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef plugin fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#4A148C
+    classDef platform fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class Enterprise enterprise
+    class Hooks hooks
+    class CICD cicd
+    class Plugin plugin
+    class Platform platform
+    class User,Admin,DevOps user
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases / Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="use-case">
+                <h4>🏢 エンタープライズ IT 管理者</h4>
+                <p><code>requiredMinimumVersion</code> / <code>requiredMaximumVersion</code> を活用してバージョンポリシーを設定。セキュリティパッチ適用済みの最小バージョンと検証完了済みの最大バージョンを定義し、組織全体のコンプライアンスを確保する</p>
+            </div>
+            <div class="use-case">
+                <h4>⚙️ CI/CD エンジニア</h4>
+                <p>Bedrock/Vertex/Foundry 使用時に API キー未設定でも動作可能に。<code>claude -p</code> のハング問題が修正され、バックグラウンドプロセスを含むパイプラインの信頼性が向上。Bazel/EDR 環境での <code>$TMPDIR</code> 問題も解消</p>
+            </div>
+            <div class="use-case">
+                <h4>🪝 フック開発者</h4>
+                <p><code>additionalContext</code> により、品質ゲートやセキュリティチェックをフックで実装し、問題がある場合に Claude に修正を促すワークフローが実現可能。エラーによるターン終了ではなくフィードバックとして処理される</p>
+            </div>
+        </section>
+
+        <!-- Required Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <div class="action-list">
+                <div class="action-item">
+                    <div class="action-number">1</div>
+                    <div class="action-content">
+                        <strong>アップデート実行</strong>: <code>npm update -g @anthropic-ai/claude-code</code>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">2</div>
+                    <div class="action-content">
+                        <strong>エンタープライズ管理者</strong>: <code>requiredMinimumVersion</code> / <code>requiredMaximumVersion</code> でバージョンポリシーを設定
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">3</div>
+                    <div class="action-content">
+                        <strong>CI/CD ユーザー</strong>: <code>claude -p</code> でバックグラウンドプロセスが約 5 秒後に停止される新挙動に留意
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">4</div>
+                    <div class="action-content">
+                        <strong>Bazel/EDR 環境</strong>: v2.1.154 以降の <code>$TMPDIR</code> 問題が本リリースで解消
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">5</div>
+                    <div class="action-content">
+                        <strong>フック利用者</strong>: Stop/SubagentStop フックで <code>additionalContext</code> を活用した品質ゲートの実装を検討
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <div class="links-list">
+                <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank">Changelog</a>
+                <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank">Claude Code Docs</a>
+                <a href="https://docs.anthropic.com/en/docs/claude-code/hooks" target="_blank">Hooks</a>
+                <a href="https://docs.anthropic.com/en/docs/claude-code/permissions" target="_blank">Permissions</a>
+                <a href="https://docs.anthropic.com/en/docs/claude-code/background-agents" target="_blank">Background Agents</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

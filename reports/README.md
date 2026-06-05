@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-06-05](2026/2026-06-05-claude-code-v2-1-163.md) - Claude Code v2.1.163: エンタープライズバージョン管理、プラグイン管理強化、フック出力改善、CI/CD およびクロスプラットフォーム修正
 - [2026-06-03](2026/2026-06-03-services-track-partner-hub.md) - Claude Partner Network: Services Track と Partner Hub の発表
 - [2026-06-03](2026/2026-06-03-claude-code-v2-1-162.md) - Claude Code v2.1.162: エージェントダッシュボード強化、起動安定性の大幅改善、Windows パス対応の修正
 - [2026-06-03](2026/2026-06-03-ai-enabled-cyber-threats-mitre-attack.md) - AI を活用したサイバー脅威の 1 年間の分析 - MITRE ATT&CK マッピング
