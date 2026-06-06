@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-06-06](2026/2026-06-06-claude-code-v2-1-166.md) - Claude Code v2.1.166: フォールバックモデル設定とセキュリティ強化
+- [2026-06-05](2026/2026-06-05-claude-opus-4-1-deprecation.md) - Claude Opus 4.1 モデルの非推奨化と廃止予定
 - [2026-06-05](2026/2026-06-05-claude-code-v2-1-163.md) - Claude Code v2.1.163: エンタープライズバージョン管理、プラグイン管理強化、フック出力改善、CI/CD およびクロスプラットフォーム修正
 - [2026-06-03](2026/2026-06-03-services-track-partner-hub.md) - Claude Partner Network: Services Track と Partner Hub の発表
 - [2026-06-03](2026/2026-06-03-claude-code-v2-1-162.md) - Claude Code v2.1.162: エージェントダッシュボード強化、起動安定性の大幅改善、Windows パス対応の修正
