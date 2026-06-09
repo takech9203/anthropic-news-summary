@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.169: セーフモード導入と大規模バグ修正 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 4px 0;
+            color: var(--text-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .bug-fix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .bug-fix-table th {
+            background: var(--anthropic-cream);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid var(--anthropic-coral);
+        }
+
+        .bug-fix-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            vertical-align: top;
+        }
+
+        .bug-fix-table tr:hover {
+            background: rgba(212, 165, 116, 0.05);
+        }
+
+        .platform-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .platform-badge.all {
+            background: #EDE9FE;
+            color: #6D28D9;
+        }
+
+        .platform-badge.windows {
+            background: #DBEAFE;
+            color: #1D4ED8;
+        }
+
+        .platform-badge.macos {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .platform-badge.wsl {
+            background: #FCE7F3;
+            color: #BE185D;
+        }
+
+        .improvement-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .improvement-list li {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .improvement-list li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bug-fix-table {
+                font-size: 12px;
+            }
+
+            .bug-fix-table td, .bug-fix-table th {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.169: セーフモード導入と大規模バグ修正</h1>
+                <p class="date">2026-06-09</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>--safe-mode フラグ</h3>
+                        <p>全カスタマイズ (CLAUDE.md、プラグイン、スキル、フック、MCP サーバー) を無効化して起動。問題のトラブルシューティングに最適</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📂</div>
+                    <div class="key-point-content">
+                        <h3>/cd コマンド</h3>
+                        <p>セッション中にワーキングディレクトリを変更。プロンプトキャッシュを破壊せず長時間セッションの効率が向上</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎯</div>
+                    <div class="key-point-content">
+                        <h3>disableBundledSkills 設定</h3>
+                        <p>バンドルされたスキル、ワークフロー、組み込みスラッシュコマンドをモデルから隠す設定を追加</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>14 件のバグ修正 + 8 件の改善</h3>
+                        <p>Windows/WSL、エンタープライズ MCP ポリシー、バックグラウンドエージェントなど幅広い修正</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">14</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">その他変更</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>問題の切り分けにカスタマイズを手動で 1 つずつ無効化</li>
+                        <li>ディレクトリ変更でキャッシュが破棄される</li>
+                        <li>MCP ポリシーが再接続時に適用漏れ</li>
+                        <li>Windows で claude -p がハング</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>--safe-mode で全カスタマイズを一括無効化</li>
+                        <li>/cd でキャッシュ維持のままディレクトリ移動</li>
+                        <li>全経路で MCP ポリシーが一貫して適用</li>
+                        <li>Windows のパフォーマンスリグレッション解消</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🛡️ --safe-mode</h3>
+                    <p>全カスタマイズを無効化してトラブルシューティング。環境変数 <code>CLAUDE_CODE_SAFE_MODE</code> でも有効化可能</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📂 /cd コマンド</h3>
+                    <p>プロンプトキャッシュを維持したままセッション中にワーキングディレクトリを変更</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 disableBundledSkills</h3>
+                    <p>設定または環境変数 <code>CLAUDE_CODE_DISABLE_BUNDLED_SKILLS</code> でバンドルスキルを非表示に</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">主要バグ修正</h2>
+            <table class="bug-fix-table">
+                <thead>
+                    <tr>
+                        <th>修正内容</th>
+                        <th>環境</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>エンタープライズ MCP ポリシーが再接続時・IDE 設定・初回セッションで適用されない</td>
+                        <td><span class="platform-badge all">全環境</span></td>
+                    </tr>
+                    <tr>
+                        <td><code>claude -p</code> がスラッシュコマンドスキャン待ちで低速化/ハング (v2.1.161 リグレッション)</td>
+                        <td><span class="platform-badge windows">Windows</span></td>
+                    </tr>
+                    <tr>
+                        <td>macOS で各ターン開始時に ~30-50ms の UI 停止</td>
+                        <td><span class="platform-badge macos">macOS</span></td>
+                    </tr>
+                    <tr>
+                        <td>リモートコントロールが OAuth トークンリフレッシュ時に "reconnecting" で固着</td>
+                        <td><span class="platform-badge all">全環境</span></td>
+                    </tr>
+                    <tr>
+                        <td>Git Credential Manager のポップアップが不要に表示</td>
+                        <td><span class="platform-badge windows">Windows</span></td>
+                    </tr>
+                    <tr>
+                        <td>バックグラウンドエージェントがプロジェクト env 値を無視</td>
+                        <td><span class="platform-badge all">全環境</span></td>
+                    </tr>
+                    <tr>
+                        <td>agents ビューで WSL/Windows Terminal でフレームが garbled</td>
+                        <td><span class="platform-badge wsl">WSL</span></td>
+                    </tr>
+                    <tr>
+                        <td>MCPB プラグインキャッシュの不要な無効化</td>
+                        <td><span class="platform-badge windows">Windows</span></td>
+                    </tr>
+                    <tr>
+                        <td>OTEL クライアント証明書パスが信頼確認なしに設定可能</td>
+                        <td><span class="platform-badge all">全環境</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <h2 class="section-title">改善</h2>
+            <ul class="improvement-list">
+                <li>レスポンスストリーミング中およびスピナーアニメーション中の CPU 使用率を低減</li>
+                <li>Vertex/Foundry で 5 分のアイドルタイムアウトを復元 (無限ハング防止)</li>
+                <li>TaskCreate の信頼性向上: 不正な入力を自動修復</li>
+                <li>リモート管理設定の部分適用: 無効エントリがあっても有効ポリシーを適用</li>
+                <li>バックグラウンドセッションが --ide, --chrome 等のフラグを retire/wake 間で保持</li>
+                <li>"CLAUDE.md is too long" 警告がモデルのコンテキストウィンドウに応じてスケール</li>
+                <li>/workflows がターン進行中でも即座に表示</li>
+                <li>API キー認証無効時のエラーメッセージにガイダンスを追加</li>
+            </ul>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">セーフモードと新機能の使用例</span>
+                </div>
+                <pre><code class="language-bash"># セーフモードで起動 (全カスタマイズ無効)
+claude --safe-mode
+
+# 環境変数でセーフモードを有効化
+CLAUDE_CODE_SAFE_MODE=1 claude
+
+# セッション中にワーキングディレクトリを変更
+# (プロンプトキャッシュを維持)
+/cd /path/to/new/project
+
+# バンドルスキルを無効化して起動
+CLAUDE_CODE_DISABLE_BUNDLED_SKILLS=1 claude
+
+# Vertex/Foundry でアイドルタイムアウトを無効化
+API_FORCE_IDLE_TIMEOUT=0 claude
+
+# バックグラウンドエージェントの全セッションを表示
+claude agents --json --all</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings.json 設定例</span>
+                </div>
+                <pre><code class="language-json">{
+  "disableBundledSkills": true
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ: セーフモード起動フロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Startup["Claude Code 起動プロセス"]
+        Init["初期化"]
+        SafeModeCheck{"--safe-mode 有効?"}
+    end
+
+    subgraph NormalMode["通常モード"]
+        direction LR
+        ClaudeMD["CLAUDE.md"]
+        Plugins["プラグイン"]
+        Skills["スキル"]
+        Hooks["フック"]
+        MCP["MCP サーバー"]
+        ClaudeMD ~~~ Plugins ~~~ Skills ~~~ Hooks ~~~ MCP
+    end
+
+    subgraph SafeMode["セーフモード"]
+        direction LR
+        NoClaudeMD["CLAUDE.md 無効"]
+        NoPlugins["プラグイン 無効"]
+        NoSkills["スキル 無効"]
+        NoHooks["フック 無効"]
+        NoMCP["MCP サーバー 無効"]
+        NoClaudeMD ~~~ NoPlugins ~~~ NoSkills ~~~ NoHooks ~~~ NoMCP
+    end
+
+    subgraph Core["Claude Code コア"]
+        Model["Claude モデル"]
+        Tools["組み込みツール"]
+        Session["セッション管理"]
+    end
+
+    Init --> SafeModeCheck
+    SafeModeCheck -->|"いいえ"| NormalMode
+    SafeModeCheck -->|"はい"| SafeMode
+    NormalMode --> Core
+    SafeMode --> Core
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef enabled fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef disabled fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef core fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+
+    class Startup platform
+    class NormalMode,SafeMode layer
+    class Core layer
+    class Init process
+    class SafeModeCheck decision
+    class ClaudeMD,Plugins,Skills,Hooks,MCP enabled
+    class NoClaudeMD,NoPlugins,NoSkills,NoHooks,NoMCP disabled
+    class Model,Tools,Session core
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🏢 エンタープライズ: MCP ポリシーの確実な適用</h4>
+                <p>セキュリティチームが設定した <code>allowedMcpServers</code> / <code>deniedMcpServers</code> が再接続時・IDE 設定・初回セッションの全経路で一貫して適用されるようになった。追加の設定変更は不要</p>
+            </div>
+            <div class="use-case">
+                <h4>🔍 開発者: カスタマイズの問題切り分け</h4>
+                <p><code>claude --safe-mode</code> で起動し、問題が再現するか確認。再現しなければカスタマイズが原因。CLAUDE.md、プラグイン、フック、MCP サーバーを順次有効化して原因を特定</p>
+            </div>
+            <div class="use-case">
+                <h4>💻 Windows ユーザー: パフォーマンス問題の解消</h4>
+                <p>v2.1.161 以降で発生していた <code>claude -p</code> のハング/低速化問題、Git Credential Manager のポップアップ、MCPB プラグインキャッシュの不要な再展開が全て解消</p>
+            </div>
+        </section>
+
+        <!-- Developer Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">⬆️</div>
+                    <div class="key-point-content">
+                        <h3>Claude Code のアップデート</h3>
+                        <p><code>claude update</code> で v2.1.169 に更新</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚠️</div>
+                    <div class="key-point-content">
+                        <h3>Vertex/Foundry ユーザー</h3>
+                        <p>デフォルト 5 分アイドルタイムアウトが復元。無限待機が必要な場合は <code>API_FORCE_IDLE_TIMEOUT=0</code> を設定</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>OTEL セキュリティ変更</h3>
+                        <p>信頼されていないプロジェクト設定から OTEL クライアント証明書パスを設定する場合、信頼確認が必要に</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連:</strong> <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
