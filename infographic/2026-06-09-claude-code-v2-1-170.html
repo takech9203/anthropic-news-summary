@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.170: Fable 5 対応とバグ修正</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: #FFF8F0;
+            color: #1a1a2e;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: #D4A574;
+            color: #1a1a2e;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212,165,116,0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: #D4A574;
+            border-radius: 2px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: #F5EDE4;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .key-point:last-child {
+            margin-bottom: 0;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .key-point-content p {
+            font-size: 0.9rem;
+            color: #4a4a5a;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2, #FECACA);
+            border: 2px solid #F87171;
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+            border: 2px solid #34D399;
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .comparison-card.before h3 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h3 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, #F5EDE4 100%);
+            border: 2px solid rgba(212,165,116,0.2);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .feature-card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 0.85rem;
+            color: #4a4a5a;
+            line-height: 1.6;
+        }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212,165,116,0.2);
+            overflow-x: auto;
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: #D4A574;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .code-block pre {
+            padding: 20px;
+            margin: 0;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .use-case {
+            background: linear-gradient(135deg, #F5EDE4 0%, #FFF8F0 100%);
+            border-left: 4px solid #D4A574;
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .use-case p {
+            font-size: 0.9rem;
+            color: #4a4a5a;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: #F5EDE4;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #6a6a7a;
+        }
+
+        .footer a {
+            color: #D4A574;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .header {
+                padding: 32px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px 20px;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <span class="category-badge">Claude Code</span>
+            <h1>Claude Code v2.1.170: Fable 5 対応とバグ修正</h1>
+            <p class="date">2026-06-09</p>
+        </div>
+
+        <!-- Key Points -->
+        <div class="section">
+            <div class="section-title">概要</div>
+            <div class="key-point">
+                <div class="key-point-icon">&#x1F31F;</div>
+                <div class="key-point-content">
+                    <h3>Claude Fable 5 対応</h3>
+                    <p>Mythos クラスの最高性能モデルへのアクセスが可能に</p>
+                </div>
+            </div>
+            <div class="key-point">
+                <div class="key-point-icon">&#x1F527;</div>
+                <div class="key-point-content">
+                    <h3>トランスクリプト保存修正</h3>
+                    <p>VS Code 統合ターミナルからのセッションが正しく保存されるように</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Before/After Comparison -->
+        <div class="section">
+            <div class="section-title">Before / After</div>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h3>Before</h3>
+                    <p>VS Code ターミナルからのセッションが --resume に表示されない</p>
+                </div>
+                <div class="comparison-card after">
+                    <h3>After</h3>
+                    <p>全環境でトランスクリプトが正しく保存、--resume で復元可能</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Cards -->
+        <div class="section">
+            <div class="section-title">主な変更点</div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-card-icon">&#x1F680;</div>
+                    <h3>Fable 5 アクセス</h3>
+                    <p>v2.1.170 で claude-fable-5 モデルが選択可能に。Mythos クラスの高性能推論を活用できます。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">&#x1F4BE;</div>
+                    <h3>セッション管理</h3>
+                    <p>環境変数継承問題を解消。VS Code 統合ターミナルでもトランスクリプトが正しく保存されます。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">&#x1F6E1;&#xFE0F;</div>
+                    <h3>安全機構</h3>
+                    <p>センシティブ分類器から Opus 4.8 フォールバックへの安全な処理パスを確保。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture Diagram -->
+        <div class="section">
+            <div class="section-title">アーキテクチャ</div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeCode["Claude Code v2.1.170"]
+        subgraph ModelLayer["モデルレイヤー"]
+            direction LR
+            Fable["Fable 5"]
+            Opus["Opus 4.8"]
+            Sonnet["Sonnet 4.6"]
+            Fable ~~~ Opus ~~~ Sonnet
+        end
+        subgraph SessionMgmt["セッション管理"]
+            direction LR
+            Transcript["トランスクリプト保存"]
+            Resume["--resume"]
+            Transcript ~~~ Resume
+        end
+    end
+    subgraph Env["実行環境"]
+        direction LR
+        Terminal["ターミナル"]
+        VSCode["VS Code"]
+        Terminal ~~~ VSCode
+    end
+    Env --> SessionMgmt
+    SessionMgmt --> ModelLayer
+                </pre>
+            </div>
+        </div>
+
+        <!-- Code Sample -->
+        <div class="section">
+            <div class="section-title">使用例</div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">BASH</span>
+                </div>
+                <pre><code class="language-bash"># v2.1.170 にアップデート
+claude update
+
+# Fable 5 をデフォルトモデルとして設定
+claude config set model claude-fable-5
+
+# セッションの再開
+claude --resume</code></pre>
+            </div>
+        </div>
+
+        <!-- Use Cases -->
+        <div class="section">
+            <div class="section-title">ユースケース</div>
+            <div class="use-case">
+                <h3>&#x1F3D7;&#xFE0F; 大規模コードベース移行</h3>
+                <p>Fable 5 で複雑な全体移行を高速実行。大規模リファクタリングや言語間移行に最適です。</p>
+            </div>
+            <div class="use-case">
+                <h3>&#x1F4BB; VS Code 開発者</h3>
+                <p>セッション復元の信頼性向上。統合ターミナルでの作業が中断されても --resume で確実に再開できます。</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Source: <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;">Generated on 2026-06-09</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                lineColor: '#1a1a2e',
+                textColor: '#1a1a2e',
+                fontSize: '14px'
+            }
+        });
+
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
