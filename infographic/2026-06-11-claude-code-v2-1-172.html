@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.172 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --danger: #EF4444;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .bugfix-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .bugfix-category {
+            margin-bottom: 16px;
+        }
+
+        .bugfix-category h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bugfix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #FEF2F2;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid #F87171;
+        }
+
+        .bugfix-item.fixed {
+            background: #F0FDF4;
+            border-left-color: #4ADE80;
+        }
+
+        .bugfix-item p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .improvement-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #EFF6FF;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid #60A5FA;
+        }
+
+        .improvement-item p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-list {
+            counter-reset: action-counter;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            counter-increment: action-counter;
+        }
+
+        .action-item::before {
+            content: counter(action-counter);
+            width: 32px;
+            height: 32px;
+            background: var(--anthropic-coral);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-top: 4px;
+        }
+
+        .action-item strong {
+            color: var(--text-primary);
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            .section {
+                padding: 24px;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.172</h1>
+                <p class="date">2026-06-11 | Claude Code Changelog</p>
+                <span class="version-badge">30 items: 4 features + 18 fixes + 8 improvements</span>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>サブエージェントの再帰的生成 (最大 5 階層)</h3>
+                        <p>サブエージェントが自身のサブエージェントを生成可能に。複雑なマルチエージェントワークフローの自律的分解と並列処理が飛躍的に向上</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">☁️</div>
+                    <div class="key-point-content">
+                        <h3>Bedrock AWS リージョン自動検出</h3>
+                        <p>AWS_REGION 未設定時に ~/.aws/config からリージョンを自動読み取り。AWS SDK 標準の優先順位に準拠</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>パフォーマンス大幅改善</h3>
+                        <p>長い会話での冗長な正規化処理削除、アイドル時 CPU 使用量削減 (5 Hz レンダリング廃止)</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>18 件のバグ修正</h3>
+                        <p>1M コンテキスト固着、モデル選択の不具合 6 件、ワイルドカードパーミッション、バックグラウンドエージェント安定性を修正</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">リリースサマリー</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">30</div>
+                    <div class="stat-label">変更項目合計</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">最大ネスト階層</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🤖 サブエージェントネスト</h3>
+                    <p>最大 5 階層までサブエージェントの再帰的生成が可能に。複雑なタスクを自律的に分解・並列処理</p>
+                </div>
+                <div class="feature-card">
+                    <h3>☁️ AWS リージョン自動検出</h3>
+                    <p>~/.aws/config からリージョンを自動読み取り。/status で取得元を確認可能</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 プラグイン検索バー</h3>
+                    <p>/plugin コマンドでマーケットプレイス閲覧時に検索バーが追加。大量のプラグインを素早く検索</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 OTEL model 属性</h3>
+                    <p>claude_code.lines_of_code.count メトリクスに model 属性を追加。モデル別コード生成量を分析可能</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture: Sub-agent Nesting -->
+        <section class="section">
+            <h2 class="section-title">サブエージェント階層構造</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph AgentTree["🤖 サブエージェント階層構造"]
+        L0["⭐ メインエージェント<br/>Level 0"]
+        L1A["🔧 サブエージェント A<br/>Level 1"]
+        L1B["🔧 サブエージェント B<br/>Level 1"]
+        L2A["📋 サブエージェント A-1<br/>Level 2"]
+        L2B["📋 サブエージェント A-2<br/>Level 2"]
+        L3["📝 サブエージェント A-1-1<br/>Level 3"]
+        L4["🔍 サブエージェント A-1-1-1<br/>Level 4"]
+        L5["⛔ Level 5 = 最大深度"]
+    end
+
+    L0 --> L1A
+    L0 --> L1B
+    L1A --> L2A
+    L1A --> L2B
+    L2A --> L3
+    L3 --> L4
+    L4 -.->|"生成不可"| L5
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef main fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef sub1 fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef sub2 fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef sub3 fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef blocked fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+
+    class AgentTree platform
+    class L0 main
+    class L1A,L1B sub1
+    class L2A,L2B sub2
+    class L3,L4 sub3
+    class L5 blocked
+                </pre>
+            </div>
+        </section>
+
+        <!-- AWS Region Resolution -->
+        <section class="section">
+            <h2 class="section-title">AWS リージョン解決フロー</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph Resolution["🌐 リージョン解決フロー"]
+        Env{"🔑 AWS_REGION<br/>環境変数"}
+        Config["📄 ~/.aws/config<br/>ファイル"]
+        Default["🏷️ デフォルト<br/>us-east-1"]
+    end
+
+    Env -->|"未設定"| Config
+    Config -->|"未設定"| Default
+    Env -->|"設定済み"| Use1["✅ 使用"]
+    Config -->|"設定済み"| Use2["✅ 使用"]
+    Default --> Use3["✅ 使用"]
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef source fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef result fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Resolution platform
+    class Env decision
+    class Config,Default source
+    class Use1,Use2,Use3 result
+                </pre>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">主要バグ修正 (18 件)</h2>
+
+            <div class="bugfix-category">
+                <h4>🗂️ コンテキスト・セッション管理</h4>
+                <div class="bugfix-item fixed">
+                    <p><strong>1M コンテキスト固着</strong>: 使用量クレジットなしの 1M セッションが自動コンパクト化されるように</p>
+                </div>
+                <div class="bugfix-item fixed">
+                    <p><strong>画像処理エラー</strong>: 複数画像含む会話での繰り返しエラーを解消</p>
+                </div>
+            </div>
+
+            <div class="bugfix-category">
+                <h4>🤖 バックグラウンドエージェント</h4>
+                <div class="bugfix-item fixed">
+                    <p><strong>スピナー残留</strong>: ワーカー応答後 30 秒間の Working 表示を修正</p>
+                </div>
+                <div class="bugfix-item fixed">
+                    <p><strong>設定誤読</strong>: プレウォームワーカーでの別ディレクトリ設定読み込みを修正</p>
+                </div>
+                <div class="bugfix-item fixed">
+                    <p><strong>EAUTH エラー</strong>: デーモン自動更新後の接続失敗を修正</p>
+                </div>
+                <div class="bugfix-item fixed">
+                    <p><strong>停止後アクティブ表示</strong>: ネストエージェント停止後のパネル表示を修正</p>
+                </div>
+            </div>
+
+            <div class="bugfix-category">
+                <h4>🎛️ モデル選択 (6 件)</h4>
+                <div class="bugfix-item fixed">
+                    <p><strong>availableModels</strong>: サブエージェント・アドバイザーへの制限適用、1M 行表示、Bedrock 未提供モデル、ID 二重化、opusplan 設定を一括修正</p>
+                </div>
+            </div>
+
+            <div class="bugfix-category">
+                <h4>🔐 パーミッション・ワークフロー</h4>
+                <div class="bugfix-item fixed">
+                    <p><strong>ワイルドカードドメイン</strong>: WebFetch ドメインルール・パス中間ワイルドカードのマッチング修正</p>
+                </div>
+                <div class="bugfix-item fixed">
+                    <p><strong>ワークフロー検証</strong>: コメント内の Date.now() 等でのバリデーション失敗を修正</p>
+                </div>
+            </div>
+
+            <div class="bugfix-category">
+                <h4>🖥️ UI・インタラクション</h4>
+                <div class="bugfix-item fixed">
+                    <p><strong>プロンプト履歴・メモリ・マウス・プラグイン UI</strong>: サブエージェントタブ、リモートメモリ、Windows コンソール、プラグインブラウザの各種修正</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <h2 class="section-title">改善 (8 件)</h2>
+
+            <div class="improvement-item">
+                <p><strong>⚡ パフォーマンス</strong>: 長い会話での冗長メッセージ正規化削除、ストリーミング状態差分検出でレスポンスタイム改善</p>
+            </div>
+            <div class="improvement-item">
+                <p><strong>💻 CPU 使用量</strong>: /goal チップの 5 Hz 再レンダリング廃止、サブエージェント並列実行中の不要 UI 更新削減</p>
+            </div>
+            <div class="improvement-item">
+                <p><strong>🌐 Chrome ツール</strong>: ブラウザツールが単一バッチ呼び出しで読み込みに。個別呼び出しから最適化</p>
+            </div>
+            <div class="improvement-item">
+                <p><strong>💬 拒否メッセージ</strong>: Usage Policy 拒否時に新セッション開始/モデル変更を提案</p>
+            </div>
+            <div class="improvement-item">
+                <p><strong>🔍 /code-review</strong>: ultra オプションが未サインイン時も表示、アカウント要件を説明</p>
+            </div>
+            <div class="improvement-item">
+                <p><strong>📡 Remote Control</strong>: フッターインジケーターを「/rc active」に短縮、狭いターミナルで非表示</p>
+            </div>
+            <div class="improvement-item">
+                <p><strong>🔁 /loop 表示</strong>: リモートセッションでの不適切な推奨を停止</p>
+            </div>
+            <div class="improvement-item">
+                <p><strong>🖥️ VS Code</strong>: PowerShell ツール呼び出しを適切なコマンド表示に、ANSI コード除去</p>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデートとサブエージェントネスト利用</span>
+                </div>
+                <pre><code class="language-bash"># v2.1.172 にアップデート
+claude update
+
+# サブエージェントのネストは自動的に利用可能
+# エージェントが複雑なタスクを自律的に分解
+claude "このマイクロサービスアーキテクチャの全サービスにヘルスチェックを追加してください"
+
+# /status でリージョンの取得元を確認
+/status</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">INI</span>
+                    <span class="code-title">~/.aws/config リージョン設定例</span>
+                </div>
+                <pre><code class="language-ini">[default]
+region = ap-northeast-1
+
+[profile production]
+region = us-west-2</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🏗️ 大規模リファクタリング</h4>
+                <p>メインエージェントが全体のアーキテクチャ設計を担当し、サブエージェントが各コンポーネントの実装を並列で分担。さらに各サブエージェントがテスト生成を委託する 3 階層構造</p>
+            </div>
+            <div class="use-case">
+                <h4>🔬 並列コードレビュー</h4>
+                <p>コードレビューエージェントがセキュリティ監査、パフォーマンス分析、スタイルチェックを別々のサブエージェントで並列実行。結果を統合して最終レビューを生成</p>
+            </div>
+            <div class="use-case">
+                <h4>☁️ Bedrock + AWS Config 連携</h4>
+                <p>AWS_REGION を設定せずに ~/.aws/config のリージョン設定に依存する環境で、追加設定なしで Claude Code が正しいリージョンを検出</p>
+            </div>
+        </section>
+
+        <!-- Required Actions -->
+        <section class="section">
+            <h2 class="section-title">推奨アクション</h2>
+            <div class="action-list">
+                <div class="action-item">
+                    <p><strong>claude update</strong> で v2.1.172 に更新</p>
+                </div>
+                <div class="action-item">
+                    <p><strong>Bedrock ユーザー</strong>: ~/.aws/config のリージョン設定が正しく検出されることを /status で確認</p>
+                </div>
+                <div class="action-item">
+                    <p><strong>1M コンテキスト利用者</strong>: スタックしていたセッションが自動解消されることを確認</p>
+                </div>
+                <div class="action-item">
+                    <p><strong>管理者</strong>: availableModels がサブエージェント・アドバイザーにも適用されるため設定を確認</p>
+                </div>
+                <div class="action-item">
+                    <p><strong>パーミッション設定</strong>: ワイルドカードドメインルールが正しく機能するようになったことを確認</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連:</strong> <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
