@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-06-12](2026/2026-06-12-claude-code-v2-1-173-v2-1-174.md) - Claude Code v2.1.173 / v2.1.174: モデルピッカー改善、GovCloud 対応修正、使用量アトリビューション追加
+- [2026-06-11](2026/2026-06-11-dxc-anthropic-alliance.md) - DXC Technology と Anthropic の戦略的アライアンス
+- [2026-06-11](2026/2026-06-11-claude-corps.md) - Claude Corps - Anthropic の AI フェローシッププログラム
 - [2026-06-11](2026/2026-06-11-claude-code-v2-1-172.md) - Claude Code v2.1.172: サブエージェントのネスト対応、大規模バグ修正、パフォーマンス改善
 - [2026-06-10](2026/2026-06-10-policy-on-the-ai-exponential.md) - Policy on the AI Exponential
 - [2026-06-09](2026/2026-06-09-claude-fable-5-mythos-5.md) - Claude Fable 5 / Claude Mythos 5: Anthropic 史上最高性能モデルの一般提供開始
