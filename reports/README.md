@@ -5,7 +5,11 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-06-13](2026/2026-06-13-claude-code-v2-1-175-v2-1-176.md) - Claude Code v2.1.175 / v2.1.176 アップデート: セッション多言語対応とモデル制御の強化
+- [2026-06-12](2026/2026-06-12-tcs-anthropic-partnership.md) - TCS と Anthropic の戦略的パートナーシップ: 56 か国 50,000 人規模で Claude を展開
+- [2026-06-12](2026/2026-06-12-fable-mythos-access-suspension.md) - 米国政府の指令による Fable 5 / Mythos 5 アクセス停止に関する Anthropic の声明
 - [2026-06-12](2026/2026-06-12-claude-code-v2-1-173-v2-1-174.md) - Claude Code v2.1.173 / v2.1.174: モデルピッカー改善、GovCloud 対応修正、使用量アトリビューション追加
+- [2026-06-12](2026/2026-06-12-anthropic-public-record.md) - Anthropic Public Record: 米国民の AI に対する意識調査の初回結果
 - [2026-06-11](2026/2026-06-11-dxc-anthropic-alliance.md) - DXC Technology と Anthropic の戦略的アライアンス
 - [2026-06-11](2026/2026-06-11-claude-corps.md) - Claude Corps - Anthropic の AI フェローシッププログラム
 - [2026-06-11](2026/2026-06-11-claude-code-v2-1-172.md) - Claude Code v2.1.172: サブエージェントのネスト対応、大規模バグ修正、パフォーマンス改善
