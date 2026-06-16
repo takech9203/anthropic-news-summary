@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-06-15](2026/2026-06-15-claude-sonnet-4-opus-4-retirement.md) - Claude Sonnet 4 / Opus 4 の廃止 -- API からの完全削除、後継モデルへの移行が必須に
+- [2026-06-15](2026/2026-06-15-claude-code-v2-1-178.md) - Claude Code v2.1.178 アップデート: パラメータベース権限ルールとネスト .claude/ ディレクトリサポート
 - [2026-06-13](2026/2026-06-13-claude-code-v2-1-175-v2-1-176.md) - Claude Code v2.1.175 / v2.1.176 アップデート: セッション多言語対応とモデル制御の強化
 - [2026-06-12](2026/2026-06-12-tcs-anthropic-partnership.md) - TCS と Anthropic の戦略的パートナーシップ: 56 か国 50,000 人規模で Claude を展開
 - [2026-06-12](2026/2026-06-12-fable-mythos-access-suspension.md) - 米国政府の指令による Fable 5 / Mythos 5 アクセス停止に関する Anthropic の声明
