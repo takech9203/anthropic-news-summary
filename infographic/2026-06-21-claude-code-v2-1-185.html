@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.185: ストリームストールヒントの UX 改善</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content { position: relative; z-index: 1; }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
+        .header .date { font-size: 14px; opacity: 0.8; }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width: 600px) { .comparison { grid-template-columns: 1fr; } }
+
+        .comparison-card { padding: 24px; border-radius: 16px; }
+        .comparison-card.before { background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); border: 2px solid #F87171; }
+        .comparison-card.after { background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border: 2px solid #34D399; }
+        .comparison-card h4 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+        .comparison-card .message { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; background: rgba(0,0,0,0.05); padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; }
+        .comparison-card .timing { font-size: 14px; color: var(--text-secondary); }
+        .comparison-card .timing strong { color: var(--text-primary); }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
+        .stat-card { background: var(--gradient-header); color: white; padding: 24px; border-radius: 16px; text-align: center; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--anthropic-coral); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        .code-block { background: #1a1a2e; border-radius: 12px; overflow: hidden; margin: 20px 0; }
+        .code-header { background: #2d2d44; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre { margin: 0; padding: 0; }
+        .code-block code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; padding: 20px !important; }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+        .mermaid { display: flex; justify-content: center; }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer a { color: var(--anthropic-coral); text-decoration: none; word-break: break-all; }
+        .footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.185: ストリームストールヒントの UX 改善</h1>
+                <div class="date">2026-06-21</div>
+            </div>
+        </div>
+
+        <!-- 概要 -->
+        <div class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">💬</div>
+                    <div class="key-point-content">
+                        <h3>ヒントメッセージの文言改善</h3>
+                        <p>「No response from API」という接続エラーを示唆する表現を「Waiting for API response」という正確な待機状態の表現に変更。ユーザーの不安を軽減し、システムが正常に動作中であることを明確に伝達する。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⏱</div>
+                    <div class="key-point-content">
+                        <h3>トリガー閾値を 10 秒から 20 秒に延長</h3>
+                        <p>複雑なリクエストや低速なネットワーク環境での偽陽性ヒント表示を削減。正常な処理中に不要な警告が表示される頻度を大幅に低減する。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Before/After 比較 -->
+        <div class="section">
+            <h2 class="section-title">Before / After 比較</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.184 以前)</h4>
+                    <div class="message">No response from API · Retrying in 5s</div>
+                    <div class="timing"><strong>閾値:</strong> 10 秒間の無応答で表示</div>
+                    <p style="font-size: 13px; color: #991B1B; margin-top: 8px;">接続が失敗したかのような誤解を与える表現</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.185)</h4>
+                    <div class="message">Waiting for API response · will retry in 5s</div>
+                    <div class="timing"><strong>閾値:</strong> 20 秒間の無応答で表示</div>
+                    <p style="font-size: 13px; color: #065F46; margin-top: 8px;">正常に待機中であることを正確に伝達</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主な変更点 -->
+        <div class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>💬 メッセージ文言の変更</h3>
+                    <p>「No response」(否定的・断定的) から「Waiting for response」(待機中・継続的) へ変更。「Retrying in」を「will retry in」に変更し、まだリトライしていないことを明確化。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏱ トリガー閾値の延長</h3>
+                    <p>ストリームストールヒントの表示タイミングを 10 秒から 20 秒に延長。大規模コードベース解析や多数のツール呼び出しを伴うタスクでの偽陽性を大幅に削減。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 技術詳細 -->
+        <div class="section">
+            <h2 class="section-title">技術詳細</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">ストリームストールヒントは、API からのストリーミングレスポンスにおいてチャンクの到着が途絶えた場合に発動する UX メカニズムである。以下のシーケンス図は、改善後のフローを示す。</p>
+            <div class="mermaid-container">
+                <div class="mermaid">
+sequenceDiagram
+    participant U as 👤 ユーザー
+    participant CC as 🖥️ Claude Code
+    participant API as 🤖 Claude API
+
+    U->>CC: コマンド実行
+    CC->>API: リクエスト送信
+    Note over CC: タイマー開始
+    Note over CC,API: 20 秒間応答なし
+    CC-->>U: "Waiting for API response · will retry in …"
+    API-->>CC: レスポンス到着
+    CC-->>U: 結果表示
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Terminal</span>
+                    <span class="code-title">表示メッセージの変化</span>
+                </div>
+                <pre><code class="language-bash"># 変更前 (v2.1.184 以前)
+# 10 秒間 API からの応答がない場合に表示:
+No response from API · Retrying in 5s
+
+# 変更後 (v2.1.185)
+# 20 秒間 API からの応答がない場合に表示:
+Waiting for API response · will retry in 5s</code></pre>
+            </div>
+        </div>
+
+        <!-- 統計 -->
+        <div class="section">
+            <h2 class="section-title">統計</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">20s</div>
+                    <div class="stat-label">新しいトリガー閾値</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">+10s</div>
+                    <div class="stat-label">閾値の延長幅</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2x</div>
+                    <div class="stat-label">待機時間の倍率</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 開発者への影響 -->
+        <div class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="use-case">
+                <h4>低速ネットワーク環境のユーザー</h4>
+                <p>VPN 経由や地理的に遠いリージョンへの接続で作業する開発者にとって、不要な警告ヒントが表示される頻度が大幅に減少する。</p>
+            </div>
+            <div class="use-case">
+                <h4>大規模コードベースの解析タスク</h4>
+                <p>複雑なプロンプトや多数のツール呼び出しを伴うタスクでは、モデルの初回レスポンスまでに 10 秒以上かかることがある。20 秒の閾値により偽陽性が解消される。</p>
+            </div>
+            <div class="use-case">
+                <h4>日常的な Claude Code ユーザー全般</h4>
+                <p>メッセージが「接続失敗」ではなく「待機中」と正確に表示されることで、不要な不安やワークフローの中断が軽減される。特別な設定変更は不要。</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデート方法</span>
+                </div>
+                <pre><code class="language-bash">claude update</code></pre>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Source:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;">Generated on 2026-06-21 | Claude Code v2.1.185 Release Infographic</p>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
