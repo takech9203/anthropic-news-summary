@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.186 - MCP CLI 認証、Bash 自動応答、バックグラウンドサブエージェント権限強化 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p, .comparison-card code {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card code {
+            display: block;
+            background: rgba(0,0,0,0.05);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+        }
+
+        /* Bug fix list */
+        .bugfix-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .bugfix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            border-left: 3px solid var(--success);
+        }
+
+        .bugfix-item .icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .bugfix-item p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .bugfix-category {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 20px 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bugfix-category:first-child {
+            margin-top: 0;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Migration/Action items */
+        .action-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+            border: 1px solid #93C5FD;
+            border-radius: 12px;
+        }
+
+        .action-item .icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .action-item .content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .action-item .content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .links {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code Update</span>
+                <h1>Claude Code v2.1.186<br>MCP CLI 認証、Bash 自動応答、バックグラウンド権限強化</h1>
+                <p class="date">2026-06-23</p>
+                <span class="version-badge">33 項目の変更を含む大規模リリース</span>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.186</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">20</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">動作変更</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要: 3 つの注目ポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔐</div>
+                    <div class="key-point-content">
+                        <h3>MCP CLI 認証</h3>
+                        <p><code>claude mcp login/logout</code> コマンドにより、インタラクティブメニューを開かずに CLI から直接 MCP サーバーへ認証可能に。<code>--no-browser</code> で SSH 環境にも対応する。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💻</div>
+                    <div class="key-point-content">
+                        <h3>Bash 自動応答</h3>
+                        <p><code>!</code> で実行したシェルコマンドの出力に対して Claude が自動的に応答。対話的なデバッグフローが大幅に効率化される。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>バックグラウンドサブエージェント権限</h3>
+                        <p>従来の自動拒否方式からメインセッションへのプロンプト表示方式に変更。どのエージェントが権限を要求しているか表示され、Esc で個別拒否が可能。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After: Bash Auto-respond -->
+        <section class="section">
+            <h2 class="section-title">Before / After: Bash コマンド実行</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (v2.1.185 以前)</h4>
+                    <p><code>!</code> コマンドの出力はコンテキストに追加されるのみ。開発者が自分で結果を読み取る必要があった。</p>
+                    <code>! git status<br>=> (出力がコンテキストに追加されるだけ)</code>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.186)</h4>
+                    <p>Claude が出力を解析し、自動的にフィードバックを返す。対話的なワークフローに。</p>
+                    <code>! git status<br>=> Claude: "3 つのファイルが変更されています"</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After: Background Permission -->
+        <section class="section">
+            <h2 class="section-title">Before / After: バックグラウンド権限</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p>バックグラウンドサブエージェントの権限要求が自動拒否され、権限が必要なツールは使用不可。</p>
+                    <code>SubAgent -> Permission? -> Auto-Deny</code>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p>権限プロンプトがメインセッションに表示。ユーザーが明示的に Allow/Deny を判断可能。</p>
+                    <code>SubAgent -> Permission? -> Main Session -> User Decision</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能/追加 (6 件)</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔐 MCP CLI 認証</h3>
+                    <p><code>claude mcp login/logout</code> で CLI から直接認証。<code>--no-browser</code> で SSH/ヘッドレス環境にも対応。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💬 Bash 自動応答</h3>
+                    <p><code>!</code> コマンドの出力に Claude が自動で応答。<code>respondToBashCommands: false</code> で従来動作に戻せる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 ワークフローフィルタ</h3>
+                    <p><code>/workflows</code> のエージェント詳細ビューで <code>f</code> キーによるステータスフィルタリングが可能に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 Plugin Skills セクション</h3>
+                    <p><code>/plugin</code> Installed タブにスキル一覧を表示する "Skills" セクションを追加。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🖥️ iTerm2 チームメイト</h3>
+                    <p><code>teammateMode: "iterm2"</code> 設定追加。<code>it2</code> CLI 未検出時に警告を表示。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>☁️ AWS 認証リフレッシュ</h3>
+                    <p><code>/login</code> に「Claude Platform on AWS - refresh credentials」オプション追加。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 (20 件)</h2>
+
+            <div class="bugfix-category">🔌 ストリーミング/接続</div>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p>スリープ復帰後に「Content block not found」や JSON パースエラーでストリーミングが失敗する問題を修正</p>
+                </div>
+            </div>
+
+            <div class="bugfix-category">🎨 UI/表示</div>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p>サブエージェントのスクロール位置がメイントランスクリプトに漏れる問題を修正</p>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p>バックグラウンドタスクプレビューでツール名が一瞬フラッシュする問題を修正</p>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p>権限プロンプトのオプション番号ずれを修正</p>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p><code>~~strikethrough~~</code> がリテラルなチルダとして表示される問題を修正</p>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p>ダークテーマフラッシュ、マウス選択ハイライト残留、MCP 切断誤通知など UI 関連の修正</p>
+                </div>
+            </div>
+
+            <div class="bugfix-category">🤖 バックグラウンドエージェント</div>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p>セッションリキャップの重複表示を修正</p>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p><code>claude agents</code> からのセッション展開で前画面が残る問題を修正</p>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p>メインターン終了後に Esc/Ctrl+C が反応しない問題を修正</p>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p>ジョブステータスの「needs input」が古いまま表示される問題を修正</p>
+                </div>
+            </div>
+
+            <div class="bugfix-category">🔒 セキュリティ/権限</div>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p><code>Agent(type)</code> deny ルールが名前付きサブエージェントに適用されない問題を修正</p>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p>Chrome タブグループ分離が並行セッションで未適用の問題を修正</p>
+                </div>
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p><code>--tools</code> のフィーチャーゲート付きツールが起動時に漏れる問題を修正</p>
+                </div>
+            </div>
+
+            <div class="bugfix-category">⚙️ その他</div>
+            <div class="bugfix-list">
+                <div class="bugfix-item">
+                    <span class="icon">✅</span>
+                    <p>Enterprise/Team のセッションコスト未表示、チームメイトの <code>--effort</code> 継承、ワークフロー <code>agent({schema})</code> の無限ループを修正</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvements & Changes -->
+        <section class="section">
+            <h2 class="section-title">改善 & 変更</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>💡 MCP タイポ候補</h3>
+                    <p><code>claude mcp get/remove</code> でサーバー名のタイポ時に最も近い名前を提案。長いリストも適切に切り詰め。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧠 メモリコンパクト化</h3>
+                    <p><code>MEMORY.md</code> がサイズ制限に近づくとエージェントにコンパクト化を促すリマインダーを表示。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 スキル柔軟キー形式</h3>
+                    <p>フロントマターキーが kebab-case、snake_case、camelCase いずれも受付可能に。不正 YAML も安全にハンドリング。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 リトライ上限変更</h3>
+                    <p><code>CLAUDE_CODE_MAX_RETRIES</code> の上限が 15 に。無人セッションには <code>RETRY_WATCHDOG</code> を推奨。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">MCP CLI 認証の使用例</span>
+                </div>
+                <pre><code class="language-bash"># MCP サーバーへの CLI 認証
+claude mcp login my-github-server
+# ブラウザが開き OAuth フローを完了
+
+# SSH 環境での認証 (ブラウザなし)
+claude mcp login my-server --no-browser
+# 認証 URL が表示されるので、別端末でアクセスしてトークンを入力
+
+# MCP サーバーからのログアウト
+claude mcp logout my-github-server</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Bash 自動応答の動作例</span>
+                </div>
+                <pre><code class="language-bash"># ! を使うと Claude が結果を解析して応答
+! git status
+# => Claude: "3 つのファイルが変更されています。main.py の差分を確認しましょうか?"
+
+# MCP サーバー名のタイポ時の候補表示
+claude mcp get githbu-server
+# => Error: Server "githbu-server" not found.
+#    Did you mean "github-server"?</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings.json 設定例</span>
+                </div>
+                <pre><code class="language-json">{
+  "respondToBashCommands": false,
+  "teammateMode": "iterm2"
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph CLI["🖥️ Claude Code CLI"]
+        direction LR
+        MCPLogin["🔐 mcp login/logout"]
+        BashCmd["💻 ! Bash Commands"]
+        Workflows["📋 /workflows"]
+        MCPLogin ~~~ BashCmd ~~~ Workflows
+    end
+
+    subgraph Background["🔄 Background Agents"]
+        direction LR
+        SubAgent["🤖 Subagent"]
+        PermPrompt["🔒 Permission Prompt"]
+        SubAgent ~~~ PermPrompt
+    end
+
+    subgraph MCP["🔌 MCP Servers"]
+        direction LR
+        OAuth["🎫 OAuth 2.0"]
+        Tools["🔧 Tools"]
+        OAuth ~~~ Tools
+    end
+
+    User(["👤 Developer"]) --> CLI
+    MCPLogin --> OAuth
+    OAuth --> Tools
+    BashCmd -->|"Auto Respond"| User
+    SubAgent -->|"Permission Bubble-up"| PermPrompt
+    PermPrompt -->|"Allow/Deny"| User
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class CLI,Background,MCP platform
+    class MCPLogin,BashCmd,Workflows,SubAgent,PermPrompt api
+    class OAuth,Tools internal
+    class User user
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🌐 リモート開発環境での MCP 接続</h4>
+                <p>SSH でリモートサーバーに接続し、<code>claude mcp login --no-browser</code> で OAuth 認証を完了。ブラウザが使えない環境でも MCP サーバーのツールをフル活用できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🐛 対話的デバッグの高速化</h4>
+                <p><code>! git log --oneline -5</code> や <code>! npm test</code> の結果に Claude が即座にフィードバック。「テストが 2 件失敗しています。エラーを見てみましょう」のような提案で次のアクションがすぐに分かる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 バックグラウンドエージェントの実用化</h4>
+                <p>バックグラウンドで動作するエージェントがファイル書き込みや外部 API アクセスの権限を必要とする場合、メインセッションにプロンプトが表示される。開発者は作業を中断せずに権限を判断できる。</p>
+            </div>
+        </section>
+
+        <!-- Required Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <div class="action-list">
+                <div class="action-item">
+                    <span class="icon">⬆️</span>
+                    <div class="content">
+                        <h4>アップデート実施</h4>
+                        <p><code>claude update</code> で v2.1.186 に更新する。</p>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <span class="icon">⚠️</span>
+                    <div class="content">
+                        <h4>Bash 自動応答の確認</h4>
+                        <p><code>!</code> コマンドの動作変更を確認。従来動作を維持するには <code>"respondToBashCommands": false</code> を設定。</p>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <span class="icon">🔢</span>
+                    <div class="content">
+                        <h4>MAX_RETRIES の確認</h4>
+                        <p>15 を超える値を設定中の場合、上限が適用される。無人セッションは <code>CLAUDE_CODE_RETRY_WATCHDOG</code> に移行。</p>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <span class="icon">🛡️</span>
+                    <div class="content">
+                        <h4>Agent deny ルールの確認</h4>
+                        <p>名前付きサブエージェントに deny ルールが正しく適用されるようになったため、権限設定を再確認する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <div class="links">
+                <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a>
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">GitHub リポジトリ</a>
+                <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer">MCP プロトコル仕様</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
