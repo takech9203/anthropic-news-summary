@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducing Claude Tag - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Availability */
+        .availability-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .availability-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .availability-list li:last-child {
+            border-bottom: none;
+        }
+
+        .availability-list li::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--anthropic-coral);
+            border-radius: 50%;
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Migration */
+        .migration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .migration-item {
+            background: var(--anthropic-cream);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .migration-item .label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .migration-item .value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .migration-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">新サービス</span>
+                <h1>Introducing Claude Tag: チームワークフローに統合される協調型 AI</h1>
+                <p class="date">2026-06-23 | Anthropic News</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">主要ポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">💬</div>
+                    <div class="key-point-content">
+                        <h3>Slack チームメンバーとして参加</h3>
+                        <p>Claude がチームメンバーとして Slack チャンネルに参加し、@Claude メンションでタスク委任が可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>コンテキスト学習</h3>
+                        <p>繰り返しの説明不要。チャンネル会話を継続的にフォローし、文脈を自動蓄積</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">👁️</div>
+                    <div class="key-point-content">
+                        <h3>アンビエントモード</h3>
+                        <p>プロアクティブな情報提供、停滞スレッドのフォローアップを自律的に実行</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⏰</div>
+                    <div class="key-point-content">
+                        <h3>非同期タスク実行</h3>
+                        <p>数時間から数日間の自律作業が可能。自身でスケジューリングを管理</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>分離された ID</h3>
+                        <p>用途別の Claude インスタンスを作成可能。セールスとエンジニアリングは情報非共有</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⭐</div>
+                    <div class="key-point-content">
+                        <h3>Opus 4.8 モデルで動作</h3>
+                        <p>最新の Opus 4.8 モデルを基盤として、高品質なチーム支援を実現</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>実証済みの成果</h3>
+                        <p>Anthropic 社内ではプロダクトチームのコードの 65% を社内版が生成</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p>都度コンテキストを提供し明示的に指示を出す従来の AI アシスタント</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p>チームに常駐し自律的にコンテキストを蓄積、プロアクティブに行動する Claude Tag</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>💬 @Claude メンション</h3>
+                    <p>Slack チャンネル内で @Claude とメンションするだけでタスクを委任。チームメンバーと同じ感覚で利用可能</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧠 コンテキスト学習</h3>
+                    <p>チャンネルの会話を継続的にフォローし、プロジェクトの背景や用語を自動的に学習</p>
+                </div>
+                <div class="feature-card">
+                    <h3>👁️ アンビエントモード</h3>
+                    <p>停滞しているスレッドのフォローアップや、関連情報のプロアクティブな提供を自動実行</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏰ 非同期タスク</h3>
+                    <p>数時間から数日間の長期タスクを自律的に実行。スケジューリングも自身で管理</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 分離 ID</h3>
+                    <p>セールス用、エンジニアリング用など用途別にインスタンスを分離。情報のサイロ化を維持</p>
+                </div>
+                <div class="feature-card">
+                    <h3>✉️ ダイレクトメッセージ</h3>
+                    <p>チャンネルだけでなく DM でも利用可能。個別の質問や機密性の高い相談に対応</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る成果</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">65%</div>
+                    <div class="stat-label">Anthropic プロダクトチームの<br>コード生成率</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Organization["🏢 組織"]
+        subgraph Admin["🔧 管理者設定"]
+            Tools["🛠️ ツール設定"]
+            Access["🔑 アクセス権限"]
+            Limits["📊 トークン上限"]
+        end
+
+        subgraph Channels["💬 Slack チャンネル"]
+            direction LR
+            SalesCh["📈 Sales チャンネル"]
+            EngCh["💻 Engineering チャンネル"]
+            SalesCh ~~~ EngCh
+        end
+
+        subgraph Identities["🤖 Claude Tag インスタンス"]
+            direction LR
+            SalesClaude["🤖 Sales Claude"]
+            EngClaude["🤖 Eng Claude"]
+            SalesClaude ~~~ EngClaude
+        end
+    end
+
+    subgraph Features["⚡ 機能"]
+        Context["🧠 コンテキスト学習"]
+        Ambient["👁️ アンビエントモード"]
+        Async["⏰ 非同期タスク"]
+        DM["✉️ ダイレクトメッセージ"]
+    end
+
+    subgraph Model["🎯 基盤"]
+        Opus["⭐ Opus 4.8"]
+    end
+
+    Admin --> Identities
+    SalesCh --> SalesClaude
+    EngCh --> EngClaude
+    Identities --> Features
+    Features --> Opus
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef admin fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#E65100
+    classDef channel fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef identity fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef feature fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#33691E
+    classDef model fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#4A148C
+
+    class Organization platform
+    class Admin admin
+    class Tools,Access,Limits admin
+    class Channels channel
+    class SalesCh,EngCh channel
+    class Identities identity
+    class SalesClaude,EngClaude identity
+    class Features feature
+    class Context,Ambient,Async,DM feature
+    class Model,Opus model
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>1. タスクの委任</h4>
+                <p>@Claude でスプリントの未完了チケットまとめ、優先度付けなどを依頼。チームの管理業務を効率化</p>
+            </div>
+            <div class="use-case">
+                <h4>2. 非同期作業</h4>
+                <p>競合製品の機能比較表作成を来週月曜日までに依頼。長期的なリサーチタスクを自律的に遂行</p>
+            </div>
+            <div class="use-case">
+                <h4>3. アンビエント対応</h4>
+                <p>デプロイがスタックした際に自動で関連ログと過去の解決策を提示。チームの問題解決を加速</p>
+            </div>
+        </section>
+
+        <!-- Availability -->
+        <section class="section">
+            <h2 class="section-title">提供情報</h2>
+            <ul class="availability-list">
+                <li>2026 年 6 月 23 日ベータ開始</li>
+                <li>Claude Enterprise / Team プラン向け</li>
+                <li>既存 Claude in Slack から 30 日間の移行期間</li>
+            </ul>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+            <div class="migration-grid">
+                <div class="migration-item">
+                    <div class="label">移行期間</div>
+                    <div class="value">30 日間</div>
+                </div>
+                <div class="migration-item">
+                    <div class="label">移行方法</div>
+                    <div class="value">オプトイン形式</div>
+                </div>
+                <div class="migration-item">
+                    <div class="label">主な変更</div>
+                    <div class="value">単発応答モデルから<br>チャンネル常駐型モデルへ</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://www.anthropic.com/news/introducing-claude-tag" target="_blank" rel="noopener noreferrer">https://www.anthropic.com/news/introducing-claude-tag</a></p>
+            <p style="margin-top: 8px;">Generated: 2026-06-23 | Anthropic News Summary</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
