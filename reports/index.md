@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-06-26](2026/2026-06-26-claude-code-v2-1-193.md) - Claude Code v2.1.193 アップデート: オートモード分類器強化と OpenTelemetry レスポンスログ
+- [2026-06-25](2026/2026-06-25-trusted-devices-remote-control.md) - Claude Code Remote Control にトラステッドデバイス認証が追加
 - [2026-06-24](2026/2026-06-24-claude-code-v2-1-190-v2-1-191.md) - Claude Code v2.1.190 / v2.1.191 アップデート
 - [2026-06-24](2026/2026-06-24-claude-code-v2-1-187.md) - Claude Code v2.1.187 リリース: サンドボックス資格情報保護、モデル制限、マウスサポートなど
 - [2026-06-23](2026/2026-06-23-introducing-claude-tag.md) - Introducing Claude Tag: チームワークフローに統合される協調型 AI
