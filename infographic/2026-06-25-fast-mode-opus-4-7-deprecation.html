@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Opus 4.7 ファストモード廃止予定 - Anthropic News</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content { position: relative; z-index: 1; }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
+        .header .date { font-size: 14px; opacity: 0.8; }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width: 600px) { .comparison { grid-template-columns: 1fr; } }
+
+        .comparison-card { padding: 24px; border-radius: 16px; }
+        .comparison-card.before { background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); border: 2px solid #F87171; }
+        .comparison-card.after { background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border: 2px solid #34D399; }
+        .comparison-card h4 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .code-block { background: #1a1a2e; border-radius: 12px; overflow: hidden; margin: 20px 0; }
+        .code-header { background: #2d2d44; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre { margin: 0; padding: 0; }
+        .code-block code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; padding: 20px !important; }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid { display: flex; justify-content: center; }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a { color: var(--anthropic-coral); text-decoration: none; word-break: break-all; }
+        .footer a:hover { text-decoration: underline; }
+
+        .comparison-card code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        .spec-table th,
+        .spec-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+            font-size: 14px;
+        }
+
+        .spec-table th {
+            background: var(--anthropic-cream);
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .spec-table td {
+            color: var(--text-secondary);
+        }
+
+        .spec-table code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            background: rgba(212, 165, 116, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .action-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .action-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-list li:last-child {
+            border-bottom: none;
+        }
+
+        .action-number {
+            width: 28px;
+            height: 28px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            flex-shrink: 0;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFF8E1 100%);
+            border: 2px solid #FF9800;
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .summary-box strong {
+            color: #E65100;
+        }
+
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API DEPRECATION</span>
+                <h1>Claude Opus 4.7 ファストモード廃止予定</h1>
+                <p class="date">2026-06-25 | Claude API Release Notes</p>
+            </div>
+        </header>
+
+        <!-- 概要 -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 16px;">
+                2026 年 6 月 25 日、Anthropic は Claude Opus 4.7 (<code style="font-family: 'JetBrains Mono', monospace; background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-size: 13px;">claude-opus-4-7-20250219</code>) のファストモード (<code style="font-family: 'JetBrains Mono', monospace; background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-size: 13px;">speed: "fast"</code>) を非推奨 (deprecated) とすることを発表しました。
+            </p>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8;">
+                削除予定日は <strong>2026 年 7 月 24 日</strong> であり、発表から 30 日間の移行期間が設けられています。削除後、<code style="font-family: 'JetBrains Mono', monospace; background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-size: 13px;">claude-opus-4-7</code> に対して <code style="font-family: 'JetBrains Mono', monospace; background: rgba(212,165,116,0.15); padding: 2px 6px; border-radius: 4px; font-size: 13px;">speed: "fast"</code> パラメータを指定したリクエストはエラーを返すようになります。
+            </p>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#9888;</div>
+                    <div class="key-point-content">
+                        <h3>非推奨化発表: 2026 年 6 月 25 日</h3>
+                        <p><code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-opus-4-7-20250219</code> に対する <code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">speed: "fast"</code> パラメータが非推奨となりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#128197;</div>
+                    <div class="key-point-content">
+                        <h3>削除予定日: 2026 年 7 月 24 日</h3>
+                        <p>30 日間の移行期間中は引き続き動作しますが、早期の移行が推奨されます。削除日以降はエラーを返します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#128640;</div>
+                    <div class="key-point-content">
+                        <h3>推奨移行先: Claude Opus 4.8</h3>
+                        <p>Claude Opus 4.8 (<code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-opus-4-8-20260528</code>) のファストモード (リサーチプレビュー) が代替として利用可能です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After Comparison -->
+        <section class="section">
+            <h2 class="section-title">モデル ID の変更</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>変更前 (非推奨)</h4>
+                    <p>モデル ID:</p>
+                    <code>claude-opus-4-7-20250219</code>
+                    <p style="margin-top: 12px;">2026 年 7 月 24 日以降エラーが発生します。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>変更後 (推奨)</h4>
+                    <p>モデル ID:</p>
+                    <code>claude-opus-4-8-20260528</code>
+                    <p style="margin-top: 12px;"><code>speed: "fast"</code> パラメータの仕様変更はありません。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ファストモードの仕様 -->
+        <section class="section">
+            <h2 class="section-title">ファストモードの仕様</h2>
+            <table class="spec-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>詳細</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>パラメータ</td>
+                        <td><code>speed: "fast"</code></td>
+                    </tr>
+                    <tr>
+                        <td>効果</td>
+                        <td>低レイテンシのレスポンス</td>
+                    </tr>
+                    <tr>
+                        <td>レート制限</td>
+                        <td>標準 Opus とは独立した専用制限</td>
+                    </tr>
+                    <tr>
+                        <td>対応モデル</td>
+                        <td>Claude Opus 4.8 (リサーチプレビュー)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Timeline Diagram -->
+        <section class="section">
+            <h2 class="section-title">ファストモード廃止タイムライン</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph Past["&#128197; &#36942;&#21435;&#12398;&#24259;&#27490;"]
+        Opus46["2026-05-28<br/>Opus 4.6<br/>ファストモード廃止"]
+    end
+    subgraph Current["&#128197; &#20170;&#22238;&#12398;&#38750;&#25512;&#22888;&#21270;"]
+        Opus47["2026-06-25<br/>Opus 4.7<br/>ファストモード非推奨"]
+    end
+    subgraph Deadline["&#128197; &#21066;&#38500;&#20104;&#23450;"]
+        Removal["2026-07-24<br/>Opus 4.7<br/>ファストモード削除"]
+    end
+    subgraph Available["&#128197; &#21033;&#29992;&#21487;&#33021;"]
+        Opus48["Claude Opus 4.8<br/>ファストモード<br/>リサーチプレビュー"]
+    end
+    Opus46 --> Opus47
+    Opus47 -->|30 日間| Removal
+    Opus48 -.->|移行先| Removal
+    classDef past fill:#E0E0E0,stroke:#9E9E9E,stroke-width:2px,color:#333333
+    classDef current fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef deadline fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef available fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    class Past past
+    class Current current
+    class Deadline deadline
+    class Available available
+                </pre>
+            </div>
+        </section>
+
+        <!-- Migration Path Diagram -->
+        <section class="section">
+            <h2 class="section-title">移行パス</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Deprecated["非推奨 -- 2026-07-24 に削除"]
+        Opus47Fast["Claude Opus 4.7<br/>speed: fast"]
+    end
+    subgraph Recommended["推奨移行先"]
+        Opus48Fast["Claude Opus 4.8<br/>speed: fast<br/>リサーチプレビュー"]
+    end
+    subgraph Benefits["移行のメリット"]
+        direction LR
+        Latest["最新モデルの性能"]
+        Support["継続的なサポート"]
+        Latest ~~~ Support
+    end
+    Opus47Fast -->|モデル ID を変更| Opus48Fast
+    Opus48Fast --> Benefits
+    classDef deprecated fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef recommended fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef benefits fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    class Deprecated deprecated
+    class Recommended recommended
+    class Benefits benefits
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Examples -->
+        <section class="section">
+            <h2 class="section-title">コード例: Python</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">変更前 -- 2026 年 7 月 24 日以降エラーが発生</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+# 2026 年 7 月 24 日以降、このリクエストはエラーを返します
+response = client.messages.create(
+    model="claude-opus-4-7-20250219",
+    speed="fast",
+    max_tokens=4096,
+    messages=[
+        {
+            "role": "user",
+            "content": "このテキストを要約してください。"
+        }
+    ]
+)</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">変更後 -- 推奨</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+response = client.messages.create(
+    model="claude-opus-4-8-20260528",
+    speed="fast",
+    max_tokens=4096,
+    messages=[
+        {
+            "role": "user",
+            "content": "このテキストを要約してください。"
+        }
+    ]
+)
+
+print(response.content[0].text)</code></pre>
+            </div>
+        </section>
+
+        <!-- curl Example -->
+        <section class="section">
+            <h2 class="section-title">コード例: curl</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Opus 4.8 ファストモードへのリクエスト例</span>
+                </div>
+                <pre><code class="language-bash">curl https://api.anthropic.com/v1/messages \
+     --header "x-api-key: $ANTHROPIC_API_KEY" \
+     --header "anthropic-version: 2023-06-01" \
+     --header "content-type: application/json" \
+     --data \
+'{
+    "model": "claude-opus-4-8-20260528",
+    "speed": "fast",
+    "max_tokens": 4096,
+    "messages": [
+        {
+            "role": "user",
+            "content": "このテキストを要約してください。"
+        }
+    ]
+}'</code></pre>
+            </div>
+        </section>
+
+        <!-- 影響を受ける対象と必要なアクション -->
+        <section class="section">
+            <h2 class="section-title">影響を受ける対象</h2>
+            <div class="use-case">
+                <h4>API 直接利用者</h4>
+                <p><code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-opus-4-7</code> または <code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-opus-4-7-20250219</code> に対して <code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">speed: "fast"</code> を指定しているすべてのアプリケーション</p>
+            </div>
+            <div class="use-case">
+                <h4>リアルタイムシステム</h4>
+                <p>ファストモードの低レイテンシ特性に依存しているリアルタイムシステム</p>
+            </div>
+            <div class="use-case">
+                <h4>クラウドプロバイダ経由の利用者</h4>
+                <p>上記モデルを Amazon Bedrock、Google Vertex AI 経由でファストモードとして利用している開発者</p>
+            </div>
+        </section>
+
+        <!-- 必要なアクション -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <ol class="action-list">
+                <li>
+                    <span class="action-number">1</span>
+                    <span><strong>影響範囲の特定</strong>: コードベース内で <code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-opus-4-7</code> と <code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">speed: "fast"</code> の組み合わせを使用している箇所を洗い出す</span>
+                </li>
+                <li>
+                    <span class="action-number">2</span>
+                    <span><strong>モデル ID の更新</strong>: <code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-opus-4-7-20250219</code> を <code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-opus-4-8-20260528</code> に変更</span>
+                </li>
+                <li>
+                    <span class="action-number">3</span>
+                    <span><strong>動作確認</strong>: Claude Opus 4.8 のファストモード (リサーチプレビュー) で期待通りの動作を確認</span>
+                </li>
+                <li>
+                    <span class="action-number">4</span>
+                    <span><strong>レート制限の確認</strong>: Opus 4.8 ファストモードの専用レート制限が要件を満たすか確認</span>
+                </li>
+                <li>
+                    <span class="action-number">5</span>
+                    <span><strong>段階的デプロイ</strong>: 本番環境への移行は段階的に実施し、問題が発生した場合に切り戻しが可能な体制を整える</span>
+                </li>
+            </ol>
+        </section>
+
+        <!-- 注意事項 -->
+        <section class="section">
+            <h2 class="section-title">移行時の注意事項</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#128300; リサーチプレビュー</h3>
+                    <p>Claude Opus 4.8 のファストモードはリサーチプレビューの段階です。本番環境での利用可否を事前に確認してください。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#9989; パラメータ互換性</h3>
+                    <p>ファストモード以外のパラメータ (<code style="font-size: 12px;">max_tokens</code>, <code style="font-size: 12px;">temperature</code> など) はそのまま使用可能です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#128260; シンプルな移行</h3>
+                    <p><code style="font-size: 12px;">speed: "fast"</code> パラメータ自体の仕様変更はありません。モデル ID のみ更新すれば移行完了です。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- まとめ -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>
+                    Claude Opus 4.7 (<code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-opus-4-7-20250219</code>) のファストモード (<code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">speed: "fast"</code>) が 2026 年 6 月 25 日に非推奨化され、<strong>2026 年 7 月 24 日に完全削除される</strong>ことが発表されました。これは 2026 年 5 月 28 日の Claude Opus 4.6 ファストモード廃止に続く、段階的なサポート終了の一環です。
+                </p>
+                <p style="margin-top: 12px;">
+                    移行は比較的シンプルで、モデル ID を <code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-opus-4-7-20250219</code> から <code style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">claude-opus-4-8-20260528</code> に変更するだけで完了します。ただし、Claude Opus 4.8 のファストモードはリサーチプレビューの段階であるため、本番環境での利用開始前に十分なテストを実施することを推奨します。
+                </p>
+                <p style="margin-top: 12px;">
+                    <strong>残り約 29 日の移行期間です。</strong> 該当するアプリケーションを運用している開発者は、早急に移行計画を策定し、テスト環境での動作確認を開始してください。
+                </p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p style="margin-bottom: 12px;"><strong>関連リンク:</strong></p>
+            <p><a href="https://platform.claude.com/docs/en/release-notes/overview">Claude Developer Platform Release Notes</a></p>
+            <p><a href="https://platform.claude.com/docs/en/build-with-claude/fast-mode#supported-models">Fast Mode - Supported Models</a></p>
+            <p><a href="https://platform.claude.com/docs/en/build-with-claude/fast-mode">Fast Mode Documentation</a></p>
+            <p><a href="https://platform.claude.com/docs/en/about-claude/models/overview">Claude Models Overview</a></p>
+            <p><a href="https://platform.claude.com/docs/en/about-claude/model-deprecations">Claude Model Deprecations</a></p>
+            <p style="margin-top: 16px; border-top: 1px solid rgba(212, 165, 116, 0.3); padding-top: 12px;">
+                ソース: Claude API Release Notes | カテゴリ: API アップデート / 廃止予定 | 発表日: 2026-06-25
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

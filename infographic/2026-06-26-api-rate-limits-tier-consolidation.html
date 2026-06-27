@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude API レートリミット統合 - Anthropic News</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content { position: relative; z-index: 1; }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
+        .header .date { font-size: 14px; opacity: 0.8; }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .key-points { display: grid; gap: 16px; }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .key-point-content p { font-size: 14px; color: var(--text-secondary); }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--anthropic-coral); margin-bottom: 8px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+
+        .code-block { background: #1a1a2e; border-radius: 12px; overflow: hidden; margin: 20px 0; }
+        .code-header { background: #2d2d44; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .code-lang { color: var(--anthropic-coral); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .code-title { color: #a0a0b0; font-size: 12px; }
+        .code-block pre { margin: 0; padding: 0; }
+        .code-block code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; padding: 20px !important; }
+
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid { display: flex; justify-content: center; }
+
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--anthropic-dark); }
+        .use-case p { font-size: 14px; color: var(--text-secondary); }
+
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a { color: var(--anthropic-coral); text-decoration: none; word-break: break-all; }
+        .footer a:hover { text-decoration: underline; }
+
+        /* Table Styles */
+        .rate-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .rate-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .rate-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        .rate-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        .rate-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .rate-table tr:last-child td:first-child {
+            border-radius: 0 0 0 8px;
+        }
+
+        .rate-table tr:last-child td:last-child {
+            border-radius: 0 0 8px 0;
+        }
+
+        .rate-table tr:nth-child(even) {
+            background: var(--anthropic-cream);
+        }
+
+        .rate-table tr:hover {
+            background: rgba(212, 165, 116, 0.1);
+        }
+
+        .tier-label {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .tier-start { background: #E9F7EC; color: #2E7D32; }
+        .tier-build { background: #E3F2FD; color: #1565C0; }
+        .tier-scale { background: #F3E5F5; color: #7B1FA2; }
+
+        .tier-section { margin-bottom: 24px; }
+        .tier-section h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+        .tier-section .tier-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+
+        .summary-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .summary-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .summary-list li:last-child {
+            border-bottom: none;
+        }
+
+        .summary-list li::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--anthropic-coral);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .stat-value { font-size: 1.8rem; }
+            .rate-table { font-size: 12px; }
+            .rate-table th, .rate-table td { padding: 8px 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE API</span>
+                <h1>Claude API レートリミット統合</h1>
+                <p class="date">2026-06-26 | 全モデルで Opus 同等の制限値に統一</p>
+            </div>
+        </div>
+
+        <!-- Overview -->
+        <div class="section">
+            <h2 class="section-title">概要</h2>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8;">
+                Anthropic は Claude API のレートリミット体系を大幅に刷新した。従来のティア構造を 3 つのティア (Start、Build、Scale) に統合し、Claude Sonnet 4.x および Claude Haiku 4.5 のレートリミットを Claude Opus 4.x と同一水準に引き上げた。この変更により、モデル選択時にレートリミットの差異を考慮する必要がなくなり、開発者はコスト・性能のトレードオフのみに集中できるようになる。
+            </p>
+        </div>
+
+        <!-- Key Points -->
+        <div class="section">
+            <h2 class="section-title">主要な変更点</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4CA;</div>
+                    <div class="key-point-content">
+                        <h3>レートリミットの統一</h3>
+                        <p>Claude Sonnet 4.x と Claude Haiku 4.5 のレートリミットが Claude Opus 4.x と完全に一致。モデルごとに異なるバックオフ戦略が不要に。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F3AF;</div>
+                    <div class="key-point-content">
+                        <h3>3 段階のティア構造</h3>
+                        <p>従来の多段階ティアを Start、Build、Scale の 3 段階に統合。組織のスケール状況に応じた明確なパスを提供。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x2705;</div>
+                    <div class="key-point-content">
+                        <h3>アクション不要の自動移行</h3>
+                        <p>既存の組織は自動的に新ティアに移行。いずれの組織も従来より低い制限を受けることはない (下方修正なし)。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="section">
+            <h2 class="section-title">Scale ティアの制限値</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">10,000</div>
+                    <div class="stat-label">RPM<br>(リクエスト/分)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10M</div>
+                    <div class="stat-label">ITPM<br>(入力トークン/分)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2M</div>
+                    <div class="stat-label">OTPM<br>(出力トークン/分)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rate Limit Tables -->
+        <div class="section">
+            <h2 class="section-title">新レートリミット構造</h2>
+
+            <!-- Start Tier -->
+            <div class="tier-section">
+                <span class="tier-label tier-start">Start ティア</span>
+                <p class="tier-desc">月間利用上限: $500</p>
+                <table class="rate-table">
+                    <thead>
+                        <tr>
+                            <th>モデル</th>
+                            <th>RPM</th>
+                            <th>ITPM</th>
+                            <th>OTPM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Claude Fable 5</td>
+                            <td>1,000</td>
+                            <td>500,000</td>
+                            <td>100,000</td>
+                        </tr>
+                        <tr>
+                            <td>Claude Opus 4.x</td>
+                            <td>1,000</td>
+                            <td>2,000,000</td>
+                            <td>400,000</td>
+                        </tr>
+                        <tr>
+                            <td>Claude Sonnet 4.x</td>
+                            <td>1,000</td>
+                            <td>2,000,000</td>
+                            <td>400,000</td>
+                        </tr>
+                        <tr>
+                            <td>Claude Haiku 4.5</td>
+                            <td>1,000</td>
+                            <td>2,000,000</td>
+                            <td>400,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Build Tier -->
+            <div class="tier-section">
+                <span class="tier-label tier-build">Build ティア</span>
+                <p class="tier-desc">月間利用上限: $1,000</p>
+                <table class="rate-table">
+                    <thead>
+                        <tr>
+                            <th>モデル</th>
+                            <th>RPM</th>
+                            <th>ITPM</th>
+                            <th>OTPM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Claude Fable 5</td>
+                            <td>2,000</td>
+                            <td>1,500,000</td>
+                            <td>300,000</td>
+                        </tr>
+                        <tr>
+                            <td>Claude Opus 4.x</td>
+                            <td>5,000</td>
+                            <td>5,000,000</td>
+                            <td>1,000,000</td>
+                        </tr>
+                        <tr>
+                            <td>Claude Sonnet 4.x</td>
+                            <td>5,000</td>
+                            <td>5,000,000</td>
+                            <td>1,000,000</td>
+                        </tr>
+                        <tr>
+                            <td>Claude Haiku 4.5</td>
+                            <td>5,000</td>
+                            <td>5,000,000</td>
+                            <td>1,000,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Scale Tier -->
+            <div class="tier-section">
+                <span class="tier-label tier-scale">Scale ティア</span>
+                <p class="tier-desc">月間利用上限: $200,000</p>
+                <table class="rate-table">
+                    <thead>
+                        <tr>
+                            <th>モデル</th>
+                            <th>RPM</th>
+                            <th>ITPM</th>
+                            <th>OTPM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Claude Fable 5</td>
+                            <td>4,000</td>
+                            <td>4,000,000</td>
+                            <td>800,000</td>
+                        </tr>
+                        <tr>
+                            <td>Claude Opus 4.x</td>
+                            <td>10,000</td>
+                            <td>10,000,000</td>
+                            <td>2,000,000</td>
+                        </tr>
+                        <tr>
+                            <td>Claude Sonnet 4.x</td>
+                            <td>10,000</td>
+                            <td>10,000,000</td>
+                            <td>2,000,000</td>
+                        </tr>
+                        <tr>
+                            <td>Claude Haiku 4.5</td>
+                            <td>10,000</td>
+                            <td>10,000,000</td>
+                            <td>2,000,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Terminology -->
+            <div style="background: var(--anthropic-cream); border-radius: 12px; padding: 20px; margin-top: 16px;">
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">用語解説</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.8;">
+                    <strong>RPM</strong> (Requests Per Minute): 1 分間あたりのリクエスト数<br>
+                    <strong>ITPM</strong> (Input Tokens Per Minute): 1 分間あたりの入力トークン数<br>
+                    <strong>OTPM</strong> (Output Tokens Per Minute): 1 分間あたりの出力トークン数
+                </p>
+            </div>
+        </div>
+
+        <!-- Mermaid Diagram -->
+        <div class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Tiers["&#x1F4CA; 新ティア構造"]
+        direction LR
+        Start["&#x1F7E2; Start&lt;br/&gt;月間 $500"]
+        Build["&#x1F535; Build&lt;br/&gt;月間 $1,000"]
+        Scale["&#x1F7E3; Scale&lt;br/&gt;月間 $200,000"]
+        Start ~~~ Build ~~~ Scale
+    end
+
+    subgraph StartLimits["&#x1F7E2; Start ティア制限"]
+        direction LR
+        S_RPM["1,000 RPM"]
+        S_ITPM["2,000,000 ITPM"]
+        S_OTPM["400,000 OTPM"]
+        S_RPM ~~~ S_ITPM ~~~ S_OTPM
+    end
+
+    subgraph BuildLimits["&#x1F535; Build ティア制限"]
+        direction LR
+        B_RPM["5,000 RPM"]
+        B_ITPM["5,000,000 ITPM"]
+        B_OTPM["1,000,000 OTPM"]
+        B_RPM ~~~ B_ITPM ~~~ B_OTPM
+    end
+
+    subgraph ScaleLimits["&#x1F7E3; Scale ティア制限"]
+        direction LR
+        Sc_RPM["10,000 RPM"]
+        Sc_ITPM["10,000,000 ITPM"]
+        Sc_OTPM["2,000,000 OTPM"]
+        Sc_RPM ~~~ Sc_ITPM ~~~ Sc_OTPM
+    end
+
+    subgraph Models["&#x1F916; 対象モデル - 全モデル同一リミット"]
+        direction LR
+        Opus["&#x2B50; Opus 4.x"]
+        Sonnet["&#x1F3B5; Sonnet 4.x"]
+        Haiku["&#x1F426; Haiku 4.5"]
+        Opus ~~~ Sonnet ~~~ Haiku
+    end
+
+    Start --> StartLimits
+    Build --> BuildLimits
+    Scale --> ScaleLimits
+    StartLimits --> Models
+    BuildLimits --> Models
+    ScaleLimits --> Models
+
+    classDef tier fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef start fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef build fill:#E3F2FD,stroke:#42A5F5,stroke-width:2px,color:#333333
+    classDef scale fill:#F3E5F5,stroke:#AB47BC,stroke-width:2px,color:#333333
+    classDef model fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class Tiers tier
+    class Start,StartLimits,S_RPM,S_ITPM,S_OTPM start
+    class Build,BuildLimits,B_RPM,B_ITPM,B_OTPM build
+    class Scale,ScaleLimits,Sc_RPM,Sc_ITPM,Sc_OTPM scale
+    class Models,Opus,Sonnet,Haiku model
+                </pre>
+            </div>
+        </div>
+
+        <!-- Code Sample -->
+        <div class="section">
+            <h2 class="section-title">コード例</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+                レートリミットが統一されたため、全モデル共通のリトライロジックで対応可能になった。
+            </p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">全モデル共通リトライロジック</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+# レートリミットが統一されたため、モデル選択はコスト・性能のみで判断
+# Sonnet でも Opus と同じ RPM/ITPM/OTPM が利用可能
+
+# 現在のレートリミットヘッダーを確認する例
+response = client.messages.create(
+    model="claude-sonnet-4-6-20260612",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello"}],
+)
+
+# レスポンスヘッダーからレートリミット情報を取得
+# x-ratelimit-limit-requests: 5000 (Build ティアの場合)
+# x-ratelimit-limit-input-tokens: 5000000
+# x-ratelimit-limit-output-tokens: 1000000
+# x-ratelimit-remaining-requests: 4999
+# x-ratelimit-reset-requests: 2026-06-26T12:00:00Z
+
+# 従来はモデルごとに異なるバックオフ戦略が必要だったが、
+# 統一後は共通のレートリミットハンドラーで対応可能
+from anthropic import RateLimitError
+
+def call_with_retry(model: str, messages: list, max_retries: int = 3):
+    """全モデル共通のリトライロジック"""
+    for attempt in range(max_retries):
+        try:
+            return client.messages.create(
+                model=model,
+                max_tokens=1024,
+                messages=messages,
+            )
+        except RateLimitError as e:
+            if attempt == max_retries - 1:
+                raise
+            import time
+            # 全モデルで同一のバックオフ戦略を適用可能
+            wait_time = 2 ** attempt
+            time.sleep(wait_time)</code></pre>
+            </div>
+        </div>
+
+        <!-- Developer Impact -->
+        <div class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="use-case">
+                <h4>対象</h4>
+                <p>Claude API を利用するすべての開発者および組織。特に Sonnet や Haiku を高スループットで利用しているプロジェクト、モデル間でリクエストを分散させてレートリミットを回避していたシステムに影響。</p>
+            </div>
+            <div class="use-case">
+                <h4>必要なアクション</h4>
+                <p>ユーザー側のアクションは不要。移行は自動的に行われ、すべての組織が同等以上のリミットを受け取る。現在のティアとリミットは Claude Console の設定画面 (/settings/limits) で確認できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>移行ガイド</h4>
+                <p>1. Claude Console で新しいティアとリミットを確認<br>
+                2. Sonnet/Haiku のリミットが Opus と同一になったため、モデルごとに異なるレートリミット処理を実装していた場合は簡素化が可能<br>
+                3. レートリミットの制約がなくなったため、純粋にコストと性能の観点からモデルを選択可能</p>
+            </div>
+        </div>
+
+        <!-- Benefits -->
+        <div class="section">
+            <h2 class="section-title">この変更のメリット</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>&#x2696;&#xFE0F; モデル間の公平性</h3>
+                    <p>Sonnet 4.x と Haiku 4.5 が Opus 4.x と同一のレートリミットを持つようになり、モデル選択時の制約が解消された。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F4CB; ティア構造の明確化</h3>
+                    <p>Start、Build、Scale の 3 段階に整理され、組織のスケール状況に応じた明確なパスが提供された。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F6E1;&#xFE0F; 下位互換性の保証</h3>
+                    <p>いずれの組織も従来より低いリミットにはならず、多くの組織が自動的に上位ティアへ移行される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>&#x1F680; ゼロアクション移行</h3>
+                    <p>開発者側でのアクションは一切不要。レートリミットの制約を気にせず最適なモデルを選択できる。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 16px;">
+                今回のレートリミット統合は、Claude API の利用体験を大幅に簡素化する重要なアップデートである。この変更により、開発者はレートリミットの制約を気にすることなく、アプリケーションの要件に最適なモデルを純粋にコストとパフォーマンスの観点から選択できるようになる。
+            </p>
+            <ul class="summary-list">
+                <li>Claude Sonnet 4.x と Claude Haiku 4.5 が Claude Opus 4.x と同一のレートリミットを持つようになり、モデル選択時の制約が解消</li>
+                <li>Start、Build、Scale の 3 段階に整理され、組織のスケール状況に応じた明確なパスを提供</li>
+                <li>いずれの組織も従来より低いリミットにはならず、多くの組織が自動的に上位ティアへ移行</li>
+                <li>開発者側でのアクションは一切不要</li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>ソース:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong>
+                <a href="https://console.anthropic.com/settings/limits" target="_blank">Claude Console - Rate Limits</a> |
+                <a href="https://docs.anthropic.com/en/docs/about-claude/models#rate-limits" target="_blank">Rate Limits Documentation</a>
+            </p>
+            <p style="margin-top: 12px;">発表日: 2026-06-26 | カテゴリ: API アップデート / レート制限</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
