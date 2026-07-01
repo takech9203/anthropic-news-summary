@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Managed Agents - イベントデルタ、逆方向ページネーション、セッション設定オーバーライド</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212,165,116,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .header-date {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            position: relative;
+        }
+
+        .header-version {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 8px;
+            position: relative;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212,165,116,0.1);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        /* Overview */
+        .overview-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .overview-list li {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .overview-list li .icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--anthropic-dark);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            border: 1px solid rgba(212,165,116,0.3);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.8);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* Feature cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .feature-card {
+            background: var(--anthropic-light);
+            border-radius: 16px;
+            padding: 24px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .feature-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212,165,116,0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Code */
+        .code-block {
+            margin: 16px 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .code-block pre {
+            margin: 0;
+            border-radius: 12px;
+        }
+
+        .code-block code {
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .code-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        /* Impact cards */
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .impact-card {
+            background: var(--anthropic-light);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(212,165,116,0.15);
+        }
+
+        .impact-card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .impact-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .action-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 16px;
+        }
+
+        .action-list li {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFFFFF 100%);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--anthropic-coral);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .action-number {
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Technical detail cards */
+        .tech-detail {
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(212,165,116,0.15);
+        }
+
+        .tech-detail h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .tech-detail p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tech-detail code {
+            background: rgba(212,165,116,0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .header {
+                padding: 32px 20px;
+                border-radius: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px 20px;
+                border-radius: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .impact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 16px 12px;
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <span class="header-badge">API アップデート</span>
+            <h1>Claude Managed Agents - イベントデルタ、逆方向ページネーション、セッション設定オーバーライド</h1>
+            <div class="header-date">2026-06-30</div>
+            <div class="header-version">Claude API Release Notes</div>
+        </header>
+
+        <!-- 概要 -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-title-icon">📋</span>
+                概要
+            </h2>
+            <ul class="overview-list">
+                <li>
+                    <span class="icon">⚡</span>
+                    <span><strong>イベントデルタ</strong>: セッションイベントストリームがリアルタイムデルタをサポート。エージェントメッセージのテキストを完全なイベント到着前にプレビュー可能に</span>
+                </li>
+                <li>
+                    <span class="icon">🔄</span>
+                    <span><strong>逆方向ページネーション</strong>: <code>GET /v1/sessions</code> エンドポイントが <code>prev_page</code> カーソルを返すようになり、双方向ナビゲーションが可能に</span>
+                </li>
+                <li>
+                    <span class="icon">🎛️</span>
+                    <span><strong>セッション設定オーバーライド</strong>: セッション作成時にモデル、システムプロンプト、ツール、MCP サーバー、スキルを個別にオーバーライド可能に</span>
+                </li>
+                <li>
+                    <span class="icon">🔐</span>
+                    <span><strong>Vault injection_location</strong>: クレデンシャルのインジェクション先をヘッダー、ボディ、またはその両方から選択可能に</span>
+                </li>
+                <li>
+                    <span class="icon">🔔</span>
+                    <span><strong>拡張 Webhook イベント</strong>: エージェント、デプロイメント、デプロイメント実行のライフサイクルイベントに対応。ポーリング不要に</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- 統計情報 -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-title-icon">📊</span>
+                統計情報
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">SSE</div>
+                    <div class="stat-label">リアルタイムストリーミング</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">双方向</div>
+                    <div class="stat-label">ページネーション</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Webhook イベントカテゴリ</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 機能カード -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-title-icon">✨</span>
+                新機能詳細
+            </h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>⚡ イベントデルタ (Event Deltas)</h4>
+                    <p><code>GET /v1/sessions/{id}/events/stream</code> エンドポイントで <code>event_deltas[]</code> クエリパラメータを指定し、<code>event_start</code> と <code>event_delta</code> イベントによりリアルタイムでテキストをプレビューできる。</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔄 逆方向ページネーション</h4>
+                    <p><code>GET /v1/sessions</code> が <code>next_page</code> に加えて <code>prev_page</code> カーソルを返すようになった。<code>page</code> パラメータとして渡すことで前のページに戻れる。</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🎛️ セッション設定オーバーライド</h4>
+                    <p><code>type: "agent_with_overrides"</code> を指定することで、モデル、システムプロンプト、ツール、MCP サーバー、スキルを単一セッションに対してのみ変更できる。A/B テストやデバッグに有用。</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔐 Vault injection_location</h4>
+                    <p>環境変数クレデンシャルの値をヘッダー (<code>headers</code>)、ボディ (<code>body</code>)、またはその両方 (<code>both</code>) にインジェクションするかを制御できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔔 拡張 Webhook イベント</h4>
+                    <p>Agent イベント (バージョン公開)、Deployment イベント (一時停止、再開)、Deployment run イベント (スケジュール実行の成功、失敗) に対応。ポーリング不要のイベント駆動型アーキテクチャを実現。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技術詳細 -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-title-icon">🏗️</span>
+                技術的な詳細
+            </h2>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">イベントデルタのストリーミングフロー</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 16px;">Server-Sent Events (SSE) プロトコルを使用して配信される。クライアントは <code>event_deltas[]</code> パラメータで対象イベントタイプを指定し、ストリームに接続する。</p>
+
+            <div class="tech-detail">
+                <h4>1. event_start</h4>
+                <p>イベントの開始を通知。クライアントはレンダリング準備を開始する。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>2. event_delta (複数回)</h4>
+                <p>テキストの差分をリアルタイムで配信。各デルタは前回からの追加テキストを含む。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>3. agent.message (最終)</h4>
+                <p>完全なメッセージイベント。最終的な応答テキスト全体を含む。</p>
+            </div>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px; margin-top: 24px; color: var(--text-primary);">セッション設定オーバーライドの構造</h3>
+            <div class="tech-detail">
+                <p>オーバーライド可能なフィールド: <code>model</code>、<code>system_prompt</code>、<code>tools</code>、<code>mcp_servers</code>、<code>skills</code></p>
+            </div>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 12px; margin-top: 24px; color: var(--text-primary);">Vault injection_location のオプション</h3>
+            <div class="tech-detail">
+                <p><code>headers</code>: リクエストヘッダーにのみインジェクション / <code>body</code>: リクエストボディにのみインジェクション / <code>both</code>: ヘッダーとボディの両方にインジェクション</p>
+            </div>
+        </section>
+
+        <!-- アーキテクチャ図 (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-title-icon">📐</span>
+                アーキテクチャ図
+            </h2>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 16px;">イベントデルタのストリーミングフロー</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant API as Claude API
+    participant A as Managed Agent
+
+    C->>API: GET /v1/sessions/{id}/events/stream<br/>?event_deltas[]=agent.message
+    API-->>C: SSE connection established
+
+    C->>API: POST /v1/sessions/{id}/messages
+    API->>A: Execute agent
+
+    A-->>API: Token generated
+    API-->>C: event: event_start
+
+    A-->>API: Token stream
+    API-->>C: event: event_delta
+    API-->>C: event: event_delta
+    API-->>C: event: event_delta
+
+    A-->>API: Generation complete
+    API-->>C: event: agent.message
+                </pre>
+            </div>
+        </section>
+
+        <!-- コードサンプル -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-title-icon">💻</span>
+                コードサンプル
+            </h2>
+
+            <div class="code-label">Event deltas でリアルタイムストリーミング</div>
+            <div class="code-block">
+                <pre><code class="language-python">import anthropic
+import httpx
+
+client = anthropic.Anthropic()
+
+# Event deltas でリアルタイムストリーミング
+session_id = "session_xyz789"
+headers = {
+    "x-api-key": "your-api-key",
+    "anthropic-version": "2024-01-01",
+}
+
+stream_url = f"https://api.anthropic.com/v1/sessions/{session_id}/events/stream?event_deltas[]=agent.message"
+
+with httpx.stream("GET", stream_url, headers=headers) as response:
+    for line in response.iter_lines():
+        if line.startswith("event: event_delta"):
+            # テキストがリアルタイムで到着
+            print(delta_text, end="", flush=True)</code></pre>
+            </div>
+
+            <div class="code-label" style="margin-top: 20px;">セッション設定オーバーライド</div>
+            <div class="code-block">
+                <pre><code class="language-python"># セッション設定オーバーライド
+session = client.managed_agents.sessions.create(
+    agent_id="agent_abc123",
+    agent={
+        "type": "agent_with_overrides",
+        "model": "claude-sonnet-5",
+        "system_prompt": "Custom system prompt for this session only.",
+    },
+    messages=[{"role": "user", "content": "Hello!"}]
+)</code></pre>
+            </div>
+
+            <div class="code-label" style="margin-top: 20px;">逆方向ページネーション</div>
+            <div class="code-block">
+                <pre><code class="language-python"># 逆方向ページネーション
+# 最初のページを取得
+first_page = client.managed_agents.sessions.list(limit=10)
+
+# 次のページに移動
+next_page = client.managed_agents.sessions.list(
+    limit=10,
+    page=first_page.next_page
+)
+
+# 前のページに戻る
+prev_page = client.managed_agents.sessions.list(
+    limit=10,
+    page=next_page.prev_page
+)</code></pre>
+            </div>
+        </section>
+
+        <!-- ユースケース -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-title-icon">🎯</span>
+                ユースケース
+            </h2>
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <h4>🖥️ リアルタイム UI</h4>
+                    <p>イベントデルタにより、エージェントの応答テキストをリアルタイムで表示する UI を構築できる。ChatGPT のようなストリーミング表示が可能に。</p>
+                </div>
+                <div class="impact-card">
+                    <h4>🧪 A/B テスト</h4>
+                    <p>セッション設定オーバーライドで、エージェント定義を変更せずにモデルやプロンプトの A/B テストを実施できる。</p>
+                </div>
+                <div class="impact-card">
+                    <h4>🔑 シークレット管理</h4>
+                    <p>Vault の injection_location により、クレデンシャルのインジェクション先をきめ細かく制御し、セキュリティを強化できる。</p>
+                </div>
+                <div class="impact-card">
+                    <h4>📡 デプロイメント監視</h4>
+                    <p>拡張 Webhook イベントにより、ポーリングなしでエージェントやデプロイメントのライフサイクルイベントを監視できる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 開発者への影響 -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-title-icon">👥</span>
+                開発者への影響
+            </h2>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--text-primary);">対象</h3>
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <h4>🤖 エージェント開発者</h4>
+                    <p>Managed Agents を利用してエージェントアプリケーションを構築している開発者</p>
+                </div>
+                <div class="impact-card">
+                    <h4>🖥️ フロントエンド開発者</h4>
+                    <p>リアルタイム UI を実装しているフロントエンド開発者</p>
+                </div>
+                <div class="impact-card">
+                    <h4>⚙️ DevOps エンジニア</h4>
+                    <p>エージェントのデプロイメントパイプラインを管理している DevOps エンジニア</p>
+                </div>
+                <div class="impact-card">
+                    <h4>🔒 セキュリティチーム</h4>
+                    <p>セキュリティ要件の厳しい環境でエージェントを運用しているチーム</p>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; margin-top: 24px; color: var(--text-primary);">必要なアクション</h3>
+            <ul class="action-list">
+                <li>
+                    <span class="action-number">1</span>
+                    <span><strong>イベントデルタの採用</strong>: リアルタイムストリーミング UI を実装している場合、<code>event_deltas[]</code> パラメータを追加してユーザー体験を向上させる</span>
+                </li>
+                <li>
+                    <span class="action-number">2</span>
+                    <span><strong>ページネーション UI の更新</strong>: セッション一覧を表示している場合、<code>prev_page</code> カーソルを利用して前ページへの戻りボタンを実装する</span>
+                </li>
+                <li>
+                    <span class="action-number">3</span>
+                    <span><strong>セッションオーバーライドの活用</strong>: A/B テストやデバッグ時にセッション設定オーバーライドを利用し、エージェント定義を変更せずに実験する</span>
+                </li>
+                <li>
+                    <span class="action-number">4</span>
+                    <span><strong>Vault 設定の見直し</strong>: セキュリティ要件に応じて <code>injection_location</code> を適切に設定する</span>
+                </li>
+                <li>
+                    <span class="action-number">5</span>
+                    <span><strong>Webhook の設定</strong>: ポーリングベースの監視を Webhook に置き換えて、イベント駆動型のワークフローを構築する</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- まとめ -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-title-icon">📝</span>
+                まとめ
+            </h2>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8;">
+                今回の Managed Agents アップデートは、プラットフォームの成熟度を大きく向上させるものである。イベントデルタによるリアルタイムストリーミングは、エージェントベースのアプリケーションにおけるユーザー体験を劇的に改善する。セッション設定オーバーライドにより、本番エージェント定義を変更することなく柔軟な実験が可能になる。拡張 Webhook イベントはポーリングの必要性を排除し、よりリアクティブなシステム設計を促進する。これらの機能を組み合わせることで、開発者はより洗練されたエージェントアプリケーションを構築できるようになる。
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-logo">Anthropic News Summary</div>
+            <p>Source: <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;">Generated on 2026-06-30</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

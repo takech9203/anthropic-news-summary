@@ -5,6 +5,11 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-06-30](2026/2026-06-30-redeploying-fable-5.md) - Claude Fable 5 の再デプロイ — 輸出規制解除とアクセス再開
+- [2026-06-30](2026/2026-06-30-managed-agents-event-deltas.md) - Claude Managed Agents — イベントデルタ、逆方向ページネーション、セッション設定オーバーライド
+- [2026-06-30](2026/2026-06-30-claude-sonnet-5.md) - Claude Sonnet 5 --- 次世代 Sonnet モデルのリリース
+- [2026-06-30](2026/2026-06-30-claude-science-ai-workbench.md) - Claude Science — 科学者向け AI ワークベンチの提供開始
+- [2026-06-30](2026/2026-06-30-claude-code-v2-1-197.md) - Claude Code v2.1.197 — Claude Sonnet 5 がデフォルトモデルに
 - [2026-06-30](2026/2026-06-30-claude-code-v2-1-196.md) - Claude Code v2.1.196 - 組織デフォルトモデル、セキュリティ強化、バックグラウンドセッション信頼性向上
 - [2026-06-29](2026/2026-06-29-fast-mode-opus-4-6-removed.md) - Claude Opus 4.6 のファストモード完全削除 -- speed: "fast" はサイレントに標準速度へフォールバック
 - [2026-06-27](2026/2026-06-27-claude-code-v2-1-195.md) - Claude Code v2.1.195 - フックマッチャー修正、音声入力改善、バックグラウンドエージェント安定性向上
