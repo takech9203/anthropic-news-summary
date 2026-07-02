@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-07-02](2026/2026-07-02-claude-code-v2-1-198.md) - Claude Code v2.1.198 — Claude in Chrome が一般提供開始、バックグラウンドエージェントの自動 PR 作成
+- [2026-07-01](2026/2026-07-01-enterprise-model-entitlements.md) - Claude Apps Enterprise モデルエンタイトルメント (ベータ)
 - [2026-06-30](2026/2026-06-30-redeploying-fable-5.md) - Claude Fable 5 の再デプロイ — 輸出規制解除とアクセス再開
 - [2026-06-30](2026/2026-06-30-managed-agents-event-deltas.md) - Claude Managed Agents — イベントデルタ、逆方向ページネーション、セッション設定オーバーライド
 - [2026-06-30](2026/2026-06-30-claude-sonnet-5.md) - Claude Sonnet 5 --- 次世代 Sonnet モデルのリリース
