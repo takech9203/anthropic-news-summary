@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-07-03](2026/2026-07-03-claude-code-v2-1-199.md) - Claude Code v2.1.199 — 信頼性の大幅強化: エラーハンドリング、部分出力保持、バックグラウンドエージェント安定化
+- [2026-07-02](2026/2026-07-02-fable-5-cyber-safeguards-jailbreak-framework.md) - Fable 5 のサイバーセキュリティセーフガードとジェイルブレイク重大度フレームワークの詳細
 - [2026-07-02](2026/2026-07-02-claude-code-v2-1-198.md) - Claude Code v2.1.198 — Claude in Chrome が一般提供開始、バックグラウンドエージェントの自動 PR 作成
 - [2026-07-01](2026/2026-07-01-enterprise-model-entitlements.md) - Claude Apps Enterprise モデルエンタイトルメント (ベータ)
 - [2026-06-30](2026/2026-06-30-redeploying-fable-5.md) - Claude Fable 5 の再デプロイ — 輸出規制解除とアクセス再開
