@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.200 / v2.1.201 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .version-badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .version-badge {
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            padding-left: 16px;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card code {
+            background: rgba(0,0,0,0.08);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Bug Fix List */
+        .bugfix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bugfix-list li {
+            padding: 12px 16px;
+            border-left: 3px solid var(--success);
+            background: #F0FDF4;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .bugfix-list li::before {
+            content: '✅ ';
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.200 / v2.1.201<br>パーミッションモード名称変更とバックグラウンドエージェント安定性向上</h1>
+                <p class="date">2026-07-04</p>
+                <div class="version-badges">
+                    <span class="version-badge">v2.1.200</span>
+                    <span class="version-badge">v2.1.201</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>パーミッションモード名称変更</h3>
+                        <p>"default" モードが "Manual" に統一。CLI、VS Code、JetBrains のすべてで表記変更。後方互換性は維持。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>バックグラウンドエージェント安定性向上</h3>
+                        <p>スリープ/復帰後のセッション停止、デーモンロック問題、ロスター破損など 8 件の重大バグを修正。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>Sonnet 5 ハーネスリマインダー変更</h3>
+                        <p>Claude Sonnet 5 セッションで会話途中のシステムロールによるリマインダーを廃止。コンテキストウィンドウの効率的利用を実現。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">♿</div>
+                    <div class="key-point-content">
+                        <h3>アクセシビリティ改善</h3>
+                        <p>スクリーンリーダー対応強化、tmux 3.4 以上でのフリッカー修正、音声入力のエラーメッセージ改善。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p><code>--permission-mode default</code></p>
+                    <p style="margin-top: 8px; font-size: 14px; color: #7F1D1D;">名称が動作を反映していない</p>
+                    <p style="margin-top: 8px; font-size: 14px; color: #7F1D1D;">AskUserQuestion が自動継続</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p><code>--permission-mode manual</code></p>
+                    <p style="margin-top: 8px; font-size: 14px; color: #065F46;">動作が直感的に理解可能</p>
+                    <p style="margin-top: 8px; font-size: 14px; color: #065F46;">明示的なオプトインで自動継続</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る改善</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">バックグラウンド<br>エージェント修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">17</div>
+                    <div class="stat-label">バグ修正<br>合計</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">アクセシビリティ<br>改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">動作変更<br>ポイント</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🏷️ Manual モード統一</h3>
+                    <p>CLI、VS Code、JetBrains 全環境でパーミッションモード "default" を "Manual" に名称変更。互換性のため旧名称も引き続き利用可能。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏸️ AskUserQuestion 変更</h3>
+                    <p>ダイアログのデフォルト自動継続を無効化。アイドルタイムアウトによる自動継続は <code>/config</code> から明示的にオプトイン。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧠 Sonnet 5 最適化</h3>
+                    <p>v2.1.201 で会話途中のシステムロールによるハーネスリマインダーを廃止。コンテキストウィンドウの無駄を削減。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 デーモンハンドオーバー</h3>
+                    <p>ビルドタイムスタンプによるバージョン判定を導入。再インストールされた古いビルドによるデーモン奪取を防止。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>♿ スクリーンリーダー対応</h3>
+                    <p>装飾グリフの非表示化、トランスクリプトシンボルの短ラベル読み上げ、テーブルの改善された読み上げ形式。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🖥️ tmux 互換性</h3>
+                    <p>tmux 3.4 以上で発生していたレンダリングフリッカーを修正。同期化ターミナル出力を有効化。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes: Background Agents -->
+        <section class="section">
+            <h2 class="section-title">バックグラウンドエージェント修正一覧</h2>
+            <ul class="bugfix-list">
+                <li>スリープ/復帰後やストールしたセッション再開時の無言停止</li>
+                <li>Esc キャンセル後のストール復帰時にターンが再実行される問題</li>
+                <li>クラッシュ後の古い daemon.lock の PID 再利用によるエージェント再起動不能</li>
+                <li>再インストールされた古いビルドによるデーモン奪取</li>
+                <li>ロスターの一時破損によるオーファンクリーンアップの永久無効化</li>
+                <li>古いバイナリが新しいバージョンのフィールドを保持しない問題</li>
+                <li>デーモン再起動時のソケット認証トークン削除</li>
+                <li>バックグラウンド出力の制御バイトがターミナルに表示される問題</li>
+            </ul>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">CLI パーミッションモード移行</span>
+                </div>
+                <pre><code class="language-bash"># 変更前
+claude --permission-mode default
+
+# 変更後 (推奨)
+claude --permission-mode manual</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">設定ファイル移行</span>
+                </div>
+                <pre><code class="language-json">{
+  "defaultMode": "manual",
+  "disabledMcpServers": ["server-a", "server-b"],
+  "enabledMcpServers": ["server-c"]
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    User(["&#128100; 開発者"]) --> CLI["&#128421;&#65039; Claude Code CLI"]
+
+    CLI --> ModeCheck{"&#128274; パーミッションモード判定"}
+
+    ModeCheck -->|manual| ManualFlow["&#9995; ユーザー承認を要求"]
+    ModeCheck -->|plan| PlanFlow["&#128203; 計画のみ実行"]
+    ModeCheck -->|auto-edit| AutoFlow["&#9889; 自動実行"]
+
+    ManualFlow --> Approve{"&#9989; 承認?"}
+    Approve -->|Yes| Execute["&#128295; ツール実行"]
+    Approve -->|No| Cancel["&#10060; キャンセル"]
+
+    PlanFlow --> Execute
+    AutoFlow --> Execute
+
+    Execute --> Result["&#128196; 結果表示"]
+
+    subgraph Config["&#9881;&#65039; 設定ソース"]
+        direction LR
+        CLIFlag["--permission-mode"]
+        SettingsFile[".claude/settings.json"]
+        VSCode["VS Code 設定"]
+    end
+
+    Config -.-> ModeCheck
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef success fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef config fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class User user
+    class CLI,ManualFlow,PlanFlow,AutoFlow,Execute,Result process
+    class ModeCheck,Approve decision
+    class Cancel error
+    class Config platform
+    class CLIFlag,SettingsFile,VSCode config
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="use-case">
+                <h4>CI/CD パイプライン利用者</h4>
+                <p>既存の <code>--permission-mode default</code> は引き続き動作するため即時対応は不要。新しいスクリプトでは <code>manual</code> を使用すること。</p>
+            </div>
+            <div class="use-case">
+                <h4>バックグラウンドエージェント利用者</h4>
+                <p>スリープ/復帰後のセッション停止、デーモンクラッシュ、バージョン競合など実運用上のエッジケースが包括的に修正。長時間稼働環境での信頼性が大幅に向上。</p>
+            </div>
+            <div class="use-case">
+                <h4>アクセシビリティ対応が必要なユーザー</h4>
+                <p>スクリーンリーダー対応の改善により、視覚障害のある開発者の利用体験が向上。tmux 3.4 以上でのフリッカー修正も含む。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連:</strong> <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></p>
+            <p style="margin-top: 12px; font-size: 11px; color: #999;">Generated: 2026-07-04 | Anthropic News Summary</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
