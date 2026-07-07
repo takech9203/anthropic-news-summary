@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.202 - ワークフロー管理強化と Remote Control 安定性向上 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: var(--anthropic-cream);
+            color: var(--text-primary);
+            line-height: 1.8;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--gradient-header);
+            color: #ffffff;
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            line-height: 1.4;
+        }
+
+        .header .version {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .date {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .key-points {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .key-point {
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            padding: 1.2rem;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .key-point-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .key-point h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .key-point p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            padding: 1.2rem 0.8rem;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .stat-card .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            display: block;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .feature-card {
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 3px solid var(--anthropic-coral);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .feature-card .feature-tag {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+        }
+
+        .bug-fix-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .bug-fix-section h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid #E57373;
+        }
+
+        .bug-fix-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-fix-list li {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            line-height: 1.6;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .bug-fix-list li:last-child {
+            border-bottom: none;
+        }
+
+        .bug-fix-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.85rem;
+            width: 8px;
+            height: 8px;
+            background: #E57373;
+            border-radius: 50%;
+        }
+
+        .mermaid-container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            overflow-x: auto;
+        }
+
+        .mermaid-container .section-title {
+            margin-bottom: 1.5rem;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .code-block {
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            color: #ffffff;
+            padding: 0.6rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .code-block pre {
+            margin: 0;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .code-block pre code {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            padding: 1.2rem !important;
+        }
+
+        .use-case {
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .use-case h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .use-case p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .use-case-icon {
+            display: inline-block;
+            margin-right: 0.3rem;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .improvement-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .improvement-list li {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            padding: 0.6rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            line-height: 1.6;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .improvement-list li:last-child {
+            border-bottom: none;
+        }
+
+        .improvement-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.9rem;
+            width: 8px;
+            height: 8px;
+            background: #66BB6A;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 600px) {
+            .key-points {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <span class="category-badge">Claude Code アップデート</span>
+            <h1>ワークフロー管理強化と Remote Control 安定性向上</h1>
+            <div class="version">Claude Code v2.1.202</div>
+            <div class="date">2026-07-07</div>
+        </div>
+
+        <!-- Key Points -->
+        <div class="section">
+            <h2 class="section-title">注目ポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <h3>ワークフロー管理の進化</h3>
+                    <p>Dynamic workflow size 設定でエージェント規模を制御可能に。OTel 属性追加でワークフロー可視化が容易に</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📱</div>
+                    <h3>Remote Control 信頼性向上</h3>
+                    <p>コマンド送信、ファイル送信、パーミッション表示の 3 つの不具合を修正しリモート操作が実用レベルに</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <h3>バックグラウンドエージェント安定性</h3>
+                    <p>セッション名永続化、クラッシュループ修正、大規模リポジトリでのパフォーマンス改善</p>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <h3>開発者体験の向上</h3>
+                    <p>SSH 環境の URL クリック対応、MCP エラー明確化、/workflows レイアウト改善</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="section">
+            <h2 class="section-title">変更統計</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number">2</span>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">13</span>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">3</span>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">18</span>
+                    <div class="stat-label">合計変更</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="section">
+            <h2 class="section-title">新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="feature-tag">NEW</span>
+                    <h3>Dynamic workflow size 設定</h3>
+                    <p>/config から「Dynamic workflow size」を設定可能に。small / medium / large の 3 段階でワークフロー実行時のエージェント数の目安を制御できる。タスクの規模やリソースに応じた柔軟な運用が可能</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-tag">NEW</span>
+                    <h3>OpenTelemetry 属性の追加</h3>
+                    <p>ワークフローから生成されたエージェントのテレメトリに workflow.run_id および workflow.name 属性が追加。分散トレーシングツールでワークフロー単位のトレースを可視化・分析可能に</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-tag">CHANGE</span>
+                    <h3>/review コマンドの動作変更</h3>
+                    <p>/review が高速な単一パスレビューに戻された。マルチエージェントレビューを利用する場合は /code-review を使用</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bug Fixes -->
+        <div class="section">
+            <h2 class="section-title">バグ修正</h2>
+
+            <div class="bug-fix-section">
+                <h3>Remote Control 関連</h3>
+                <ul class="bug-fix-list">
+                    <li>インタラクティブセッションへのコマンド送信が "Unknown command" エラーで失敗する問題</li>
+                    <li>キャプションなしで送信された画像やファイルがサイレントにドロップされる問題</li>
+                    <li>/remote-control セッションで誤ったパーミッションモードが表示される問題</li>
+                </ul>
+            </div>
+
+            <div class="bug-fix-section">
+                <h3>バックグラウンドエージェント関連</h3>
+                <ul class="bug-fix-list">
+                    <li>/rename でのセッション名変更がジョブ再起動時にリセットされる問題</li>
+                    <li>claude agents からチャットを開く際のクラッシュ/リスポーンループ</li>
+                    <li>多数の git worktree を持つリポジトリでの重大なパフォーマンス問題</li>
+                </ul>
+            </div>
+
+            <div class="bug-fix-section">
+                <h3>その他の修正</h3>
+                <ul class="bug-fix-list">
+                    <li>インライン Ctrl+R 履歴検索でのクラッシュ</li>
+                    <li>mTLS ハンドシェイクの一時的な失敗</li>
+                    <li>SSH 上でサインイン URL がクリック不能になる問題</li>
+                    <li>ワークフロースクリプト内の Unicode クォートエスケープ破損</li>
+                    <li>音声入力の無制限リトライ</li>
+                    <li>プロキシ/ネットワーク断でのダウンロード即時失敗</li>
+                    <li>スキル再呼び出し時の指示重複追加</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Improvements -->
+        <div class="section">
+            <h2 class="section-title">改善</h2>
+            <ul class="improvement-list">
+                <li><strong>/workflows エージェントリスト表示</strong>: タイトル幅拡大、専用の時間カラム追加、モデル名の短縮</li>
+                <li><strong>MCP エラーメッセージ</strong>: url があるが type がない場合のエラーが明確化され "type": "http" の追加を提案</li>
+                <li><strong>/review コマンド</strong>: 高速な単一パスレビューに戻し、マルチエージェントは /code-review に分離</li>
+            </ul>
+        </div>
+
+        <!-- Architecture Diagram -->
+        <div class="mermaid-container">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <pre class="mermaid">
+flowchart TD
+    User(["&#128100; 開発者"]) --> CLI["&#128421;&#65039; Claude Code CLI"]
+
+    CLI --> Workflow["&#128203; ワークフローエンジン"]
+    CLI --> RemoteCtrl["&#128241; Remote Control"]
+
+    subgraph WorkflowSystem["&#128260; ワークフロー管理"]
+        direction LR
+        Config["&#9881;&#65039; Dynamic Size"]
+        Agents["&#129302; エージェント群"]
+        OTel["&#128202; OpenTelemetry"]
+        Config ~~~ Agents ~~~ OTel
+    end
+
+    Workflow --> Config
+    Config --> Agents
+    Agents --> OTel
+
+    subgraph RemoteSystem["&#128225; Remote Control"]
+        direction LR
+        Mobile["&#128241; モバイルアプリ"]
+        WebApp["&#127760; Web アプリ"]
+        Mobile ~~~ WebApp
+    end
+
+    RemoteCtrl --> Mobile
+    RemoteCtrl --> WebApp
+
+    subgraph Observability["&#128269; オブザーバビリティ"]
+        direction LR
+        RunID["workflow.run_id"]
+        WFName["workflow.name"]
+        Traces["分散トレース"]
+        RunID ~~~ WFName ~~~ Traces
+    end
+
+    OTel --> RunID
+    OTel --> WFName
+    RunID --> Traces
+    WFName --> Traces
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef workflow fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef remote fill:#E8F5E9,stroke:#A5D6A7,stroke-width:2px,color:#2E7D32
+    classDef otel fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#5D4037
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class User user
+    class CLI process
+    class Workflow,Config,Agents process
+    class RemoteCtrl,Mobile,WebApp remote
+    class OTel,RunID,WFName,Traces otel
+    class WorkflowSystem,RemoteSystem,Observability platform
+            </pre>
+        </div>
+
+        <!-- Code Samples -->
+        <div class="section">
+            <h2 class="section-title">コード例</h2>
+
+            <div class="code-block">
+                <div class="code-header">bash - ワークフロー管理と Remote Control</div>
+                <pre><code class="language-bash"># Dynamic workflow size を設定
+claude /config
+# 設定画面で "Dynamic workflow size" を選択し、small / medium / large を指定
+
+# ワークフローの実行状況を確認
+claude /workflows
+
+# Remote Control セッションを開始
+claude /remote-control
+
+# サインイン (SSH 環境でもクリック可能な URL が表示される)
+claude auth login
+
+# /review コマンドの使い分け
+/review 123              # 高速な単一パスレビュー
+/code-review high 123    # マルチエージェントレビュー</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">json - MCP サーバー設定 (url を使う場合は type: "http" が必要)</div>
+                <pre><code class="language-json">{
+  "mcpServers": {
+    "my-server": {
+      "type": "http",
+      "url": "https://my-mcp-server.example.com/mcp"
+    }
+  }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Use Cases -->
+        <div class="section">
+            <h2 class="section-title">対象ユーザーとユースケース</h2>
+
+            <div class="use-case">
+                <h3><span class="use-case-icon">👥</span> ワークフローを活用するチーム</h3>
+                <p>Dynamic workflow size 設定でリソース消費を最適化。OTel 属性でワークフロー単位の監視・分析が可能に</p>
+            </div>
+
+            <div class="use-case">
+                <h3><span class="use-case-icon">📱</span> Remote Control を利用するオペレーター</h3>
+                <p>コマンド送信やファイル送信の不具合が解消され、モバイル/Web からの安定したリモート操作が実現</p>
+            </div>
+
+            <div class="use-case">
+                <h3><span class="use-case-icon">🏢</span> エンタープライズ OTel ユーザー</h3>
+                <p>workflow.run_id / workflow.name 属性を活用し、Jaeger、Honeycomb、Datadog などでワークフロートレースを構築</p>
+            </div>
+
+            <div class="use-case">
+                <h3><span class="use-case-icon">🔒</span> mTLS 企業環境ユーザー</h3>
+                <p>証明書ローテーション時のハンドシェイク失敗が修正され、企業ネットワークでの安定稼働が向上</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Source: <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank">Claude Code Changelog</a></p>
+            <p style="margin-top: 0.5rem;">Generated by Anthropic News Summary - 2026-07-07</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true,theme:'base',themeVariables:{primaryColor:'#D4A574',primaryTextColor:'#1a1a2e',primaryBorderColor:'#D4A574',lineColor:'#D4A574',background:'#FFFFFF',mainBkg:'#FFF8F0'}});</script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
