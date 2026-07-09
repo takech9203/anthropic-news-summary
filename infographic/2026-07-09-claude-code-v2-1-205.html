@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.205 アップデート - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --shadow: 0 4px 24px rgba(26, 26, 46, 0.08);
+            --shadow-hover: 0 8px 32px rgba(26, 26, 46, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--anthropic-dark);
+            line-height: 1.8;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--anthropic-dark) 0%, #2d2d4e 50%, #3a2a1e 100%);
+            color: #fff;
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.1) 0%, transparent 60%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 1rem;
+            opacity: 0.85;
+            color: var(--anthropic-coral);
+        }
+
+        /* Sections */
+        .section {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--anthropic-coral);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title .icon {
+            font-size: 1.5rem;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.2rem;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--anthropic-coral) 0%, #E8C9A8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .key-point-content p {
+            font-size: 0.88rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--anthropic-dark);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--anthropic-coral);
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            margin-top: 0.3rem;
+        }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+            border: 2px solid #ffcdd2;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e9 100%);
+            border: 2px solid #c8e6c9;
+        }
+
+        .comparison-card h4 {
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comparison-card.before h4 { color: #c62828; }
+        .comparison-card.after h4 { color: #2e7d32; }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            padding: 0.4rem 0;
+            font-size: 0.9rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '\2717';
+            position: absolute;
+            left: 0;
+            color: #e53935;
+            font-weight: bold;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '\2713';
+            position: absolute;
+            left: 0;
+            color: #43a047;
+            font-weight: bold;
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .feature-card {
+            background: var(--anthropic-light);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feature-card .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #fff;
+            border: 2px solid var(--anthropic-coral);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+
+        .mermaid-container .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .mermaid-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 0.8rem;
+            text-align: center;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #282c34;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 0.7rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 0.75rem;
+        }
+
+        .code-block pre {
+            margin: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            padding: 1.2rem !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 1.2rem 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 1rem;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--anthropic-cream);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .footer h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--anthropic-dark);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--anthropic-dark);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.4rem 1rem;
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid var(--anthropic-coral);
+            transition: all 0.2s;
+        }
+
+        .footer-links a:hover {
+            background: var(--anthropic-coral);
+            color: #fff;
+        }
+
+        .footer .generated {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .header {
+                padding: 2rem 1.5rem;
+                border-radius: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+                border-radius: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE CODE</span>
+                <h1>Claude Code v2.1.205 アップデート</h1>
+                <p class="date">2026-07-09</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F4CB;</span> 概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F6E1;&#xFE0F;</div>
+                    <div class="key-point-content">
+                        <h3>セキュリティ多層防御の導入</h3>
+                        <p>トランスクリプト改ざん防止、偽造承認のブロック、未解決変数に対する rm -rf ガードの 3 層でオートモードの安全性を大幅に強化</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4BE;</div>
+                    <div class="key-point-content">
+                        <h3>自動アップデーターのメモリ最適化</h3>
+                        <p>バイナリダウンロードをストリーミング方式に変更し、ピークメモリ使用量を約 400 MB 削減。CI/CD 環境での安定性が向上</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F5A5;&#xFE0F;</div>
+                    <div class="key-point-content">
+                        <h3>エージェントビューの UI 刷新</h3>
+                        <p>PR リンクの自動表示、カラー状態ワード、分類器によるヘッドライン生成により、バックグラウンドジョブの管理が効率化</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1FA7A;</div>
+                    <div class="key-point-content">
+                        <h3>/doctor コマンドの診断ツール化</h3>
+                        <p>フルセットアップ診断ツールに昇格し、問題の検出と修正を一括で実行可能に。/checkup エイリアスも利用可能</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F504;</span> Before / After: 自動アップデーター</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>&#x274C; v2.1.204 以前</h4>
+                    <ul>
+                        <li>バイナリ全体をメモリにバッファリング</li>
+                        <li>ピークメモリ +400 MB</li>
+                        <li>メモリ制約環境で不安定</li>
+                        <li>CI/CD ランナーで OOM リスク</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>&#x2705; v2.1.205 以降</h4>
+                    <ul>
+                        <li>チャンクごとにディスクへ直接ストリーミング</li>
+                        <li>ピークメモリ大幅削減</li>
+                        <li>コンテナ環境でも安定動作</li>
+                        <li>低スペックマシンでも安全にアップデート</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x2728;</span> 主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F6E1;&#xFE0F;</div>
+                    <h4>セキュリティ 3 層防御</h4>
+                    <p>トランスクリプト書き込みブロック、偽造承認の明示的排除、未解決変数の rm -rf 実行前確認によりプロンプトインジェクション耐性を強化</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1FA7A;</div>
+                    <h4>/doctor 診断ツール</h4>
+                    <p>フルセットアップチェックアップツールに昇格。問題の検出だけでなく修正まで一括実行可能。/checkup エイリアスも対応</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F517;</div>
+                    <h4>エージェントビュー: PR リンク</h4>
+                    <p>PR の編集、マージ、コメント、プッシュを行ったセッションに対して、該当 PR へのリンクが自動表示される</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F3A8;</div>
+                    <h4>エージェントビュー: カラー状態表示</h4>
+                    <p>カラー付き状態ワードと分類器が生成したヘッドラインにより、生のツールコール文字列の代わりに人間可読な情報を提供</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F4DB;</div>
+                    <h4>MCP サーバー名の予約</h4>
+                    <p>"Claude Browser" と "Claude Preview" が予約名に。Claude Desktop ペインのリネームに先行した措置</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x26A1;</div>
+                    <h4>ストリーミングダウンロード</h4>
+                    <p>自動アップデーターがチャンクごとにディスクに直接書き込む方式に変更。ピークメモリ約 400 MB 削減</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F4CA;</span> 数字で見るリリース</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">-400 MB</div>
+                    <div class="stat-label">ピークメモリ削減</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">変更項目の合計</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">セキュリティ防御層</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram: Security -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F3D7;&#xFE0F;</span> セキュリティ多層防御アーキテクチャ</h2>
+
+            <div class="mermaid-container">
+                <div class="mermaid-label">v2.1.205 セキュリティ多層防御の構造</div>
+                <div class="mermaid">
+flowchart TD
+    subgraph Threats["攻撃ベクター"]
+        direction LR
+        T1["トランスクリプト改ざん"]
+        T2["偽造承認注入"]
+        T3["変数未解決 rm -rf"]
+        T1 ~~~ T2 ~~~ T3
+    end
+
+    subgraph Defense["v2.1.205 セキュリティ防御層"]
+        direction LR
+        D1["トランスクリプト<br/>書き込みブロック"]
+        D2["人間入力なし<br/>明示マーキング"]
+        D3["未解決変数<br/>実行前確認"]
+        D1 ~~~ D2 ~~~ D3
+    end
+
+    subgraph AutoMode["オートモード実行環境"]
+        direction LR
+        Transcript["セッション<br/>トランスクリプト"]
+        BgNotify["バックグラウンド<br/>タスク通知"]
+        Shell["シェル<br/>コマンド実行"]
+        Transcript ~~~ BgNotify ~~~ Shell
+    end
+
+    subgraph Result["保護された状態"]
+        direction LR
+        R1["改ざん不能な<br/>会話履歴"]
+        R2["検証済み<br/>承認のみ実行"]
+        R3["安全な<br/>削除操作"]
+        R1 ~~~ R2 ~~~ R3
+    end
+
+    T1 -->|攻撃試行| D1
+    T2 -->|攻撃試行| D2
+    T3 -->|攻撃試行| D3
+
+    D1 -->|保護| Transcript
+    D2 -->|保護| BgNotify
+    D3 -->|保護| Shell
+
+    Transcript --> R1
+    BgNotify --> R2
+    Shell --> R3
+
+    classDef threat fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef defense fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef env fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef result fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+
+    class T1,T2,T3 threat
+    class D1,D2,D3 defense
+    class Transcript,BgNotify,Shell env
+    class R1,R2,R3 result
+    class Threats,Defense,AutoMode,Result layer
+                </div>
+            </div>
+        </section>
+
+        <!-- Sequence Diagram: Updater -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F504;</span> アップデーターのメモリ最適化フロー</h2>
+
+            <div class="mermaid-container">
+                <div class="mermaid-label">自動アップデーターのストリーミング最適化</div>
+                <div class="mermaid">
+sequenceDiagram
+    participant U as ユーザー
+    participant CLI as Claude Code CLI
+    participant UP as アップデーター
+    participant NET as ダウンロードサーバー
+    participant DSK as ディスク
+
+    Note over U,DSK: v2.1.204 以前: メモリバッファリング方式
+    U->>CLI: 自動アップデート開始
+    CLI->>UP: バイナリ更新要求
+    UP->>NET: HTTP GET バイナリ
+    NET-->>UP: レスポンス全体をメモリに保持
+    Note over UP: ピークメモリ +400 MB
+    UP->>DSK: 一括書き込み
+    DSK-->>UP: 書き込み完了
+    UP-->>CLI: 更新完了
+
+    Note over U,DSK: v2.1.205 以降: ストリーミング方式
+    U->>CLI: 自動アップデート開始
+    CLI->>UP: バイナリ更新要求
+    UP->>NET: HTTP GET バイナリ
+    loop チャンクごと
+        NET-->>UP: データチャンク
+        UP->>DSK: チャンク書き込み
+    end
+    Note over UP: ピークメモリ大幅削減
+    DSK-->>UP: 書き込み完了
+    UP-->>CLI: 更新完了
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F4BB;</span> コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">v2.1.205 アップデートと診断</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version
+
+# /doctor コマンドで環境診断と修正
+claude
+/doctor
+
+# エイリアスも利用可能
+/checkup
+
+# エージェントビューで PR リンク付きの状態確認
+claude agents
+
+# json-schema オプションの使用 (format キーワード対応)
+claude --json-schema '{"type": "object", "properties": {"email": {"type": "string", "format": "email"}}}'
+
+# MCP サーバー名の確認
+claude mcp list</code></pre>
+            </div>
+
+            <div class="code-block" style="margin-top: 1rem;">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">MCP サーバー名の予約対応</span>
+                </div>
+                <pre><code class="language-bash"># 以下の名前は予約済みとなり、使用不可
+# - "Claude Browser"
+# - "Claude Preview"
+
+# カスタム MCP サーバーでこれらの名前を使用している場合は変更が必要
+claude mcp remove "Claude Browser"
+claude mcp add "My Custom Browser" --command "..."</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F468;&#x200D;&#x1F4BB;</span> ユースケース</h2>
+            <div class="use-case">
+                <h4>&#x1F916; オートモード利用者: セキュリティ強化による安心感</h4>
+                <p>トランスクリプト改ざん防止と偽造承認のブロックにより、プロンプトインジェクション攻撃に対する耐性が向上。自律的な実行環境での安全性が確保される</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x2601;&#xFE0F; CI/CD 環境・コンテナ利用者: メモリ効率の改善</h4>
+                <p>自動アップデーターのストリーミング化により、メモリ制約のある GitHub Actions ランナーやコンテナ環境でも安定したアップデートが可能に</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F4CB; バックグラウンドエージェント管理者: UI 刷新による効率化</h4>
+                <p>PR リンク自動表示、カラー状態ワード、分類器ヘッドラインにより、多数のジョブの状況把握が容易になり認知負荷が軽減される</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1FA9F; Windows ユーザー: 安定性向上</h4>
+                <p>NTFS ジャンクションでのワークツリー外ファイル削除とディレクトリ削除時のクラッシュが修正され、Windows 環境での信頼性が向上</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <h3>&#x1F517; 関連リンク</h3>
+            <div class="footer-links">
+                <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a>
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">GitHub リポジトリ</a>
+                <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a>
+            </div>
+            <p class="generated">Generated on 2026-07-09 | Source: Claude Code Changelog</p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+        hljs.highlightAll();
+    </script>
+</body>
+</html>

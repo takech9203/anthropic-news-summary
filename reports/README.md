@@ -5,7 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-07-09](2026/2026-07-09-claude-code-v2-1-205.md) - Claude Code v2.1.205 アップデート: セキュリティ強化、エージェント UI 刷新、自動アップデーター最適化
 - [2026-07-08](2026/2026-07-08-claude-code-v2-1-203-v2-1-204.md) - Claude Code v2.1.203-v2.1.204 アップデート: バックグラウンドエージェントの大規模安定化とパフォーマンス改善
+- [2026-07-07](2026/2026-07-07-claude-cowork-web-mobile-ms365.md) - Claude Cowork の Web/モバイル展開と Microsoft 365 コネクタの書き込みツール追加
 - [2026-07-07](2026/2026-07-07-claude-code-v2-1-202.md) - Claude Code v2.1.202 アップデート: ワークフロー管理強化と Remote Control 安定性向上
 - [2026-07-06](2026/2026-07-06-making-of-claude-code.md) - The Making of Claude Code -- 社内 CLI ツールから Anthropic のフラッグシップコーディングエージェントへの進化の軌跡
 - [2026-07-06](2026/2026-07-06-alberta-government-claude-cybersecurity.md) - Alberta 州政府が Claude を活用し政府システム全体のサイバーセキュリティ脆弱性を発見・修正

@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Cowork Web/Mobile 展開 + Microsoft 365 書き込みツール - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --shadow: 0 4px 24px rgba(26, 26, 46, 0.08);
+            --shadow-hover: 0 8px 32px rgba(26, 26, 46, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--anthropic-dark);
+            line-height: 1.8;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--anthropic-dark) 0%, #2d2d4e 50%, #3a2a1e 100%);
+            color: #fff;
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.1) 0%, transparent 60%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 1rem;
+            opacity: 0.85;
+            color: var(--anthropic-coral);
+        }
+
+        /* Sections */
+        .section {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--anthropic-coral);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title .icon {
+            font-size: 1.5rem;
+        }
+
+        /* Overview */
+        .overview-text {
+            font-size: 1rem;
+            line-height: 2;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .overview-text strong {
+            color: var(--anthropic-dark);
+            background: linear-gradient(transparent 60%, rgba(212, 165, 116, 0.3) 60%);
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.2rem;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--anthropic-coral) 0%, #E8C9A8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .key-point-content p {
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--anthropic-dark);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--anthropic-coral);
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            margin-top: 0.3rem;
+        }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+            border: 2px solid #ffcdd2;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e9 100%);
+            border: 2px solid #c8e6c9;
+        }
+
+        .comparison-card h4 {
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comparison-card.before h4 { color: #c62828; }
+        .comparison-card.after h4 { color: #2e7d32; }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            padding: 0.4rem 0;
+            font-size: 0.9rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '\2717';
+            position: absolute;
+            left: 0;
+            color: #e53935;
+            font-weight: bold;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '\2713';
+            position: absolute;
+            left: 0;
+            color: #43a047;
+            font-weight: bold;
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .feature-card {
+            background: var(--anthropic-light);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feature-card .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #fff;
+            border: 2px solid var(--anthropic-coral);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+
+        .mermaid-container .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .mermaid-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 0.8rem;
+            text-align: center;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #282c34;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 0.7rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 0.75rem;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            padding: 1.2rem !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 1.2rem 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 1rem;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Target Users */
+        .target-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .target-card {
+            padding: 1.2rem;
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            border: 1px solid rgba(212, 165, 116, 0.3);
+        }
+
+        .target-card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .target-card p {
+            font-size: 0.82rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Action List */
+        .action-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .action-list li {
+            padding: 0.6rem 0;
+            padding-left: 2rem;
+            position: relative;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .action-list li:last-child {
+            border-bottom: none;
+        }
+
+        .action-list li::before {
+            content: '\25B6';
+            position: absolute;
+            left: 0;
+            color: var(--anthropic-coral);
+            font-size: 0.7rem;
+            top: 0.8rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--anthropic-cream);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .footer h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--anthropic-dark);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--anthropic-dark);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.4rem 1rem;
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid var(--anthropic-coral);
+            transition: all 0.2s;
+        }
+
+        .footer-links a:hover {
+            background: var(--anthropic-coral);
+            color: #fff;
+        }
+
+        .footer .generated {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .header {
+                padding: 2rem 1.5rem;
+                border-radius: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+                border-radius: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature-grid,
+            .target-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLAUDE APPS</span>
+                <h1>Claude Cowork Web/Mobile 展開 +<br>Microsoft 365 書き込みツール追加</h1>
+                <p class="date">2026-07-07</p>
+            </div>
+        </header>
+
+        <!-- Overview / Key Points -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F4CB;</span> 概要</h2>
+            <p class="overview-text">
+                Claude Apps に 2 つの重要なアップデートが発表された。<strong>Claude Cowork がマルチデバイス対応</strong>し、Web およびモバイルで利用可能に。さらに <strong>Microsoft 365 コネクタが書き込み対応</strong>に大幅拡張され、メール送信、カレンダー管理、ファイル操作が可能になった。
+            </p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F4F1;</div>
+                    <div class="key-point-content">
+                        <h3>Cowork マルチデバイス対応</h3>
+                        <p>デスクトップ専用だった Cowork が Web ブラウザおよびモバイルアプリで利用可能に。あらゆるデバイスからアクセスできる</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x2601;&#xFE0F;</div>
+                    <div class="key-point-content">
+                        <h3>リモートセッション実行</h3>
+                        <p>セッションがリモートサーバー上で実行されるため、ラップトップを閉じても作業が継続。デバイスオフラインでもタスクを自動実行する</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x270F;&#xFE0F;</div>
+                    <div class="key-point-content">
+                        <h3>Microsoft 365 書き込みツール</h3>
+                        <p>メール送信、カレンダー管理、OneDrive/SharePoint へのファイル作成・更新が可能に。読み取り専用から大幅拡張</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">&#x1F3E0;</div>
+                    <div class="key-point-content">
+                        <h3>統合ホーム画面</h3>
+                        <p>Chat と Cowork が 1 つのホーム画面を共有し、プロジェクトとアーティファクトを一元管理できる</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F504;</span> Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>&#x274C; Before</h4>
+                    <ul>
+                        <li>Cowork はデスクトップアプリ専用</li>
+                        <li>ローカルマシンのリソースに依存</li>
+                        <li>ラップトップを閉じるとセッション中断</li>
+                        <li>MS365 は検索と読み取りのみ</li>
+                        <li>メール送信やファイル作成は不可</li>
+                        <li>Chat と Cowork が別画面</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>&#x2705; After</h4>
+                    <ul>
+                        <li>Web/モバイル/デスクトップ全対応</li>
+                        <li>リモートサーバーで実行、デバイス非依存</li>
+                        <li>バックグラウンドで作業継続</li>
+                        <li>MS365 メール送信・カレンダー管理可能</li>
+                        <li>OneDrive/SharePoint ファイル操作可能</li>
+                        <li>統合ホーム画面で一元管理</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F4CA;</span> 数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">Max</div>
+                    <div class="stat-label">最初のロールアウト対象プラン</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">新規 MS365 書き込み機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2 段階</div>
+                    <div class="stat-label">セキュリティ承認モデル</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">対応デバイスタイプ</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cowork Features -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F91D;</span> Claude Cowork 新機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F310;</div>
+                    <h4>マルチデバイス対応</h4>
+                    <p>Web ブラウザ、モバイルアプリ、デスクトップから Cowork にアクセス可能</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x2601;&#xFE0F;</div>
+                    <h4>リモートセッション実行</h4>
+                    <p>サーバー側で計算リソースを確保。モバイルでもデスクトップと同等の処理が可能</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F504;</div>
+                    <h4>クロスデバイス同期</h4>
+                    <p>セッションとファイルが Claude アカウントに保存され、任意のデバイスからアクセス可能</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F30D;</div>
+                    <h4>バックグラウンド実行</h4>
+                    <p>ラップトップを閉じても作業が継続。スケジュールされたタスクはオフラインでも実行</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F3E0;</div>
+                    <h4>統合ホーム画面</h4>
+                    <p>Chat と Cowork が 1 つのホーム画面を共有。プロジェクトとアーティファクトを一元管理</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F4C5;</div>
+                    <h4>段階的ロールアウト</h4>
+                    <p>Max プランから開始し、順次他のプランにも拡大予定</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MS365 Features -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F4E7;</span> Microsoft 365 書き込みツール</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">&#x2709;&#xFE0F;</div>
+                    <h4>メール操作</h4>
+                    <p>メールの下書き、送信、整理が可能に。Claude がメールワークフローを自動化</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F4C5;</div>
+                    <h4>カレンダー管理</h4>
+                    <p>カレンダーイベントの作成・更新・削除を Claude から直接操作</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x2699;&#xFE0F;</div>
+                    <h4>メールボックス設定</h4>
+                    <p>メールボックスの設定変更を Claude が代行</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F4C1;</div>
+                    <h4>ファイル操作</h4>
+                    <p>OneDrive および SharePoint へのファイル作成・更新が可能に</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F50D;</div>
+                    <h4>既存機能の維持</h4>
+                    <p>読み取りおよび検索ツールは従来どおり動作</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F4AC;</div>
+                    <h4>Teams は読み取り専用</h4>
+                    <p>Teams コネクタは引き続き読み取り専用のまま</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F3D7;&#xFE0F;</span> アーキテクチャ</h2>
+
+            <div class="mermaid-container">
+                <div class="mermaid-label">Cowork マルチデバイスアーキテクチャ</div>
+                <div class="mermaid">
+flowchart TD
+    subgraph Devices["クライアントデバイス"]
+        direction LR
+        Desktop["デスクトップ"]
+        Web["Web ブラウザ"]
+        Mobile["モバイル"]
+        Desktop ~~~ Web ~~~ Mobile
+    end
+
+    subgraph Cloud["Claude クラウド"]
+        subgraph SessionMgr["セッション管理"]
+            direction LR
+            Sync["クロスデバイス同期"]
+            Scheduler["スケジューラー"]
+            Sync ~~~ Scheduler
+        end
+
+        subgraph Runtime["リモート実行環境"]
+            direction LR
+            CoworkEngine["Cowork エンジン"]
+            TaskRunner["タスクランナー"]
+            CoworkEngine ~~~ TaskRunner
+        end
+
+        subgraph Storage["データ層"]
+            direction LR
+            Account[("アカウント")]
+            Projects[("プロジェクト")]
+            Artifacts[("アーティファクト")]
+            Account ~~~ Projects ~~~ Artifacts
+        end
+    end
+
+    subgraph UnifiedHome["統合ホーム"]
+        direction LR
+        Chat["Chat"]
+        Cowork["Cowork"]
+        Chat ~~~ Cowork
+    end
+
+    Devices --> UnifiedHome
+    UnifiedHome --> SessionMgr
+    SessionMgr --> Runtime
+    Runtime --> Storage
+    Scheduler -.->|デバイスオフライン時も実行| TaskRunner
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef device fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef cloud fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef home fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class Devices,Cloud platform
+    class SessionMgr,Runtime,Storage,UnifiedHome layer
+    class Desktop,Web,Mobile device
+    class Sync,Scheduler,CoworkEngine,TaskRunner cloud
+    class Account,Projects,Artifacts storage
+    class Chat,Cowork home
+                </div>
+            </div>
+
+            <div class="mermaid-container" style="margin-top: 1.5rem;">
+                <div class="mermaid-label">Microsoft 365 書き込みツールのインタラクションフロー</div>
+                <div class="mermaid">
+sequenceDiagram
+    participant U as ユーザー
+    participant C as Claude
+    participant Auth as 認証レイヤー
+    participant M365 as Microsoft 365
+    participant Entra as Microsoft Entra
+
+    Note over U,Entra: 初回セットアップ - 管理者による権限同意
+    U->>Entra: 書き込み権限の同意要求
+    Entra-->>U: 権限同意完了
+
+    Note over U,Entra: 通常利用フロー - メール送信の例
+    U->>C: メールを送信して
+    C->>Auth: アクセストークン検証
+    Auth->>Entra: OAuth トークン検証
+    Entra-->>Auth: トークン有効
+    Auth-->>C: 認証成功
+
+    C->>M365: メール下書き作成
+    M365-->>C: 下書き作成完了
+    C->>M365: メール送信
+    M365-->>C: 送信完了
+    C-->>U: メール送信完了を報告
+
+    Note over U,Entra: OneDrive ファイル操作の例
+    U->>C: レポートを OneDrive に保存して
+    C->>M365: ファイル作成/更新
+    M365-->>C: ファイル保存完了
+    C-->>U: 保存完了を報告
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F4BB;</span> コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">PowerShell</span>
+                    <span class="code-title">Microsoft Entra 管理者セットアップ</span>
+                </div>
+                <pre><code class="language-powershell"># Microsoft Entra での権限同意 (PowerShell)
+# Claude の Microsoft 365 コネクタ用サービスプリンシパルに対して
+# 書き込み権限を付与する管理者操作の例
+
+# 1. Azure AD モジュールのインポート
+Import-Module Microsoft.Graph
+
+# 2. 管理者としてサインイン
+Connect-MgGraph -Scopes "Application.ReadWrite.All"
+
+# 3. Claude コネクタのサービスプリンシパルを確認
+$sp = Get-MgServicePrincipal -Filter "displayName eq 'Claude for Microsoft 365'"
+
+# 4. 付与される権限の確認
+# - Mail.ReadWrite (メール読み書き)
+# - Mail.Send (メール送信)
+# - Calendars.ReadWrite (カレンダー読み書き)
+# - Files.ReadWrite.All (OneDrive/SharePoint ファイル読み書き)
+# - MailboxSettings.ReadWrite (メールボックス設定)
+
+# 5. 管理者同意の付与
+# Azure Portal > Enterprise Applications > Claude for Microsoft 365
+# > Permissions > Grant admin consent</code></pre>
+            </div>
+
+            <div class="code-block" style="margin-top: 1.5rem;">
+                <div class="code-header">
+                    <span class="code-lang">Text</span>
+                    <span class="code-title">MS365 書き込みツール利用例</span>
+                </div>
+                <pre><code class="language-plaintext"># メール送信の例
+ユーザー: 来週の会議について田中さんにメールを送って。
+         日時は 7 月 14 日 14:00、場所は第 3 会議室。
+
+Claude: メールを作成して送信します。
+
+  宛先: tanaka@example.com
+  件名: 来週の会議について
+  本文: 来週 7 月 14 日 14:00 より第 3 会議室にて会議を実施します。
+        ご参加をお願いいたします。
+
+  メールを送信しました。
+
+# カレンダーイベント作成の例
+ユーザー: 上記の会議をカレンダーにも登録して。
+
+Claude: カレンダーイベントを作成します。
+
+  タイトル: 会議
+  日時: 2026-07-14 14:00-15:00
+  場所: 第 3 会議室
+  参加者: tanaka@example.com
+
+  カレンダーイベントを作成しました。</code></pre>
+            </div>
+
+            <div class="code-block" style="margin-top: 1.5rem;">
+                <div class="code-header">
+                    <span class="code-lang">Text</span>
+                    <span class="code-title">Cowork クロスデバイス利用例</span>
+                </div>
+                <pre><code class="language-plaintext"># デスクトップで Cowork セッションを開始
+ユーザー (デスクトップ): このプロジェクトのデータ分析レポートを作成して。
+                       完了したら通知して。
+
+Claude: データ分析レポートの作成を開始します。
+       セッションはリモートで実行されるため、
+       デバイスを閉じても作業は継続します。
+
+# ラップトップを閉じて外出
+
+# モバイルから同じセッションにアクセス
+ユーザー (モバイル): レポートの進捗を確認したい。
+
+Claude: データ分析レポートは 80% 完了しています。
+       現在、可視化チャートの生成中です。
+       推定完了時間: 約 5 分後。</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F4A1;</span> ユースケース</h2>
+            <div class="use-case">
+                <h4>&#x1F4F1; クロスデバイスワークフロー</h4>
+                <p>オフィスのデスクトップで Cowork セッションを開始し、移動中にモバイルから進捗確認、帰宅後に Web ブラウザから結果を確認。デバイスに縛られない連続的な作業が可能になる</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x2709;&#xFE0F; エンタープライズメール自動化</h4>
+                <p>Claude に定例報告メールの作成・送信を依頼。カレンダーの空き時間を確認し、会議を自動スケジュール。議事録を OneDrive に自動保存するエンドツーエンドのワークフロー</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x23F0; スケジュール実行による自動タスク</h4>
+                <p>毎朝のレポート集計、定期的なデータ分析、週次のファイル整理など、cron のようにデバイスがオフラインでもタスクを自動実行。真の「バックグラウンド AI ワーカー」として機能する</p>
+            </div>
+            <div class="use-case">
+                <h4>&#x1F3E2; IT 管理者によるセキュアな展開</h4>
+                <p>Microsoft Entra 管理者の同意と組織管理者の有効化という 2 段階承認で、セキュリティとコンプライアンスの要件を満たしながら段階的に導入可能</p>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title"><span class="icon">&#x1F468;&#x200D;&#x1F4BB;</span> 対象ユーザーと必要なアクション</h2>
+            <div class="target-grid">
+                <div class="target-card">
+                    <h4>&#x2B50; Max プランユーザー</h4>
+                    <p>Cowork の Web/モバイル対応が最初にロールアウト。即座に新機能を利用可能</p>
+                </div>
+                <div class="target-card">
+                    <h4>&#x1F3E2; エンタープライズ管理者</h4>
+                    <p>MS365 書き込みツールの有効化に Entra 管理者の同意と組織管理者の設定が必要</p>
+                </div>
+                <div class="target-card">
+                    <h4>&#x1F4F1; モバイルワーカー</h4>
+                    <p>デスクトップを利用できない環境でも Cowork セッションにアクセスし継続作業可能</p>
+                </div>
+                <div class="target-card">
+                    <h4>&#x1F512; IT セキュリティチーム</h4>
+                    <p>新たな書き込み権限の評価とリスクアセスメントが必要</p>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.8rem; color: var(--anthropic-dark);">&#x25B6; 必要なアクション</h3>
+            <ul class="action-list">
+                <li><strong>Max プランユーザー</strong>: Web ブラウザまたはモバイルアプリから Cowork 機能を試用可能</li>
+                <li><strong>既存 Cowork ユーザー</strong>: デスクトップセッションがクラウドに同期され、他のデバイスからアクセス可能に</li>
+                <li><strong>Microsoft Entra 管理者</strong>: 更新されたパーミッションセットに同意する必要あり</li>
+                <li><strong>組織の Claude 管理者</strong>: 書き込みツールを明示的に有効化する必要あり</li>
+                <li><strong>Teams 利用者</strong>: Teams は引き続き読み取り専用のため、書き込み操作は対象外</li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <h3>&#x1F517; 関連リンク</h3>
+            <div class="footer-links">
+                <a href="https://support.claude.com/en/articles/12138966-release-notes" target="_blank">Claude Apps Release Notes</a>
+                <a href="https://support.claude.com/" target="_blank">Claude Cowork ドキュメント</a>
+                <a href="https://support.claude.com/" target="_blank">Microsoft 365 コネクタ設定</a>
+            </div>
+            <p class="generated">Generated on 2026-07-07 | Source: Claude Apps Release Notes</p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
