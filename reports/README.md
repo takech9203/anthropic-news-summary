@@ -5,8 +5,14 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-07-09](2026/2026-07-09-ust-claude-physical-ai.md) - UST、Claude を物理 AI に導入 — グローバルプレミアパートナーシップ
+- [2026-07-09](2026/2026-07-09-reflect-with-claude.md) - Claude 利用振り返り機能「Reflect」を発表
+- [2026-07-09](2026/2026-07-09-inviting-hard-questions.md) - Anthropic、「難しい質問を歓迎する」イニシアチブを発表
+- [2026-07-09](2026/2026-07-09-claude-code-v2-1-206.md) - Claude Code v2.1.206 リリース — /doctor 強化と agents ビュー改善
 - [2026-07-09](2026/2026-07-09-claude-code-v2-1-205.md) - Claude Code v2.1.205 アップデート: セキュリティ強化、エージェント UI 刷新、自動アップデーター最適化
+- [2026-07-09](2026/2026-07-09-ben-bernanke-ltbt.md) - Ben Bernanke 氏、Anthropic 長期利益信託に就任
 - [2026-07-08](2026/2026-07-08-claude-code-v2-1-203-v2-1-204.md) - Claude Code v2.1.203-v2.1.204 アップデート: バックグラウンドエージェントの大規模安定化とパフォーマンス改善
+- [2026-07-08](2026/2026-07-08-api-key-expiration.md) - Claude API キー有効期限設定機能を追加
 - [2026-07-07](2026/2026-07-07-claude-cowork-web-mobile-ms365.md) - Claude Cowork の Web/モバイル展開と Microsoft 365 コネクタの書き込みツール追加
 - [2026-07-07](2026/2026-07-07-claude-code-v2-1-202.md) - Claude Code v2.1.202 アップデート: ワークフロー管理強化と Remote Control 安定性向上
 - [2026-07-06](2026/2026-07-06-making-of-claude-code.md) - The Making of Claude Code -- 社内 CLI ツールから Anthropic のフラッグシップコーディングエージェントへの進化の軌跡
