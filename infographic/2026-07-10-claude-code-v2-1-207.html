@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.207 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .comparison-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-card code {
+            background: rgba(0,0,0,0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Bug Fix List */
+        .bugfix-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .bugfix-category {
+            margin-bottom: 16px;
+        }
+
+        .bugfix-category h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--anthropic-cream);
+        }
+
+        .bugfix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--anthropic-cream);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .bugfix-item .icon {
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action Items */
+        .action-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .action-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-list li .action-icon {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .related-links {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .footer .related-links a {
+            display: inline-block;
+            margin-right: 16px;
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">ツール更新</span>
+                <h1>Claude Code v2.1.207</h1>
+                <p class="date">2026-07-10</p>
+                <p class="subtitle">Auto モード全プラットフォーム開放とセキュリティ強化</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">リリース概要</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">変更項目 (合計)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">新機能・変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">17</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">改善</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">主要ポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🚀</div>
+                    <div class="key-point-content">
+                        <h3>Auto モード全プラットフォーム開放</h3>
+                        <p>Bedrock、Vertex AI、Foundry で CLAUDE_CODE_ENABLE_AUTO_MODE 環境変数なしに Auto モードが利用可能に。段階展開の完了により全プラットフォームでデフォルト有効化された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>デフォルトモデル Claude Opus 4.8</h3>
+                        <p>Bedrock、Vertex、Claude Platform on AWS のデフォルトモデルが Claude Opus 4.8 に統一された。Claude Platform (API 直接利用) と同等の体験を全プラットフォームで提供。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>プラグインセキュリティ強化</h3>
+                        <p>シェルインジェクション防止と設定読み込みスコープの制限により、サプライチェーン攻撃のリスクが排除された。プラグイン開発者は exec フォームへの移行が必要。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+
+            <div class="comparison" style="margin-bottom: 24px;">
+                <div class="comparison-card before">
+                    <h4>Before - プラグイン設定</h4>
+                    <ul>
+                        <li><code>command</code> フィールドでシェルフォーム使用</li>
+                        <li><code>${user_config.*}</code> がシェル経由で展開</li>
+                        <li>シェルインジェクション攻撃が可能</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After - プラグイン設定</h4>
+                    <ul>
+                        <li>exec フォーム (<code>args</code> 配列) を使用</li>
+                        <li><code>$CLAUDE_PLUGIN_OPTION_*</code> 環境変数</li>
+                        <li>インジェクション攻撃が構造的に不可能</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before - Auto モード設定</h4>
+                    <ul>
+                        <li><code>.claude/settings.local.json</code> から読み込み</li>
+                        <li>リポジトリ内から制御可能</li>
+                        <li>悪意あるリポジトリによる操作リスク</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After - Auto モード設定</h4>
+                    <ul>
+                        <li><code>~/.claude/settings.json</code> のみ有効</li>
+                        <li>ユーザーレベルで明示的に管理</li>
+                        <li>リポジトリからの操作不可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">新機能・変更</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🌐 Auto モード全開放</h3>
+                    <p>Bedrock、Vertex AI、Foundry で環境変数設定なしに Auto モードが利用可能。無効化する場合は <code>disableAutoMode</code> を設定。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⭐ Opus 4.8 デフォルト化</h3>
+                    <p>Bedrock、Vertex、Claude Platform on AWS のデフォルトモデルが Claude Opus 4.8 に変更され、全プラットフォームで統一。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📁 設定読み込み元変更</h3>
+                    <p>Auto モードは .claude/settings.local.json から autoMode を読み込まなくなった。~/.claude/settings.json を使用する必要がある。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ シェルインジェクション修正</h3>
+                    <p>シェルフォームでの ${user_config.*} が拒否され、exec フォームまたは環境変数の使用が必須に。コマンドインジェクション防止。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔐 プラグインスコープ制限</h3>
+                    <p>pluginConfigs がプロジェクトレベルの .claude/settings.json から読み込まれなくなった。ユーザー設定、--settings、管理設定のみ有効。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正 (17 件)</h2>
+            <div class="bugfix-grid">
+                <div class="bugfix-category">
+                    <h4>パフォーマンス・UX</h4>
+                    <div class="bugfix-item">
+                        <span class="icon">⚡</span>
+                        <span>ストリーミング中のターミナルフリーズ修正 - 差分レンダリング導入により長大コンテンツでもスムーズ操作</span>
+                    </div>
+                    <div class="bugfix-item">
+                        <span class="icon">📜</span>
+                        <span>レスポンス完了時にトランスクリプトが回答先頭より上にジャンプする問題を修正</span>
+                    </div>
+                </div>
+                <div class="bugfix-category">
+                    <h4>セキュリティ・権限</h4>
+                    <div class="bugfix-item">
+                        <span class="icon">🔑</span>
+                        <span>管理設定の無断同意記録修正 - 非インタラクティブ実行からの同意が永続的に記録される問題</span>
+                    </div>
+                    <div class="bugfix-item">
+                        <span class="icon">⚠️</span>
+                        <span>偽陽性プロンプトインジェクション警告修正</span>
+                    </div>
+                    <div class="bugfix-item">
+                        <span class="icon">💰</span>
+                        <span>/usage-credits の入力検証修正 - $1,000 超は確認必須に</span>
+                    </div>
+                </div>
+                <div class="bugfix-category">
+                    <h4>自動更新・ファイルシステム</h4>
+                    <div class="bugfix-item">
+                        <span class="icon">📦</span>
+                        <span>自動更新がカスタムランチャーを上書きする問題を修正</span>
+                    </div>
+                    <div class="bugfix-item">
+                        <span class="icon">🔧</span>
+                        <span>extensions.worktreeConfig 残留修正 - go-git ツール破壊防止</span>
+                    </div>
+                    <div class="bugfix-item">
+                        <span class="icon">📂</span>
+                        <span>ブラケットパターンの不正修正 - ファイル読み込み破壊防止</span>
+                    </div>
+                </div>
+                <div class="bugfix-category">
+                    <h4>エージェント・バックグラウンド</h4>
+                    <div class="bugfix-item">
+                        <span class="icon">🔄</span>
+                        <span>エージェントチームのクラッシュループ修正 - 不正メールボックスメッセージによる毎秒エラー</span>
+                    </div>
+                    <div class="bugfix-item">
+                        <span class="icon">🏷️</span>
+                        <span>バックグラウンドセッションの名前表示修正</span>
+                    </div>
+                    <div class="bugfix-item">
+                        <span class="icon">📋</span>
+                        <span>バックグラウンドセッションのブランク復帰修正</span>
+                    </div>
+                </div>
+                <div class="bugfix-category">
+                    <h4>Remote Control・Deep Research</h4>
+                    <div class="bugfix-item">
+                        <span class="icon">🌐</span>
+                        <span>Remote Control のステータス更新消失修正 - ネットワーク復帰時</span>
+                    </div>
+                    <div class="bugfix-item">
+                        <span class="icon">🖥️</span>
+                        <span>デスクトップアプリの Remote Control 表示修正</span>
+                    </div>
+                    <div class="bugfix-item">
+                        <span class="icon">🔍</span>
+                        <span>Deep Research のソース "unknown" 表示修正 - ホスト名表示に改善</span>
+                    </div>
+                </div>
+                <div class="bugfix-category">
+                    <h4>プラットフォーム固有</h4>
+                    <div class="bugfix-item">
+                        <span class="icon">☁️</span>
+                        <span>Bedrock SSO クレデンシャル修正 - 毎回新規要求の問題</span>
+                    </div>
+                    <div class="bugfix-item">
+                        <span class="icon">💻</span>
+                        <span>cd 複合コマンドの権限プロンプト修正</span>
+                    </div>
+                    <div class="bugfix-item">
+                        <span class="icon">🪟</span>
+                        <span>Windows の無期限ハング修正 - AWS クレデンシャル解決停滞時</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <h2 class="section-title">改善 (2 件)</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📋 テキスト貼り付けの折りたたみ</h3>
+                    <p>同じテキストを再度貼り付けた場合、新しいプレースホルダーを追加する代わりに既存のプレースホルダーを展開するように改善。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏱️ ブロックセッション表示改善</h3>
+                    <p>ブロックされたセッションのプレビューが質問を先頭に表示し、言葉による経過時間 (waiting 3m) を表示するように改善。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagrams -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+
+            <div class="mermaid-container">
+                <h4>Auto モードのプラットフォーム展開構造</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph User["&#128100; ユーザー環境"]
+        direction LR
+        UserSettings["&#9881;&#65039; ~/.claude/settings.json&lt;br/&gt;autoMode 設定"]
+        DisableFlag["&#128683; disableAutoMode&lt;br/&gt;無効化フラグ"]
+        UserSettings ~~~ DisableFlag
+    end
+
+    subgraph Platforms["&#9729;&#65039; クラウドプラットフォーム"]
+        direction LR
+        Bedrock["&#128310; Amazon Bedrock"]
+        Vertex["&#128311; Google Vertex AI"]
+        Foundry["&#128995; Foundry"]
+        CPlatform["&#128992; Claude Platform&lt;br/&gt;on AWS"]
+        Bedrock ~~~ Vertex ~~~ Foundry ~~~ CPlatform
+    end
+
+    subgraph AutoMode["&#129302; Auto モード"]
+        Controller["&#127899;&#65039; Auto モード&lt;br/&gt;コントローラー"]
+        Policy["&#128203; 権限ポリシー&lt;br/&gt;評価"]
+        Exec["&#9889; 自律的&lt;br/&gt;ツール実行"]
+    end
+
+    subgraph Security["&#128274; セキュリティ境界"]
+        direction LR
+        NoLocal["&#10060; .claude/settings.local.json&lt;br/&gt;読み込み拒否"]
+        NoEnvVar["&#9989; 環境変数&lt;br/&gt;不要"]
+        NoLocal ~~~ NoEnvVar
+    end
+
+    UserSettings --> Controller
+    DisableFlag --> Controller
+    Platforms --> Controller
+    Controller --> Policy
+    Policy --> Exec
+    Security -.-> Controller
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef platform fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef auto fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef security fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class UserSettings,DisableFlag user
+    class Bedrock,Vertex,Foundry,CPlatform platform
+    class Controller,Policy,Exec auto
+    class NoLocal,NoEnvVar security
+    class User,Platforms,AutoMode,Security layer
+                </pre>
+            </div>
+
+            <div class="mermaid-container">
+                <h4>プラグインセキュリティ修正の構造</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Before["&#10060; v2.1.206 以前: 脆弱なパターン"]
+        ShellForm["&#128026; シェルフォーム&lt;br/&gt;command: curl $URL"]
+        UserConfig["&#128221; user_config.*&lt;br/&gt;テンプレート変数"]
+        Injection["&#128165; シェルインジェクション&lt;br/&gt;可能"]
+        ShellForm --> UserConfig --> Injection
+    end
+
+    subgraph After["&#9989; v2.1.207 以降: 安全なパターン"]
+        ExecForm["&#128230; exec フォーム&lt;br/&gt;args 配列"]
+        EnvVar["&#128273; 環境変数&lt;br/&gt;CLAUDE_PLUGIN_OPTION_*"]
+        Safe["&#128737;&#65039; インジェクション&lt;br/&gt;不可能"]
+        ExecForm --> Safe
+        EnvVar --> Safe
+    end
+
+    subgraph Scope["&#128272; 設定読み込みスコープ"]
+        direction LR
+        Allowed["&#9989; 読み込み許可&lt;br/&gt;~/.claude/settings.json&lt;br/&gt;--settings フラグ&lt;br/&gt;管理設定"]
+        Denied["&#10060; 読み込み拒否&lt;br/&gt;.claude/settings.json&lt;br/&gt;プロジェクトレベル"]
+        Allowed ~~~ Denied
+    end
+
+    classDef danger fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef safe fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef scope fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+
+    class ShellForm,UserConfig,Injection danger
+    class ExecForm,EnvVar,Safe safe
+    class Allowed,Denied scope
+    class Before,After,Scope layer
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">プラグイン移行: シェルフォーム → exec フォーム</span>
+                </div>
+                <pre><code class="language-json">// 変更前 (v2.1.206 以前) - 脆弱なシェルフォーム
+{
+  "hooks": {
+    "on_save": {
+      "command": "curl -H 'Authorization: ${user_config.api_key}' https://api.example.com"
+    }
+  }
+}
+
+// 変更後 (v2.1.207) - 安全な exec フォーム
+{
+  "hooks": {
+    "on_save": {
+      "command": "curl",
+      "args": ["-H", "Authorization: $CLAUDE_PLUGIN_OPTION_API_KEY", "https://api.example.com"]
+    }
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">Auto モード設定の移行</span>
+                </div>
+                <pre><code class="language-json">// 変更前 - .claude/settings.local.json (無視される)
+{
+  "autoMode": {
+    "enabled": true,
+    "permissions": ["read", "write"]
+  }
+}
+
+// 変更後 - ~/.claude/settings.json (有効)
+{
+  "autoMode": {
+    "enabled": true,
+    "permissions": ["read", "write"]
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">pluginConfigs の移行</span>
+                </div>
+                <pre><code class="language-json">// 変更前 - .claude/settings.json (プロジェクト内 - 無視される)
+{
+  "pluginConfigs": {
+    "my-plugin": {
+      "api_key": "sk-xxx",
+      "endpoint": "https://api.example.com"
+    }
+  }
+}
+
+// 変更後 - ~/.claude/settings.json (ユーザーレベル - 有効)
+{
+  "pluginConfigs": {
+    "my-plugin": {
+      "api_key": "sk-xxx",
+      "endpoint": "https://api.example.com"
+    }
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデート後の推奨ワークフロー</span>
+                </div>
+                <pre><code class="language-bash"># アップデートコマンド
+npm update -g @anthropic-ai/claude-code
+# または
+brew upgrade claude-code
+
+# バージョン確認
+claude --version  # v2.1.207 を確認
+
+# Auto モード環境変数の削除 (不要になった)
+# .bashrc / .zshrc から以下を削除
+# export CLAUDE_CODE_ENABLE_AUTO_MODE=1
+
+# Auto モードの無効化 (組織ポリシーとして必要な場合)
+cat &lt;&lt;'EOF' &gt; ~/.claude/settings.json
+{
+  "disableAutoMode": true
+}
+EOF</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">monitors/headersHelper でのスクリプト内読み込み</span>
+                </div>
+                <pre><code class="language-bash">#!/bin/bash
+# スクリプト内で環境変数を読み込む
+API_KEY="$CLAUDE_PLUGIN_OPTION_API_KEY"
+curl -H "Authorization: $API_KEY" https://api.example.com</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">完全な設定例</span>
+                </div>
+                <pre><code class="language-json">// ~/.claude/settings.json - 推奨設定
+{
+  "autoMode": {
+    "enabled": true,
+    "permissions": ["read", "write", "execute"]
+  },
+  "pluginConfigs": {
+    "my-linter": {
+      "endpoint": "https://lint.example.com",
+      "api_key": "sk-xxx"
+    }
+  }
+}
+
+// プラグインの hooks 定義 - exec フォーム
+{
+  "hooks": {
+    "pre_commit": {
+      "command": "node",
+      "args": ["scripts/validate.js", "--key", "$CLAUDE_PLUGIN_OPTION_API_KEY"]
+    },
+    "post_save": {
+      "command": "python",
+      "args": ["-c", "import os; print(os.environ['CLAUDE_PLUGIN_OPTION_WEBHOOK_URL'])"]
+    }
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>Bedrock / Vertex AI / Foundry ユーザー</h4>
+                <p>Auto モードがオプトインなしで利用可能に。デフォルトモデルも Claude Opus 4.8 に更新。既存の CLAUDE_CODE_ENABLE_AUTO_MODE 環境変数設定は削除可能。</p>
+            </div>
+            <div class="use-case">
+                <h4>プラグイン開発者</h4>
+                <p>シェルフォームでの ${user_config.*} が使用不可に。exec フォーム (args 配列) または $CLAUDE_PLUGIN_OPTION_* 環境変数への移行が必要。pluginConfigs のプロジェクトレベル読み込みも廃止。</p>
+            </div>
+            <div class="use-case">
+                <h4>エージェントチーム利用者</h4>
+                <p>クラッシュループの修正により、不正なメールボックスメッセージによるシステム停止が防止される。バックグラウンドセッションの名前表示とブランク復帰も修正。</p>
+            </div>
+            <div class="use-case">
+                <h4>Remote Control 利用者</h4>
+                <p>ネットワーク復帰時のステータス消失とデスクトップアプリからの進捗表示問題が修正。安定したリモート操作が可能に。</p>
+            </div>
+            <div class="use-case">
+                <h4>Windows ユーザー</h4>
+                <p>AWS クレデンシャル解決の停滞による無期限ハングが修正。credential_process が応答しない場合もタイムアウトが適切に処理される。</p>
+            </div>
+            <div class="use-case">
+                <h4>Deep Research 利用者</h4>
+                <p>Fetch フェーズエージェントが "unknown" ではなくソースのホスト名で表示されるようになり、調査の透明性が向上。</p>
+            </div>
+            <div class="use-case">
+                <h4>全ユーザー</h4>
+                <p>ストリーミング中のターミナルフリーズが解消。長大な出力 (数百行のリスト、大きなテーブル、コードブロック) でもスムーズな操作が可能。差分レンダリングにより入力遅延を防止。</p>
+            </div>
+        </section>
+
+        <!-- Required Actions -->
+        <section class="section">
+            <h2 class="section-title">推奨アクション</h2>
+            <ul class="action-list">
+                <li>
+                    <span class="action-icon">1</span>
+                    <span><strong>プラグインの移行</strong>: シェルフォームで ${user_config.*} を使用しているプラグインは、exec フォームまたは環境変数に移行する</span>
+                </li>
+                <li>
+                    <span class="action-icon">2</span>
+                    <span><strong>Auto モード設定の確認</strong>: .claude/settings.local.json で autoMode を設定している場合、~/.claude/settings.json に移動する</span>
+                </li>
+                <li>
+                    <span class="action-icon">3</span>
+                    <span><strong>不要な環境変数の削除</strong>: CLAUDE_CODE_ENABLE_AUTO_MODE を設定している場合は削除可能</span>
+                </li>
+                <li>
+                    <span class="action-icon">4</span>
+                    <span><strong>Auto モードの無効化</strong>: 組織ポリシーとして無効化する場合は disableAutoMode を設定する</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <div class="related-links">
+                <strong>関連リンク:</strong>
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub</a>
+                <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
