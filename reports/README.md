@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-07-14](2026/2026-07-14-claude-code-v2-1-208.md) - Claude Code v2.1.208 リリース — スクリーンリーダーモード、メモリリーク修正、パフォーマンス大幅改善
 - [2026-07-10](2026/2026-07-10-claude-code-v2-1-207.md) - Claude Code v2.1.207 リリース — Auto モード全プラットフォーム開放とセキュリティ強化
 - [2026-07-10](2026/2026-07-10-access-transparency-cmek-preserve.md) - Access Transparency: CMEK コンテンツ保全ドキュメントの拡充
 - [2026-07-09](2026/2026-07-09-ust-claude-physical-ai.md) - UST、Claude を物理 AI に導入 — グローバルプレミアパートナーシップ
