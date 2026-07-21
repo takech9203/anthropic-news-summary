@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-07-21](2026/2026-07-21-claude-code-v2-1-216.md) - Claude Code v2.1.216 - サンドボックス設定の柔軟化と長時間セッションのパフォーマンス改善
+- [2026-07-20](2026/2026-07-20-rare-disease-research-grants.md) - Anthropic AI for Science: 希少疾患研究助成プログラムの応募開始
 - [2026-07-20](2026/2026-07-20-claude-code-v2-1-215.md) - Claude Code v2.1.215 リリース — /verify と /code-review の自動実行廃止、ユーザー主導の明示的呼び出しに変更
 - [2026-07-18](2026/2026-07-18-claude-code-v2-1-214.md) - Claude Code v2.1.214 リリース — セキュリティ大幅強化、EndConversation ツール追加、Windows/PowerShell 安定性改善
 - [2026-07-17](2026/2026-07-17-claude-code-v2-1-212.md) - Claude Code v2.1.212 リリース — /fork アーキテクチャ刷新、暴走ループ防止キャップ、MCP 自動バックグラウンド化
