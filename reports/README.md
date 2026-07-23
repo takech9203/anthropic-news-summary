@@ -5,7 +5,12 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-07-22](2026/2026-07-22-managed-agents-effort-webhooks-seeding.md) - Claude Managed Agents: エフォートレベル、Webhook 拡張、セッションシーディング
+- [2026-07-22](2026/2026-07-22-economic-futures-research-fund-agenda.md) - Economic Futures Research Fund の研究アジェンダ
+- [2026-07-22](2026/2026-07-22-claude-code-v2-1-218.md) - Claude Code v2.1.218 - コードレビューのバックグラウンド実行とアクセシビリティ強化
 - [2026-07-22](2026/2026-07-22-claude-code-v2-1-217.md) - Claude Code v2.1.217 - サブエージェント管理の強化とエンタープライズ環境向け安定性改善
+- [2026-07-22](2026/2026-07-22-anthropic-economic-index-connector.md) - Anthropic Economic Index コネクタ: Claude で経済データを探索可能に
+- [2026-07-21](2026/2026-07-21-donation-public-first-action.md) - Anthropic が Public First Action に追加 2,000 万ドルを寄付
 - [2026-07-21](2026/2026-07-21-claude-code-v2-1-216.md) - Claude Code v2.1.216 - サンドボックス設定の柔軟化と長時間セッションのパフォーマンス改善
 - [2026-07-20](2026/2026-07-20-rare-disease-research-grants.md) - Anthropic AI for Science: 希少疾患研究助成プログラムの応募開始
 - [2026-07-20](2026/2026-07-20-claude-code-v2-1-215.md) - Claude Code v2.1.215 リリース — /verify と /code-review の自動実行廃止、ユーザー主導の明示的呼び出しに変更

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.218 - コードレビューのバックグラウンド実行とアクセシビリティ強化 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 4px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '\2717';
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '\2713';
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Behavior Changes */
+        .behavior-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .behavior-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: var(--anthropic-light);
+            font-size: 14px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .behavior-list li .behavior-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .behavior-list li .behavior-text {
+            color: var(--text-secondary);
+        }
+
+        .behavior-list li .behavior-text strong {
+            color: var(--text-primary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>v2.1.218 - コードレビューのバックグラウンド実行とアクセシビリティ強化</h1>
+                <p class="date">2026-07-22</p>
+                <span class="version-badge">v2.1.218</span>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔍</div>
+                    <div class="key-point-content">
+                        <h3>/code-review がバックグラウンドサブエージェントとして実行</h3>
+                        <p>会話を占有せず、レビュー中も他の作業を継続可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">♿</div>
+                    <div class="key-point-content">
+                        <h3>スクリーンリーダーでの削除テキスト読み上げ対応</h3>
+                        <p>単語削除・行削除時にスクリーンリーダーが変更を適切に通知</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>auto モードの権限ダイアログ削減</h3>
+                        <p>分類器に委譲することで、不要な権限確認を減らしスムーズな操作を実現</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-content">
+                        <h3>MCP 接続失敗時の HTTP ステータス/エラー表示</h3>
+                        <p>接続失敗の原因を即座に特定できるよう、HTTP ステータスコードとエラーメッセージを表示</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🐛</div>
+                    <div class="key-point-content">
+                        <h3>Windows パス CJK 文字化け、左矢印会話消失など重大バグ修正</h3>
+                        <p>Windows 環境での CJK 文字を含むパス処理、左矢印キーによる会話消失、複数行ペーストの問題を修正</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>/code-review が会話全体を占有</li>
+                        <li>レビュー中は他の作業が不可</li>
+                        <li>レビュー完了まで待機が必要</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>バックグラウンドサブエージェントで実行</li>
+                        <li>レビュー中も作業を継続可能</li>
+                        <li>完了時に通知で結果を受け取り</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">機能カテゴリ</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔍 コードレビュー改善</h3>
+                    <p>バックグラウンドサブエージェント実行により、会話のブロックを解消。レビュー結果は完了時に通知される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>♿ アクセシビリティ</h3>
+                    <p>削除テキスト読み上げ対応とフォーカス追跡の改善。スクリーンリーダー利用者の操作体験を向上。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ auto モード改善</h3>
+                    <p>権限ダイアログ削減と分類器活用により、自動実行フローがよりスムーズに。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🐛 重要バグ修正</h3>
+                    <p>Windows CJK 文字化け、左矢印キーによる会話消失、複数行ペーストの問題を修正。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mermaid Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <div class="mermaid">
+flowchart TD
+    subgraph CodeReview["🔍 /code-review の新アーキテクチャ"]
+        direction LR
+        Main["💬 メイン会話"]
+        BG["🤖 バックグラウンド<br/>サブエージェント"]
+        Result["📋 レビュー結果"]
+        Main ~~~ BG ~~~ Result
+    end
+
+    subgraph AutoMode["⚡ auto モード分類器の拡張"]
+        direction LR
+        DangerousRm["🗑️ dangerous-rm"]
+        BGAmp["& バックグラウンド"]
+        WinPath["🪟 Windows パス"]
+        DangerousRm ~~~ BGAmp ~~~ WinPath
+    end
+
+    subgraph A11y["♿ アクセシビリティ強化"]
+        direction LR
+        WordDel["📝 単語削除読み上げ"]
+        LineDel["📄 行削除読み上げ"]
+        Focus["🎯 フォーカス追跡"]
+        WordDel ~~~ LineDel ~~~ Focus
+    end
+
+    subgraph BugFix["🐛 重要バグ修正"]
+        direction LR
+        WinCJK["🔤 Windows CJK 文字化け"]
+        LeftArrow["⬅️ 左矢印キー消失"]
+        Paste["📋 複数行ペースト"]
+        WinCJK ~~~ LeftArrow ~~~ Paste
+    end
+
+    User(["👤 開発者"]) --> CodeReview
+    User --> AutoMode
+    User --> A11y
+    User --> BugFix
+
+    Main -->|"バックグラウンド実行"| BG
+    BG -->|"完了通知"| Result
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class CodeReview,AutoMode,A11y,BugFix platform
+    class Main,BG,Result,DangerousRm,BGAmp,WinPath,WordDel,LineDel,Focus,WinCJK,LeftArrow,Paste process
+    class User user
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Examples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">YAML</span>
+                    <span class="code-title">スキルのフロントマターでブール値の新しい記法</span>
+                </div>
+                <pre><code class="language-yaml"># スキルのフロントマターでブール値の新しい記法
+---
+context: fork
+background: yes      # true/false に加えて yes/no/on/off/1/0 が使用可能
+enabled: on
+verbose: 0
+---</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">MCP サーバーの接続状態確認</span>
+                </div>
+                <pre><code class="language-bash"># MCP サーバーの接続状態確認 (HTTP ステータス表示あり)
+claude mcp list
+# ✓ github-server    connected
+# ✗ custom-server    failed (HTTP 502: Bad Gateway)
+# ⚠ local-server     config has leading whitespace in URL</code></pre>
+            </div>
+        </section>
+
+        <!-- Behavior Changes -->
+        <section class="section">
+            <h2 class="section-title">動作変更</h2>
+            <ul class="behavior-list">
+                <li>
+                    <span class="behavior-icon">🔬</span>
+                    <span class="behavior-text"><strong>/deep-research は手動起動のみ</strong>: Claude が自発的に起動しなくなった。ユーザーが明示的にコマンドを実行する必要がある。</span>
+                </li>
+                <li>
+                    <span class="behavior-icon">🏷️</span>
+                    <span class="behavior-text"><strong>agent 名のコロン <code>:</code> 禁止</strong>: プラグイン名前空間の予約のため、エージェント名にコロンを含めることができなくなった。</span>
+                </li>
+                <li>
+                    <span class="behavior-icon">🔄</span>
+                    <span class="behavior-text"><strong>context: fork スキルがデフォルトでバックグラウンド実行</strong>: fork コンテキストを持つスキルは自動的にバックグラウンドで実行される。</span>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>Source:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;">Generated: 2026-07-22 | Category: Claude Code | Version: v2.1.218</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
