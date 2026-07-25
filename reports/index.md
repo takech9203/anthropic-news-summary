@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-07-25](2026/2026-07-25-claude-code-v2-1-220.md) - Claude Code v2.1.220: 安定性の向上
+- [2026-07-24](2026/2026-07-24-claude-opus-5.md) - Claude Opus 5: エージェント性能を飛躍させる次世代モデル
+- [2026-07-24](2026/2026-07-24-claude-code-v2-1-219.md) - Claude Code v2.1.219: Opus 5 統合とワークフロー改善
 - [2026-07-22](2026/2026-07-22-managed-agents-effort-webhooks-seeding.md) - Claude Managed Agents: エフォートレベル、Webhook 拡張、セッションシーディング
 - [2026-07-22](2026/2026-07-22-economic-futures-research-fund-agenda.md) - Economic Futures Research Fund の研究アジェンダ
 - [2026-07-22](2026/2026-07-22-claude-code-v2-1-218.md) - Claude Code v2.1.218 - コードレビューのバックグラウンド実行とアクセシビリティ強化
