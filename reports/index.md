@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-07-27](2026/2026-07-27-position-open-weights-models.md) - Anthropic、オープンウェイトモデルに関する立場を表明
+- [2026-07-27](2026/2026-07-27-cognizant-anthropic-partnership.md) - Cognizant と Anthropic のパートナーシップ拡大: Claude 認定人材 30,000 人超でエンタープライズ展開を加速
 - [2026-07-25](2026/2026-07-25-claude-code-v2-1-220.md) - Claude Code v2.1.220: 安定性の向上
 - [2026-07-24](2026/2026-07-24-claude-opus-5.md) - Claude Opus 5: エージェント性能を飛躍させる次世代モデル
 - [2026-07-24](2026/2026-07-24-claude-code-v2-1-219.md) - Claude Code v2.1.219: Opus 5 統合とワークフロー改善
