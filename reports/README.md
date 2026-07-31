@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-07-30](2026/2026-07-30-investigating-incidents-cybersecurity-evals.md) - サイバーセキュリティ評価における 3 件の実世界インシデントの調査
 - [2026-07-27](2026/2026-07-27-position-open-weights-models.md) - Anthropic、オープンウェイトモデルに関する立場を表明
 - [2026-07-27](2026/2026-07-27-cognizant-anthropic-partnership.md) - Cognizant と Anthropic のパートナーシップ拡大: Claude 認定人材 30,000 人超でエンタープライズ展開を加速
 - [2026-07-25](2026/2026-07-25-claude-code-v2-1-220.md) - Claude Code v2.1.220: 安定性の向上
