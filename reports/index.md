@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-08-03](2026/2026-08-03-claude-code-v2-1-221.md) - Claude Code v2.1.221: VSCode Focus view とサンドボックス認証情報マスキング
+- [2026-08-01](2026/2026-08-01-dreams-claude-opus-5.md) - Dreams (research preview) が Claude Opus 5 をサポート
 - [2026-07-30](2026/2026-07-30-investigating-incidents-cybersecurity-evals.md) - サイバーセキュリティ評価における 3 件の実世界インシデントの調査
 - [2026-07-27](2026/2026-07-27-position-open-weights-models.md) - Anthropic、オープンウェイトモデルに関する立場を表明
 - [2026-07-27](2026/2026-07-27-cognizant-anthropic-partnership.md) - Cognizant と Anthropic のパートナーシップ拡大: Claude 認定人材 30,000 人超でエンタープライズ展開を加速

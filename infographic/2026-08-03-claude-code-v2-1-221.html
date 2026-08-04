@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.221 - VSCode Focus view とサンドボックス認証情報マスキング - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        .security-badge {
+            display: inline-block;
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.5);
+            color: #FCA5A5;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+            margin-left: 8px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+        }
+
+        .section p.lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 4px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '\2717';
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '\2713';
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Fix / Change Lists */
+        .fix-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 8px;
+        }
+
+        .fix-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 10px 14px;
+            background: var(--anthropic-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .fix-list li .fix-icon {
+            flex-shrink: 0;
+        }
+
+        .fix-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Alert Box */
+        .alert-box {
+            background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+            border: 2px solid #F44336;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .alert-box .alert-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .alert-box h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #B71C1C;
+            margin-bottom: 6px;
+        }
+
+        .alert-box p {
+            font-size: 14px;
+            color: #7F1D1D;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Inline code */
+        .inline-code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 6px;
+            padding: 1px 6px;
+        }
+
+        /* Use Cases */
+        .use-case {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .use-case-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .use-case-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action Steps */
+        .action-steps {
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .action-step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-step-content h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .action-step-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">ツールアップデート</span>
+                <h1>Claude Code v2.1.221: VSCode Focus view とサンドボックス認証情報マスキング</h1>
+                <p class="date">2026-08-03</p>
+                <span class="version-badge">v2.1.221</span>
+                <span class="security-badge">🔒 セキュリティ修正あり</span>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🖥️</div>
+                    <div class="key-point-content">
+                        <h3>VSCode に Focus view を追加</h3>
+                        <p>ツールアクティビティを展開可能なターンごとのサマリーの背後に隠し、チャットの可読性を大きく向上。<span class="inline-code">Ctrl+Alt+F</span> で切り替え可能</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎭</div>
+                    <div class="key-point-content">
+                        <h3>サンドボックス認証情報の mask モード</h3>
+                        <p>Linux/WSL で、サンドボックス内のコマンドにはセンチネル (ダミー値) を見せ、外部送信時のみプロキシが実際の値へ置換。認証情報の露出を防ぐ</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>zsh 権限チェックバイパスのセキュリティ修正</h3>
+                        <p>zsh の <span class="inline-code">[[ ]]</span> 正規表現条件式に隠されたコマンドが権限チェックをすり抜ける問題を修正。速やかなアップデートを推奨</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌿</div>
+                    <div class="key-point-content">
+                        <h3>バックグラウンドセッションの Git 動作変更</h3>
+                        <p>常にドラフト PR を開くのではなく、コミットとプッシュで作業を保全し、タスクが必要とする場合のみドラフト PR を作成するように変更</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>プロンプトキャッシュコストの削減と多数の修正</h3>
+                        <p>auto モードの権限チェックがキャッシュ効率の良い方式になりコストを削減。Vim モード、MCP、Bedrock 認証など多数の修正も含まれる</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Fix -->
+        <section class="section">
+            <h2 class="section-title">セキュリティ修正</h2>
+            <div class="alert-box">
+                <span class="alert-icon">🚨</span>
+                <div>
+                    <h3>Bash ツールの権限チェックバイパス修正 (zsh)</h3>
+                    <p>zsh では <span class="inline-code">[[ string =~ pattern ]]</span> のような条件式の評価中にコマンド置換などが実行される可能性があり、これが権限チェックの解析対象から漏れていた。修正後は、該当するコマンドに権限プロンプトが表示される。サンドボックスや権限設定でコマンド実行を制御している環境では重要な修正であり、速やかなアップデートを推奨する。</p>
+                </div>
+            </div>
+            <ul class="fix-list">
+                <li><span class="fix-icon">🪟</span><span><strong>PowerShell の権限チェック修正</strong>: Windows で引用符を含むパスの権限チェックが誤って処理される問題を修正</span></li>
+            </ul>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🖥️ VSCode Focus view</h3>
+                    <p>ツールアクティビティを展開可能なターンごとのサマリーの背後に隠すチャットメニューのトグル。実行中のツールはライブインジケーターで表示。<span class="inline-code">Ctrl+Alt+F</span> または「Claude Code: Toggle Focus view」コマンドで切り替え。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎭 認証情報 mask モード</h3>
+                    <p>Linux/WSL でサンドボックス化されたコマンドはセンチネルのコピーを読み取り、サンドボックスプロキシが外部送信時に実際の値へ置換。macOS では <span class="inline-code">deny</span> にフォールバック。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌿 バックグラウンドセッションの Git 動作</h3>
+                    <p>作業を保全するためにコミットとプッシュを行い、タスクが必要とする場合のみドラフト PR を開くように変更。不要なドラフト PR の量産を防止。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 claude plugin validate の警告</h3>
+                    <p>マーケットプレイスまたはプラグイン名が Claude Desktop のマネージドマーケットプレイス同期で拒否される場合に警告を表示。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 claude-api スキルの prompt-audit</h3>
+                    <p>旧世代モデル向けに書かれたパターンがないか、プロンプトとツール説明を監査するサブコマンドが追加された。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: バックグラウンドセッションの Git 動作</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before - v2.1.220 まで</h4>
+                    <ul>
+                        <li>作業完了時に常にドラフト PR を開く</li>
+                        <li>調査タスクでも PR が作成される</li>
+                        <li>不要なドラフト PR が量産される</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After - v2.1.221</h4>
+                    <ul>
+                        <li>コミットとプッシュで作業を保全</li>
+                        <li>タスクが必要とする場合のみドラフト PR を作成</li>
+                        <li>PR 前提のワークフローではタスク指示に PR 作成を明記</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="section-subtitle">🎭 mask モードにおけるサンドボックスプロキシの動作</h3>
+            <p class="lead">従来はアクセスの許可か拒否 (<span class="inline-code">deny</span>) の二択だったが、<span class="inline-code">mode: "mask"</span> ではサンドボックス内のプロセスやその出力に実際の認証情報を露出させることなく、認証が必要な外部通信を成立させられる。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Sandbox["📦 サンドボックス環境"]
+        Cmd["⚙️ サンドボックス化された<br/>コマンド"]
+        Sentinel["📄 センチネルコピー<br/>ダミー値"]
+    end
+
+    subgraph Proxy["🛡️ サンドボックスプロキシ"]
+        Substitute["🔄 外部送信時に<br/>実際の値へ置換"]
+    end
+
+    Real[("🔑 実際の認証情報<br/>ファイル")]
+    External{{"🌐 外部サービス"}}
+
+    Cmd --> Sentinel
+    Cmd --> Substitute
+    Real -.-> Substitute
+    Substitute --> External
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef external fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class Sandbox,Proxy platform
+    class Cmd,Sentinel process
+    class Substitute internal
+    class Real storage
+    class External external
+                </pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">.claude/settings.json - mask モード設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "sandbox": {
+    "credentialFiles": [
+      {
+        "path": "~/.npmrc",
+        "mode": "mask"
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+            <p class="lead">この設定により、Linux/WSL ではサンドボックス化されたコマンドは <span class="inline-code">~/.npmrc</span> のセンチネルコピーを読み取り、サンドボックスプロキシが外部送信時に実際の値へ置換する。macOS では <span class="inline-code">deny</span> として動作する。</p>
+
+            <h3 class="section-subtitle">🖥️ VSCode Focus view の切り替え</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Text</span>
+                    <span class="code-title">Focus view の切り替え方法</span>
+                </div>
+                <pre><code class="language-plaintext"># キーボードショートカット
+Ctrl+Alt+F
+
+# コマンドパレット (Ctrl+Shift+P)
+Claude Code: Toggle Focus view</code></pre>
+            </div>
+
+            <h3 class="section-subtitle">🛠️ その他のコマンド例</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">prompt-audit と環境変数</span>
+                </div>
+                <pre><code class="language-bash"># 旧世代モデル向けのパターンがないかプロンプトとツール説明を監査
+claude "claude-api スキルの prompt-audit で src/prompts/ を監査して"
+
+# v2.1.221 で修正され、正しく無効化されるようになった
+export CLAUDE_CODE_RESUME_INTERRUPTED_TURN=0</code></pre>
+            </div>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正</h2>
+            <ul class="fix-list">
+                <li><span class="fix-icon">🧠</span><span><strong>思考トグル</strong>: 思考オフで開始したセッションで、セッションの残りの間トグルが効かない問題を修正</span></li>
+                <li><span class="fix-icon">🔌</span><span><strong>print モードの MCP 接続</strong>: <span class="inline-code">--mcp-config</span> の MCP サーバーが <span class="inline-code">-p</span> の最初のターンの前に接続されない問題を修正</span></li>
+                <li><span class="fix-icon">📎</span><span><strong>@ メンションファイル</strong>: Esc で取り消して再送信した際に @ メンションファイルが暗黙的に破棄される問題を修正</span></li>
+                <li><span class="fix-icon">💥</span><span><strong>SDK MCP ツールのクラッシュ</strong>: <span class="inline-code">constructor</span> などの組み込みプロパティと同名のツールでクラッシュする問題を修正</span></li>
+                <li><span class="fix-icon">🔎</span><span><strong>WebSearch の 400 エラー</strong>: 思考無効時に effort <span class="inline-code">xhigh</span>/<span class="inline-code">max</span> で失敗する問題を修正</span></li>
+                <li><span class="fix-icon">📤</span><span><strong>サンドボックスの大容量アップロード</strong>: プロキシ経由の大容量アップロードが TLS エラーで失敗する問題を修正</span></li>
+                <li><span class="fix-icon">📊</span><span><strong>利用上限メッセージ</strong>: Team/Enterprise で誤って組織の月次上限を原因として表示する問題を修正</span></li>
+                <li><span class="fix-icon">☁️</span><span><strong>Bedrock 認証</strong>: Windows のデスクトップ管理セッションで AWS SSO の名前付きプロファイル認証が失敗する問題を修正</span></li>
+                <li><span class="fix-icon">⏸️</span><span><strong>中断ターン自動再開</strong>: <span class="inline-code">CLAUDE_CODE_RESUME_INTERRUPTED_TURN=0</span> が無効化されない問題を修正</span></li>
+                <li><span class="fix-icon">😴</span><span><strong>スリープ復帰時の競合</strong>: 2 つのプロセスが同じ MCP コネクタや WIF OAuth トークンを同時に更新し得る競合を修正</span></li>
+                <li><span class="fix-icon">🔄</span><span><strong>セッション名同期</strong>: Claude Code Desktop や claude.ai からの名前変更が CLI に反映されない問題を修正</span></li>
+                <li><span class="fix-icon">🧩</span><span><strong>スキル呼び出し</strong>: 組み込み機能と同名のプラグイン/組織配布スキルが非対話セッションで呼び出せない問題を修正</span></li>
+                <li><span class="fix-icon">🔔</span><span><strong>プラグイン通知</strong>: リロード後も「Plugins changed」通知が残り続ける問題を修正</span></li>
+                <li><span class="fix-icon">⌨️</span><span><strong>Vim モード (2 件)</strong>: ヤンクレジスタがダイアログ・履歴検索・トランスクリプトビューをまたいで保持。空プロンプトまで undo した際の確認も有効化</span></li>
+            </ul>
+        </section>
+
+        <!-- Improvements & Behavior Changes -->
+        <section class="section">
+            <h2 class="section-title">改善と動作変更</h2>
+
+            <h3 class="section-subtitle">⚡ 改善</h3>
+            <ul class="fix-list">
+                <li><span class="fix-icon">🔧</span><span><strong>Google Vertex AI のツール検索</strong>: Claude 4.5 世代以降のモデルでツール検索が再有効化</span></li>
+                <li><span class="fix-icon">💰</span><span><strong>auto モードの権限チェック効率化</strong>: キャッシュ済みの会話プレフィックスを再利用し、プロンプトキャッシュのコストを削減</span></li>
+                <li><span class="fix-icon">📈</span><span><strong>Stats パネル</strong>: トークン合計にキャッシュトークンが内訳付きでカウント</span></li>
+                <li><span class="fix-icon">📝</span><span><strong>/ultrareview</strong>: リポジトリがベースと履歴を共有しない場合のエラーメッセージを改善</span></li>
+                <li><span class="fix-icon">🚀</span><span><strong>Windows 起動の高速化</strong>: プロセス作成時刻の取得をネイティブの kernel32 呼び出しに変更</span></li>
+            </ul>
+
+            <h3 class="section-subtitle">🔀 動作変更</h3>
+            <ul class="fix-list">
+                <li><span class="fix-icon">🧩</span><span><strong>/plugin install</strong>: 古いマーケットプレイスカタログを更新してリトライ。インストールしたプラグインは安全な場合は即座に有効化。<span class="inline-code">"."</span> を <span class="inline-code">skills</span> パスとして受け付け</span></li>
+                <li><span class="fix-icon">📟</span><span><strong>/status</strong>: セッションの種類 (<span class="inline-code">interactive</span>、または <span class="inline-code">attached</span>/<span class="inline-code">unattended</span> のバックグラウンドジョブ) を表示</span></li>
+                <li><span class="fix-icon">😀</span><span><strong>絵文字オートコンプリート</strong>: 一般的な代替ショートコードを受け付け</span></li>
+                <li><span class="fix-icon">🌱</span><span><strong>/fork</strong>: フォークしたセッションは独自の新しい worktree を作成</span></li>
+                <li><span class="fix-icon">🌐</span><span><strong>Claude in Chrome</strong>: 開いたブラウザタブが不要になったら閉じるように変更</span></li>
+                <li><span class="fix-icon">⚡</span><span><strong>fast モード</strong>: セッション中に利用クレジットが尽きた際、ストリーム上で報告</span></li>
+                <li><span class="fix-icon">👀</span><span><strong>Monitor</strong>: 出力を生成せずに終了した watch はその旨を表示</span></li>
+                <li><span class="fix-icon">🛂</span><span><strong>Gateway</strong>: <span class="inline-code">model</span> フィールドに文字列以外の値を指定すると 400 エラーで拒否</span></li>
+                <li><span class="fix-icon">🔕</span><span><strong>通知の削除</strong>: auto モード分類器のキュー中に表示される繰り返し通知を削除</span></li>
+            </ul>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <span class="use-case-icon">🖥️</span>
+                <div class="use-case-content">
+                    <h3>VSCode でコードに集中したい開発者</h3>
+                    <p>ツール実行ログが大量に流れるチャットで Focus view を有効にすれば、各ターンのサマリーだけが表示され、会話の流れを追いやすくなる。詳細が必要なときはサマリーを展開して確認できる。</p>
+                </div>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">🔐</span>
+                <div class="use-case-content">
+                    <h3>Linux/WSL で認証情報を扱うサンドボックス運用</h3>
+                    <p><span class="inline-code">deny</span> にしていた <span class="inline-code">~/.npmrc</span> などの認証情報ファイルを <span class="inline-code">mask</span> に変更すれば、サンドボックス内に実際の値を露出させることなく npm install などの外部通信を成立させられる。</p>
+                </div>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">🤖</span>
+                <div class="use-case-content">
+                    <h3>バックグラウンドセッションでの調査・実験タスク</h3>
+                    <p>調査タスクや実験的な変更では不要なドラフト PR が作成されなくなり、コミットとプッシュで作業が保全される。PR 作成を前提とするワークフローでは、タスク指示に PR 作成を明記する。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <div class="action-steps">
+                <div class="action-step">
+                    <div class="action-step-number">1</div>
+                    <div class="action-step-content">
+                        <h3>アップデートの適用</h3>
+                        <p>セキュリティ修正 (zsh 権限チェックバイパス) が含まれるため、速やかなアップデートを推奨する</p>
+                    </div>
+                </div>
+                <div class="action-step">
+                    <div class="action-step-number">2</div>
+                    <div class="action-step-content">
+                        <h3>バックグラウンドセッションの運用確認</h3>
+                        <p>ドラフト PR が常には作成されなくなったため、PR 作成を前提としたワークフローではタスク指示に PR 作成を明記する</p>
+                    </div>
+                </div>
+                <div class="action-step">
+                    <div class="action-step-number">3</div>
+                    <div class="action-step-content">
+                        <h3>サンドボックス認証情報設定の見直し</h3>
+                        <p>Linux/WSL 環境では、deny にしていた認証情報ファイルを mask に変更することで、セキュリティを保ちながら外部通信を許可できる</p>
+                    </div>
+                </div>
+                <div class="action-step">
+                    <div class="action-step-number">4</div>
+                    <div class="action-step-content">
+                        <h3>/fork の挙動確認</h3>
+                        <p>フォークしたセッションが独自の worktree を作成するようになったため、ディスク使用量とブランチ運用に注意する</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデート方法</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 組み込みコマンド
+claude update
+
+# npm を使用する場合
+npm update -g @anthropic-ai/claude-code</code></pre>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🎯</div>
+                    <div class="key-point-content">
+                        <h3>UI・セキュリティ・ワークフローの 3 側面で改善</h3>
+                        <p>VSCode の Focus view で会話に集中でき、mask モードと zsh バイパス修正でセキュリティが強化され、バックグラウンドセッションは必要な場合のみドラフト PR を開くようになった。セキュリティ修正が含まれるため、全ユーザーに速やかなアップデートを推奨する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong>
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a> |
+                <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a>
+            </p>
+            <p style="margin-top: 8px;">Generated: 2026-08-03 | Category: ツールアップデート | Version: v2.1.221</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

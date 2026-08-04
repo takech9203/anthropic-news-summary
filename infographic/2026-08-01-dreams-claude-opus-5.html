@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dreams (research preview) が Claude Opus 5 をサポート - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .section > p.lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card .feature-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card .badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 4px;
+        }
+
+        /* Model List */
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .model-chip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            background: var(--anthropic-cream);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .model-chip.new {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border: 2px solid var(--anthropic-coral);
+        }
+
+        .model-chip code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+        }
+
+        .model-chip .badge {
+            background: var(--anthropic-coral);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: auto;
+        }
+
+        /* Lifecycle Steps */
+        .lifecycle {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .lifecycle-step {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .lifecycle-step .status {
+            display: inline-block;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: var(--gradient-header);
+            color: var(--anthropic-coral);
+        }
+
+        .lifecycle-step p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .stat-detail {
+            font-size: 11px;
+            opacity: 0.65;
+            margin-top: 6px;
+        }
+
+        /* Info Note */
+        .info-note {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--warning);
+            padding: 16px 20px;
+            border-radius: 0 12px 12px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .info-note strong {
+            color: var(--text-primary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .use-case ul {
+            margin-top: 8px;
+            padding-left: 18px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .use-case ul li {
+            margin-bottom: 4px;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer ul li {
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ============================================================ -->
+        <!-- 1. Header -->
+        <!-- ============================================================ -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <span class="category-badge">Managed Agents</span>
+                <h1>Dreams (research preview) が Claude Opus 5 をサポート</h1>
+                <p class="date">2026-08-01</p>
+                <p class="subtitle">エージェントのメモリストアと過去セッションを Claude に読み込ませ、重複統合・更新・インサイト抽出を行う非同期ジョブ「Dreams」で、最上位モデル Claude Opus 5 が選択可能になりました。</p>
+            </div>
+        </header>
+
+        <!-- ============================================================ -->
+        <!-- 2. Key Points (概要) -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">⭐</div>
+                    <div class="key-point-content">
+                        <h3>Claude Opus 5 が Dreams のサポートモデルに追加</h3>
+                        <p>Dreams のパイプラインを実行するモデルとして最上位モデル Claude Opus 5 を選択可能になり、より高品質なメモリのキュレーションを実現できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💤</div>
+                    <div class="key-point-content">
+                        <h3>Dreams はメモリを再編成する非同期ジョブ</h3>
+                        <p>既存のメモリストアと過去のセッショントランスクリプトを読み込み、重複の統合、古い情報の更新、新しいインサイトの抽出を行った新しいメモリストアを生成します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>入力ストアは一切変更されない安全設計</h3>
+                        <p>出力は入力とは別の新しいメモリストアとして生成されるため、結果をレビューし、不要であれば破棄できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>移行は model パラメータの変更のみ</h3>
+                        <p>既存コードの <code>model</code> パラメータに <code>claude-opus-5</code> を指定するだけで移行でき、API の呼び出し方法やその他のパラメータに変更はありません。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💰</div>
+                    <div class="key-point-content">
+                        <h3>課金は選択したモデルの標準 API トークンレート</h3>
+                        <p>コストは入力セッションの数と長さにほぼ比例するため、まず少数のセッションで試し、品質を確認してから規模を拡大することが推奨されます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 3. Background (背景) -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">背景: なぜ Dreams が必要か</h2>
+            <p class="lead">Managed Agents のエージェントは動作中にメモリストアへ書き込みを行いますが、書き込みはローカルかつ増分的です。多数のセッションを重ねるうちに、メモリストアには問題が蓄積していきます。Dreams は以下の 3 つの処理でこれを解決します。</p>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>重複エントリの統合</h3>
+                    <p>セッションを重ねて蓄積した重複エントリをまとめ、メモリストアをコンパクトに保ちます。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>古い情報の置き換え</h3>
+                    <p>古い情報や矛盾するエントリを最新の値で置き換え、メモリの一貫性を維持します。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3>新しいインサイトの抽出</h3>
+                    <p>過去のセッショントランスクリプトからパターンと新しいインサイトを抽出し、メモリに反映します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 4. Supported Models -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">サポートモデル (リサーチプレビュー期間中)</h2>
+            <div class="model-grid">
+                <div class="model-chip new"><span>⭐</span><code>claude-opus-5</code><span class="badge">今回追加</span></div>
+                <div class="model-chip"><span>📖</span><code>claude-fable-5</code></div>
+                <div class="model-chip"><span>🤖</span><code>claude-opus-4-8</code></div>
+                <div class="model-chip"><span>🤖</span><code>claude-opus-4-7</code></div>
+                <div class="model-chip"><span>🎵</span><code>claude-sonnet-5</code></div>
+                <div class="model-chip"><span>🎵</span><code>claude-sonnet-4-6</code></div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 5. Technical Details (主要機能カード) -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📥</div>
+                    <h3>入力と出力</h3>
+                    <p>入力は既存の<strong>メモリストア 1 つ</strong>と<strong>セッション 1 ~ 100 件</strong>。出力は別の新しいメモリストアで、その ID は Dream が <code>running</code> 状態になって間もなく <code>outputs[]</code> に現れます。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔑</div>
+                    <h3>ベータヘッダー</h3>
+                    <p>Dream のエンドポイントは <code>dreaming-2026-04-21</code> でゲートされています。<code>managed-agents-2026-04-01</code> と両方のヘッダーの送信が必要です (SDK は自動的に設定)。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>instructions によるステアリング</h3>
+                    <p>オプションの <code>instructions</code> フィールド (最大 4,096 文字) で合成処理の方針を指示できます。パイプラインはテキストエディタではないため、特定行への命令的な編集指示は効果がなく、個別編集には Memory Stores API を使用します。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📡</div>
+                    <h3>実行時間と監視</h3>
+                    <p>非同期実行で、入力トランスクリプト数に応じて数分から数時間かかります。<code>running</code> 状態で <code>session_id</code> が設定され、セッションイベントをストリーミングしてリアルタイムに観察できます。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💴</div>
+                    <h3>料金とレート制限</h3>
+                    <p>選択したモデルの標準 API トークンレートで課金され、<code>usage</code> フィールドで正確な合計を確認できます。Dream の作成にはデフォルトのレート制限が適用され、引き上げにはサポートへの問い合わせが必要です。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 6. Lifecycle -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">Dream のライフサイクル</h2>
+            <div class="lifecycle">
+                <div class="lifecycle-step">
+                    <span class="status">pending</span>
+                    <p>Dream が作成され、キューに登録された状態</p>
+                </div>
+                <div class="lifecycle-step">
+                    <span class="status">running</span>
+                    <p>パイプラインが処理中。<code>usage</code> は進行に応じて更新</p>
+                </div>
+                <div class="lifecycle-step">
+                    <span class="status">completed</span>
+                    <p>正常終了。<code>outputs[]</code> に新しいメモリストアが含まれる</p>
+                </div>
+                <div class="lifecycle-step">
+                    <span class="status">failed</span>
+                    <p>エラーで終了。出力ストアは失敗前までの内容で残る</p>
+                </div>
+                <div class="lifecycle-step">
+                    <span class="status">canceled</span>
+                    <p>キャンセルされた状態。出力ストアはそのまま残る</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 7. Limits (数字で見る制限) -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">数字で見る Dreams の制限</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">100</div>
+                    <div class="stat-label">Dream あたりの<br>最大セッション数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4,096</div>
+                    <div class="stat-label">instructions の<br>最大文字数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">サポートモデル数</div>
+                    <div class="stat-detail">Opus 5 を含む</div>
+                </div>
+            </div>
+            <div class="info-note">
+                <strong>注意</strong>: Dream の作成にはデフォルトのレート制限が適用されます。より高い制限が必要な場合は、サポートへの問い合わせが必要です。
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 8. Architecture Diagram (Mermaid) -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <h4>Dream 非同期ジョブによるメモリストア再編成フロー</h4>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Inputs["📥 入力"]
+        direction LR
+        Store[("🧠 既存メモリストア")]
+        Sessions["📜 過去セッション<br/>1 ~ 100 件"]
+        Store ~~~ Sessions
+    end
+
+    subgraph Dream["💤 Dream 非同期ジョブ"]
+        Model["⭐ Claude Opus 5<br/>ほか対応モデル"]
+        Pipeline["🔄 合成パイプライン<br/>重複統合・更新・インサイト抽出"]
+        Model --> Pipeline
+    end
+
+    subgraph Outputs["📤 出力"]
+        NewStore[("✨ 新しいメモリストア")]
+    end
+
+    Store --> Dream
+    Sessions --> Dream
+    Instructions(["📝 instructions<br/>最大 4,096 文字"]) -.-> Dream
+    Pipeline --> NewStore
+    NewStore --> Review{"レビュー"}
+    Review -->|採用| Attach["🔗 今後のセッションに<br/>アタッチ"]
+    Review -->|破棄| Delete["🗑️ 削除または<br/>アーカイブ"]
+
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef model fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class Inputs,Dream,Outputs container
+    class Store,NewStore storage
+    class Model model
+    class Pipeline,Attach,Delete process
+    class Sessions,Instructions input
+    class Review decision
+                </pre>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 9. Code Sample -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <p class="lead">Claude Opus 5 を指定して Dream を作成する例 (Python) です。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">Claude Opus 5 で Dream を作成</span>
+                </div>
+                <pre><code class="language-python">dream = client.beta.dreams.create(
+    inputs=[
+        {"type": "memory_store", "memory_store_id": store_id},
+        {"type": "sessions", "session_ids": [session_a, session_b]},
+    ],
+    model="claude-opus-5",
+    instructions="Focus on coding-style preferences; ignore one-off debugging notes.",
+)
+print(dream.id)  # drm_01...
+
+# ステータスをポーリング
+while dream.status in ("pending", "running"):
+    time.sleep(10)
+    dream = client.beta.dreams.retrieve(dream.id)
+    print(f"status={dream.status} input_tokens={dream.usage.input_tokens}")
+
+# 完了後、出力ストアを新しいセッションで利用
+output_store_id = next(
+    output.memory_store_id for output in dream.outputs if output.type == "memory_store"
+)
+session = client.beta.sessions.create(
+    agent=agent_id,
+    environment_id=environment_id,
+    resources=[
+        {"type": "memory_store", "memory_store_id": output_store_id},
+    ],
+)</code></pre>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 10. Use Cases (開発者への影響) -->
+        <!-- ============================================================ -->
+        <section class="section">
+            <h2 class="section-title">ユースケース / 開発者への影響</h2>
+            <div class="use-case">
+                <h4>長期運用エージェントのメモリ品質維持</h4>
+                <p>Managed Agents でエージェントを構築し、メモリストアの重複・矛盾・古いエントリの蓄積に課題を抱えているチームは、Opus 5 による高品質なキュレーションでメモリの一貫性を回復できます。入力ストアは変更されないため、安全に試すことができます。</p>
+            </div>
+            <div class="use-case">
+                <h4>既存 Dreams 利用者のモデルアップグレード</h4>
+                <p><code>model</code> パラメータに <code>claude-opus-5</code> を指定するだけで、最上位モデルによるメモリキュレーションを利用できます。標準 API トークンレートで課金されるため、コストとキュレーション品質のバランスの検討が必要です。</p>
+            </div>
+            <div class="use-case">
+                <h4>スモールスタートによる段階的な導入</h4>
+                <p>コストは入力セッションの数と長さにほぼ比例します。まず少数のセッションで試し、キュレーション品質に満足してから規模を拡大する運用が推奨されます。まだ Dreams を利用していない場合は、リサーチプレビューへのアクセスリクエストが必要です。</p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- 11. Footer -->
+        <!-- ============================================================ -->
+        <footer class="footer">
+            <h4>出典・関連リンク</h4>
+            <ul>
+                <li>出典: <a href="https://platform.claude.com/docs/en/managed-agents/dreams" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/managed-agents/dreams</a></li>
+                <li>Dreams の制限事項: <a href="https://platform.claude.com/docs/en/managed-agents/dreams#limits" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/managed-agents/dreams#limits</a></li>
+                <li>Memory Stores: <a href="https://platform.claude.com/docs/en/managed-agents/memory" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/managed-agents/memory</a></li>
+                <li>Sessions: <a href="https://platform.claude.com/docs/en/managed-agents/sessions" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/managed-agents/sessions</a></li>
+                <li>Claude Platform Release Notes: <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></li>
+                <li>リサーチプレビューへのアクセスリクエスト: <a href="https://claude.com/form/claude-managed-agents" target="_blank" rel="noopener noreferrer">https://claude.com/form/claude-managed-agents</a></li>
+            </ul>
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
