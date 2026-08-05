@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.222 - worktree 分離の強化とバックグラウンドタスクの権限修正 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-badge {
+            display: inline-block;
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            color: var(--anthropic-coral);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        .security-badge {
+            display: inline-block;
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.5);
+            color: #FCA5A5;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+            margin-left: 8px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+        }
+
+        .section p.lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            font-size: 14px;
+            padding: 4px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '\2717';
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '\2713';
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Fix / Change Lists */
+        .fix-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 8px;
+        }
+
+        .fix-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 10px 14px;
+            background: var(--anthropic-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .fix-list li .fix-icon {
+            flex-shrink: 0;
+        }
+
+        .fix-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Alert Box */
+        .alert-box {
+            background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+            border: 2px solid #F44336;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .alert-box .alert-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .alert-box h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #B71C1C;
+            margin-bottom: 6px;
+        }
+
+        .alert-box p {
+            font-size: 14px;
+            color: #7F1D1D;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Inline code */
+        .inline-code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 6px;
+            padding: 1px 6px;
+        }
+
+        /* Use Cases */
+        .use-case {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-light);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--anthropic-coral);
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .use-case-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .use-case-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action Steps */
+        .action-steps {
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .action-step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-step-content h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .action-step-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">ツールアップデート</span>
+                <h1>Claude Code v2.1.222: worktree 分離の強化とバックグラウンドタスクの権限修正</h1>
+                <p class="date">2026-08-04</p>
+                <span class="version-badge">v2.1.222</span>
+                <span class="security-badge">🔒 セキュリティ修正あり</span>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🌿</div>
+                    <div class="key-point-content">
+                        <h3>worktree 分離の強化</h3>
+                        <p>分離セッションとそのサブエージェントがメインチェックアウトへ破壊的な git コマンドを実行できてしまう問題を修正。分離はすべてのセッション種別でファイル編集と Bash に適用される</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🪝</div>
+                    <div class="key-point-content">
+                        <h3>PreToolUse auto-allow フックのバイパス修正</h3>
+                        <p>サマリー生成、コンパクション、リネームなどのバックグラウンドエージェントタスクで、auto-allow フックがツール制限をバイパスできてしまう問題を修正</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>auto モードの安全性向上</h3>
+                        <p><span class="inline-code">SendMessage</span> で他のエージェントセッションへ送信されるメッセージが、送信前に権限分類器で評価されるようになった</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>プロキシ・ゲートウェイ環境の安定性向上</h3>
+                        <p>HTTPS プロキシ背後での起動時接続チェックのハング、カスタム <span class="inline-code">ANTHROPIC_BASE_URL</span> ゲートウェイでのストリームアイドルタイムアウトなどを修正</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>/usage の帰属精度改善と ultraplan の削除</h3>
+                        <p>MCP サーバーへの使用量の過剰帰属を修正し、実際にツール結果を消費したリクエストのみを反映。ultraplan 機能は削除された</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Fixes -->
+        <section class="section">
+            <h2 class="section-title">セキュリティ修正</h2>
+            <div class="alert-box">
+                <span class="alert-icon">🚨</span>
+                <div>
+                    <h3>worktree 分離セッションからの破壊的 git コマンドを遮断</h3>
+                    <p>worktree はメインの作業ディレクトリと同じ <span class="inline-code">.git</span> リポジトリを共有するため、修正前は分離セッションやそのサブエージェントが <span class="inline-code">git reset --hard</span> や <span class="inline-code">git checkout</span> のような破壊的な git コマンドをメインチェックアウトに対して実行できてしまう経路が存在した。v2.1.222 では、分離がファイル編集と Bash の両方に対して、すべてのセッション種別 (サブエージェントを含む) で一貫して適用される。</p>
+                </div>
+            </div>
+            <div class="alert-box">
+                <span class="alert-icon">🪝</span>
+                <div>
+                    <h3>バックグラウンドタスクでのツール制限をフックより優先</h3>
+                    <p>PreToolUse の auto-allow フックは権限プロンプトなしにツール実行を許可できるが、修正前はこの判定がバックグラウンドエージェントタスク (サマリー生成、コンパクション、リネーム) のツール制限より優先され、本来使えないはずのツールを実行できる可能性があった。修正後は、ツール制限がフックの判定に関係なく適用される。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主要な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🌿 worktree 分離の強化</h3>
+                    <p>分離セッションとサブエージェントからメインチェックアウトを破壊する経路を遮断。ファイル編集と Bash の両方に、すべてのセッション種別で分離を適用。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🪝 フックバイパスの修正</h3>
+                    <p>バックグラウンドエージェントタスクにおいて、PreToolUse の auto-allow フックよりツール制限を優先。制限された文脈での想定外のツール実行を防止。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ SendMessage の権限分類</h3>
+                    <p>auto モードで、他のエージェントセッションへ送信されるメッセージを送信前に権限分類器で評価。エージェント間の指示の連鎖を通じた制御の迂回に防御層を追加。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📄 /diff ビューの改善</h3>
+                    <p><span class="inline-code">/diff</span> ビュー、Remote Control のワークスペース diff、Claude Code on the web の diff が、diff ドライバーや textconv を無視して生の git blob コンテンツを使用。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📱 Remote Control 自動起動のスコープ変更</h3>
+                    <p>リポジトリローカル設定からの自動起動の有効化を廃止 (無効化は引き続き可能)。クローンしただけで意図せず有効化されることを防止。有効化は <span class="inline-code">/config</span> から。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: 分離と権限の境界</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before - v2.1.221 まで</h4>
+                    <ul>
+                        <li>分離セッションからメインチェックアウトへ破壊的 git コマンドを実行できる経路が存在</li>
+                        <li>auto-allow フックがバックグラウンドタスクのツール制限をバイパス可能</li>
+                        <li>SendMessage のメッセージは権限分類器の評価対象外</li>
+                        <li>リポジトリローカル設定で Remote Control の自動起動を有効化可能</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After - v2.1.222</h4>
+                    <ul>
+                        <li>分離をすべてのセッション種別でファイル編集と Bash に適用</li>
+                        <li>ツール制限がフックの判定に関係なく適用される</li>
+                        <li>SendMessage のメッセージを送信前に権限分類器で評価</li>
+                        <li>自動起動の有効化はユーザースコープの /config のみ (無効化は引き続き可能)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="section-subtitle">🌿 worktree 分離強化後のセッション分離の適用範囲</h3>
+            <p class="lead">worktree 分離セッションは、メインの作業ディレクトリとは独立した git worktree の中で作業する仕組みである。v2.1.222 では、分離セッションとサブエージェントのファイル編集と Bash コマンドがセッション用 worktree に閉じ込められ、メインチェックアウトへの破壊的 git コマンドは遮断される。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Isolated["📦 worktree 分離セッション"]
+        direction LR
+        Session["🤖 メインセッション"]
+        Subagent["🤖 サブエージェント"]
+        Session ~~~ Subagent
+    end
+
+    subgraph Guard["🛡️ 分離の適用"]
+        direction LR
+        Edits["📝 ファイル編集"]
+        Bash["⚙️ Bash コマンド"]
+        Edits ~~~ Bash
+    end
+
+    Worktree[("🌿 セッション用 worktree")]
+    Main[("🗄️ メインチェックアウト")]
+
+    Session --> Edits
+    Session --> Bash
+    Subagent --> Edits
+    Subagent --> Bash
+    Edits --> Worktree
+    Bash --> Worktree
+    Bash -. "🚫 破壊的 git コマンドを遮断" .-> Main
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class Isolated,Guard platform
+    class Session,Subagent process
+    class Edits,Bash internal
+    class Worktree storage
+    class Main warning
+                </pre>
+            </div>
+
+            <h3 class="section-subtitle">🛡️ auto モードにおける SendMessage の権限分類</h3>
+            <p class="lead">マルチエージェント構成では <span class="inline-code">SendMessage</span> ツールでエージェントセッション間のメッセージ交換ができる。修正前は送信されるメッセージ自体が権限分類器の評価対象外だったが、v2.1.222 からは送信前にメッセージ内容が評価され、危険な指示が他のエージェントセッションへそのまま渡ることを防げる。あわせて、長いサマリーが拒否される問題も修正され、文字数制限を超えた場合は切り詰められるようになった。</p>
+
+            <h3 class="section-subtitle">📄 /diff ビューでの生の git blob コンテンツの使用</h3>
+            <p class="lead">git では <span class="inline-code">.gitattributes</span> などでカスタム diff ドライバーや textconv を設定でき、<span class="inline-code">git diff</span> の出力を変換できる。Claude Code の diff 表示がこれらの変換に依存すると、実際のファイル内容と表示される差分が一致しない可能性があるため、v2.1.222 ではこれらを無視して生の git blob コンテンツを使用する。表示される差分は常にファイルの実際の変更内容を反映する。</p>
+
+            <h3 class="section-subtitle">📱 Remote Control 自動起動の設定スコープ変更</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Text</span>
+                    <span class="code-title">Remote Control 自動起動の設定 - v2.1.222 以降</span>
+                </div>
+                <pre><code class="language-plaintext"># リポジトリローカル設定 (.claude/settings.json) からの有効化は不可
+# ユーザースコープで /config から有効化する
+
+/config</code></pre>
+            </div>
+
+            <h3 class="section-subtitle">🏷️ サブエージェントの effort 設定 (表示修正の対象)</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Markdown</span>
+                    <span class="code-title">.claude/agents/my-reviewer.md</span>
+                </div>
+                <pre><code class="language-markdown">---
+name: my-reviewer
+description: コードレビュー用サブエージェント
+effort: high
+---
+
+レビュー手順の指示...</code></pre>
+            </div>
+            <p class="lead">v2.1.222 以降、サブエージェントのトランスクリプトビューのスピナーには、セッションの effort レベルではなく、この <span class="inline-code">effort:</span> 設定が正しく表示される。</p>
+        </section>
+
+        <!-- Bug Fixes -->
+        <section class="section">
+            <h2 class="section-title">バグ修正</h2>
+            <ul class="fix-list">
+                <li><span class="fix-icon">💳</span><span><strong>/usage-credits</strong>: Team/Enterprise で、以前のリクエストが却下されたメンバーが新しい利用クレジットリクエストを送信できない問題を修正</span></li>
+                <li><span class="fix-icon">🌐</span><span><strong>HTTPS プロキシ環境の起動時接続チェック</strong>: プロキシ背後でハングした後に失敗する問題を修正。API リクエストと同じプロキシ対応トランスポートを使用し、明確なメッセージとともにタイムアウト</span></li>
+                <li><span class="fix-icon">🔌</span><span><strong>Connection closed mid-response</strong>: 実際には完了していたレスポンスにエラーが報告される問題を修正</span></li>
+                <li><span class="fix-icon">📊</span><span><strong>/usage の MCP サーバー帰属</strong>: 呼び出し以降のすべてのターンではなく、ツール結果を実際に消費したリクエストのみを反映するように修正</span></li>
+                <li><span class="fix-icon">🔀</span><span><strong>プルリクエストとのセッション連携</strong>: ブランチのプッシュ後に作成された PR (GitHub REST API 経由を含む) にセッションがリンクされない問題を修正</span></li>
+                <li><span class="fix-icon">🤖</span><span><strong>モデルファミリーエイリアスのステップダウン</strong>: 組織で制限された <span class="inline-code">model: opus</span> のようなエイリアスが、親モデルへのフォールバックではなく、許可された同ファミリーの最新モデルへ正しくステップダウン</span></li>
+                <li><span class="fix-icon">⏱️</span><span><strong>カスタムゲートウェイのストリームアイドルタイムアウト</strong>: キープアライブ ping が届いているにもかかわらずタイムアウトが発生する問題を修正</span></li>
+                <li><span class="fix-icon">🔑</span><span><strong>claude.ai コネクタ</strong>: セッショントークンが無効な場合に誤って「認可が必要」と表示される問題を修正。代わりに <span class="inline-code">/login</span> のヒントを表示</span></li>
+                <li><span class="fix-icon">🧰</span><span><strong>利用不可ツールのエラー表示</strong>: MCP サーバーの削除後など、ローカルで利用できなくなったツールのエラーが表示されない問題を修正</span></li>
+                <li><span class="fix-icon">✉️</span><span><strong>SendMessage の長いサマリー</strong>: 拒否される問題を修正。文字数制限を超えた場合は切り詰められ、送信が失敗しなくなった</span></li>
+                <li><span class="fix-icon">🏷️</span><span><strong>サブエージェントの effort 表示</strong>: スピナーがサブエージェント自身の <span class="inline-code">effort:</span> 設定ではなくセッションの effort レベルを表示する問題を修正</span></li>
+                <li><span class="fix-icon">💥</span><span><strong>ファイルウォッチャーのクラッシュ</strong>: ファイルシステムエラー遭遇時や、ティアダウン中にまれに発生するクラッシュを修正</span></li>
+                <li><span class="fix-icon">🗣️</span><span><strong>スクリーンリーダーの読み上げ</strong>: <span class="inline-code">--ax-screen-reader</span> モードでバックスペースのたびに入力行全体が再読み上げされる問題を修正。行末での削除は削除した文字だけをエコー</span></li>
+                <li><span class="fix-icon">🖥️</span><span><strong>ホストのモデル選択キー</strong>: <span class="inline-code">CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST</span> 設定時に、古いディスク上の <span class="inline-code">managed-settings.json</span> より優先されない問題を修正</span></li>
+            </ul>
+        </section>
+
+        <!-- Improvements & Behavior Changes -->
+        <section class="section">
+            <h2 class="section-title">改善・動作変更・削除</h2>
+
+            <h3 class="section-subtitle">⚡ 改善</h3>
+            <ul class="fix-list">
+                <li><span class="fix-icon">🛡️</span><span><strong>auto モードの安全性向上</strong>: <span class="inline-code">SendMessage</span> で送信されるメッセージを送信前に権限分類器で評価</span></li>
+                <li><span class="fix-icon">🚫</span><span><strong>disable-model-invocation スキルの拒否動作</strong>: 該当スキルを呼び出そうとした場合、ワークフローを複製するのではなく、ユーザーにスキルの実行を依頼するよう指示</span></li>
+                <li><span class="fix-icon">📄</span><span><strong>/diff ビュー</strong>: diff ドライバーや textconv を無視し、生の git blob コンテンツを使用</span></li>
+            </ul>
+
+            <h3 class="section-subtitle">🔀 動作変更</h3>
+            <ul class="fix-list">
+                <li><span class="fix-icon">📱</span><span><strong>Remote Control 自動起動</strong>: リポジトリローカル設定 (<span class="inline-code">.claude/settings.json</span> など) からの有効化は不可に (無効化は引き続き可能)。有効化はユーザースコープの <span class="inline-code">/config</span> から</span></li>
+            </ul>
+
+            <h3 class="section-subtitle">🗑️ 削除</h3>
+            <ul class="fix-list">
+                <li><span class="fix-icon">📋</span><span><strong>ultraplan 機能</strong>: 削除された。依存するワークフローは通常のプランモードなどへ移行する</span></li>
+            </ul>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <span class="use-case-icon">🌿</span>
+                <div class="use-case-content">
+                    <h3>worktree 分離での並行作業</h3>
+                    <p>分離セッションやサブエージェントに並行作業させている間も、メインチェックアウトの作業状態が破壊される心配がなくなった。分離はファイル編集と Bash の両方に一貫して適用されるため、安心して複数タスクを同時に走らせられる。</p>
+                </div>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">🪝</span>
+                <div class="use-case-content">
+                    <h3>PreToolUse フックで auto-allow を運用する管理者</h3>
+                    <p>auto-allow フックを設定していても、サマリー生成やコンパクションなどのバックグラウンドタスクではツール制限が確実に適用される。フック経由で制限が緩んでいないか個別に確認する必要がなくなった。</p>
+                </div>
+            </div>
+            <div class="use-case">
+                <span class="use-case-icon">🤖</span>
+                <div class="use-case-content">
+                    <h3>SendMessage を使うマルチエージェント構成</h3>
+                    <p>auto モードで複数のエージェントセッションを連携させる場合も、エージェント間のメッセージが送信前に権限分類器で評価されるため、危険な指示の連鎖による制御の迂回を防げる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <div class="action-steps">
+                <div class="action-step">
+                    <div class="action-step-number">1</div>
+                    <div class="action-step-content">
+                        <h3>アップデートの適用</h3>
+                        <p>worktree 分離と PreToolUse フックに関するセキュリティ上重要な修正が含まれるため、速やかなアップデートを推奨する</p>
+                    </div>
+                </div>
+                <div class="action-step">
+                    <div class="action-step-number">2</div>
+                    <div class="action-step-content">
+                        <h3>Remote Control 設定の確認</h3>
+                        <p>リポジトリローカル設定で自動起動を有効化していた場合、その設定は無効になる。必要であれば /config からユーザースコープで有効化する</p>
+                    </div>
+                </div>
+                <div class="action-step">
+                    <div class="action-step-number">3</div>
+                    <div class="action-step-content">
+                        <h3>ultraplan 利用者の移行</h3>
+                        <p>ultraplan 機能は削除されたため、依存するワークフローがある場合は通常のプランモードなどへ移行する</p>
+                    </div>
+                </div>
+                <div class="action-step">
+                    <div class="action-step-number">4</div>
+                    <div class="action-step-content">
+                        <h3>/usage の数値の再確認</h3>
+                        <p>MCP サーバーへの使用量の帰属方法が変わったため、MCP サーバーごとの使用量をモニタリングしている場合は数値の変化に注意する</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップデート方法</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 組み込みコマンド
+claude update
+
+# npm を使用する場合
+npm update -g @anthropic-ai/claude-code</code></pre>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🎯</div>
+                    <div class="key-point-content">
+                        <h3>分離と権限の境界を厳密にしたセキュリティ重点リリース</h3>
+                        <p>worktree 分離がすべてのセッション種別でファイル編集と Bash に適用され、メインチェックアウトを破壊する経路が塞がれた。PreToolUse auto-allow フックのバイパス修正と SendMessage の権限分類により、フックやエージェント間通信を通じた制限の迂回に対する防御も強化された。プロキシ環境やカスタムゲートウェイでの安定性向上、/usage の帰属精度改善、アクセシビリティの改善も含まれるため、全ユーザーに速やかなアップデートを推奨する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong>
+                <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a> |
+                <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a>
+            </p>
+            <p style="margin-top: 8px;">Generated: 2026-08-04 | Category: ツールアップデート | Version: v2.1.222</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
