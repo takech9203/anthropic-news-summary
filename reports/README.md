@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-08-07](2026/2026-08-07-fable-5-biology-safeguards.md) - Fable 5 の生物学関連安全対策の改善
 - [2026-08-05](2026/2026-08-05-inference-hooks-opus-4-1-retirement.md) - Inference hooks ベータ提供開始と Claude Opus 4.1 の廃止
 - [2026-08-05](2026/2026-08-05-claude-code-v2-1-223.md) - Claude Code v2.1.223: 権限バイパス修正とマーケットプレイス管理のワイルドカード対応
 - [2026-08-04](2026/2026-08-04-tino-cuellar.md) - Mariano-Florentino (Tino) Cuéllar 氏が Anthropic の Chief Global Affairs Officer に就任
