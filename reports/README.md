@@ -5,7 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-08-08](2026/2026-08-08-claude-code-v2-1-225-v2-1-226.md) - Claude Code v2.1.225 & v2.1.226 リリース — ゲートウェイ支出上限の通知対応、認証安定性の修正、Remote Control 連携強化
+- [2026-08-07](2026/2026-08-07-managed-agents-budgets-advisor.md) - Claude Managed Agents 大型アップデート: セッション予算、アドバイザー、推論ジオ制御、GitHub スキル読み込み
 - [2026-08-07](2026/2026-08-07-fable-5-biology-safeguards.md) - Fable 5 の生物学関連安全対策の改善
+- [2026-08-07](2026/2026-08-07-claude-code-v2-1-224.md) - Claude Code v2.1.224: セルフホスト実行環境とクロスセッションメッセージングの追加
 - [2026-08-05](2026/2026-08-05-inference-hooks-opus-4-1-retirement.md) - Inference hooks ベータ提供開始と Claude Opus 4.1 の廃止
 - [2026-08-05](2026/2026-08-05-claude-code-v2-1-223.md) - Claude Code v2.1.223: 権限バイパス修正とマーケットプレイス管理のワイルドカード対応
 - [2026-08-04](2026/2026-08-04-tino-cuellar.md) - Mariano-Florentino (Tino) Cuéllar 氏が Anthropic の Chief Global Affairs Officer に就任
