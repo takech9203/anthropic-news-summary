@@ -5,6 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-08-12](2026/2026-08-12-claude-code-v2-1-229.md) - Claude Code v2.1.229 リリース — プラグインマーケットプレイスの command ソース、SSE キープアライブ ping、/commit-push-pr の危険フラグ自動承認撤廃
+- [2026-08-11](2026/2026-08-11-compliance-api-local-sessions.md) - Compliance API がローカルセッションのトランスクリプト取得に対応、`anthropic-workspace-id` レスポンスヘッダーを追加
+- [2026-08-11](2026/2026-08-11-claude-code-v2-1-228.md) - Claude Code v2.1.228 リリース — 再描画停止の修正、claude.ai 同期スキルのハードニング、Write ツールの上書きルール変更
+- [2026-08-10](2026/2026-08-10-sonnet-5-standard-pricing.md) - Claude Sonnet 5 の導入価格が標準価格化 --- 2026 年 9 月 1 日の値上げは実施されず
 - [2026-08-10](2026/2026-08-10-claude-code-v2-1-227.md) - Claude Code v2.1.227 リリース — 期限切れトークン起動時のプラン誤判定修正、claude-code-action の Bash 実行不能修正、スラッシュコマンドメニュー改善
 - [2026-08-08](2026/2026-08-08-claude-code-v2-1-225-v2-1-226.md) - Claude Code v2.1.225 & v2.1.226 リリース — ゲートウェイ支出上限の通知対応、認証安定性の修正、Remote Control 連携強化
 - [2026-08-07](2026/2026-08-07-managed-agents-budgets-advisor.md) - Claude Managed Agents 大型アップデート: セッション予算、アドバイザー、推論ジオ制御、GitHub スキル読み込み

@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance API がローカルセッションのトランスクリプト取得に対応、anthropic-workspace-id レスポンスヘッダーを追加 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Warning Section */
+        .section.warning-section {
+            background: #FFFBF5;
+            border: 2px solid #FF9800;
+            box-shadow: 0 4px 20px rgba(255, 152, 0, 0.12);
+        }
+
+        .section.warning-section .section-title::before {
+            background: #FF9800;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* API Cards */
+        .api-cards {
+            display: grid;
+            gap: 16px;
+        }
+
+        .api-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.35);
+            border-radius: 16px;
+            padding: 20px 24px;
+        }
+
+        .api-card-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .api-method {
+            background: var(--info);
+            color: white;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .api-path {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            word-break: break-all;
+        }
+
+        .api-card p {
+            margin-bottom: 0;
+        }
+
+        .api-tag {
+            display: inline-block;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-top: 10px;
+            margin-right: 6px;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .comparison-card li {
+            font-size: 13.5px;
+            color: var(--text-primary);
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .comparison-card.before li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Flow Steps */
+        .flow-steps {
+            display: grid;
+            gap: 12px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .flow-step-num {
+            width: 32px;
+            height: 32px;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .flow-step p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Info List */
+        .info-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .info-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 10px 16px 10px 36px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .info-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 14px;
+            color: var(--anthropic-coral);
+        }
+
+        .info-list.limits li {
+            background: #FFF3E0;
+        }
+
+        .info-list.limits li::before {
+            content: '⚠️';
+            font-size: 12px;
+            left: 12px;
+        }
+
+        .info-list.excluded li {
+            background: #FFEBEE;
+            border: 1px solid rgba(244, 67, 54, 0.35);
+            color: var(--text-primary);
+        }
+
+        .info-list.excluded li::before {
+            content: '🚫';
+            font-size: 12px;
+            left: 12px;
+        }
+
+        .info-list.notes li {
+            background: #EFF6FF;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .info-list.notes li::before {
+            content: '❓';
+            font-size: 12px;
+            left: 12px;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0;
+        }
+
+        .info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .info-table th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .info-table th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .info-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .info-table tr:nth-child(even) td {
+            background: var(--anthropic-cream);
+        }
+
+        .info-table td:first-child {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Callout */
+        .callout {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+
+        .callout.summary {
+            background: var(--anthropic-cream);
+            border-color: var(--anthropic-coral);
+        }
+
+        .callout.security {
+            background: #FFEBEE;
+            border-color: #F44336;
+        }
+
+        .callout.note {
+            background: #EFF6FF;
+            border-color: #3B82F6;
+        }
+
+        .callout-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .callout p {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 0;
+        }
+
+        /* Inline code */
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            border-radius: 4px;
+            padding: 1px 6px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Links List */
+        .links-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .links-list li {
+            font-size: 14px;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .links-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+            top: 3px;
+        }
+
+        .links-list a {
+            color: #B8874F;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .links-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #B8874F;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">エンタープライズ</span>
+                <span class="category-badge">コンプライアンス</span>
+                <span class="category-badge">API</span>
+                <h1>Compliance API がローカルセッションのトランスクリプト取得に対応、<code style="font-size: 0.85em;">anthropic-workspace-id</code> レスポンスヘッダーを追加</h1>
+                <p class="date">📅 2026-08-11 | ソース: Claude Developer Platform Release Notes</p>
+                <p class="lead">ユーザー自身のマシンで動く Cowork と Claude Code のトランスクリプトを、既存の Compliance Access Key のまま API から取得できるようになりました。あわせて Claude API のレスポンスから「どのワークスペースに計上されたか」を確認できるヘッダーが追加されました。</p>
+            </div>
+        </header>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>発表日</td>
+                        <td>2026-08-11</td>
+                    </tr>
+                    <tr>
+                        <td>ソース</td>
+                        <td>Claude Developer Platform Release Notes</td>
+                    </tr>
+                    <tr>
+                        <td>カテゴリ</td>
+                        <td>エンタープライズ / コンプライアンス / API</td>
+                    </tr>
+                    <tr>
+                        <td>公式リンク</td>
+                        <td><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer" style="color: #B8874F;">https://platform.claude.com/docs/en/release-notes/overview</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 / キーポイント</h2>
+            <p>Anthropic は 2026 年 8 月 11 日、Claude Developer Platform のリリースノートで 2 件の変更を公開しました。いずれもエンタープライズにおける可視性と帰属の明確化に関わる変更であり、監査とコスト配賦の運用を API だけで完結させる方向の拡張として位置づけられます。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">💻</div>
+                    <div class="key-point-content">
+                        <h3>ローカルセッションのトランスクリプト取得</h3>
+                        <p>ユーザー自身のマシン上で実行される Cowork および Claude Code セッションのトランスクリプトを Compliance API から取得できるようになりました。Claude Enterprise 組織向けのベータ機能です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>既存のキーとスコープでそのまま利用可能</h3>
+                        <p>3 つのエンドポイントはいずれも既存の Compliance Access Key と <code class="inline">read:compliance_user_data</code> スコープで利用できます。ドキュメントには「新しいキー、スコープ、設定、クライアントの更新はいずれも不要」と明記されています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏷️</div>
+                    <div class="key-point-content">
+                        <h3><code class="inline">anthropic-workspace-id</code> レスポンスヘッダー</h3>
+                        <p>リクエストの API キーまたはアクセストークンが解決したワークスペースの <code class="inline">wrkspc_</code> 接頭辞付き ID を返します。組織の Default Workspace の場合も ID が返ります。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📈</div>
+                    <div class="key-point-content">
+                        <h3>使用量、コスト、レート制限の帰属を確認できる</h3>
+                        <p>あるリクエストがどのワークスペースの使用量、コスト、レート制限に計上されたかを、レスポンス側から確認できるようになりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚠️</div>
+                    <div class="key-point-content">
+                        <h3>カバレッジの前提を正確に把握する必要がある</h3>
+                        <p>Console API キー認証の Claude Code、サードパーティクラウド経由の Claude Code、Claude Code on the web は記録されません。HIPAA readiness 組織と CMEK 組織にも制約があります。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るポイント</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">追加されたローカル<br>セッションのエンドポイント</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6 年</div>
+                    <div class="stat-label">記録内容の既定の<br>保存期間</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24 時間</div>
+                    <div class="stat-label">ページカーソルの<br>有効期間</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">500</div>
+                    <div class="stat-label">一覧エンドポイントの<br><code style="color:#D4A574;">limit</code> 最大値</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1,000</div>
+                    <div class="stat-label">メッセージエンドポイントの<br><code style="color:#D4A574;">limit</code> 最大値</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">約 1 MiB</div>
+                    <div class="stat-label"><code style="color:#D4A574;">text</code> ブロックの<br>サーバー最大値</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p>Compliance API は 2026 年 5 月 21 日の一般提供開始以降、Claude Enterprise 組織のチャット、ファイル、プロジェクト、アクティビティフィードを SIEM、DLP、eDiscovery などの既存セキュリティスタックに取り込む窓口として機能してきました。</p>
+            <ul class="info-list">
+                <li><strong>リモートセッションが先行</strong>: claude.ai の Web およびモバイルで開始された Cowork セッションは Anthropic 管理のクラウド環境で実行され、<code class="inline">GET /v1/compliance/apps/sessions/remote</code> と <code class="inline">GET /v1/compliance/apps/sessions/remote/{session_id}/messages</code> の 2 エンドポイントで公開されています。これらもベータであり、同じ Compliance Access Key と <code class="inline">read:compliance_user_data</code> スコープで動作します。</li>
+                <li><strong>ローカル実行は空白だった</strong>: Claude Desktop の Cowork や、ターミナル / Claude Desktop / IDE 拡張で動作する Claude Code は、ユーザー自身のマシン上で実行されるため、リモートセッションのエンドポイントでは取得できませんでした。公式ドキュメントは「リモートセッションのエンドポイントは Cowork セッションのみを返す」と明記しています。</li>
+                <li><strong>新しいリソース種別の導入</strong>: 今回の追加はこの空白を埋めるものであり、リモートセッション対応の続きとして <strong>ローカルセッション</strong> という新しいリソース種別を導入した形になります。</li>
+                <li><strong>RBAC との関係</strong>: 2026 年 4 月 9 日の Enterprise プラン向けロールベースアクセス制御 (RBAC) により、グループ単位で Cowork などの機能利用を制御できるようになっています。RBAC が「誰が使えるか」を制御する層であるのに対し、今回のローカルセッション対応は「実際に何が行われたか」を事後に取得する層を担います。</li>
+            </ul>
+            <div class="callout note">
+                <span class="callout-icon">📝</span>
+                <p><strong>注記</strong>: 当リポジトリには 2026 年 8 月 3 日付のリモートセッション対応レポートは存在しませんでした (<code class="inline">reports/2026/</code> 配下の 08-03 は Claude Code v2.1.221 のみ)。そのため本節のリモートセッションに関する記述は、レポートではなく公式ドキュメントの記載に基づいています。</p>
+            </div>
+        </section>
+
+        <!-- Before / After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: リモートセッション対応との比較</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (リモートセッション対応まで)</h4>
+                    <ul>
+                        <li>Anthropic 管理のクラウド環境で動作する Cowork セッションのみが取得対象</li>
+                        <li>エンドポイントは一覧とメッセージの 2 種類のみ</li>
+                        <li>Claude Desktop の Cowork とターミナル / IDE の Claude Code は取得できない</li>
+                        <li><code class="inline">product_surface</code> は <code class="inline">cowork_remote</code> のみ</li>
+                        <li>ID 接頭辞は <code class="inline">cse_</code> のみ</li>
+                        <li>Claude API のレスポンスからワークスペースを特定できない</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (2026-08-11 以降)</h4>
+                    <ul>
+                        <li>ユーザー自身のマシン上のセッションも取得対象に</li>
+                        <li>一覧、単一取得、メッセージの 3 エンドポイントを追加</li>
+                        <li>Claude Desktop の Cowork とターミナル / Desktop / IDE 拡張の Claude Code に対応</li>
+                        <li><code class="inline">product_surface</code> に <code class="inline">cowork</code>、<code class="inline">claude_code</code> が加わる</li>
+                        <li>ID 接頭辞 <code class="inline">clls_</code> を追加</li>
+                        <li><code class="inline">anthropic-workspace-id</code> でワークスペース帰属を確認できる</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout summary">
+                <span class="callout-icon">💡</span>
+                <p>リモートセッション対応は 2026 年 8 月 3 日時点で公開されていた仕組みであり、今回のローカルセッション対応はその続きにあたります。両者はエンドポイントの種類で分かれるため、既存のインテグレーションはローカルセッション向けの差分実装が必要になります。</p>
+            </div>
+        </section>
+
+        <!-- Architecture (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図: データフロー</h2>
+            <p>ユーザーのマシン上のクライアントから Claude API、サーバーサイド記録、Compliance API を経て企業の監査システムへ至るデータフローです。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph UserMachine["💻 ユーザーのマシン"]
+        direction LR
+        CoworkDesktop["🤝 Cowork&lt;br/&gt;Claude Desktop"]
+        ClaudeCode["⌨️ Claude Code&lt;br/&gt;ターミナル / Desktop / IDE 拡張"]
+        CoworkDesktop ~~~ ClaudeCode
+    end
+
+    subgraph AnthropicSide["🏢 Anthropic"]
+        ClaudeAPI["📨 Claude API&lt;br/&gt;推論リクエストを受信"]
+        Capture["🗃️ サーバーサイド記録&lt;br/&gt;デバイスへのインストール不要"]
+        Store[("🔐 トランスクリプトストア&lt;br/&gt;既定 6 年保持")]
+    end
+
+    subgraph ComplianceAPI["🔒 Compliance API ベータ"]
+        ListEP["📋 GET /sessions/local&lt;br/&gt;セッション一覧"]
+        GetEP["🔎 GET /sessions/local/SESSION_ID&lt;br/&gt;メタデータ取得"]
+        MsgEP["💬 GET /sessions/local/SESSION_ID/messages&lt;br/&gt;トランスクリプト取得"]
+    end
+
+    subgraph Audit["🛡️ 企業の監査システム"]
+        direction LR
+        SIEM["📈 SIEM"]
+        DLP["🔐 DLP"]
+        Discovery["⚖️ eDiscovery"]
+        SIEM ~~~ DLP ~~~ Discovery
+    end
+
+    AccessKey(["🔑 Compliance Access Key&lt;br/&gt;read:compliance_user_data"])
+
+    CoworkDesktop --&gt; ClaudeAPI
+    ClaudeCode --&gt; ClaudeAPI
+    ClaudeAPI --&gt; Capture
+    Capture --&gt; Store
+    Store --&gt; ListEP
+    Store --&gt; GetEP
+    Store --&gt; MsgEP
+    AccessKey -.-&gt; ListEP
+    AccessKey -.-&gt; GetEP
+    AccessKey -.-&gt; MsgEP
+    ListEP --&gt; SIEM
+    GetEP --&gt; DLP
+    MsgEP --&gt; Discovery
+
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class UserMachine,AnthropicSide,ComplianceAPI,Audit container
+    class CoworkDesktop,ClaudeCode input
+    class ClaudeAPI,Capture internal
+    class Store storage
+    class ListEP,GetEP,MsgEP process
+    class SIEM,DLP,Discovery decision
+    class AccessKey warning
+                </pre>
+            </div>
+        </section>
+
+        <!-- Change 1: 3 endpoints -->
+        <section class="section">
+            <h2 class="section-title">変更点 1: ローカルセッションの 3 エンドポイント</h2>
+            <p>公式ドキュメントで確認できる仕様は以下の通りです。3 つのエンドポイントはすべて <code class="inline">read:compliance_user_data</code> スコープを要求します。</p>
+            <div class="api-cards">
+                <div class="api-card">
+                    <div class="api-card-head">
+                        <span class="api-method">GET</span>
+                        <span class="api-path">/v1/compliance/apps/sessions/local</span>
+                    </div>
+                    <p>組織横断のセッションメタデータ一覧を返します。トランスクリプト本文は含みません。フィルターは <code class="inline">created_at</code> の範囲のみで、組織フィルターもユーザーフィルターも存在しません。</p>
+                    <span class="api-tag">一覧</span>
+                    <span class="api-tag">limit 既定 100 / 最大 500</span>
+                    <span class="api-tag">created_at 降順</span>
+                </div>
+                <div class="api-card">
+                    <div class="api-card-head">
+                        <span class="api-method">GET</span>
+                        <span class="api-path">/v1/compliance/apps/sessions/local/{session_id}</span>
+                    </div>
+                    <p>単一セッションのメタデータを返します。一覧と同じセッションオブジェクトをエンベロープなしで返すため、メールアドレスの解決に利用できます。</p>
+                    <span class="api-tag">取得</span>
+                    <span class="api-tag">エンベロープなし</span>
+                    <span class="api-tag">ID 接頭辞 clls_</span>
+                </div>
+                <div class="api-card">
+                    <div class="api-card-head">
+                        <span class="api-method">GET</span>
+                        <span class="api-path">/v1/compliance/apps/sessions/local/{session_id}/messages</span>
+                    </div>
+                    <p>単一セッションのトランスクリプトを返します。ページングされる <code class="inline">data</code> 配列に加えて <code class="inline">session</code> エンベロープを含みます。</p>
+                    <span class="api-tag">トランスクリプト</span>
+                    <span class="api-tag">limit 既定 100 / 最大 1,000</span>
+                    <span class="api-tag">既定は古い順</span>
+                </div>
+            </div>
+            <div class="callout summary">
+                <span class="callout-icon">🔑</span>
+                <p>ドキュメントには「新しいキー、スコープ、設定、クライアントの更新はいずれも不要」と明記されており、導入コストは低く抑えられています。</p>
+            </div>
+        </section>
+
+        <!-- Change 2: local vs remote -->
+        <section class="section">
+            <h2 class="section-title">変更点 2: ローカルセッションとリモートセッションの差異</h2>
+            <p>公式ドキュメントの比較表に基づく差異は以下の通りです。</p>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>ローカルセッション</th>
+                        <th>リモートセッション</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>エンドポイント</td>
+                        <td><code class="inline">/v1/compliance/apps/sessions/local</code> 配下の一覧、取得、メッセージ</td>
+                        <td><code class="inline">/v1/compliance/apps/sessions/remote</code> 配下の一覧、メッセージ</td>
+                    </tr>
+                    <tr>
+                        <td>実行場所</td>
+                        <td>ユーザー自身のマシン</td>
+                        <td>Anthropic 管理のクラウド環境</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">product_surface</code> の値</td>
+                        <td><code class="inline">cowork</code>、<code class="inline">claude_code</code></td>
+                        <td><code class="inline">cowork_remote</code></td>
+                    </tr>
+                    <tr>
+                        <td>ID 接頭辞</td>
+                        <td><code class="inline">clls_</code></td>
+                        <td><code class="inline">cse_</code></td>
+                    </tr>
+                    <tr>
+                        <td>一覧のフィルター</td>
+                        <td><code class="inline">created_at</code> の範囲のみ</td>
+                        <td>組織、ユーザー、<code class="inline">created_at</code> の範囲</td>
+                    </tr>
+                    <tr>
+                        <td>ライフサイクルフィールド</td>
+                        <td>なし。<code class="inline">status</code> と <code class="inline">updated_at</code> を持たない</td>
+                        <td><code class="inline">status</code>、<code class="inline">updated_at</code></td>
+                    </tr>
+                    <tr>
+                        <td>保持期間</td>
+                        <td>既定 6 年。組織が有限のカスタム会話保持期間を設定している場合はその期間</td>
+                        <td>6 年</td>
+                    </tr>
+                    <tr>
+                        <td>エンドポイント固有のレート制限</td>
+                        <td>なし</td>
+                        <td>あり</td>
+                    </tr>
+                    <tr>
+                        <td>API 経由の削除</td>
+                        <td>不可</td>
+                        <td>不可</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>ローカルセッションは共有の Compliance API レート制限のみに計上され、リモートセッションのエンドポイントに適用される追加のレート制限の対象にはなりません。</p>
+        </section>
+
+        <!-- Change 3: workspace id header -->
+        <section class="section">
+            <h2 class="section-title">変更点 3: <code class="inline">anthropic-workspace-id</code> レスポンスヘッダー</h2>
+            <p>Claude API のレスポンスに <code class="inline">anthropic-workspace-id</code> ヘッダーが追加されました。<code class="inline">request-id</code> および <code class="inline">anthropic-organization-id</code> と並んで返されます。ドキュメントの例では以下のように出力されます。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">HTTP</span>
+                    <span class="code-title">レスポンスヘッダーの例</span>
+                </div>
+                <pre><code class="language-http">HTTP/1.1 200 OK
+request-id: req_018EeWyXxfu5pfWkrYcMdjWG
+anthropic-organization-id: 0d0e7a3b-52f1-4c7e-9a51-3f6f2f7c1b9e
+anthropic-workspace-id: wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ</code></pre>
+            </div>
+            <p>値はリクエストの API キーまたはアクセストークンが解決したワークスペースの <code class="inline">wrkspc_</code> 接頭辞付き ID であり、それが Default Workspace である場合も同様に ID が返ります。</p>
+
+            <h3 class="subsection-title">🔍 詳細な挙動</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🚫 ヘッダーが返らないケース</h3>
+                    <p>認証情報がワークスペースに解決しない場合 (Admin API へのリクエストなど)、または 401 のように認証完了前にリクエストが失敗した場合はヘッダーが存在しません。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📡 対象範囲</h3>
+                    <p>同じアクセス方法で他の Claude API エンドポイントからもヘッダーを読み取れます。Claude Managed Agents の API も対象であり、セッション作成のレスポンスから読み取ってセッションが属するワークスペースを記録できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏠 Default Workspace の扱い</h3>
+                    <p>Default Workspace も他のワークスペースと同様に <code class="inline">wrkspc_</code> ID を持ち、このヘッダーで返ります。ただし List Workspaces の結果には現れず、API キー、使用量レポート、コストレポートでは <code class="inline">workspace_id</code> が <code class="inline">null</code> になります。Get Workspace に渡すと <code class="inline">"name": "Default"</code> として返ります。</p>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">🛠️ 取得したワークスペース ID の用途</h3>
+            <ul class="info-list">
+                <li>リクエストがどのワークスペースの使用量、コスト、レート制限に計上されたかを確認する</li>
+                <li>Usage and Cost API のレポートや Admin API のオブジェクト (API キーなど) の <code class="inline">workspace_id</code> フィールドと突合する。いずれも Default Workspace は <code class="inline">null</code> を返す</li>
+                <li>Admin API キーで Get Workspace を呼び出し、Default Workspace の ID かどうかを判定する</li>
+                <li>Console で該当ワークスペースを開き、セッション、ファイル、メッセージバッチ、スキルなどリクエストのリソースを確認する</li>
+            </ul>
+        </section>
+
+        <!-- Capture mechanism -->
+        <section class="section">
+            <h2 class="section-title">技術詳細: キャプチャの仕組みと対象範囲</h2>
+            <p>ドキュメントによると、ローカルセッションは Claude Enterprise アカウントでサインインした状態でユーザー自身のマシン上で実行される Cowork および Claude Code のセッションを指します。対象は Claude Desktop の Cowork と、ターミナル、Claude Desktop、IDE 拡張の Claude Code です。</p>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="flow-step-num">1</div>
+                    <p>クライアントが Claude API へ推論リクエストを送信する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">2</div>
+                    <p>Anthropic は各会話を、そのリクエストが Claude API に到達した時点でサーバーサイドに記録する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">3</div>
+                    <p>デバイス側には何もインストールされず、クライアントが既に Claude API へ送信しているリクエストを超える情報は収集されない。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">4</div>
+                    <p>Compliance API のエンドポイントから記録済みのセッションとトランスクリプトを取得する。</p>
+                </div>
+            </div>
+            <div class="callout">
+                <span class="callout-icon">⚠️</span>
+                <p><strong>トランスクリプトの意味</strong>: トランスクリプトは「Claude が何を依頼され、何を返したか」を示すものであり、デバイス上で何が起きたかを示すものではありません。ファイルやネットワークの活動はトランスクリプト内のツール呼び出しとツール結果を通じてのみ可視化されるため、API に到達しない活動 (セッションが送信しなかったローカルファイルなど) は記録されません。</p>
+            </div>
+        </section>
+
+        <!-- Coverage exclusions: WARNING -->
+        <section class="section warning-section">
+            <h2 class="section-title">⚠️ 重要: キャプチャされないケース (カバレッジの除外条件)</h2>
+            <p>以下の場合はローカルセッションが記録されません。監査要件の関係者に必ず共有すべき前提条件です。</p>
+            <ul class="info-list excluded">
+                <li><strong>Console API キー認証の Claude Code</strong>: Claude Code が Claude Console の API キーで認証している場合は記録されません。</li>
+                <li><strong>サードパーティクラウド経由の Claude Code</strong>: Claude Code が Amazon Bedrock、Google Cloud、Microsoft Foundry などのサードパーティクラウドプラットフォーム経由で動作している場合は記録されません。</li>
+                <li><strong>Claude Code on the web</strong>: Anthropic 管理のクラウド環境で動作しますが、リモートセッションにも該当しないため記録されません。</li>
+                <li><strong>HIPAA readiness を有効化している組織</strong>: ローカルセッションデータは一切収集されず、エンドポイントはセッションを返しません。</li>
+                <li><strong>ゼロデータ保持 (ZDR) が適用されるセッション</strong>: 一覧から除外されます。</li>
+            </ul>
+            <div class="callout security">
+                <span class="callout-icon">🔐</span>
+                <p><strong>CMEK 組織の扱い</strong>: 顧客管理暗号鍵 (CMEK) を利用している組織では、セッションの一覧取得と個別取得は通常どおり可能ですが、トランスクリプト本文は現時点では返りません。メッセージエンドポイントの全メッセージが <code class="inline">provenance.type</code> に <code class="inline">content_unavailable</code>、<code class="inline">reason</code> に <code class="inline">not_captured</code> を持ち、<code class="inline">content</code> は空配列となります。</p>
+            </div>
+            <div class="callout">
+                <span class="callout-icon">🔎</span>
+                <p><strong>マスキングは行われない</strong>: URL、認証情報、個人データのマスキングは行われないため、トランスクリプトは機微情報として扱う必要があります。保存先の暗号化とアクセス制御を設計してください。</p>
+            </div>
+        </section>
+
+        <!-- List endpoint spec -->
+        <section class="section">
+            <h2 class="section-title">一覧エンドポイントの仕様</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>仕様</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>フィルター</td>
+                        <td><code class="inline">created_at.gte</code> と <code class="inline">created_at.lt</code> のみ。組織フィルターもユーザーフィルターも存在しない。両者は RFC 3339 形式で UTC オフセットが必須であり、両方を指定する場合は <code class="inline">created_at.lt</code> が <code class="inline">created_at.gte</code> より厳密に後でなければ 400 Bad Request となる</td>
+                    </tr>
+                    <tr>
+                        <td>ソート</td>
+                        <td><code class="inline">created_at</code> の降順 (新しい順)。同値の場合は <code class="inline">id</code> で解決</td>
+                    </tr>
+                    <tr>
+                        <td>ページング</td>
+                        <td><code class="inline">limit</code> は既定 100、最大 500。前方向のみのページングで、レスポンスの <code class="inline">next_page</code> を次のリクエストの <code class="inline">page</code> クエリパラメータに渡し、<code class="inline">next_page</code> が <code class="inline">null</code> になったら停止する。<code class="inline">has_more</code> フィールドは存在しない</td>
+                    </tr>
+                    <tr>
+                        <td>カーソルの有効期間</td>
+                        <td>一覧の走査は開始から 24 時間以内に完了する。それより古いカーソルも受理されるが、現在の保持境界に対して再評価されるため、保持期間から外れかけているセッションがスキップされる可能性がある</td>
+                    </tr>
+                    <tr>
+                        <td>反映遅延</td>
+                        <td>新しいセッションとメッセージは短い処理遅延の後に結果へ現れる。通常は数分以内であり、開始直後に見つからないセッションが記録されていないとは限らない</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="subsection-title">🧾 セッションオブジェクトのフィールド</h3>
+            <ul class="info-list">
+                <li><code class="inline">user.id</code>: 常に設定され、アカウント削除後も残る</li>
+                <li><code class="inline">user.email_address</code>: ユーザーのアカウントが削除された場合、またはキーが読み取れる組織のメンバーでなくなった場合は <code class="inline">null</code></li>
+                <li><code class="inline">workspace_id</code>: セッションがワークスペースに紐づいていない場合は <code class="inline">null</code></li>
+                <li><code class="inline">product_surface</code>: 文字列または <code class="inline">null</code>。<code class="inline">cowork</code> は Claude Desktop の Cowork、<code class="inline">claude_code</code> は Claude Code を示す。カバレッジ拡大に伴い新しい値が追加される</li>
+                <li><code class="inline">id</code>: 不透明な文字列として扱う。フォーマットは予告なく変更される可能性がある</li>
+            </ul>
+            <div class="callout summary">
+                <span class="callout-icon">🔄</span>
+                <p>ドキュメントは前方互換なハンドラーの実装を推奨しており、未知の <code class="inline">product_surface</code> 値はそのまま通し、想定しないフィールドは無視するよう求めています。</p>
+            </div>
+        </section>
+
+        <!-- Paging spec table (dedicated) -->
+        <section class="section">
+            <h2 class="section-title">ページング仕様まとめ</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>一覧エンドポイント</th>
+                        <th>メッセージエンドポイント</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">limit</code> 既定値</td>
+                        <td>100</td>
+                        <td>100</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">limit</code> 最大値</td>
+                        <td>500</td>
+                        <td>1,000</td>
+                    </tr>
+                    <tr>
+                        <td>ページングの方式</td>
+                        <td>前方向のみ。<code class="inline">next_page</code> を次の <code class="inline">page</code> に渡す</td>
+                        <td>前方向のみ。<code class="inline">next_page</code> を次の <code class="inline">page</code> に渡す</td>
+                    </tr>
+                    <tr>
+                        <td>終了条件</td>
+                        <td><code class="inline">next_page</code> が <code class="inline">null</code>。<code class="inline">has_more</code> は存在しない</td>
+                        <td><code class="inline">next_page</code> が <code class="inline">null</code>。<code class="inline">limit</code> より少ないページ数は終端を意味しない</td>
+                    </tr>
+                    <tr>
+                        <td>並び順</td>
+                        <td><code class="inline">created_at</code> の降順 (新しい順)</td>
+                        <td>既定は古い順。<code class="inline">order=desc</code> で逆順</td>
+                    </tr>
+                    <tr>
+                        <td>カーソルの有効期間</td>
+                        <td>開始から 24 時間以内に走査を完了する</td>
+                        <td>最初のページから 24 時間で失効。失効後は <code class="inline">page</code> なしでの再開を促す 400 Bad Request</td>
+                    </tr>
+                    <tr>
+                        <td>カーソルの紐づけ</td>
+                        <td>現在の保持境界に対して再評価される</td>
+                        <td>発行時のセッションと並び順に紐づく。別セッションや別 <code class="inline">order</code> 向けのカーソルは 400</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Retention and created_at -->
+        <section class="section">
+            <h2 class="section-title">保持期間と <code class="inline">created_at</code> の変動</h2>
+            <p>ローカルセッションはサーバーサイドのライフサイクルを持たないため、<code class="inline">status</code> と <code class="inline">updated_at</code> が存在せず、可視性は保持期間によって決まります。セッションはクライアントが実行した一連の Claude API 呼び出し (推論呼び出し) として記録され、保持期間は各呼び出しに個別に適用されます。</p>
+            <ul class="info-list limits">
+                <li><code class="inline">created_at</code> はセッションで保持されている最も古い呼び出しのタイムスタンプ (UTC) である。古い呼び出しが保持期間を過ぎるにつれて <code class="inline">created_at</code> は前進し、すべての呼び出しが期限切れになるとセッション自体が返らなくなる</li>
+                <li><code class="inline">created_at</code> が実行ごとに変動しうるため、一覧を継続的に再走査する場合は <code class="inline">id</code> で重複排除する必要がある</li>
+                <li><code class="inline">created_at</code> が後方へ動くことはなく <code class="inline">updated_at</code> も存在しないため、初回エクスポート後にメッセージが追加されたセッションは、後続の <code class="inline">created_at</code> ウィンドウに再出現しない</li>
+                <li>トランスクリプトを最新に保つには、最長のセッション実行時間以上の末尾ウィンドウを毎回再取得し、返ったセッションのトランスクリプトを再取得して <code class="inline">id</code> でメッセージを重複排除する運用が必要になる</li>
+            </ul>
+
+            <h3 class="subsection-title">🗄️ 保持期間の適用ルール</h3>
+            <p>記録されたローカルセッションの内容は既定でキャプチャから 6 年間保存されます。セッションを実行した組織が claude.ai の組織設定で有限のカスタム会話保持期間を設定している場合は、既定より短くても長くてもその期間が適用され、複数のカスタム保持期間が設定されている場合は最短のものが適用されます。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>設定変更の即時反映</h4>
+                    <ul>
+                        <li>設定を変更した時点でエンドポイントは組織の現在の期間より古い活動を返さなくなる</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>記録済み内容の保存期間</h4>
+                    <ul>
+                        <li>記録済みの各メッセージはキャプチャ時点で有効だった期間だけ保存されるため、後から期間を延長しても既に期限切れとなった内容は復元されない</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transcript contents -->
+        <section class="section">
+            <h2 class="section-title">トランスクリプトの内容と除外項目</h2>
+            <p>メッセージエンドポイントは、記録された Claude API 呼び出しから再構成したトランスクリプトを返します。ユーザープロンプト、アシスタントのテキスト、ツール呼び出し、ツール結果のテキスト部分が、サイズによる切り詰めを除いて送信時のまま返ります。</p>
+
+            <h3 class="subsection-title">🚫 省略または置換される項目</h3>
+            <ul class="info-list excluded">
+                <li>思考ブロックは常に含まれない</li>
+                <li>リクエストのシステムプロンプトは返らない。代わりに <code class="inline">[system prompt content not shown]</code> というマーカーメッセージが入る (通常はセッションごとに 1 回。記録内容のないセッションにはマーカーが入らない)</li>
+                <li>ツール定義と MCP サーバー設定はトランスクリプトに含まれない</li>
+                <li>画像、PDF、その他のバイナリまたは構造化ブロックは返らない。<code class="inline">[image content not shown]</code> のような <code class="inline">text</code> ブロックとして現れ、<code class="inline">truncated</code> が <code class="inline">true</code> になる。ツール結果内の非テキスト項目は <code class="inline">[N non-text item(s) not shown]</code> の 1 エントリに置換され、ツール結果ブロックの <code class="inline">truncated</code> が <code class="inline">true</code> になる</li>
+                <li><code class="inline">text</code> ブロックの引用メタデータは省略され、該当ブロックの <code class="inline">truncated</code> が <code class="inline">true</code> になる</li>
+            </ul>
+
+            <h3 class="subsection-title">✅ 通常のコンテンツとして現れる項目</h3>
+            <ul class="info-list">
+                <li><code class="inline">CLAUDE.md</code> などのプロジェクト指示ファイルは通常のユーザーロールのコンテンツとして現れる</li>
+                <li>スキルの内容は、クライアントがメッセージコンテンツとして送信した場合に現れ、他のユーザーテキストと区別されない</li>
+            </ul>
+        </section>
+
+        <!-- Messages endpoint spec -->
+        <section class="section">
+            <h2 class="section-title">メッセージエンドポイントの仕様</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📦 エンベロープ</h3>
+                    <p>レスポンスはページングされる <code class="inline">data</code> 配列に加えて <code class="inline">session</code> エンベロープを含みます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📧 <code class="inline">user.email_address</code></h3>
+                    <p>このエンドポイントでは常に <code class="inline">null</code> です。メールアドレスを解決しないため、<code class="inline">null</code> はアカウント削除を意味しません。メールアドレスに紐づけるには <code class="inline">user.id</code> を一覧エンドポイントまたは取得エンドポイントの結果と結合します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔢 並び順とページング</h3>
+                    <p>既定は古い順。<code class="inline">order=desc</code> で逆順になります。<code class="inline">limit</code> は既定 100、最大 1,000。レスポンスのサイズ上限に達するとページが早く終わることがあるため、<code class="inline">limit</code> より少ないメッセージ数のページが終端を意味するわけではなく、<code class="inline">next_page</code> が <code class="inline">null</code> になるまでページングを続けます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏳ カーソルの制約</h3>
+                    <p>ページカーソルは発行時のセッションと並び順に紐づきます。走査のカーソルは最初のページから 24 時間で失効し、失効後は <code class="inline">page</code> パラメータなしでの再開を促す 400 Bad Request が返ります。別のセッションや別の <code class="inline">order</code> 向けに発行されたカーソルも 400 になります。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧱 ブロック構造</h3>
+                    <p>各メッセージは <code class="inline">role</code> (<code class="inline">user</code> または <code class="inline">assistant</code>) と、<code class="inline">text</code>、<code class="inline">tool_use</code>、<code class="inline">tool_result</code> ブロックからなる <code class="inline">content</code> 配列を持ちます。<code class="inline">tool_use</code> の <code class="inline">input</code> はオブジェクトではなく JSON エンコードされた文字列です。<code class="inline">tool_result</code> は <code class="inline">tool_use_id</code>、<code class="inline">name</code>、<code class="inline">is_error</code>、<code class="inline">text</code> エントリの <code class="inline">content</code> 配列、<code class="inline">truncated</code> を持ちます。MCP のツール呼び出しと結果、および多くのサーバーツールの呼び出しと結果は同じ <code class="inline">tool_use</code> / <code class="inline">tool_result</code> 形状に正規化され、それ以外のブロック種別は <code class="inline">[&lt;block type&gt; content not shown]</code> のプレースホルダーになります。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🕒 タイムスタンプ</h3>
+                    <p>同一の推論呼び出しから再構成されたメッセージはその呼び出しのタイムスタンプを持つため、連続するメッセージが同じ <code class="inline">created_at</code> を共有することが多くあります。タイムスタンプで再ソートせず、返された順序を保持します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- provenance -->
+        <section class="section">
+            <h2 class="section-title"><code class="inline">provenance</code> フィールド</h2>
+            <p>各メッセージは、内容がどのように記録されたかを示す <code class="inline">provenance</code> を持ちます。Claude API によって検証済みの内容の場合は <code class="inline">null</code> であり、これが通常のケースです。それ以外は <code class="inline">type</code> で例外を示すオブジェクトになります。</p>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th><code class="inline">type</code></th>
+                        <th>意味</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">content_unavailable</code></td>
+                        <td>内容を返せない。<code class="inline">content</code> は空配列で、<code class="inline">provenance.reason</code> が理由を示す</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">client_asserted</code></td>
+                        <td>クライアントが会話履歴として提供し、記録済みレスポンスと突合できなかったアシスタントメッセージ。作成者が検証されていない</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">synthetic_marker</code></td>
+                        <td>システムプロンプトの代替マーカーなど、エンドポイント自身が生成したレコード</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="subsection-title">📋 <code class="inline">content_unavailable</code> の <code class="inline">reason</code></h3>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th><code class="inline">reason</code></th>
+                        <th>意味</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">not_captured</code></td>
+                        <td>そのターンの内容が利用できない。記録が保存されていないことの証明にはならない。ストレージ側のアクセスポリシーで内容が保持されない場合 (CMEK を利用する組織など) も同じ理由で報告され、記録済みセッション内の個別のターンが他のデータ取り扱い上の理由で利用できない場合も同じ理由になる</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">cmek_key_revoked</code></td>
+                        <td>顧客管理鍵で暗号化された内容が、鍵の失効などで利用できない場合に予約されている値。現時点では返らないが、前方互換のために処理を用意する</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">retention_elapsed</code></td>
+                        <td>内容が保持期間を過ぎた</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">oversize</code></td>
+                        <td>単一メッセージがメッセージあたりのサイズ上限を超えた。メッセージ自体は空の <code class="inline">content</code> 配列で返る</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="callout summary">
+                <span class="callout-icon">💡</span>
+                <p>マーカーおよび <code class="inline">client_asserted</code> のメッセージは、<code class="inline">truncated: true</code> が付いた角括弧付きの説明テキストブロックで始まります。これらは「欠落」ではなく「存在するが利用できない、または未検証」として扱い、未知の <code class="inline">provenance</code> の型と理由を許容する実装が推奨されています。</p>
+            </div>
+            <div class="callout">
+                <span class="callout-icon">✂️</span>
+                <p><strong>履歴の書き換え / 圧縮時の挙動</strong>: クライアントがセッション中に会話履歴を書き換えたり圧縮したりした場合 (コンテキスト圧縮後など) は、その時点にマーカーメッセージが挿入され、クライアントが送信した新しい内容から継続します。組織に有限の保持期間が設定されている場合、書き換えられた履歴自体は返らず (2 つ目のマーカーがその旨を示す)、最新のユーザーターンとそれ以降のみが表示されます。</p>
+            </div>
+        </section>
+
+        <!-- Size limits -->
+        <section class="section">
+            <h2 class="section-title">サイズ上限のパラメータ</h2>
+            <p>ツールブロックのバイト数は 2 つのパラメータで制御します。</p>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>パラメータ</th>
+                        <th>既定値</th>
+                        <th>挙動</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">tool_use_input_max_bytes</code></td>
+                        <td>10,000 バイト</td>
+                        <td><code class="inline">-1</code> でサーバー最大値 (文字列あたり約 1 MiB)。<code class="inline">0</code> は 400 Bad Request。最大値を超える値は最大値に切り下げられる</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">tool_result_max_bytes</code></td>
+                        <td>10,000 バイト</td>
+                        <td>同上</td>
+                    </tr>
+                </tbody>
+            </table>
+            <ul class="info-list limits">
+                <li>上限で切り詰められた文字列は文字境界で切られ、<code class="inline">…[truncated; pass tool_result_max_bytes=-1 for the server max]</code> のようなインバンドの接尾辞が付与され、そのブロックの <code class="inline">truncated</code> が <code class="inline">true</code> になる</li>
+                <li>切り詰められた <code class="inline">tool_use</code> の <code class="inline">input</code> は有効な JSON ではなくなるため、ツール入力のパースは切り詰められていないブロックに限定するか、上限を上げて再取得する必要がある</li>
+                <li><code class="inline">text</code> ブロックは常に同じサーバー最大値の約 1 MiB で上限が掛かり、これを引き上げるパラメータは存在しない</li>
+            </ul>
+        </section>
+
+        <!-- Errors -->
+        <section class="section">
+            <h2 class="section-title">エラー応答</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>状況</th>
+                        <th>応答</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>親組織でローカルセッションが利用できない</td>
+                        <td>404 Not Found、メッセージ <code class="inline">Local sessions are not available.</code></td>
+                    </tr>
+                    <tr>
+                        <td>セッション一覧または記録内容が一時的に利用できない</td>
+                        <td>503</td>
+                    </tr>
+                    <tr>
+                        <td>セッション ID の形式が不正</td>
+                        <td>400 Bad Request</td>
+                    </tr>
+                    <tr>
+                        <td>キーが読み取れない組織のセッション、存在しないセッション、ZDR 適用、すべての呼び出しが保持期間を経過</td>
+                        <td>404 Not Found (4 つのケースを区別しない)</td>
+                    </tr>
+                    <tr>
+                        <td>Admin API キー (<code class="inline">sk-ant-admin01-...</code>) で認証</td>
+                        <td>403 Forbidden</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Items needing confirmation -->
+        <section class="section">
+            <h2 class="section-title">公式ドキュメントで確認が必要な点</h2>
+            <p>本レポートの作成時点で、公式ドキュメントの記載からは確定できなかった項目です。断定を避け、確認が必要な事項として残しています。</p>
+            <ul class="info-list notes">
+                <li><strong>ベータヘッダーとバージョンヘッダーの要否</strong>: ローカルセッションのエンドポイントはベータと明記されているが、公式ドキュメントの <code class="inline">curl</code> 例に含まれるヘッダーは <code class="inline">x-api-key</code> のみであり、<code class="inline">anthropic-beta</code> ヘッダーや <code class="inline">anthropic-version</code> ヘッダーの指定は示されていない。要否は Compliance API のリファレンスで確認が必要である</li>
+                <li><strong>比較演算子の対応範囲</strong>: 一覧エンドポイントで <code class="inline">created_at.gt</code> および <code class="inline">created_at.lte</code> が利用できるかは、ローカルセッションの節では言及されていない (リモートセッションの節では <code class="inline">gte</code>、<code class="inline">gt</code>、<code class="inline">lt</code>、<code class="inline">lte</code> が明記されている)。ローカルセッションで利用可能な演算子は API リファレンスで確認が必要である</li>
+                <li><strong><code class="inline">order=asc</code> の明示指定</strong>: メッセージエンドポイントの <code class="inline">order</code> パラメータについて、ドキュメントは既定が古い順で <code class="inline">order=desc</code> で逆順になると記載しているが、<code class="inline">order=asc</code> を明示的に指定できるかは記載がないため確認が必要である</li>
+            </ul>
+        </section>
+
+        <!-- Code samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+
+            <h3 class="subsection-title">📋 ローカルセッションの一覧取得</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">created_at の範囲のみでフィルターする</span>
+                </div>
+                <pre><code class="language-bash"># 一覧エンドポイント。created_at の範囲のみでフィルターする
+# created_at.lt は created_at.gte より厳密に後である必要がある
+curl --fail-with-body -sS -G \
+  "https://api.anthropic.com/v1/compliance/apps/sessions/local" \
+  --header "x-api-key: $ANTHROPIC_COMPLIANCE_ACCESS_KEY" \
+  --data-urlencode "created_at.gte=2026-08-01T00:00:00Z" \
+  --data-urlencode "created_at.lt=2026-08-11T00:00:00Z" \
+  --data-urlencode "limit=100"</code></pre>
+            </div>
+
+            <h3 class="subsection-title">🔎 単一セッションのメタデータ取得</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">エンベロープなしでセッションオブジェクトを返す</span>
+                </div>
+                <pre><code class="language-bash"># 取得エンドポイント。一覧と同じセッションオブジェクトをエンベロープなしで返す
+session_id="clls_01HxKpLmNoPqRsTuVwXyZaBc"
+
+curl --fail-with-body -sS \
+  "https://api.anthropic.com/v1/compliance/apps/sessions/local/$session_id" \
+  --header "x-api-key: $ANTHROPIC_COMPLIANCE_ACCESS_KEY"</code></pre>
+            </div>
+
+            <h3 class="subsection-title">💬 トランスクリプトの取得</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">limit は既定 100、最大 1,000</span>
+                </div>
+                <pre><code class="language-bash"># メッセージエンドポイント。limit は既定 100、最大 1,000
+# tool_result_max_bytes に -1 を渡すとサーバー最大値の約 1 MiB になる
+session_id="clls_01HxKpLmNoPqRsTuVwXyZaBc"
+
+curl --fail-with-body -sS -G \
+  "https://api.anthropic.com/v1/compliance/apps/sessions/local/$session_id/messages" \
+  --header "x-api-key: $ANTHROPIC_COMPLIANCE_ACCESS_KEY" \
+  --data-urlencode "limit=1000" \
+  --data-urlencode "tool_use_input_max_bytes=-1" \
+  --data-urlencode "tool_result_max_bytes=-1"</code></pre>
+            </div>
+
+            <h3 class="subsection-title">📄 一覧の前方向ページング</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">next_page を page パラメータに渡して id で重複排除する</span>
+                </div>
+                <pre><code class="language-python"># next_page を page パラメータに渡して前方向にページングする
+# has_more は存在しないため、next_page が null になったら停止する
+# created_at は前進しうるため、id で重複排除する
+import os
+
+import httpx
+
+BASE_URL = "https://api.anthropic.com/v1/compliance/apps/sessions/local"
+HEADERS = {"x-api-key": os.environ["ANTHROPIC_COMPLIANCE_ACCESS_KEY"]}
+
+seen_ids: set[str] = set()
+params: dict[str, str] = {
+    "created_at.gte": "2026-08-01T00:00:00Z",
+    "created_at.lt": "2026-08-11T00:00:00Z",
+    "limit": "500",  # 最大値
+}
+
+with httpx.Client(headers=HEADERS, timeout=60.0) as client:
+    while True:
+        response = client.get(BASE_URL, params=params)
+        response.raise_for_status()
+        payload = response.json()
+
+        for session in payload["data"]:
+            if session["id"] in seen_ids:
+                continue
+            seen_ids.add(session["id"])
+            print(
+                session["id"],
+                session["product_surface"],
+                session["created_at"],
+                session["user"]["id"],
+                session["workspace_id"],
+            )
+
+        next_page = payload.get("next_page")
+        if not next_page:
+            break
+        params["page"] = next_page
+
+print(f"取得したセッション数: {len(seen_ids)}")</code></pre>
+            </div>
+
+            <h3 class="subsection-title">🏷️ <code class="inline">anthropic-workspace-id</code> レスポンスヘッダーの読み取り</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">with_raw_response でレスポンスヘッダーを読み取る</span>
+                </div>
+                <pre><code class="language-python"># anthropic SDK の with_raw_response でレスポンスヘッダーを読み取る
+# 認証情報がワークスペースに解決しない場合、ヘッダーは存在しない
+import anthropic
+
+client = anthropic.Anthropic()
+
+response = client.messages.with_raw_response.create(
+    model="claude-opus-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello, Claude"}],
+)
+
+workspace_id = response.headers.get("anthropic-workspace-id")
+request_id = response.headers.get("request-id")
+organization_id = response.headers.get("anthropic-organization-id")
+
+print(f"Workspace ID: {workspace_id}")
+print(f"Request ID: {request_id}")
+print(f"Organization ID: {organization_id}")
+
+# パースしたレスポンス本文は parse で取得する
+message = response.parse()
+print(message.content[0].text)</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">🎯 対象</h3>
+            <ul class="info-list">
+                <li><strong>コンプライアンス / eDiscovery 担当者</strong>: Claude Desktop の Cowork や Claude Code での作業内容を、証跡として API から取得する必要がある担当者</li>
+                <li><strong>セキュリティチーム</strong>: SIEM や DLP にローカルセッションのトランスクリプトを取り込み、機微情報の取り扱いを監視する担当者</li>
+                <li><strong>Compliance API のインテグレーション実装者</strong>: 既存のチャット / ファイル / プロジェクトのエクスポート処理にローカルセッションを追加する開発者</li>
+                <li><strong>プラットフォーム運用者および FinOps 担当者</strong>: <code class="inline">anthropic-workspace-id</code> を活用してリクエスト単位のワークスペース帰属を記録し、コスト配賦やレート制限の調査に用いる担当者</li>
+            </ul>
+
+            <h3 class="subsection-title">🛠️ 必要なアクション</h3>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="flow-step-num">1</div>
+                    <p><strong>利用可否の確認</strong>: Claude Enterprise 組織であり、Compliance API が有効化されていることを確認する。404 で <code class="inline">Local sessions are not available.</code> が返る場合は親組織でローカルセッションが利用できない状態である。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">2</div>
+                    <p><strong>既存キーでの疎通確認</strong>: 新しいキーやスコープは不要であるため、既存の Compliance Access Key と <code class="inline">read:compliance_user_data</code> スコープで一覧エンドポイントを呼び出して疎通を確認する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">3</div>
+                    <p><strong>エクスポート設計の見直し</strong>: <code class="inline">created_at</code> が前進しうること、<code class="inline">updated_at</code> が存在しないことを踏まえ、末尾ウィンドウの再取得と <code class="inline">id</code> による重複排除を前提としたジョブ設計に変更する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">4</div>
+                    <p><strong>前方互換な実装</strong>: 未知の <code class="inline">product_surface</code> 値と未知の <code class="inline">provenance</code> の型 / 理由を通過させ、想定外のフィールドを無視する実装にする。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">5</div>
+                    <p><strong>機微情報の取り扱い</strong>: トランスクリプトにマスキングが行われないことを前提に、保存先の暗号化とアクセス制御を設計する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">6</div>
+                    <p><strong>カバレッジのギャップの明示</strong>: Console API キー認証の Claude Code、サードパーティクラウド経由の Claude Code、Claude Code on the web、HIPAA readiness 組織、CMEK 組織のトランスクリプト本文が対象外であることを、監査要件の関係者に共有する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">7</div>
+                    <p><strong>ワークスペース ID のロギング</strong>: Claude API を呼び出すクライアントで <code class="inline">anthropic-workspace-id</code> を <code class="inline">request-id</code> とともにログに記録し、後続のコスト調査やレート制限調査に使えるようにする。</p>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">🔄 移行ガイド: リモートセッション実装からの差分</h3>
+            <p>既にリモートセッションのエンドポイントを利用している組織は、ローカルセッション向けに以下の差分を実装する必要があります。</p>
+            <div class="use-case">
+                <h4>🔍 フィルターの縮小</h4>
+                <p>組織フィルターとユーザーフィルターが存在しないため、<code class="inline">created_at.gte</code> / <code class="inline">created_at.lt</code> による時間窓のみで走査し、必要なフィルタリングは取得後にクライアント側で行います。</p>
+            </div>
+            <div class="use-case">
+                <h4>♻️ ライフサイクルフィールドの不在</h4>
+                <p><code class="inline">status</code> と <code class="inline">updated_at</code> に依存した差分検出は使えないため、末尾ウィンドウの再取得と <code class="inline">id</code> による重複排除に置き換えます。</p>
+            </div>
+            <div class="use-case">
+                <h4>➕ メタデータ取得エンドポイントの追加</h4>
+                <p>ローカルセッションには単一セッションのメタデータ取得エンドポイントが存在するため、メールアドレスの解決に利用できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔀 <code class="inline">product_surface</code> の分岐</h4>
+                <p><code class="inline">cowork_remote</code> に加えて <code class="inline">cowork</code> と <code class="inline">claude_code</code> を扱います。</p>
+            </div>
+            <div class="use-case">
+                <h4>🆔 ID 接頭辞の分岐</h4>
+                <p><code class="inline">cse_</code> に加えて <code class="inline">clls_</code> を扱います。</p>
+            </div>
+            <div class="use-case">
+                <h4>🚦 レート制限</h4>
+                <p>ローカルセッションは共有の Compliance API レート制限のみに計上されるため、リモートセッション向けに実装したエンドポイント固有のスロットリングをそのまま適用する必要はありません。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p>2026 年 8 月 11 日の 2 件の変更は、いずれも「そのリクエストは誰の、どのワークスペースの、どのセッションのものか」を API から確定できるようにするものです。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>ローカルセッション対応はセッション監査の最後の空白を埋める</h3>
+                        <p>リモートセッションのエンドポイントは Anthropic 管理のクラウド環境で動作する Cowork セッションのみを対象としていました。今回のローカルセッション対応により、Claude Desktop の Cowork とターミナル / IDE の Claude Code が加わり、Claude Enterprise 組織のエージェント利用をエンドポイントの種類で分けつつ一通り取得できる構成になりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💸</div>
+                    <div class="key-point-content">
+                        <h3>導入コストが低い</h3>
+                        <p>新しいキー、スコープ、設定、クライアントの更新はいずれも不要であり、既存の Compliance Access Key でそのまま呼び出せます。デバイス側のエージェント導入も不要で、記録はリクエストが Claude API に到達した時点でサーバーサイドで行われます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚠️</div>
+                    <div class="key-point-content">
+                        <h3>一方でカバレッジの前提を正確に把握する必要がある</h3>
+                        <p>Console API キー認証の Claude Code、サードパーティクラウド経由の Claude Code、Claude Code on the web は記録されません。HIPAA readiness 組織ではローカルセッションデータが収集されず、CMEK 組織ではセッションは列挙できるがトランスクリプト本文が返りません。トランスクリプトは API に到達した内容のみを示すため、デバイス上の活動そのものの証跡ではありません。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔁</div>
+                    <div class="key-point-content">
+                        <h3>エクスポートの設計が従来と異なる</h3>
+                        <p><code class="inline">updated_at</code> が存在せず <code class="inline">created_at</code> が保持期間に応じて前進するため、差分検出ではなく末尾ウィンドウの再取得と <code class="inline">id</code> による重複排除が必要になります。カーソルの 24 時間の有効期間も含めて、ジョブの設計段階で織り込む必要があります。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏷️</div>
+                    <div class="key-point-content">
+                        <h3><code class="inline">anthropic-workspace-id</code> は運用の摩擦を減らす</h3>
+                        <p>これまで Default Workspace の使用量やコストは <code class="inline">workspace_id</code> が <code class="inline">null</code> として現れるため識別しにくかったですが、レスポンスヘッダーでは Default Workspace も <code class="inline">wrkspc_</code> ID として返ります。<code class="inline">request-id</code> と併せて記録しておけば、コスト配賦とレート制限の調査を後から追跡できます。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="callout summary">
+                <span class="callout-icon">💡</span>
+                <p>ベータ段階であるため、<code class="inline">product_surface</code> の値やフィールドは今後拡張される見込みです。ドキュメントが繰り返し求めているように、未知の値を通過させる前方互換な実装を最初から用意しておくことが、この機能を長期運用する上での要点となります。</p>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="links-list">
+                <li><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude Developer Platform Release Notes</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/compliance-content-data" target="_blank" rel="noopener noreferrer">Retrieve and delete chats, files, projects, and sessions</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/compliance-content-data#retrieve-local-sessions" target="_blank" rel="noopener noreferrer">Retrieve local sessions</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/compliance-content-data#retrieve-a-local-session-transcript" target="_blank" rel="noopener noreferrer">Retrieve a local session transcript</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/compliance-content-data#retrieve-remote-sessions" target="_blank" rel="noopener noreferrer">Retrieve remote sessions</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/compliance-api-access" target="_blank" rel="noopener noreferrer">Set up the Compliance API</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/compliance-errors" target="_blank" rel="noopener noreferrer">Compliance API errors</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/compliance-faq#data-coverage-and-retention" target="_blank" rel="noopener noreferrer">Compliance API FAQ</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/workspaces" target="_blank" rel="noopener noreferrer">Workspaces</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/workspaces#identify-the-workspace-behind-an-api-response" target="_blank" rel="noopener noreferrer">Identify the workspace behind an API response</a></li>
+                <li><a href="https://platform.claude.com/docs/en/api/overview#response-headers" target="_blank" rel="noopener noreferrer">API response headers</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/usage-cost-api" target="_blank" rel="noopener noreferrer">Usage and Cost API</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/cmek" target="_blank" rel="noopener noreferrer">Customer-managed encryption keys</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/api-and-data-retention" target="_blank" rel="noopener noreferrer">API and data retention</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <p><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p><a href="https://platform.claude.com/docs/en/manage-claude/compliance-content-data" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/manage-claude/compliance-content-data</a></p>
+            <p><a href="https://platform.claude.com/docs/en/manage-claude/workspaces" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/manage-claude/workspaces</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-08-11 | カテゴリ: エンタープライズ / コンプライアンス / API</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

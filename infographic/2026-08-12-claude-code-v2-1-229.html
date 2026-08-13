@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.229: プラグインマーケットプレイスの command ソース、SSE キープアライブ ping、/commit-push-pr の危険フラグ自動承認撤廃 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --danger: #DC2626;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: #E8F1FF;
+            color: #1565C0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 8px;
+            border: 1px solid #90CAF9;
+        }
+
+        .latest-badge {
+            display: inline-block;
+            background: #E9F7EC;
+            color: #2E7D32;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 8px;
+            border: 1px solid #66BB6A;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        .header .npm-time {
+            font-size: 13px;
+            opacity: 0.75;
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .count-badge {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .count-badge.added {
+            background: linear-gradient(135deg, #E9F7EC 0%, #A7F3D0 100%);
+            color: #1B5E20;
+        }
+
+        .count-badge.fixed {
+            background: linear-gradient(135deg, #E8F1FF 0%, #C5DDF9 100%);
+            color: #1565C0;
+        }
+
+        .count-badge.improved {
+            background: linear-gradient(135deg, #E9F7EC 0%, #C8E6C9 100%);
+            color: #2E7D32;
+        }
+
+        .count-badge.updated {
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+            color: #6A1B9A;
+        }
+
+        .count-badge.changed {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            color: #E65100;
+        }
+
+        .count-badge.vscode {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            color: #0D47A1;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card.priority {
+            border-color: #F87171;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FEE9E9 100%);
+        }
+
+        .feature-card.security {
+            border-color: #FF9800;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFF3E0 100%);
+        }
+
+        .feature-card.highlight {
+            border-color: #66BB6A;
+            background: linear-gradient(135deg, #FFFFFF 0%, #EAF8EE 100%);
+        }
+
+        .item-no {
+            display: inline-block;
+            min-width: 26px;
+            height: 26px;
+            line-height: 26px;
+            text-align: center;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Fix / Change List */
+        .fix-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .fix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .fix-item .fix-icon {
+            flex-shrink: 0;
+            font-size: 18px;
+            line-height: 1.4;
+        }
+
+        .fix-item .fix-text strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .fix-item .fix-text span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Tech Detail Blocks */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tech-detail p + p {
+            margin-top: 10px;
+        }
+
+        .tech-detail ul {
+            margin: 10px 0 0 22px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tech-detail li {
+            margin-bottom: 6px;
+        }
+
+        /* Warning / Breaking Change */
+        .warning-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .warning-box.critical {
+            background: #FFEBEE;
+            border-color: #F44336;
+        }
+
+        .warning-box .warning-label {
+            display: inline-block;
+            background: #FF9800;
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 3px 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .warning-box.critical .warning-label {
+            background: #F44336;
+        }
+
+        .warning-box h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 10px;
+        }
+
+        .warning-box.critical h3 {
+            color: #C62828;
+        }
+
+        .warning-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box p + p {
+            margin-top: 10px;
+        }
+
+        .warning-box ul {
+            margin: 10px 0 0 22px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box li {
+            margin-bottom: 6px;
+        }
+
+        /* Security Section */
+        .security-section {
+            background: linear-gradient(135deg, #FFFDF7 0%, #FFF3E0 100%);
+            border: 2px dashed #FF9800;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .security-card {
+            background: #FFFFFF;
+            border: 2px solid #FFCC80;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .security-card .shield {
+            font-size: 26px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .security-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 8px;
+        }
+
+        .security-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        /* Highlight Section */
+        .highlight-section {
+            background: linear-gradient(135deg, #FBFFFC 0%, #EAF8EE 100%);
+            border: 2px dashed #66BB6A;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stat-card.total {
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-value {
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-label {
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action List */
+        .action-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .action-number {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-content strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .action-content span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Notes */
+        .migration-note {
+            background: #E9F7EC;
+            border: 2px solid #66BB6A;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .migration-note h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2E7D32;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .migration-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .migration-note ol {
+            margin: 8px 0 0 22px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .migration-note li {
+            margin-bottom: 6px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        code.inline {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            margin: 8px 0 0 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .security-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <span class="version-badge">v2.1.229</span>
+                <span class="latest-badge">✅ 最新版</span>
+                <h1>Claude Code v2.1.229<br>プラグインマーケットプレイスの command ソース、SSE キープアライブ ping、/commit-push-pr の危険フラグ自動承認撤廃</h1>
+                <p class="date">📅 リリース日: 2026 年 8 月 12 日 | ソース: Claude Code Changelog</p>
+                <p class="npm-time">📦 npm 公開日時: 2026-08-12T19:28:48Z</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">📊 数字で見る v2.1.229</h2>
+            <p class="section-lead">v2.1.229 は全 32 項目で構成される。直前の v2.1.228 が 18 項目だったのに対し、項目数はほぼ 2 倍に増えており、対象領域も CLI 本体、ゲートウェイ経由の接続、セルフホストランナー、サンドボックス、VSCode 拡張へと広がっている。</p>
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-value">32</div>
+                    <div class="stat-label">全変更点</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">🆕 追加</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">🔧 修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">✨ 改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">📘 更新</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">🔀 変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">🧩 VSCode</div>
+                </div>
+            </div>
+            <p class="section-lead" style="margin-top: 20px; margin-bottom: 0;">内訳: 追加 3 件、修正 18 件、改善 3 件、更新 2 件、変更 3 件、VSCode 拡張 3 件。このうち <strong>破壊的変更は 2 件</strong>である。</p>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">🎯 概要: 内容の重心は 4 点</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>1. プラグインマーケットプレイスの <code class="inline">command</code> ソースの追加</h3>
+                        <p>ローカルのコマンド (例えば IDE) がプラグインディレクトリを出力し、その結果はセッションごとに再解決され、再起動なしで適用される。<code class="inline">mode: "link"</code> を指定すると、出力されたディレクトリをその場で使用する。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📡</div>
+                    <div class="key-point-content">
+                        <h3>2. SSE キープアライブ ping の追加</h3>
+                        <p>Vertex および Bedrock を上流とする構成で、長い思考の合間にゲートウェイのストリーミング応答が SSE キープアライブ ping を送るようになり、アイドルタイムアウトによる切断を防ぐ。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🖥️</div>
+                    <div class="key-point-content">
+                        <h3>3. ストリーミング中の応答の消失と二重出力の修正</h3>
+                        <p>ストリーミング中に長い応答が部分的に消え、ターミナルへ 2 回出力される問題が修正された。日常的に TUI を利用するすべてのユーザーに関わる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚠️</div>
+                    <div class="key-point-content">
+                        <h3>4. <code class="inline">/commit-push-pr</code> の危険フラグ自動承認の撤廃</h3>
+                        <p><code class="inline">--force</code>、<code class="inline">--amend</code>、<code class="inline">--no-verify</code> などの危険なフラグを含む git / gh コマンドが自動承認されなくなった。破壊的変更である。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏭</div>
+                    <div class="key-point-content">
+                        <h3>そのほかの実運用に直結する項目</h3>
+                        <p>セルフホストランナーセッションでのサーバー提供フック対応、<code class="inline">claude remote-control --continue</code> のドキュメント化、<code class="inline">ListAgents</code> における <code class="inline">offline</code> / <code class="inline">cloud</code> ラベル、ワークフローのファンアウトにおけるプロンプトプレフィックスキャッシュの再利用、32 MB リクエスト上限を超える会話のコンパクション挙動、サンドボックスの IPv6 リテラル対応とフェイルクローズ強制などが揃っている。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Breaking Changes -->
+        <section class="section security-section">
+            <h2 class="section-title">⚠️ 破壊的変更 <span class="count-badge changed">2 件</span></h2>
+            <p class="section-lead">本リリースには対応が必要な破壊的変更が 2 件含まれる。いずれも安全側への変更だが、既存の起動スクリプトや自動化フローが停止する可能性がある。</p>
+
+            <div class="warning-box critical">
+                <span class="warning-label">Breaking Change 1 / 対応必須</span>
+                <h3>🏭 セルフホストランナーの Windows 起動における <code class="inline">--base-dir</code> 必須化</h3>
+                <p>セルフホストランナーの Windows 起動で、明示的な <code class="inline">--base-dir</code> の指定が必須になった。changelog は、Windows にはデフォルトのチェックアウトディレクトリが存在しないと明記している。</p>
+                <p>修正前は <code class="inline">--base-dir</code> を指定しない起動が受け付けられていた。本リリース以降は、指定のない既存の起動スクリプトやサービス定義は、そのままでは起動に失敗する。</p>
+                <ul>
+                    <li>起動スクリプト、サービス定義、タスクスケジューラの設定など、セルフホストランナーを起動しているすべての箇所を洗い出す</li>
+                    <li><code class="inline">--base-dir</code> を指定していない箇所に、チェックアウト先のディレクトリを明示的に追加する</li>
+                    <li>指定するディレクトリがランナーの実行アカウントで書き込み可能であることを確認する</li>
+                    <li>更新後に、実際にセッションが起動しリポジトリの準備が完了することを確認する</li>
+                    <li>Windows 以外のプラットフォームで運用している場合、この変更の対象外である</li>
+                </ul>
+            </div>
+
+            <div class="warning-box critical">
+                <span class="warning-label">Breaking Change 2 / 確認必須</span>
+                <h3>🔐 <code class="inline">/commit-push-pr</code> の危険フラグ自動承認の撤廃</h3>
+                <p><code class="inline">/commit-push-pr</code> はコミットからプッシュ、プルリクエスト作成までを一連で行うコマンドであり、その過程で git / gh コマンドを実行する。修正前は、このコマンドが実行する git / gh コマンドが自動承認の対象であった。</p>
+                <p>問題は、自動承認の範囲に危険なフラグを伴うコマンドまで含まれていた点にある。本リリース以降は自動承認されなくなり、実行の可否がユーザーの判断に戻る。安全側への変更であるが、<code class="inline">/commit-push-pr</code> を無人で実行していた自動化がある場合には、承認待ちで停止する可能性がある。</p>
+                <ul>
+                    <li><code class="inline">--force</code>: <code class="inline">git push --force</code> はリモートの履歴を上書きする。他者のコミットが失われる可能性があり、共有ブランチに対して実行された場合の影響は大きい</li>
+                    <li><code class="inline">--amend</code>: <code class="inline">git commit --amend</code> は直前のコミットを書き換える。すでにプッシュ済みのコミットに対して行い、続けて強制プッシュすると履歴の不整合を招く</li>
+                    <li><code class="inline">--no-verify</code>: コミットフックやプッシュフックの実行を省略する。lint、テスト、シークレット検出などをフックで担保している運用では、その検証をすべて回避することになる</li>
+                    <li>本変更を無効化して従来の挙動に戻す設定は changelog に記載されていない</li>
+                </ul>
+            </div>
+
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before: v2.1.228 まで</h4>
+                    <p>Windows のセルフホストランナーは <code class="inline">--base-dir</code> なしで起動できた。<code class="inline">/commit-push-pr</code> は危険なフラグを伴う git / gh コマンドも自動承認していた。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After: v2.1.229 以降</h4>
+                    <p>Windows 起動には <code class="inline">--base-dir</code> の明示指定が必須。<code class="inline">/commit-push-pr</code> の危険なフラグはユーザーの承認を要する。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Feature Highlights -->
+        <section class="section highlight-section">
+            <h2 class="section-title">🆕 新機能ハイライト <span class="count-badge added">3 件</span></h2>
+            <p class="section-lead">本リリースでは追加が 3 件戻ってきており、プラグインの配布・解決の方式、ゲートウェイ接続の安定性、セルフホスト実行環境の 3 領域に及ぶ。</p>
+            <div class="security-grid">
+                <div class="security-card">
+                    <span class="shield">🧩</span>
+                    <h3><span class="item-no">3</span> プラグインマーケットプレイスの <code class="inline">command</code> ソース</h3>
+                    <p>ローカルのコマンド (例えば IDE) がプラグインディレクトリを出力する方式が追加された。出力はセッションごとに再解決され、再起動なしで適用される。<code class="inline">mode: "link"</code> を指定すると、そのディレクトリをその場で使用する。</p>
+                </div>
+                <div class="security-card">
+                    <span class="shield">📡</span>
+                    <h3><span class="item-no">2</span> SSE キープアライブ ping</h3>
+                    <p>長い思考の一時停止中に、ゲートウェイのストリーミング応答へ SSE キープアライブ ping を送るようになった。これにより Vertex および Bedrock を上流とする構成でのアイドルタイムアウト切断を防ぐ。</p>
+                </div>
+                <div class="security-card">
+                    <span class="shield">🏭</span>
+                    <h3><span class="item-no">1</span> セルフホストランナーセッションでのサーバー提供フック対応</h3>
+                    <p>セルフホストランナーのセッションで、サーバーから提供される Claude Code フックがサポートされるようになった。マネージド環境の挙動と一致する。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture: command source -->
+        <section class="section">
+            <h2 class="section-title">🏗️ プラグインマーケットプレイスの <code class="inline">command</code> ソース解決フロー</h2>
+            <p class="section-lead">従来のプラグインマーケットプレイスは、あらかじめ確定した場所からプラグインを解決する方式であった。<code class="inline">command</code> ソースは、その解決をローカルのコマンド実行に委ねる。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    SessionStart(["🚀 セッション開始"]) --> LoadConfig["⚙️ マーケットプレイス設定の読み込み"]
+    LoadConfig --> SourceType{"🔀 ソース種別の判定"}
+    SourceType -->|"従来のソース"| Legacy["📦 既存の解決処理"]
+    SourceType -->|"command"| RunCommand["⌨️ ローカルコマンドを実行<br/>IDE など"]
+    RunCommand --> PrintDir["📤 プラグインディレクトリを出力"]
+    PrintDir --> ModeCheck{"🧭 mode の指定"}
+    ModeCheck -->|"mode に link"| LinkUse["🔗 出力ディレクトリを<br/>その場で使用"]
+    ModeCheck -->|"link 以外"| NormalLoad["📁 通常のプラグイン読み込み"]
+    LinkUse --> Apply["✅ 再起動なしで適用"]
+    NormalLoad --> Apply
+    Legacy --> Apply
+    Apply --> NextSession(["🔄 次のセッションで再解決"])
+
+    classDef start fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+
+    class SessionStart,NextSession start
+    class SourceType,ModeCheck decision
+    class RunCommand,PrintDir,LinkUse,NormalLoad,Legacy process
+    class LoadConfig,Apply internal
+                </pre>
+            </div>
+            <div class="tech-detail">
+                <h3>🔄 セッションごとの再解決</h3>
+                <p>プラグインの提供元がローカルの状態に応じて変化する場合、その変化がセッション開始のたびに反映される。IDE がワークスペースの状態に応じて異なるプラグインディレクトリを出力する構成であれば、ユーザー側で設定を書き換える必要がない。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>⚡ 再起動なしの適用</h3>
+                <p>解決結果の適用に Claude Code の再起動を必要としない。プラグイン開発中の反復サイクルにおいて、待ち時間の削減につながる。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🔗 <code class="inline">mode: "link"</code> によるその場での使用</h3>
+                <p>出力されたディレクトリを複製せずにその場で使う指定である。開発中のプラグインディレクトリを直接参照する用途に向く。なお v2.1.228 では、プラグインの唯一のバージョンがシンボリックリンクされた開発用チェックアウトである場合に、バックグラウンドのプラグインキャッシュクリーンアップがそのキャッシュを削除してしまう問題が修正されている。リンク方式での開発利用に関する整備が続いていることが読み取れる。</p>
+                <p>なお、<code class="inline">command</code> ソースはローカルコマンドの実行を伴うため、設定するコマンドは信頼できるものに限る必要がある。changelog は具体的な設定スキーマの全体像を示していないため、実際のキー構成は公式ドキュメントで確認することを推奨する。</p>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">プラグインマーケットプレイスの command ソースの設定例</span>
+                </div>
+                <pre><code class="language-json">{
+  "marketplaces": {
+    "my-ide-plugins": {
+      "source": "command",
+      "command": "my-ide --print-plugin-dir",
+      "mode": "link"
+    }
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">📖 背景</h2>
+            <div class="tech-detail">
+                <h3>🔁 v2.1.228 からの流れ</h3>
+                <p>直前のリリース v2.1.228 (2026 年 8 月 11 日) は、修正 12 件、改善 3 件、変更 2 件、削除 1 件の全 18 項目で構成され、内部レイアウトエラーによる対話セッションの再描画停止、claude.ai から同期されたスキルのハードニング、Write ツールの上書きルール変更が中心であった。新機能の追加はなく、安定性とセキュリティ境界の整理に寄った内容である。</p>
+                <p>v2.1.229 はその流れを受けつつ、性格が変わっている。追加が 3 件戻ってきており、なかでもプラグインマーケットプレイスの <code class="inline">command</code> ソースは、プラグインの配布・解決の方式に新しい選択肢を加える変更である。v2.1.228 が設定階層をまたいだ marketplace エントリのマージを修正していたのに対し、本リリースはマーケットプレイスのソース種別そのものを拡張しており、プラグイン周辺の整備が継続していることが読み取れる。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🏭 セルフホストランナーの連続性</h3>
+                <p>v2.1.228 では <code class="inline">checkout</code> フック失敗時に全ランナーのセッションが失敗する問題と、バックグラウンドタスク完了直後のセッション早期終了が修正された。本リリースではサーバー提供フックへの対応が追加され、<code class="inline">managed-mcp.json</code> が配備された環境での起動時終了、Git Credential Manager のプロンプトによるハングが修正され、さらに Windows 起動時の <code class="inline">--base-dir</code> 必須化という破壊的変更が入っている。導入から日の浅いセルフホスト実行環境が、実運用で見つかった問題を順次取り込んでいる段階にある。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>📡 Remote Control の継続的な整備</h3>
+                <p>v2.1.228 で <code class="inline">/resume</code> による履歴・タイトルの漏洩が修正されたのに続き、本リリースでは <code class="inline">--continue</code> のドキュメント化、<code class="inline">ListAgents</code> のラベル追加、ラップトップ側ターミナルでスラッシュコマンドを入力した後にスピナーが固まる問題の修正が加わっている。</p>
+            </div>
+        </section>
+
+        <!-- Added (3) -->
+        <section class="section">
+            <h2 class="section-title">🆕 追加 <span class="count-badge added">3 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">1</span> 🏭 セルフホストランナーセッションでのサーバー提供フック対応</h3>
+                    <p>セルフホストランナーのセッションで、サーバーから提供される Claude Code フックがサポートされるようになった。マネージド環境の挙動と一致する。</p>
+                </div>
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">2</span> 📡 SSE キープアライブ ping の追加</h3>
+                    <p>長い思考の一時停止中に、ゲートウェイのストリーミング応答へ SSE キープアライブ ping を送るようになった。これにより Vertex および Bedrock を上流とする構成でのアイドルタイムアウト切断を防ぐ。</p>
+                </div>
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">3</span> 🧩 プラグインマーケットプレイスの <code class="inline">command</code> ソースの追加</h3>
+                    <p>ローカルのコマンド (例えば IDE) がプラグインディレクトリを出力する方式が追加された。出力はセッションごとに再解決され、再起動なしで適用される。<code class="inline">mode: "link"</code> を指定すると、そのディレクトリをその場で使用する。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fixed (18) -->
+        <section class="section">
+            <h2 class="section-title">🔧 修正 <span class="count-badge fixed">18 件</span></h2>
+            <p class="section-lead">項目 4 から 21 が修正にあたる。TUI のレンダリング、Windows のパス処理、ゲートウェイ接続、セルフホストランナー、コンパクションなど、影響範囲の明確な修正が幅広く揃っている。</p>
+            <div class="feature-grid">
+                <div class="feature-card priority">
+                    <h3><span class="item-no">4</span> 🖥️ ストリーミング中の応答の消失と二重出力の修正</h3>
+                    <p>長い応答がストリーミング中に部分的に消え、ターミナルに 2 回出力される問題を修正。</p>
+                </div>
+                <div class="feature-card priority">
+                    <h3><span class="item-no">5</span> 💥 非文字列の引数値によるクラッシュの修正</h3>
+                    <p>ツール呼び出しの <code class="inline">glob</code>、<code class="inline">file_path</code>、<code class="inline">command</code> の値が文字列でない場合に、エラー画面へのクラッシュが発生する問題を修正。該当セッションの <code class="inline">--resume</code> 時に発生するケースも含む。</p>
+                </div>
+                <div class="feature-card priority">
+                    <h3><span class="item-no">6</span> 📐 狭いターミナルでの RangeError クラッシュの修正</h3>
+                    <p>非常に幅の狭いターミナルウィンドウで進捗バーや Markdown テーブルが描画された際の RangeError クラッシュを修正。起動時に <code class="inline">claude --continue</code> / <code class="inline">--resume</code> をクラッシュさせる可能性もあった。</p>
+                </div>
+                <div class="feature-card priority">
+                    <h3><span class="item-no">7</span> 🪟 Windows の拡張長パス・UNC パスによるクラッシュの修正</h3>
+                    <p>ツール呼び出しやメッセージが拡張長パス (<code class="inline">\\?\</code>) または UNC パスでファイルを参照した場合に、Windows でクラッシュする問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">8</span> 🔖 <code class="inline">CLAUDE_CODE_ATTRIBUTION_HEADER</code> による auto モード失敗の修正</h3>
+                    <p><code class="inline">CLAUDE_CODE_ATTRIBUTION_HEADER</code> で attribution ヘッダーを無効化しているユーザーについて、auto モードがすべてのツール呼び出しで失敗する問題を修正。Anthropic API への直接接続が対象。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">9</span> 🚪 カスタムゲートウェイでの <code class="inline">/model</code> 拒否の修正</h3>
+                    <p>カスタムの <code class="inline">ANTHROPIC_BASE_URL</code> ゲートウェイを使用する claude.ai サブスクライバーに対して、<code class="inline">/model</code> が Sonnet / Opus 1M を拒否する問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">10</span> 🔑 厳格な認可サーバーでの MCP OAuth の修正</h3>
+                    <p>リダイレクト URI に <code class="inline">localhost</code> ではなく <code class="inline">127.0.0.1</code> を使用することで、厳格な認可サーバーでの MCP OAuth を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">11</span> 🌀 Remote Control のスピナー固着の修正</h3>
+                    <p>ラップトップのターミナルでスラッシュコマンドを入力した後に、Remote Control クライアントで作業中スピナーが固まったままになる問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">12</span> 🐙 Claude Code Review ワークフローのレビュー未投稿の修正</h3>
+                    <p><code class="inline">/install-github-app</code> が生成する Claude Code Review ワークフローが、プルリクエストにレビューを投稿せずに完了してしまう問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">13</span> 🩺 IDE 診断多数時の UI 停止の修正</h3>
+                    <p>IDE 拡張が接続されている状態で、数千件の IDE 診断を伴うファイルを編集した後に発生する数秒間の UI 停止を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">14</span> 🧹 <code class="inline">claude plugin</code> の残存 liveness ファイルの修正</h3>
+                    <p>ワンショットの <code class="inline">claude plugin</code> コマンドが liveness ファイルを残し、古いバージョンのプラグインのクリーンアップを妨げる可能性があった問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">15</span> 🖧 CPU 制限コンテナでのコア数誤認の修正</h3>
+                    <p>CPU 制限のあるコンテナ内の動的ワークフローが、コンテナの CPU 制限ではなくホストマシンのコア数を使用してしまう問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">16</span> 👁️ ファイルウォッチャーのハンドルリークとスケジュールタスク監視エラーの修正</h3>
+                    <p>アトミックなファイル置換の後に発生するファイルウォッチャーのハンドルリークと、ネットワークファイルシステムや仮想ファイルシステムでスケジュールタスクのウォッチャーが失敗した際に Windows で発生する未捕捉エラーを修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">17</span> 🈳 空白のみのメッセージによる 400 エラーの修正</h3>
+                    <p>SDK および <code class="inline">--input-format stream-json</code> のセッションで、空白のみのメッセージを送信すると 400 API エラーになる問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">18</span> 📦 32 MB リクエスト上限超過時のコンパクションリトライの修正</h3>
+                    <p>メッセージだけで API の 32 MB リクエスト上限を超える会話について、除去できる画像やドキュメントが存在しないにもかかわらずコンパクションをリトライし続ける問題を修正。以降は明確なメッセージを伴って一度だけ失敗する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">19</span> 📊 Claude Desktop セッションからの OpenTelemetry エクスポートの修正</h3>
+                    <p>Desktop が管理するゲートウェイが同時にテレメトリのエンドポイントでもある場合に、Claude Desktop セッションからの OpenTelemetry エクスポートが拒否される問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">20</span> 🔌 <code class="inline">managed-mcp.json</code> 配備時のリモートセッション起動失敗の修正</h3>
+                    <p><code class="inline">managed-mcp.json</code> が配備されており、かつサーバーが MCP サーバーを配信する場合に、セルフホストランナーやその他のリモートセッションが起動時に終了してしまう問題を修正。該当するサーバーは警告を出してスキップされるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">21</span> 🔐 セルフホストランナーの Git Credential Manager ハングの修正</h3>
+                    <p>セルフホストランナーのリポジトリ準備処理が Git Credential Manager のプロンプトでハングする問題を修正。認証情報が欠落している場合、git はすぐに失敗するようになった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improved (3) -->
+        <section class="section">
+            <h2 class="section-title">✨ 改善 <span class="count-badge improved">3 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">22</span> 💰 ワークフローのファンアウトにおけるプレフィックスキャッシュ再利用の改善</h3>
+                    <p>ワークフローのファンアウトで、同一プレフィックスを持つ兄弟エージェントの起動時刻をずらすようになった。これにより後続のエージェントはキャッシュされたプロンプトプレフィックスを読み込み、同じ分のコストを再度支払わずに済む。<code class="inline">CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS=0</code> で無効化できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">23</span> 📏 "prompt is too long" エラーの改善</h3>
+                    <p><code class="inline">/compact</code> を提案するだけでなく、自動コンパクションでなぜ回復できなかったのかを説明するようになった。</p>
+                </div>
+                <div class="feature-card security">
+                    <h3><span class="item-no">24</span> 🧱 サンドボックスの改善</h3>
+                    <p>ネットワークドメインリスト中の IPv6 リテラルが角括弧で囲われるようになり (<code class="inline">[::1]:443</code>)、曖昧な表記はフェイルクローズで強制され、<code class="inline">/doctor</code> で警告される。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Updated (2) -->
+        <section class="section">
+            <h2 class="section-title">📘 更新 / ドキュメント化 <span class="count-badge updated">2 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">25</span> 📡 <code class="inline">claude remote-control --continue</code> のドキュメント化</h3>
+                    <p>直近の Remote Control セッションを再開するための <code class="inline">claude remote-control --continue</code> がドキュメントに記載された。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">26</span> 🔑 <code class="inline">/login</code> の警告表示の更新</h3>
+                    <p>ログイン成功後に <code class="inline">CLAUDE_CODE_OAUTH_TOKEN</code> の上書きに関する警告を再度表示するようになった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Changed (3) -->
+        <section class="section">
+            <h2 class="section-title">🔀 変更 <span class="count-badge changed">3 件</span></h2>
+            <p class="section-lead">項目 28 と 29 は破壊的変更である。</p>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">27</span> 🏷️ <code class="inline">ListAgents</code> のラベル変更</h3>
+                    <p><code class="inline">ListAgents</code> は切断された Remote Control セッションを <code class="inline">offline</code> としてマークし、ユーザーのクラウドセッションを <code class="inline">cloud</code> としてラベル付けするようになった。</p>
+                </div>
+                <div class="feature-card security">
+                    <h3><span class="item-no">28</span> ⚠️ <code class="inline">/commit-push-pr</code> の危険フラグ自動承認の撤廃 (破壊的変更)</h3>
+                    <p><code class="inline">/commit-push-pr</code> において、危険なフラグ (<code class="inline">--force</code>、<code class="inline">--amend</code>、<code class="inline">--no-verify</code> など) を伴う git / gh コマンドが自動承認されなくなった。</p>
+                </div>
+                <div class="feature-card security">
+                    <h3><span class="item-no">29</span> ⚠️ セルフホストランナーの Windows 起動における <code class="inline">--base-dir</code> 必須化 (破壊的変更)</h3>
+                    <p>セルフホストランナーの Windows 起動で、明示的な <code class="inline">--base-dir</code> の指定が必須になった。Windows にはデフォルトのチェックアウトディレクトリが存在しない。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VSCode (3) -->
+        <section class="section">
+            <h2 class="section-title">🧩 VSCode 拡張 <span class="count-badge vscode">3 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">30</span> 💬 フィードバックダイアログへの切り替え</h3>
+                    <p>「Report a problem」および <code class="inline">/bug</code> が、廃止されたアンケートのリンクではなく組み込みのフィードバックダイアログを開くようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">31</span> ↔️ <code class="inline">/btw</code> パネルのリサイズ対応</h3>
+                    <p><code class="inline">/btw</code> のサイドクエスチョンパネルが、境界のドラッグでリサイズ可能になった。サイドドッキング配置とスタック配置の両方に対応する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">32</span> 🗂️ サイドバーのセッショングループの追加</h3>
+                    <p>サイドバーにセッショングループが追加された。右クリックで作成、名前の変更、削除ができ、Cmd / Ctrl クリックまたは Shift クリックで複数のセッションを一度に移動できる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">🔬 技術的な詳細</h2>
+            <div class="tech-detail">
+                <h3>📡 SSE キープアライブ ping とアイドルタイムアウト</h3>
+                <p>Claude Code のストリーミング応答は Server-Sent Events (SSE) で配信される。モデルが長時間の思考を行う局面では、SSE のストリーム上にデータが流れない時間が生じる。この無通信区間が長引くと、経路上のロードバランサやプロキシがアイドルタイムアウトと判断して接続を切断することがある。</p>
+                <p>changelog は、この問題が Vertex および Bedrock を上流とする構成で顕在化することを明記している。本リリースでは、長い思考の一時停止中にゲートウェイのストリーミング応答へキープアライブ ping を挿入することで、無通信区間そのものを発生させない方式が採られた。Vertex AI または Amazon Bedrock 経由で Claude Code を利用しており、長時間の思考中に接続が切れる症状に遭遇していた環境では、本バージョンへの更新価値が高い。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>💰 ワークフローのファンアウトとプロンプトプレフィックスキャッシュ</h3>
+                <p>Claude Code のワークフローは、複数のサブエージェントを並列に起動するファンアウトを行うことがある。このとき、同じプレフィックスを持つ兄弟エージェント (same-prefix sibling agents) は、プロンプトの先頭部分が共通になる。</p>
+                <p>プロンプトキャッシュは、共通のプレフィックスがすでにキャッシュに書き込まれていれば、後続のリクエストがそれを読み込む形で機能する。ところが完全に同時に起動すると、いずれのリクエストもキャッシュ書き込みの完了を待たずに走るため、各エージェントが同じプレフィックス分のコストを個別に支払うことになる。</p>
+                <p>本改善は、同一プレフィックスの兄弟エージェントの起動時刻をずらすことで、先行するエージェントがプレフィックスをキャッシュに載せ、後続のエージェントがそれを読み込むようにした。この時間差の挿入は <code class="inline">CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS=0</code> で無効化できる。並列起動の即時性を最優先したい場合は、この環境変数で従来の挙動に戻せる。</p>
+            </div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph Before["🔴 従来: 完全同時起動"]
+        direction TB
+        W1["🧭 ワークフロー"] --> A1["🤖 兄弟エージェント A"]
+        W1 --> B1["🤖 兄弟エージェント B"]
+        W1 --> C1["🤖 兄弟エージェント C"]
+        A1 --> Cost1["💸 プレフィックス分を<br/>それぞれ支払う"]
+        B1 --> Cost1
+        C1 --> Cost1
+    end
+
+    subgraph After["🟢 v2.1.229: 起動時刻をずらす"]
+        direction TB
+        W2["🧭 ワークフロー"] --> A2["🤖 先行エージェント A"]
+        A2 --> Write["📝 プレフィックスを<br/>キャッシュに書き込み"]
+        Write --> B2["🤖 後続エージェント B"]
+        Write --> C2["🤖 後続エージェント C"]
+        B2 --> Cost2["💰 キャッシュ読み込みで<br/>コスト削減"]
+        C2 --> Cost2
+    end
+
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef good fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Before,After container
+    class W1,W2,A1,B1,C1,A2,B2,C2 process
+    class Write internal
+    class Cost1 warning
+    class Cost2 good
+                </pre>
+            </div>
+            <div class="tech-detail">
+                <h3>📦 32 MB リクエスト上限とコンパクションの終了条件</h3>
+                <p>Claude API にはリクエストサイズの上限として 32 MB がある。会話が長大になった場合、Claude Code は自動コンパクションによって会話を縮約し、リクエストを上限内に収めようとする。この縮約の手段には、画像やドキュメントの除去も含まれる。</p>
+                <p>修正前は、メッセージだけで 32 MB を超える会話について、除去できる画像やドキュメントが存在しない状況でもコンパクションのリトライが繰り返されていた。縮約する対象がないため成功する見込みはなく、ユーザーは進捗のない再試行を待たされることになる。本修正により、この状況では明確なメッセージを伴って一度だけ失敗するようになった。</p>
+                <p>関連する改善として、"prompt is too long" エラーが <code class="inline">/compact</code> の提案だけでなく、自動コンパクションでなぜ回復できなかったのかを説明するようになった。両者を合わせると、コンテキスト上限に到達した際に、ユーザーが状況を把握して次の行動を選べるようになる方向の変更である。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🧱 サンドボックスの IPv6 リテラルとフェイルクローズ</h3>
+                <p>サンドボックスは、ネットワークドメインリストに基づいて通信先を制御する。IPv6 アドレスをリテラルで記述する場合、ポート番号との区切りが曖昧になるという構文上の問題がある。IPv6 アドレス自体がコロンを含むためである。本リリースでは、ネットワークドメインリスト中の IPv6 リテラルが角括弧で囲われるようになった。changelog は例として <code class="inline">[::1]:443</code> を挙げている。</p>
+                <p>さらに重要なのは、曖昧な表記の扱いである。曖昧な表記はフェイルクローズ (fail-closed) で強制され、<code class="inline">/doctor</code> によって警告される。フェイルクローズとは、判断がつかない場合に許可ではなく拒否を選ぶ設計である。ネットワーク制御においては、解釈が曖昧な記述を「通す」方向に解決してしまうと、意図しない通信が許可される。フェイルクローズを採ることで、設定の曖昧さが権限の緩みに直結しない構造になる。加えて <code class="inline">/doctor</code> が該当箇所を警告するため、設定を書き直すべき箇所をユーザーが把握できる。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>📡 Remote Control の運用改善</h3>
+                <p>Remote Control 関連では 3 つの項目がある。第一に、<code class="inline">claude remote-control --continue</code> がドキュメント化された。これは直近の Remote Control セッションを再開するためのフラグである。第二に、<code class="inline">ListAgents</code> が切断された Remote Control セッションを <code class="inline">offline</code> としてマークし、クラウドセッションを <code class="inline">cloud</code> としてラベル付けするようになった。複数のセッションが一覧に並ぶ状況で、どのセッションが到達可能でどれがクラウド上のものかを判別できる。第三に、ラップトップのターミナルでスラッシュコマンドを入力した後に、Remote Control クライアント側で作業中スピナーが固まったままになる問題が修正された。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🔖 <code class="inline">CLAUDE_CODE_ATTRIBUTION_HEADER</code> と auto モード</h3>
+                <p>attribution ヘッダーは、リクエストの発信元に関する情報を付与するヘッダーである。<code class="inline">CLAUDE_CODE_ATTRIBUTION_HEADER</code> はこれを無効化するための環境変数として存在する。修正前は、この環境変数でヘッダーを無効化しているユーザーについて、auto モードがすべてのツール呼び出しで失敗していた。changelog は対象を Anthropic API への直接接続と明記している。ヘッダーの無効化はプライバシーや社内ポリシーの都合で設定されることがあり、その設定が auto モードを完全に使用不能にしていた点で影響の大きい不具合であった。</p>
+            </div>
+        </section>
+
+        <!-- Impact / Audience -->
+        <section class="section">
+            <h2 class="section-title">👥 開発者への影響: 対象</h2>
+            <div class="fix-list">
+                <div class="fix-item">
+                    <span class="fix-icon">☁️</span>
+                    <div class="fix-text">
+                        <strong>Vertex AI / Amazon Bedrock 利用者</strong>
+                        <span>長い思考の一時停止中に SSE キープアライブ ping が送られるようになり、アイドルタイムアウトによる切断が防がれる。長時間の思考で接続が切れていた環境では更新価値が高い</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🏭</span>
+                    <div class="fix-text">
+                        <strong>セルフホストランナー利用者</strong>
+                        <span>サーバー提供フックへの対応が追加された一方、Windows 起動では <code class="inline">--base-dir</code> の明示指定が必須になった (破壊的変更)。加えて <code class="inline">managed-mcp.json</code> 配備時の起動失敗と Git Credential Manager によるハングが修正された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">⚠️</span>
+                    <div class="fix-text">
+                        <strong><code class="inline">/commit-push-pr</code> を利用しているユーザーおよびチーム</strong>
+                        <span>危険なフラグを伴う git / gh コマンドが自動承認されなくなった (破壊的変更)。安全側への変更だが、自動化の挙動が変わる可能性がある</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🧩</span>
+                    <div class="fix-text">
+                        <strong>プラグイン開発者およびプラグインを配布するチーム</strong>
+                        <span>マーケットプレイスに <code class="inline">command</code> ソースが追加され、セッションごとの再解決と再起動なしの適用、<code class="inline">mode: "link"</code> による直接参照が可能になった</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">💰</span>
+                    <div class="fix-text">
+                        <strong>ワークフローのファンアウトを利用しているユーザー</strong>
+                        <span>同一プレフィックスの兄弟エージェントの起動がずらされ、プロンプトプレフィックスのキャッシュが再利用されるようになった</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🖥️</span>
+                    <div class="fix-text">
+                        <strong>TUI を日常的に利用するすべてのユーザー</strong>
+                        <span>ストリーミング中の応答消失と二重出力、狭いターミナルでの RangeError クラッシュ、非文字列引数によるクラッシュが修正された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🪟</span>
+                    <div class="fix-text">
+                        <strong>Windows ユーザー</strong>
+                        <span>拡張長パス (<code class="inline">\\?\</code>) および UNC パス参照時のクラッシュと、ネットワーク・仮想ファイルシステムでのスケジュールタスク監視の未捕捉エラーが修正された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🔖</span>
+                    <div class="fix-text">
+                        <strong><code class="inline">CLAUDE_CODE_ATTRIBUTION_HEADER</code> を設定しているユーザー</strong>
+                        <span>Anthropic API への直接接続で auto モードが全ツール呼び出しに失敗する問題が解消された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🚪</span>
+                    <div class="fix-text">
+                        <strong>カスタムゲートウェイを使う claude.ai サブスクライバー</strong>
+                        <span><code class="inline">ANTHROPIC_BASE_URL</code> にカスタムゲートウェイを設定している場合の <code class="inline">/model</code> による Sonnet / Opus 1M の拒否が解消された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🔑</span>
+                    <div class="fix-text">
+                        <strong>MCP の OAuth を利用しているユーザー</strong>
+                        <span>リダイレクト URI が <code class="inline">127.0.0.1</code> になり、厳格な認可サーバーでも OAuth が機能する</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🖧</span>
+                    <div class="fix-text">
+                        <strong>コンテナで Claude Code を動かしているユーザー</strong>
+                        <span>CPU 制限のあるコンテナ内で、ホストのコア数ではなくコンテナの CPU 制限が使われるようになった</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🐙</span>
+                    <div class="fix-text">
+                        <strong><code class="inline">/install-github-app</code> を利用しているリポジトリ</strong>
+                        <span>Claude Code Review ワークフローがレビューを投稿せずに完了する問題が修正された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🧩</span>
+                    <div class="fix-text">
+                        <strong>IDE 拡張および VSCode 拡張の利用者</strong>
+                        <span>数千件の診断を伴う編集後の UI 停止が修正され、<code class="inline">/btw</code> パネルのリサイズとサイドバーのセッショングループが利用できる</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🈳</span>
+                    <div class="fix-text">
+                        <strong>SDK / <code class="inline">--input-format stream-json</code> 利用者</strong>
+                        <span>空白のみのメッセージ送信による 400 エラーが解消された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🧱</span>
+                    <div class="fix-text">
+                        <strong>サンドボックスを利用しているユーザー</strong>
+                        <span>IPv6 リテラルの角括弧記法に対応し、曖昧な表記はフェイルクローズで拒否され <code class="inline">/doctor</code> で警告される</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="section">
+            <h2 class="section-title">✅ 必要なアクション</h2>
+            <div class="action-list">
+                <div class="action-item">
+                    <div class="action-number">1</div>
+                    <div class="action-content">
+                        <strong>セルフホストランナーの Windows 起動への対応 (破壊的変更・対応必須)</strong>
+                        <span>起動スクリプト、サービス定義、タスクスケジューラの設定を洗い出し、<code class="inline">--base-dir</code> にチェックアウト先のディレクトリを明示的に追加する。指定するディレクトリがランナーの実行アカウントで書き込み可能であることを確認し、更新後に実際にセッションが起動しリポジトリの準備が完了することを確認する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">2</div>
+                    <div class="action-content">
+                        <strong><code class="inline">/commit-push-pr</code> の自動承認撤廃への対応 (破壊的変更・確認必須)</strong>
+                        <span>無人環境や CI で実行している場合、承認待ちで停止する可能性がある。実行フローを点検する。多くの場合、<code class="inline">--force</code> の代わりに <code class="inline">--force-with-lease</code> を使う、<code class="inline">--amend</code> の代わりに新しいコミットを積む、<code class="inline">--no-verify</code> をやめてフックの失敗自体を解消する、といった代替がある</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">3</div>
+                    <div class="action-content">
+                        <strong>ワークフローのファンアウトの起動タイミング変更への対応 (任意)</strong>
+                        <span>プロンプトプレフィックスのキャッシュ再利用によるコスト面の利点がある一方、並列起動の開始が完全に同時ではなくなる。即時性を優先する場合は <code class="inline">CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS=0</code> で無効化できる</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">4</div>
+                    <div class="action-content">
+                        <strong>サンドボックス設定の確認 (任意)</strong>
+                        <span>ネットワークドメインリストに IPv6 リテラルを記述している場合、角括弧を用いた記法 (<code class="inline">[::1]:443</code> の形式) に整えることを推奨する。曖昧な表記はフェイルクローズで拒否されるため、意図した通信が遮断される可能性がある。<code class="inline">/doctor</code> を実行すると、警告対象の記述を確認できる</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">5</div>
+                    <div class="action-content">
+                        <strong>バージョンの更新</strong>
+                        <span>下記のコマンドで最新バージョンに更新する。更新後は <code class="inline">claude --version</code> でバージョンを確認する</span>
+                    </div>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップグレード方法</span>
+                </div>
+                <pre><code class="language-bash"># npm で最新バージョンをインストール
+npm install -g @anthropic-ai/claude-code@latest
+
+# Claude Code の自己更新コマンドを利用する場合
+claude update
+
+# 更新後のバージョンを確認し、2.1.229 になっていることを確かめる
+claude --version</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">セルフホストランナーの Windows 起動 (--base-dir 必須)</span>
+                </div>
+                <pre><code class="language-bash"># v2.1.229 以降、Windows では --base-dir の明示指定が必須
+claude self-hosted-runner --base-dir C:\claude-runner\checkouts</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ワークフローのプレフィックススタガーを無効化する</span>
+                </div>
+                <pre><code class="language-bash"># 同一プレフィックスの兄弟エージェントの起動時刻のずらしを無効化
+export CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS=0</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Remote Control セッションの再開</span>
+                </div>
+                <pre><code class="language-bash"># 直近の Remote Control セッションを再開する
+claude remote-control --continue</code></pre>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">🔀 移行ガイド</h2>
+            <div class="migration-note">
+                <h3>⚠️ 破壊的変更が 2 件含まれる</h3>
+                <p>移行時の確認手順は次のとおり。</p>
+                <ol>
+                    <li>本バージョンへ更新し、<code class="inline">claude --version</code> で <code class="inline">2.1.229</code> になっていることを確認する</li>
+                    <li>Windows でセルフホストランナーを運用している場合、起動コマンドに <code class="inline">--base-dir</code> を追加し、セッションが起動することを確認する (対応必須)</li>
+                    <li><code class="inline">/commit-push-pr</code> を利用している場合、危険なフラグを伴う git / gh コマンドが承認待ちになることを前提に、無人実行のフローを見直す (確認必須)</li>
+                    <li>ワークフローのファンアウトを多用している場合、起動タイミングのずれが許容できるかを確認し、必要に応じて <code class="inline">CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS=0</code> を設定する</li>
+                    <li>サンドボックスのネットワークドメインリストに IPv6 リテラルがある場合、<code class="inline">/doctor</code> で警告が出ていないかを確認し、角括弧記法に整える</li>
+                    <li>プラグインマーケットプレイスの <code class="inline">command</code> ソースを導入する場合、出力するコマンドが信頼できるものであることを確認し、<code class="inline">mode: "link"</code> の指定が必要かを判断する</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">💡 ユースケース</h2>
+            <div class="use-case">
+                <h4>🧩 IDE と連動したプラグイン配布を構成する</h4>
+                <p>マーケットプレイスの <code class="inline">command</code> ソースにより、IDE がワークスペースの状態に応じて出力するプラグインディレクトリをそのまま利用できる。セッションごとに再解決されるため、ユーザー側で設定を書き換える必要がない。<code class="inline">mode: "link"</code> を指定すれば開発中のディレクトリを直接参照でき、再起動なしで適用されるため反復サイクルが短くなる。</p>
+            </div>
+            <div class="use-case">
+                <h4>☁️ Vertex AI / Bedrock で長時間の思考を伴うタスクを回す</h4>
+                <p>SSE キープアライブ ping により、長い思考の一時停止中に無通信区間が生じなくなる。経路上のロードバランサやプロキシがアイドルタイムアウトと判断して接続を切断する症状が防がれる。</p>
+            </div>
+            <div class="use-case">
+                <h4>💰 ワークフローのファンアウトでコストを抑える</h4>
+                <p>同一プレフィックスの兄弟エージェントの起動時刻がずらされ、後続のエージェントがキャッシュされたプロンプトプレフィックスを読み込む。大量のサブエージェントを並列に起動する構成でコスト削減につながる。即時性を優先する場合は <code class="inline">CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS=0</code> で無効化できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔐 チームでコミットからプルリクエストまでを安全に自動化する</h4>
+                <p><code class="inline">/commit-push-pr</code> の危険なフラグが自動承認されなくなり、不可逆な操作や検証回避がユーザーの確認を経るようになった。フックによる lint、テスト、シークレット検出を運用の前提としているチームでは、検証の実効性が高まる。</p>
+            </div>
+            <div class="use-case">
+                <h4>📡 複数マシンの Remote Control セッションを管理する</h4>
+                <p><code class="inline">ListAgents</code> が切断されたセッションを <code class="inline">offline</code>、クラウドセッションを <code class="inline">cloud</code> としてラベル付けするため、どのセッションが到達可能かを判別できる。<code class="inline">claude remote-control --continue</code> で直近のセッションをすぐに再開できる。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">📝 まとめ</h2>
+            <div class="summary-box">
+                <h3>追加 3 件、修正 18 件、改善 3 件、更新 2 件、変更 3 件、VSCode 拡張 3 件の全 32 項目からなる規模の大きいリリース</h3>
+                <p>修正中心であった v2.1.228 に対し、v2.1.229 は新機能の追加と破壊的変更の両方を含む。</p>
+                <p><strong>機能面で最も注目すべき</strong>はプラグインマーケットプレイスの <code class="inline">command</code> ソースである。ローカルのコマンドがプラグインディレクトリを出力し、その結果はセッションごとに再解決され、再起動なしで適用される。<code class="inline">mode: "link"</code> を指定すると出力されたディレクトリをその場で使用する。プラグイン開発の反復サイクルと、ローカル環境の状態に応じた動的なプラグイン提供の両方に効く追加である。</p>
+                <p><strong>接続の安定性</strong>では、Vertex および Bedrock を上流とする構成に対する SSE キープアライブ ping の追加が大きい。長い思考の一時停止中に無通信区間が生じないため、アイドルタイムアウトによる切断が防がれる。加えて、ストリーミング中に長い応答が部分的に消えて二重に出力される問題の修正は、日常的に TUI を利用するすべてのユーザーに関わる。</p>
+                <p><strong>破壊的変更は 2 件</strong>を明確に区別して扱う必要がある。セルフホストランナーの Windows 起動における <code class="inline">--base-dir</code> の必須化は対応必須であり、指定のない起動スクリプトはそのままでは動作しない。<code class="inline">/commit-push-pr</code> における危険なフラグの自動承認撤廃は安全側への変更であるが、無人実行のフローがある場合は承認待ちで停止する可能性がある。<code class="inline">--force</code>、<code class="inline">--amend</code>、<code class="inline">--no-verify</code> はいずれも不可逆な操作や検証回避を伴うため、ユーザーの確認を挟む設計に戻ったことは運用上の安全性を高める。</p>
+                <p><strong>コスト面</strong>では、ワークフローのファンアウトで同一プレフィックスの兄弟エージェントの起動をずらし、プロンプトプレフィックスのキャッシュを再利用する改善が入った。即時性を優先する場合は <code class="inline">CLAUDE_CODE_WORKFLOW_PREFIX_STAGGER_MS=0</code> で無効化できる。<strong>セキュリティ面</strong>では、サンドボックスの IPv6 リテラル対応と、曖昧な表記に対するフェイルクローズの強制および <code class="inline">/doctor</code> による警告が、設定の曖昧さが権限の緩みにつながらない構造を用意している。</p>
+                <p>そのほか、32 MB リクエスト上限を超える会話がコンパクションを無為にリトライし続ける問題の修正、"prompt is too long" エラーの説明の充実、<code class="inline">CLAUDE_CODE_ATTRIBUTION_HEADER</code> 設定時の auto モード失敗、MCP OAuth のリダイレクト URI、CPU 制限コンテナでのコア数誤認など、影響範囲の明確な修正が幅広く揃っている。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></li>
+                <li><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li><a href="2026-08-11-claude-code-v2-1-228.html">Claude Code v2.1.228</a></li>
+                <li><a href="2026-08-10-claude-code-v2-1-227.html">Claude Code v2.1.227</a></li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-08-12 | npm 公開日時: 2026-08-12T19:28:48Z | カテゴリ: Claude Code アップデート | Anthropic News Summary</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

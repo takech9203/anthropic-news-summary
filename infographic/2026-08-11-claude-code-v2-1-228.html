@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.228: 再描画停止の修正、claude.ai 同期スキルのハードニング、Write ツールの上書きルール変更 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --danger: #DC2626;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: #E8F1FF;
+            color: #1565C0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 8px;
+            border: 1px solid #90CAF9;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        .header .npm-time {
+            font-size: 13px;
+            opacity: 0.75;
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .count-badge {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .count-badge.fixed {
+            background: linear-gradient(135deg, #E8F1FF 0%, #C5DDF9 100%);
+            color: #1565C0;
+        }
+
+        .count-badge.improved {
+            background: linear-gradient(135deg, #E9F7EC 0%, #C8E6C9 100%);
+            color: #2E7D32;
+        }
+
+        .count-badge.changed {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            color: #E65100;
+        }
+
+        .count-badge.removed {
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+            color: #6A1B9A;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card.priority {
+            border-color: #F87171;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FEE9E9 100%);
+        }
+
+        .feature-card.security {
+            border-color: #FF9800;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFF3E0 100%);
+        }
+
+        .item-no {
+            display: inline-block;
+            min-width: 26px;
+            height: 26px;
+            line-height: 26px;
+            text-align: center;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Fix / Change List */
+        .fix-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .fix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .fix-item .fix-icon {
+            flex-shrink: 0;
+            font-size: 18px;
+            line-height: 1.4;
+        }
+
+        .fix-item .fix-text strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .fix-item .fix-text span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Tech Detail Blocks */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tech-detail p + p {
+            margin-top: 10px;
+        }
+
+        /* Warning / Breaking Change */
+        .warning-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .warning-box .warning-label {
+            display: inline-block;
+            background: #FF9800;
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 3px 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .warning-box h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 10px;
+        }
+
+        .warning-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box p + p {
+            margin-top: 10px;
+        }
+
+        .warning-box ul {
+            margin: 10px 0 0 22px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box li {
+            margin-bottom: 6px;
+        }
+
+        /* Security Section */
+        .security-section {
+            background: linear-gradient(135deg, #FFFDF7 0%, #FFF3E0 100%);
+            border: 2px dashed #FF9800;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .security-card {
+            background: #FFFFFF;
+            border: 2px solid #FFCC80;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .security-card .shield {
+            font-size: 26px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .security-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 8px;
+        }
+
+        .security-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stat-card.total {
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-value {
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-label {
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action List */
+        .action-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .action-number {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-content strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .action-content span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Notes */
+        .migration-note {
+            background: #E9F7EC;
+            border: 2px solid #66BB6A;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .migration-note h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2E7D32;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .migration-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .migration-note ol {
+            margin: 8px 0 0 22px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .migration-note li {
+            margin-bottom: 6px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        code.inline {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            margin: 8px 0 0 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .security-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <span class="version-badge">v2.1.228</span>
+                <h1>Claude Code v2.1.228<br>再描画停止の修正、claude.ai 同期スキルのハードニング、Write ツールの上書きルール変更</h1>
+                <p class="date">📅 リリース日: 2026 年 8 月 11 日 | ソース: Claude Code Changelog</p>
+                <p class="npm-time">📦 npm 公開日時: 2026-08-11T17:45:45Z</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">📊 数字で見る v2.1.228</h2>
+            <p class="section-lead">本バージョンは全 18 項目で構成される。新機能の追加はなく、修正中心のリリースである。</p>
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">全変更点</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">🔧 修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">✨ 改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">🔀 変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">🗑️ 削除</div>
+                </div>
+            </div>
+            <p class="section-lead" style="margin-top: 20px; margin-bottom: 0;">修正 12 件のうち 1 件はセキュリティ強化 (claude.ai 同期スキルのハードニング)、新機能は 0 件である。</p>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">🎯 概要: 内容の重心は 3 点</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🖥️</div>
+                    <div class="key-point-content">
+                        <h3>1. 対話セッションの再描画完全停止を修正</h3>
+                        <p>まれな内部レイアウトエラーの後、プロセスは動作を継続しているにもかかわらず対話セッションの再描画が完全に停止する問題を修正。ユーザーからはフリーズと区別しにくく、強制終了で作業を失うリスクがあった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>2. claude.ai 同期スキルのハードニング</h3>
+                        <p>同期されたスキルはローカルコマンドや MCP プロンプトを shadow しなくなり、説明文はサニタイズとラベル付けの対象となり、ローカルマシン上で <code class="inline">!</code> コマンドの実行と <code class="inline">@</code> ファイル展開を行わなくなった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚠️</div>
+                    <div class="key-point-content">
+                        <h3>3. Write ツールの上書きルールの変更</h3>
+                        <p>新しいモデルは、当該セッションで読んでいない既存ファイルであっても上書きできるようになり、Edit ツールのルールと整合した。旧モデルは従来どおり事前の Read が必要である。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>そのほかの影響範囲が明確な修正</h3>
+                        <p>クロスセッションメッセージの表示インライン化、セッションクリーンアップがプロジェクトのメモリフォルダ内を削除する問題、Remote Control <code class="inline">/resume</code> による履歴・タイトルの漏洩、Windows での git / Git Bash 検出、設定マージにおける marketplace エントリの扱いなどが修正された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">☁️</div>
+                    <div class="key-point-content">
+                        <h3>Vertex AI の待ち時間短縮</h3>
+                        <p>期限切れまたは欠落した Google Cloud 認証情報が、数分間リトライされる代わりに数秒で失敗するようになった。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Breaking Change Warning -->
+        <section class="section">
+            <h2 class="section-title">⚠️ 破壊的変更の可能性: Write ツールの挙動変更</h2>
+            <div class="warning-box">
+                <span class="warning-label">Breaking Change 注意</span>
+                <h3>新しいモデルは未読の既存ファイルを上書きできる</h3>
+                <p>Claude Code のファイル編集系ツールには、対象ファイルを事前に Read していることを要求するルールがあった。これは、モデルが既存の内容を把握しないまま上書きして変更を失わせる事故を防ぐガードである。</p>
+                <p>本リリースでは、<strong>新しいモデルに限り</strong>、当該セッションで読んでいない既存ファイルの上書きが許可された。changelog はこの変更が Edit ツールのルールと整合するものであると明記している。<strong>旧モデルは従来どおり事前の Read が必要</strong>で、挙動は変わらない。</p>
+                <p>つまり、同じ Write ツールでも使用するモデルによって前提条件が異なる状態になる。既存ファイルの上書きに対して「事前に Read が行われること」を暗黙の前提としてワークフローやフックを組んでいる場合は、新しいモデルではその前提が成り立たなくなるため、破壊的変更となる可能性がある。</p>
+                <ul>
+                    <li><code class="inline">PreToolUse</code> フックや権限ルールが事前 Read を前提としている場合は、条件を見直す</li>
+                    <li><code class="inline">CLAUDE.md</code> などで「Write の前に必ず Read する」旨を運用ルールとして明記している場合は、指示が引き続き有効であることを確認する</li>
+                    <li>上書きされると影響が大きいファイルは、権限設定で Write の対象から除外するなど、ツール側のガードに依存しない保護を検討する</li>
+                    <li>旧モデルを利用している場合は従来どおり事前の Read が必要であり、対応は不要である</li>
+                </ul>
+            </div>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before: v2.1.227 まで</h4>
+                    <p>Write ツールで既存ファイルを上書きするには、モデルの世代にかかわらず当該セッションでの事前 Read が必要だった。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After: v2.1.228 以降</h4>
+                    <p>新しいモデルは未読の既存ファイルも上書きできる (Edit ツールと整合)。旧モデルは事前 Read が必要なまま。</p>
+                </div>
+            </div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Start(["✍️ Write ツール呼び出し"]) --> Exists{"📄 既存ファイルか"}
+    Exists -->|"いいえ 新規作成"| Allow["✅ 書き込み実行"]
+    Exists -->|"はい"| Read{"👀 当該セッションで<br/>Read 済みか"}
+    Read -->|"はい"| Allow
+    Read -->|"いいえ"| ModelCheck{"🤖 モデルの世代"}
+    ModelCheck -->|"新しいモデル<br/>v2.1.228 以降"| Allow
+    ModelCheck -->|"旧モデル"| Deny["⛔ 事前 Read が必要"]
+
+    classDef start fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class Start start
+    class Exists,Read,ModelCheck decision
+    class Allow process
+    class Deny warning
+                </pre>
+            </div>
+        </section>
+
+        <!-- Security Hardening -->
+        <section class="section security-section">
+            <h2 class="section-title">🛡️ セキュリティ強化: claude.ai 同期スキルのハードニング</h2>
+            <p class="section-lead">本リリースで最もセキュリティ上の意味が大きい変更である。claude.ai から同期されたスキルは、ユーザーのローカル環境の外側で定義された内容がローカルの実行環境に持ち込まれる経路にあたる。今回のハードニングは、その境界に対して 3 つの防御を加えている。</p>
+            <div class="security-grid">
+                <div class="security-card">
+                    <span class="shield">🚫</span>
+                    <h3>1. ローカルコマンドや MCP プロンプトを shadow しない</h3>
+                    <p>修正前は、同期されたスキルがローカルで定義されたコマンドや MCP プロンプトと同じ名前を占めた場合、ローカル側の定義を覆い隠す (shadow する) 可能性があった。ユーザーが意図したローカルの定義の代わりにリモート由来の定義が実行されうるという名前の衝突の問題である。</p>
+                </div>
+                <div class="security-card">
+                    <span class="shield">🧼</span>
+                    <h3>2. 説明文のサニタイズとラベル付け</h3>
+                    <p>スキルの説明文 (description) はモデルがスキルを選択する際の判断材料としてコンテキストに入るため、指示めいた文章が含まれるとモデルの挙動に影響を与える余地がある。本リリースでは説明文がサニタイズされ、さらにラベル付けされることで、リモート由来の内容であることが区別できるようになった。</p>
+                </div>
+                <div class="security-card">
+                    <span class="shield">🚷</span>
+                    <h3>3. <code class="inline">!</code> コマンド実行と <code class="inline">@</code> ファイル展開の禁止</h3>
+                    <p>Claude Code のコマンド本文では <code class="inline">!</code> によるシェルコマンド実行と <code class="inline">@</code> によるファイル参照の展開が利用できる。これらが有効なままだと、リモート側で定義された内容がユーザーのマシン上でコマンドを実行したり、ローカルファイルの中身をコンテキストへ展開したりできることになる。本リリース以降、これらは実行・展開されない。</p>
+                </div>
+            </div>
+            <div class="tech-detail">
+                <h3>💡 更新価値</h3>
+                <p>これらは、リモート由来のスキルが持ちうる権限をローカル定義のコマンドより明確に狭める措置であり、claude.ai とスキルを同期している環境では本バージョンへの更新価値が高い。</p>
+            </div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Remote["☁️ claude.ai"]
+        Skill["🧩 同期されたスキル"]
+    end
+
+    subgraph Local["💻 ローカルマシン"]
+        subgraph Guard["🛡️ ハードニング境界"]
+            direction LR
+            NoShadow["🚫 shadow の禁止"]
+            Sanitize["🧼 説明文のサニタイズとラベル付け"]
+            NoExec["🚷 ! コマンドと @ 展開の禁止"]
+            NoShadow ~~~ Sanitize ~~~ NoExec
+        end
+        subgraph Assets["🗂️ ローカル定義"]
+            direction LR
+            Commands["⌨️ ローカルコマンド"]
+            Prompts["🔌 MCP プロンプト"]
+            Files[("📁 ローカルファイル")]
+            Commands ~~~ Prompts ~~~ Files
+        end
+    end
+
+    Skill --> Guard
+    NoShadow -.->|"上書きしない"| Commands
+    NoShadow -.->|"上書きしない"| Prompts
+    NoExec -.->|"展開しない"| Files
+
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef guard fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+
+    class Remote,Local,Guard,Assets container
+    class Skill input
+    class NoShadow,Sanitize,NoExec guard
+    class Commands,Prompts process
+    class Files storage
+                </pre>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">📖 背景</h2>
+            <div class="tech-detail">
+                <h3>🔁 v2.1.227 からの流れ</h3>
+                <p>直前のリリース v2.1.227 (2026 年 8 月 10 日) は、期限切れのログイントークンで起動した際に Max プランのユーザーが誤判定される問題、GitHub ホストランナー上での <code class="inline">claude-code-action</code> の Bash 実行不能、<code class="inline">/tui</code> による巻き戻し済み会話の復活といった、修正 3 件と改善 2 件の小規模なメンテナンスリリースであった。v2.1.228 はその流れを引き継ぎつつ、修正項目が 12 件に増え、対象領域も TUI のレンダリング、セルフホストランナー、Remote Control、プラグインキャッシュ、設定マージへと広がっている。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🧵 直近の新機能の継続的な磨き込み</h3>
+                <p>v2.1.227 が <code class="inline">/tui</code> に関して巻き戻し済み会話の復活を修正したのに対し、本リリースでは <code class="inline">/tui</code> がモデル選択を巻き戻す問題が修正されている点も連続性がある。また v2.1.224 (2026 年 8 月 7 日) で追加されたクロスセッションメッセージングとセルフホスト実行環境については、本リリースで表示改善と複数の実運用上の修正が加えられ、導入直後の機能が継続的に磨かれている状況が読み取れる。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🛡️ リモート由来の指示への境界設定</h3>
+                <p>セキュリティ面では、claude.ai から同期されたスキルという「リモート由来の指示」がローカル実行環境に持ち込まれる経路に対して、境界を明確化するハードニングが行われた。</p>
+            </div>
+        </section>
+
+        <!-- Fixed (12) -->
+        <section class="section">
+            <h2 class="section-title">🔧 修正 <span class="count-badge fixed">12 件</span></h2>
+            <p class="section-lead">影響の大きい修正を上位に配置している。項目 12 はセキュリティ強化を含む。</p>
+            <div class="feature-grid">
+                <div class="feature-card priority">
+                    <h3><span class="item-no">1</span> 🖥️ 対話セッションの再描画完全停止の修正</h3>
+                    <p>まれな内部レイアウトエラーの後、プロセスは動作を継続しているにもかかわらず、対話セッションの再描画が完全に停止することがある問題を修正。</p>
+                </div>
+                <div class="feature-card priority">
+                    <h3><span class="item-no">8</span> 🧠 セッションクリーンアップによるメモリフォルダ削除の修正</h3>
+                    <p>セッションクリーンアップが、プロジェクトのメモリフォルダ内の内容を削除してしまう問題を修正。</p>
+                </div>
+                <div class="feature-card security">
+                    <h3><span class="item-no">12</span> 🛡️ claude.ai から同期されたスキルのハードニング</h3>
+                    <p>セキュリティ強化。同期されたスキルはローカルコマンドや MCP プロンプトを shadow しなくなった。説明文はサニタイズされてラベル付けされ、ユーザーのマシン上でスキル本文が <code class="inline">!</code> コマンドを実行したり <code class="inline">@</code> によるファイル展開を行ったりしなくなった。</p>
+                </div>
+                <div class="feature-card priority">
+                    <h3><span class="item-no">5</span> 🔓 Remote Control <code class="inline">/resume</code> の履歴・タイトル漏洩の修正</h3>
+                    <p>接続中に Remote Control で <code class="inline">/resume</code> を実行すると、再開した会話のタイトルや履歴が接続中のセッションへ漏洩する問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">2</span> 🪟 Windows での git / Git Bash 検出の修正</h3>
+                    <p>git のインストール先の親フォルダから Claude Code を起動した場合に、Windows 上で <code class="inline">git</code> / Git Bash が見つからない問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">3</span> ⏪ <code class="inline">/tui</code> によるモデル巻き戻しの修正</h3>
+                    <p>最後の応答以降に <code class="inline">/model</code> でモデルを変更していた場合に、<code class="inline">/tui</code> がセッションを以前のモデルへ戻してしまう問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">4</span> 📬 クロスセッションメッセージングのインボックス欠落の修正</h3>
+                    <p>インストールまたはアップグレード後の最初のセッションで、クロスセッションメッセージングがインボックスなしで開始されることがある問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">6</span> 🏭 <code class="inline">claude self-hosted-runner</code> の <code class="inline">checkout</code> フック失敗の修正</h3>
+                    <p>セッションが push しないリポジトリで <code class="inline">checkout</code> フックが失敗すると、すべての新規ランナーでセッションが失敗する問題を修正。該当のリポジトリは警告を出してスキップされるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">7</span> ⏱️ セルフホストランナーのセッション早期終了の修正</h3>
+                    <p>バックグラウンドタスクの完了から後続ターンの開始までの空白時間に、セルフホストランナーがセッションを終了してしまう問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">9</span> 🔗 プラグインキャッシュクリーンアップの誤削除の修正</h3>
+                    <p>バックグラウンドのプラグインキャッシュクリーンアップが、プラグインの唯一のバージョンがシンボリックリンクされた開発用チェックアウトである場合に、そのキャッシュを削除してしまう問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">10</span> ⚙️ 設定マージ問題の修正</h3>
+                    <p>より優先度の高い設定階層で再定義された marketplace エントリが、別の階層のカスタムヘッダーを継承してしまう問題を修正。marketplace エントリはエントリ全体としてマージされるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">11</span> 🔁 deferred-tools リマインダーの二重送信の修正</h3>
+                    <p>スキル呼び出しの後に、deferred-tools リマインダーがモデルへ 2 回送信されることがある問題を修正。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improved (3) -->
+        <section class="section">
+            <h2 class="section-title">✨ 改善 <span class="count-badge improved">3 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">13</span> 💬 クロスセッションメッセージの表示改善</h3>
+                    <p>送信者と本文が折りたたまれた 1 行ではなくインラインで表示されるようになった。また、他のマシン上の Remote Control セッションへのメッセージでは、送信者としてユーザーの Remote Control セッション名が表示される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">14</span> ☁️ Vertex AI の認証情報ハンドリング改善</h3>
+                    <p>期限切れまたは欠落した Google Cloud 認証情報が、数分間リトライされる代わりに数秒で失敗するようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">15</span> 📉 コンパクション進捗表示の改善</h3>
+                    <p>コンパクション中に、進捗バーだけでなくリトライのカウントダウンと停滞ヒント (stall hint) が表示されるようになった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Changed (2) -->
+        <section class="section">
+            <h2 class="section-title">🔀 変更 <span class="count-badge changed">2 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card security">
+                    <h3><span class="item-no">16</span> ⚠️ Write ツールの上書きルールの変更</h3>
+                    <p>新しいモデルは、当該セッションで読んでいない既存ファイルを上書きできるようになり、Edit ツールのルールと整合した。旧モデルは従来どおり事前の Read が必要である。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">17</span> 🌀 ターミナルタイトルのビジースピナーグリフの更新</h3>
+                    <p>一部のターミナルで発生するタブバーのちらつき (jitter) を軽減するため、ターミナルタイトルに使われるビジースピナーのグリフが更新された。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Removed (1) -->
+        <section class="section">
+            <h2 class="section-title">🗑️ 削除 <span class="count-badge removed">1 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">18</span> 📝 auto モードのコストに関する古い注記の削除</h3>
+                    <p>Pro、Max、Team プランの初回利用通知から、auto モードのセッションがわずかに割高になるという古い注記が削除された。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">🔬 技術的な詳細</h2>
+            <div class="tech-detail">
+                <h3>🖥️ 内部レイアウトエラーによる再描画停止</h3>
+                <p>Claude Code の対話セッションは、ターミナル上に描画される TUI アプリケーションとして動作する。修正前は、まれな内部レイアウトエラーが発生すると再描画のループが完全に停止し、画面が更新されなくなる状態に陥ることがあった。このときプロセス自体は動作を継続しているため、ユーザーの視点では「フリーズしたように見えるが、裏では処理が進んでいる」という判別しにくい状況になる。セッションを強制終了すると進行中の作業が失われるおそれがあり、体験上のインパクトは大きい。本修正により、内部レイアウトエラーが再描画の停止につながらなくなった。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>☁️ Vertex AI の認証情報ハンドリング</h3>
+                <p>Vertex AI 経由で Claude を利用する構成では、Google Cloud の認証情報が期限切れであったり存在しなかったりする場合がある。修正前は、この状況でリトライが数分間続き、ユーザーは原因が分からないまま長く待たされていた。改善後は数秒で失敗するため、認証情報の問題であることを早期に把握し、再認証などの対処に移れる。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>⚙️ 設定マージにおける marketplace エントリの扱い</h3>
+                <p>Claude Code の設定は複数の階層 (settings tier) から読み込まれ、優先度に従ってマージされる。修正前は、より優先度の高い階層で marketplace エントリを再定義した場合に、そのエントリが別の階層で定義されたカスタムヘッダーを継承してしまうことがあった。意図しない認証ヘッダーなどが引き継がれる可能性があるため、設定の予測可能性を損なう問題である。本リリースでは、marketplace エントリがエントリ全体 (whole entries) としてマージされるようになり、上位階層での再定義が下位階層のフィールドを引き継がなくなった。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🧠 セッションクリーンアップとプロジェクトのメモリフォルダ</h3>
+                <p>Claude Code はセッションデータの蓄積を抑えるためにクリーンアップ処理を行う。修正前は、この処理がプロジェクトのメモリフォルダ内の内容まで削除してしまうことがあった。メモリはプロジェクト固有の文脈を蓄積する仕組みであり、失われると再蓄積が必要になる。本修正により、クリーンアップの対象からメモリフォルダの内容が除外された。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🔓 Remote Control <code class="inline">/resume</code> による情報漏洩</h3>
+                <p>修正前は、Remote Control に接続した状態で <code class="inline">/resume</code> を実行すると、再開した会話のタイトルや履歴が、接続中の別セッションへ漏洩することがあった。異なる会話の内容が意図しない相手に見える可能性がある問題であり、本リリースで修正されている。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🪟 Windows での git / Git Bash 検出</h3>
+                <p>修正前は、git のインストール先の親フォルダから Claude Code を起動した場合に、Windows 上で <code class="inline">git</code> および Git Bash が見つからないことがあった。git が利用できないと差分表示やコミット関連の操作が機能しないため、Windows ユーザーにとって影響の大きい問題である。</p>
+            </div>
+        </section>
+
+        <!-- Impact / Audience -->
+        <section class="section">
+            <h2 class="section-title">👥 開発者への影響: 対象</h2>
+            <div class="fix-list">
+                <div class="fix-item">
+                    <span class="fix-icon">🛡️</span>
+                    <div class="fix-text">
+                        <strong>claude.ai とスキルを同期しているユーザー</strong>
+                        <span>同期されたスキルの権限が明確に制限された。セキュリティ上の改善であるため、該当するすべてのユーザーに本バージョンへの更新を推奨</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">⚠️</span>
+                    <div class="fix-text">
+                        <strong>新しいモデルを利用しているユーザー</strong>
+                        <span>Write ツールが未読の既存ファイルを上書きできるようになった。事前 Read を前提としたワークフローがある場合は見直しが必要</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🪟</span>
+                    <div class="fix-text">
+                        <strong>Windows ユーザー</strong>
+                        <span>git のインストール先の親フォルダから起動した場合の git / Git Bash 検出が修正された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">☁️</span>
+                    <div class="fix-text">
+                        <strong>Vertex AI 利用者</strong>
+                        <span>認証情報が期限切れまたは欠落している場合の待ち時間が数分から数秒に短縮された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🏭</span>
+                    <div class="fix-text">
+                        <strong>セルフホストランナー利用者</strong>
+                        <span><code class="inline">checkout</code> フック失敗時の全ランナー障害と、バックグラウンドタスク完了直後のセッション早期終了が修正された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">📡</span>
+                    <div class="fix-text">
+                        <strong>Remote Control 利用者</strong>
+                        <span>接続中の <code class="inline">/resume</code> による履歴・タイトルの漏洩が修正され、クロスセッションメッセージの表示がインライン化された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🧠</span>
+                    <div class="fix-text">
+                        <strong>プロジェクトメモリを活用しているユーザー</strong>
+                        <span>セッションクリーンアップによるメモリフォルダ内の削除が修正された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">⚙️</span>
+                    <div class="fix-text">
+                        <strong>marketplace を設定で管理しているチーム</strong>
+                        <span>設定階層をまたいだカスタムヘッダーの意図しない継承が解消された</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="section">
+            <h2 class="section-title">✅ 必要なアクション: アップグレード</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップグレード方法</span>
+                </div>
+                <pre><code class="language-bash"># npm で最新バージョンをインストール
+npm install -g @anthropic-ai/claude-code@latest
+
+# Claude Code の自己更新コマンドを利用する場合
+claude update
+
+# 更新後のバージョンを確認し、2.1.228 になっていることを確かめる
+claude --version</code></pre>
+            </div>
+            <p class="section-lead" style="margin-top: 4px;">Write ツールの上書きルールはモデルの世代によって異なるため、セッション内で <code class="inline">/model</code> を実行して現在のモデルを確認する。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Text</span>
+                    <span class="code-title">利用中のモデルを確認する</span>
+                </div>
+                <pre><code class="language-text">&gt; /model</code></pre>
+            </div>
+            <div class="action-list">
+                <div class="action-item">
+                    <div class="action-number">1</div>
+                    <div class="action-content">
+                        <strong>Write ツールの挙動変更への対応 (影響を受ける可能性がある)</strong>
+                        <span>事前 Read を前提とした <code class="inline">PreToolUse</code> フックや権限ルールを見直す。<code class="inline">CLAUDE.md</code> の運用ルールが引き続き有効か確認し、重要なファイルは権限設定で Write の対象から除外する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">2</div>
+                    <div class="action-content">
+                        <strong>claude.ai 同期スキルのハードニングへの対応</strong>
+                        <span><code class="inline">!</code> コマンド実行や <code class="inline">@</code> ファイル展開に依存していたスキルの動作を確認する。ローカルコマンドや MCP プロンプトと名前が重複している場合は呼び出し結果が変わることを想定する。コマンド実行やファイル参照が必要な処理は、ローカルのカスタムコマンドやプラグインとして定義し直すことを検討する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">3</div>
+                    <div class="action-content">
+                        <strong>バージョンの更新</strong>
+                        <span>上記のコマンドで最新バージョンに更新し、更新後は <code class="inline">claude --version</code> でバージョンを確認する</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">🔀 移行ガイド</h2>
+            <div class="migration-note">
+                <h3>ℹ️ 機能削除を伴う破壊的変更はないが、Write ツールの挙動変更は既存の前提を崩す可能性がある</h3>
+                <p>移行時の確認手順は次のとおり。</p>
+                <ol>
+                    <li>本バージョンへ更新し、<code class="inline">claude --version</code> で <code class="inline">2.1.228</code> になっていることを確認する</li>
+                    <li>新しいモデルを使用しているセッションで、既存ファイルへの Write が意図しないタイミングで許可されないか、権限設定とフックの構成を確認する</li>
+                    <li>claude.ai から同期しているスキルを一覧し、<code class="inline">!</code> コマンドや <code class="inline">@</code> ファイル展開に依存していないか、ローカルコマンドや MCP プロンプトと名前が重複していないかを確認する</li>
+                    <li>marketplace エントリを複数の設定階層で定義している場合は、更新後に想定どおりのヘッダーが使われているかを確認する</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">💡 ユースケース</h2>
+            <div class="use-case">
+                <h4>🖥️ 長時間の TUI セッションを安心して継続する</h4>
+                <p>再描画が完全に停止する不具合が解消されたため、フリーズと判別できずに強制終了して進行中の作業を失うリスクがなくなる。日常的に対話セッションを利用するすべてのユーザーにとって価値が大きい。</p>
+            </div>
+            <div class="use-case">
+                <h4>🛡️ チームで claude.ai のスキルを共有する</h4>
+                <p>同期されたスキルがローカルコマンドや MCP プロンプトを shadow せず、<code class="inline">!</code> コマンド実行や <code class="inline">@</code> ファイル展開も行わないため、リモート由来の指示がローカル環境で持てる権限が明確に狭まる。スキル共有を前提とした運用でも境界が予測しやすくなる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏭 セルフホストランナーで CI/CD を運用する</h4>
+                <p><code class="inline">checkout</code> フックの失敗が全ランナーのセッション失敗に波及する問題と、バックグラウンドタスク完了直後のセッション早期終了が修正され、長時間ジョブの安定性が向上する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧠 プロジェクトメモリを蓄積しながら開発する</h4>
+                <p>セッションクリーンアップがプロジェクトのメモリフォルダ内を削除しなくなったため、蓄積した文脈が失われて再蓄積が必要になる事態を避けられる。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">📝 まとめ</h2>
+            <div class="summary-box">
+                <h3>修正 12 件、改善 3 件、変更 2 件、削除 1 件の全 18 項目からなる修正中心のリリース</h3>
+                <p><strong>第一に</strong>、内部レイアウトエラーによって対話セッションの再描画が完全に停止する問題の修正である。プロセスは動作を継続するため判別が難しく、強制終了によって作業を失うリスクがあった不具合であり、日常的に TUI を利用するすべてのユーザーにとって価値が大きい。</p>
+                <p><strong>第二に</strong>、claude.ai から同期されたスキルのハードニングである。ローカルコマンドや MCP プロンプトを shadow しなくなり、説明文はサニタイズとラベル付けの対象となり、ローカルマシン上で <code class="inline">!</code> コマンドの実行と <code class="inline">@</code> ファイル展開が行われなくなった。リモート由来の指示がローカル環境で持てる権限を明確に狭める措置であり、claude.ai とスキルを同期している環境では速やかな更新を推奨する。</p>
+                <p><strong>第三に</strong>、Write ツールの上書きルールの変更である。新しいモデルでは未読の既存ファイルを上書きできるようになり、Edit ツールのルールと整合した。旧モデルの挙動は変わらないが、事前 Read を暗黙の前提としてフックや権限ルールを構成しているチームは、前提が成り立たなくなる点を確認する必要がある。</p>
+                <p>そのほか、セッションクリーンアップによるプロジェクトメモリの削除、Remote Control <code class="inline">/resume</code> の履歴・タイトル漏洩、Windows での git / Git Bash 検出、設定階層をまたいだ marketplace エントリのヘッダー継承といった、影響範囲の明確な修正が揃っている。Vertex AI 利用者にとっては、認証情報の問題が数分ではなく数秒で判明するようになった点も実務上の改善である。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></li>
+                <li><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li><a href="2026-08-10-claude-code-v2-1-227.html">Claude Code v2.1.227</a></li>
+                <li><a href="2026-08-07-claude-code-v2-1-224.html">Claude Code v2.1.224</a></li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-08-11 | npm 公開日時: 2026-08-11T17:45:45Z | カテゴリ: Claude Code アップデート | Anthropic News Summary</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
