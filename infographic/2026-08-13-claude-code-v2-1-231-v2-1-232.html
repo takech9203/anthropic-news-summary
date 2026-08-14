@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.231 &amp; v2.1.232: サブエージェントフォークのデフォルト有効化、@ メンションによるセッション間メッセージング、GitLab 対応、セキュリティ修正多数 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --danger: #DC2626;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: #E8F1FF;
+            color: #1565C0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 8px;
+            border: 1px solid #90CAF9;
+        }
+
+        .security-badge {
+            display: inline-block;
+            background: #FFF3E0;
+            color: #E65100;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 8px;
+            border: 1px solid #FFB74D;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .count-badge {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .count-badge.added {
+            background: linear-gradient(135deg, #E9F7EC 0%, #A7F3D0 100%);
+            color: #1B5E20;
+        }
+
+        .count-badge.fixed {
+            background: linear-gradient(135deg, #E8F1FF 0%, #C5DDF9 100%);
+            color: #1565C0;
+        }
+
+        .count-badge.improved {
+            background: linear-gradient(135deg, #E9F7EC 0%, #C8E6C9 100%);
+            color: #2E7D32;
+        }
+
+        .count-badge.security {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            color: #E65100;
+        }
+
+        .count-badge.remote {
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+            color: #6A1B9A;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card.priority {
+            border-color: #F87171;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FEE9E9 100%);
+        }
+
+        .feature-card.security {
+            border-color: #FF9800;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFF3E0 100%);
+        }
+
+        .feature-card.highlight {
+            border-color: #66BB6A;
+            background: linear-gradient(135deg, #FFFFFF 0%, #EAF8EE 100%);
+        }
+
+        .item-no {
+            display: inline-block;
+            min-width: 26px;
+            height: 26px;
+            line-height: 26px;
+            text-align: center;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Fix / Change List */
+        .fix-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .fix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .fix-item .fix-icon {
+            flex-shrink: 0;
+            font-size: 18px;
+            line-height: 1.4;
+        }
+
+        .fix-item .fix-text strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .fix-item .fix-text span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Tech Detail Blocks */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tech-detail p + p {
+            margin-top: 10px;
+        }
+
+        .tech-detail ul {
+            margin: 10px 0 0 22px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tech-detail li {
+            margin-bottom: 6px;
+        }
+
+        /* Warning / Breaking Change */
+        .warning-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .warning-box .warning-label {
+            display: inline-block;
+            background: #FF9800;
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 3px 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .warning-box h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 10px;
+        }
+
+        .warning-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box p + p {
+            margin-top: 10px;
+        }
+
+        .warning-box ul {
+            margin: 10px 0 0 22px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box li {
+            margin-bottom: 6px;
+        }
+
+        /* Security Section */
+        .security-section {
+            background: linear-gradient(135deg, #FFFDF7 0%, #FFF3E0 100%);
+            border: 2px dashed #FF9800;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .security-card {
+            background: #FFFFFF;
+            border: 2px solid #FFCC80;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .security-card .shield {
+            font-size: 26px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .security-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 8px;
+        }
+
+        .security-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        /* Highlight Section */
+        .highlight-section {
+            background: linear-gradient(135deg, #FBFFFC 0%, #EAF8EE 100%);
+            border: 2px dashed #66BB6A;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stat-card.total {
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-value {
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-label {
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action List */
+        .action-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .action-number {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-content strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .action-content span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Notes */
+        .migration-note {
+            background: #E9F7EC;
+            border: 2px solid #66BB6A;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .migration-note h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2E7D32;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .migration-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .migration-note ol {
+            margin: 8px 0 0 22px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .migration-note li {
+            margin-bottom: 6px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        code.inline {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            margin: 8px 0 0 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .security-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <span class="version-badge">v2.1.231 &amp; v2.1.232</span>
+                <span class="security-badge">🛡️ セキュリティ修正多数</span>
+                <h1>Claude Code v2.1.231 &amp; v2.1.232<br>サブエージェントフォークのデフォルト有効化、@ メンションによるセッション間メッセージング、GitLab 対応、セキュリティ修正多数</h1>
+                <p class="date">📅 リリース日: 2026 年 8 月 13 日 | ソース: Claude Code Changelog (npm レジストリ基準)</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">📊 数字で見る v2.1.231 &amp; v2.1.232</h2>
+            <p class="section-lead">v2.1.231 は MCP OAuth の修正 1 件のみの小規模パッチ、v2.1.232 は新機能、セキュリティ修正、Remote Control の安定性改善など約 50 項目を含む大規模リリースである。</p>
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-value">47</div>
+                    <div class="stat-label">全変更点</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">🩹 v2.1.231</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">🛡️ セキュリティ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">📱 Remote Control</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">🦊 GitLab トークン<br>ファミリー対応</div>
+                </div>
+            </div>
+            <p class="section-lead" style="margin-top: 20px; margin-bottom: 0;">v2.1.232 の主要テーマは 4 つ。<strong>サブエージェントフォークのデフォルト有効化</strong>、<strong>@ メンションによるセッション間メッセージング</strong>、<strong>GitLab 対応</strong>、そして <strong>セキュリティ修正の集中投入</strong>である。</p>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">🎯 概要: 主要テーマは 4 点 + 緊急パッチ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔀</div>
+                    <div class="key-point-content">
+                        <h3>1. サブエージェントフォークのデフォルト有効化</h3>
+                        <p><code class="inline">subagent_type: "fork"</code> を指定したサブエージェントが会話全体とプロンプトキャッシュを継承するようになり、インタラクティブセッションではチームメイト以外のエージェント起動がデフォルトでバックグラウンド実行となった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗣️</div>
+                    <div class="key-point-content">
+                        <h3>2. @ メンションによるセッション間メッセージング</h3>
+                        <p>プロンプトで <code class="inline">@</code> を入力すると他の Claude セッションを名前で指定でき、Claude が <code class="inline">SendMessage</code> を使って直接連絡する。セッション名の一意性保証と受信制御の設定も同時に導入された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🦊</div>
+                    <div class="key-point-content">
+                        <h3>3. GitLab 対応</h3>
+                        <p>GitLab トークンファミリーのシークレットレダクションと、プラグインマーケットプレイスでの <code class="inline">gitlab.com</code> リポジトリ URL のサポートが追加され、GitLab を利用する企業環境への適合性が向上した。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>4. セキュリティ修正の集中投入</h3>
+                        <p>PowerShell の権限バイパス、Windows のシンボリックリンク経由の権限バイパス、ネストされた git リポジトリの信頼継承など、複数の脆弱性が修正されている。速やかなアップデートを推奨。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🩹</div>
+                    <div class="key-point-content">
+                        <h3>v2.1.231: MCP OAuth の緊急パッチ</h3>
+                        <p>Slack など事前登録済み OAuth クライアントを使う MCP サーバーへのサインインが、リダイレクト URI の不一致で失敗する問題を単独で修正した緊急パッチである。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">📖 背景</h2>
+            <div class="tech-detail">
+                <h3>🤝 マルチセッション・マルチエージェント協調の段階的強化</h3>
+                <p>Claude Code は近年、複数セッション・複数エージェントの協調動作を段階的に強化してきた。v2.1.225 では SendMessage による他マシンの Remote Control セッションへの名前指定での会話開始が実現し、今回の v2.1.232 では <code class="inline">@</code> メンションによる UI レベルでの統合と、同一マシン上でのセッション名の一意性保証が加わった。サブエージェントのフォーク機能も実験的な位置付けからデフォルト有効へと昇格し、マルチエージェントワークフローが標準機能として整備されつつある。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🦊 GitHub 中心から GitLab ほぼ同等へ</h3>
+                <p>これまでプラグインマーケットプレイスやシークレットレダクションは GitHub 中心の対応だったが、本リリースで GitLab がほぼ同等の扱いとなり、GitLab を利用する企業環境への適合性が向上した。</p>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">🏗️ v2.1.232 の全体像</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Multi["🤝 マルチエージェント / マルチセッション"]
+        direction LR
+        Fork["🔀 サブエージェントフォーク<br/>会話とキャッシュを継承"]
+        Mention["🗣️ @ メンション<br/>SendMessage で直接連絡"]
+        Unique["🏷️ セッション名の一意性<br/>name-word-word 変形"]
+        Fork ~~~ Mention ~~~ Unique
+    end
+
+    subgraph GitLab["🦊 GitLab 対応"]
+        direction LR
+        Redact["🔒 トークンレダクション<br/>glpat- gldt- など 11 種"]
+        Market["🧩 プラグインマーケットプレイス<br/>gitlab.com URL クローン"]
+        Redact ~~~ Market
+    end
+
+    subgraph Security["🛡️ セキュリティ修正"]
+        direction LR
+        PS["⚠️ PowerShell<br/>権限バイパス修正"]
+        Symlink["⚠️ Windows シンボリックリンク<br/>権限バイパス修正"]
+        NestedGit["⚠️ ネストされた git リポジトリ<br/>信頼の個別確認"]
+        PS ~~~ Symlink ~~~ NestedGit
+    end
+
+    subgraph Remote["📱 Remote Control 安定性"]
+        direction LR
+        Reattach["🔗 既存セッションへ再アタッチ"]
+        Reconnect["📶 約 30 分の再接続継続"]
+        Isolation["🧱 ブリッジセッションの分離"]
+        Reattach ~~~ Reconnect ~~~ Isolation
+    end
+
+    User(["👤 ユーザー"]) --> Multi
+    User --> Remote
+    Multi -.-> Security
+    GitLab -.-> Security
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef multi fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef gitlab fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef security fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef remote fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class User user
+    class Fork,Mention,Unique multi
+    class Redact,Market gitlab
+    class PS,Symlink,NestedGit security
+    class Reattach,Reconnect,Isolation remote
+    class Multi,GitLab,Security,Remote layer
+                </pre>
+            </div>
+        </section>
+
+        <!-- v2.1.231 -->
+        <section class="section">
+            <h2 class="section-title">🩹 v2.1.231: MCP OAuth の修正 <span class="count-badge fixed">1 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card priority">
+                    <h3><span class="item-no">1</span> 🔑 MCP OAuth サインイン失敗の修正</h3>
+                    <p>事前登録済み OAuth クライアントを使用する MCP サーバー (Slack など) へのサインインが、リダイレクト URI の不一致で失敗する問題を修正した緊急パッチ。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fork -->
+        <section class="section highlight-section">
+            <h2 class="section-title">🔀 サブエージェントフォークのデフォルト有効化 <span class="count-badge added">v2.1.232</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">2</span> 🧬 <code class="inline">subagent_type: "fork"</code> のデフォルト有効化</h3>
+                    <p>フォーク型サブエージェントが会話全体とプロンプトキャッシュを継承するようになった。また、インタラクティブセッションでは、チームメイト以外のエージェント起動がデフォルトでバックグラウンド実行される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">3</span> 🗂️ エージェントパネルの更新</h3>
+                    <p>完了したサブエージェントは即座に非表示となり、<code class="inline">/tasks</code> のフッターヒントが表示される。「↓ N more」のオーバーフローインジケーターは視認性向上のため左に移動した。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">4</span> 🧹 スタートアップティップの削除</h3>
+                    <p>カスタムサブエージェント作成を勧める起動時のヒントと、<code class="inline">/powerup</code> ツアー内の対応する案内が削除された。</p>
+                </div>
+            </div>
+            <div class="comparison" style="margin-top: 20px;">
+                <div class="comparison-card before">
+                    <h4>Before: 従来のサブエージェント</h4>
+                    <p>独立したコンテキストで起動し、必要な情報はプロンプトを通じて明示的に引き渡す必要があった。これまでの調査結果や方針決定を再説明する手間が発生していた。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After: フォーク型サブエージェント</h4>
+                    <p>親セッションの会話全体とプロンプトキャッシュを継承。再説明なしに作業を分岐でき、キャッシュヒットにより追加コストとレイテンシも抑えられる。バックグラウンド実行がデフォルトとなり、メインの会話を止めずに並行作業を進められる。</p>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">フォーク型サブエージェントの利用</span>
+                </div>
+                <pre><code class="language-json">// エージェント定義でフォーク型を指定すると、
+// 親セッションの会話全体とプロンプトキャッシュを継承する
+{
+  "subagent_type": "fork"
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- @ Mention -->
+        <section class="section">
+            <h2 class="section-title">🗣️ @ メンションによるセッション間メッセージング <span class="count-badge added">v2.1.232</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">5</span> 🗣️ <code class="inline">@</code> メンションのサポート</h3>
+                    <p>プロンプトで <code class="inline">@</code> を入力すると他の Claude セッションを名前で指定でき、Claude が <code class="inline">SendMessage</code> を使ってそのセッションに直接連絡する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">6</span> 📨 <code class="inline">SendMessage</code> の名前解決改善</h3>
+                    <p>名前のみの指定でも、ライブセッション 1 件と完全一致すれば ref による確認なしで配信されるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">7</span> 🏷️ セッション名の一意性保証</h3>
+                    <p>同一マシン上のインタラクティブセッションは一意な名前を維持する。既存のライブセッションと同名で開始または改名すると、<code class="inline">name-word-word</code> 形式のバリアントが割り当てられ、その旨が通知される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">8</span> ⚙️ <code class="inline">/config</code> の新設定項目</h3>
+                    <p>「Dialog expiry」と「Messages from your other sessions」(セッション間の受信メッセージを許可 / 保留 / 拒否) の 2 行が追加された。</p>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Text</span>
+                    <span class="code-title">セッション間メッセージングの利用</span>
+                </div>
+                <pre><code class="language-plaintext"># プロンプトで @ を入力するとライブセッションを名前で指定できる
+@backend-session API のエンドポイント一覧を共有してください
+
+# 受信側の制御は /config の「Messages from your other sessions」で
+# 許可 / 保留 / 拒否を選択</code></pre>
+            </div>
+        </section>
+
+        <!-- GitLab -->
+        <section class="section">
+            <h2 class="section-title">🦊 GitLab 対応 <span class="count-badge added">v2.1.232</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">9</span> 🔒 GitLab トークンのシークレットレダクション</h3>
+                    <p>GitLab のトークンファミリー (<code class="inline">glrt-</code>、<code class="inline">gloas-</code>、<code class="inline">glptt-</code>、<code class="inline">glagent-</code>、<code class="inline">glimt-</code>、<code class="inline">glsoat-</code>、<code class="inline">glcbt-</code>、<code class="inline">glft-</code>、<code class="inline">glffct-</code>) のレダクションと、ルーティング可能な <code class="inline">glpat-</code> / <code class="inline">gldt-</code> トークンの完全レダクションが追加された。<code class="inline">glab</code> CLI の設定ストアも <code class="inline">gh</code> と同様のサンドボックスおよび認証情報パスの保護を受ける。</p>
+                </div>
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">10</span> 🧩 プラグインマーケットプレイスの GitLab 対応</h3>
+                    <p><code class="inline">gitlab.com</code> のリポジトリ URL (ネストされたサブグループを含む) が <code class="inline">github.com</code> の URL と同様にクローンできるようになった。クローンの認証失敗時のヒントには、実際に使用している git ホスト名が表示される。</p>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">GitLab マーケットプレイスの追加</span>
+                </div>
+                <pre><code class="language-bash"># gitlab.com のリポジトリ URL がそのままマーケットプレイスとして利用可能
+# ネストされたサブグループにも対応
+claude plugin marketplace add https://gitlab.com/my-group/my-subgroup/claude-plugins</code></pre>
+            </div>
+        </section>
+
+        <!-- Marketplace & Enterprise -->
+        <section class="section">
+            <h2 class="section-title">🏢 マーケットプレイスとエンタープライズ設定 <span class="count-badge">4 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">11</span> 🏷️ 設定エイリアスの追加</h3>
+                    <p><code class="inline">additionalMarketplaces</code> と <code class="inline">allowedMarketplaces</code> が、<code class="inline">extraKnownMarketplaces</code> と <code class="inline">strictKnownMarketplaces</code> のより分かりやすいエイリアスとして利用可能になった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">12</span> 🚫 <code class="inline">blockedMarketplaces</code> の適用強化</h3>
+                    <p>エンタープライズポリシーで url タイプの <code class="inline">blockedMarketplaces</code> にベアリポジトリ URL を指定した場合、CLI がその URL を git クローンとして分類してもブロックが維持される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">13</span> 🖥️ ゲートウェイの <code class="inline">desktop:</code> オーバーレイ拡張</h3>
+                    <p>従来手動で列挙された 11 個のキーのみだったが、リリース済みのすべての Desktop 設定を受け付けるようになった。Desktop 自身のスキーマに対して起動時に検証され、不明または無効なキーは起動失敗となる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">14</span> ✅ ゲートウェイの起動時検証強化</h3>
+                    <p><code class="inline">managed.policies[].match.groups</code> や <code class="inline">admin.admin_groups</code> の空エントリ、不正な <code class="inline">email_domain</code> 値 (空、<code class="inline">@</code>・空白・カンマを含む) は、誰にもマッチしない、または管理者権限を付与してしまう事態を防ぐため、起動時にエラーとなる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fable Advisor -->
+        <section class="section">
+            <h2 class="section-title">🧭 Fable 5 アドバイザーの再提供 <span class="count-badge">2 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">15</span> 🧭 <code class="inline">/advisor</code> での Fable 5 再提供</h3>
+                    <p>Fable アクセスを持つ組織向けに、Fable 5 が <code class="inline">/advisor</code> のアドバイザーとして再び提供される。使用量クレジットの同意は <code class="inline">/model fable</code> を通じて設定する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">16</span> 💬 同意メッセージの修正</h3>
+                    <p>インタラクティブな <code class="inline">--advisor fable</code> 起動時の同意メッセージが、既に終了したインタラクティブセッションで <code class="inline">/model fable</code> を実行するよう案内していた問題を修正。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security -->
+        <section class="section security-section">
+            <h2 class="section-title">🛡️ セキュリティ修正 <span class="count-badge security">8 件</span></h2>
+            <p class="section-lead">権限モデルの抜け穴が広範に塞がれた。すべてのユーザーに速やかなアップデートを推奨する。特に Windows ユーザー、および信頼済みワークスペース内で外部リポジトリを扱うユーザーは早期の適用が望ましい。</p>
+            <div class="security-grid">
+                <div class="security-card">
+                    <span class="shield">⚠️</span>
+                    <h3><span class="item-no">17</span> PowerShell 権限バイパスの修正</h3>
+                    <p>変数書き込みパラメータが <code class="inline">$PSDefaultParameterValues</code> をサイレントに上書きし、後続コマンドのファイルアクセスをリダイレクトできる権限バイパスを修正。</p>
+                </div>
+                <div class="security-card">
+                    <span class="shield">🪟</span>
+                    <h3><span class="item-no">18</span> Windows シンボリックリンク権限バイパスの修正</h3>
+                    <p>Git Bash が Cygwin 形式のシンボリックリンクを辿る一方、パス検証はそれらを通常ファイルとして扱っていた権限バイパスを修正。シンボリックリンク経由の書き込みには権限承認が必要になった。</p>
+                </div>
+                <div class="security-card">
+                    <span class="shield">📁</span>
+                    <h3><span class="item-no">19</span> ネストされた git リポジトリの信頼継承の修正</h3>
+                    <p>ネストされた git リポジトリが親ディレクトリから信頼を継承していた問題を修正。各リポジトリは個別の信頼確認を必要とする。</p>
+                </div>
+                <div class="security-card">
+                    <span class="shield">⌨️</span>
+                    <h3><span class="item-no">20</span> Bash 入力リダイレクトの権限チェック</h3>
+                    <p><code class="inline">&lt; file</code> 形式の入力リダイレクトが、引数として指定した場合と同様に全プラットフォームで権限チェックされるようになった。</p>
+                </div>
+                <div class="security-card">
+                    <span class="shield">🔌</span>
+                    <h3><span class="item-no">21</span> クロスセッションメッセージングソケットの保護</h3>
+                    <p>共有 <code class="inline">/tmp</code> 上の自動生成ソケットディレクトリを強化。事前に仕込まれたシンボリックリンクや他ユーザーのディレクトリは使用せず拒否される。</p>
+                </div>
+                <div class="security-card">
+                    <span class="shield">🐧</span>
+                    <h3><span class="item-no">22</span> Linux サンドボックスの強化</h3>
+                    <p>Linux ファイルシステムサンドボックスの保護パスバイパスを修正。</p>
+                </div>
+                <div class="security-card">
+                    <span class="shield">🔍</span>
+                    <h3><span class="item-no">23</span> <code class="inline">sandbox.ripgrep</code> の制限</h3>
+                    <p><code class="inline">sandbox.ripgrep</code> はユーザー設定、管理設定、<code class="inline">--settings</code> からのみ有効となり、プロジェクト設定からサンドボックスの ripgrep バイナリを上書きできなくなった。</p>
+                </div>
+                <div class="security-card">
+                    <span class="shield">📥</span>
+                    <h3><span class="item-no">24</span> Cowork セッションの @-import 制限</h3>
+                    <p>Cowork セッションが、ユーザースコープのメモリファイルから外部 @-import をインライン展開しなくなった。</p>
+                </div>
+            </div>
+            <div class="warning-box">
+                <span class="warning-label">動作変更に注意</span>
+                <h3>📁 ネストされた git リポジトリの信頼分離</h3>
+                <p>従来、信頼済みディレクトリの配下にある git リポジトリは親の信頼を継承していた。この動作は、たとえばクローンしてきた未検証のリポジトリを信頼済みワークスペース内に配置した場合に、確認なしでそのリポジトリのフック類が有効になるリスクがあった。</p>
+                <p>v2.1.232 以降、各リポジトリは個別に信頼確認を必要とする。信頼済みディレクトリ内にサブリポジトリを持つモノレポ的な構成では、初回アクセス時に追加の確認プロンプトが表示される点に留意が必要である。</p>
+            </div>
+        </section>
+
+        <!-- Remote Control -->
+        <section class="section">
+            <h2 class="section-title">📱 Remote Control の安定性改善 <span class="count-badge remote">8 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">25</span> 🧱 ブリッジセッションの分離</h3>
+                    <p>クラウドセッション内のブリッジがホストする Remote Control セッションが、そのセッションのトランスクリプトや認証情報を継承していた問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">26</span> 🔗 セッションの再アタッチ</h3>
+                    <p>Claude Desktop や IDE から開始した Remote Control セッションが、ローカルセッションの再開のたびに新しい claude.ai セッションとして表示される問題を修正。既存セッションに再アタッチされる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">27</span> 📶 アイドル時の到達不能表示の修正</h3>
+                    <p>アイドル中の Remote Control セッションが、新たに接続したクライアントに到達不能と表示される問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">28</span> 🕘 会話履歴の復元</h3>
+                    <p>セッションワーカーの再起動時に、ブリッジセッションが会話履歴を復元しない問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">29</span> 🗑️ 削除済みセッションの再開</h3>
+                    <p>claude.ai やアプリからセッションが削除された会話を再開すると、ログインに関するメッセージで失敗する代わりに、代替セッションを開始するようになった (v2.1.227 でのリグレッション)。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">30</span> 🔁 再接続の継続</h3>
+                    <p>ネットワーク断の後、約 30 分間再接続を試行し続ける。1 時間の間に散発する数回の断続で切断されることもなくなった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">31</span> 🎛️ Remote Control の移動制御</h3>
+                    <p>会話の再開が、同一マシン上で Remote Control を保持している別の Claude Code からサイレントに奪わなくなった。移動するには保持側で <code class="inline">/remote-control</code> を実行する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">32</span> 🧾 状態表示の明確化</h3>
+                    <p>セッションが別デバイスに引き継がれたのか、別アプリから終了されたのか、削除されたのかをターミナルに表示し、その操作を取り消してしまう再接続の提案を停止した。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Other Fixes -->
+        <section class="section">
+            <h2 class="section-title">🔧 その他の修正 <span class="count-badge fixed">9 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">33</span> 🔌 MCP 接続のハング修正</h3>
+                    <p>サーバーがプロトコルバージョンのプローブに応答しない、または不正な応答を返した場合に、接続タイムアウトの 30 秒間フルにハングする問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">34</span> 🚪 Cloud gateway <code class="inline">/login</code> の修正</h3>
+                    <p>管理設定の読み込みに失敗した際、「Press Enter to continue」の後にサイレントに終了したり、ターミナルが応答しなくなる問題を修正。理由が表示されるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">35</span> 🎙️ 音声モードの修正</h3>
+                    <p>ネイティブビルドで、音声サービスが接続を拒否した際に「listening...」のまま固まる問題を修正。拒否が即座に表示される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">36</span> 🔐 mTLS 証明書の自動リロード</h3>
+                    <p>クライアント証明書のローテーションに再起動が必要だった問題を修正。接続エラー時にローテーション済みの証明書と鍵を自動的に再読み込みする。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">37</span> 🌏 リージョン値のフォールバック</h3>
+                    <p>不正な形式の AWS または Vertex のリージョン値がリクエスト URL の構築に使用される問題を修正。デフォルトリージョンにフォールバックする。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">38</span> ⏱️ ストリームアイドルタイムアウトの回復</h3>
+                    <p>Bedrock、Vertex、ゲートウェイ環境で、ストリームのアイドルタイムアウトエラーがリクエストを失敗させる代わりに回復するようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">39</span> 🖥️ 表示の修正</h3>
+                    <p>切り詰められたテキストを含むオーバーレイが 1 列広く描画される問題、先頭切り詰めテキストが省略記号に潰れる問題、絵文字の途中で切れたプレビューによる文字化けを修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">40</span> 🧩 マーケットプレイス登録の競合修正</h3>
+                    <p><code class="inline">known_marketplaces.json</code> への同時書き込みにより、プラグインマーケットプレイスがサイレントに登録解除される起動時の競合を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">41</span> 🔄 <code class="inline">/update</code> と <code class="inline">/tui</code> の再起動許可</h3>
+                    <p>再起動後も存続する作業の実行中に、<code class="inline">/update</code> と <code class="inline">/tui</code> が再起動を拒否する問題を修正。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <h2 class="section-title">✨ 改善 <span class="count-badge improved">6 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">42</span> ⚡ フルスクリーンストリーミングの高速化</h3>
+                    <p>更新のたびに会話全体を再正規化しなくなり、長時間セッションでも応答性が維持される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">43</span> 🧾 管理設定の承認ダイアログの改善</h3>
+                    <p>エンドポイント URL の表示、テレメトリのみの変更に対する明確な文言、定型的な OpenTelemetry オプションのスキップに加え、サーバー管理のサンドボックスバイナリ上書き (<code class="inline">sandbox.bwrapPath</code>、<code class="inline">sandbox.socatPath</code>、<code class="inline">sandbox.ripgrep</code>) には承認を必須とした。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">44</span> 💬 <code class="inline">/feedback</code> と <code class="inline">/bug</code> の即時表示</h3>
+                    <p>Claude の応答中に呼び出しても、ターンの完了を待たずに即座に開くようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">45</span> 🧩 <code class="inline">/plugin install</code> のマーケットプレイス自動更新</h3>
+                    <p><code class="inline">plugin@marketplace</code> 形式でのインストール時にマーケットプレイスを先に更新するため、新規公開プラグインが手動更新なしでインストールできる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">46</span> 🔎 <code class="inline">/code-review</code> のバックグラウンド実行</h3>
+                    <p>high、xhigh、max のエフォートレベルでも、他のレベルと同様にバックグラウンドエージェントで実行される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">47</span> 🖼️ 画像読み込みの非ブロック化</h3>
+                    <p>貼り付けおよびクリップボードの画像がイベントループをブロックせずに読み込まれる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">🔬 技術的な詳細</h2>
+            <div class="tech-detail">
+                <h3>🔀 サブエージェントフォークの動作</h3>
+                <p>従来のサブエージェントは独立したコンテキストで起動し、必要な情報はプロンプトを通じて明示的に引き渡す必要があった。フォーク型サブエージェント (<code class="inline">subagent_type: "fork"</code>) は親セッションの会話全体を継承するため、これまでの調査結果や方針決定を再説明することなく作業を分岐できる。</p>
+                <p>さらにプロンプトキャッシュも継承されるため、長大な会話コンテキストを引き継いでもキャッシュヒットにより追加コストとレイテンシが抑えられる。インタラクティブセッションでは、チームメイト以外のエージェント起動がデフォルトでバックグラウンド実行となり、メインの会話を止めずに並行作業を進められる。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🗣️ @ メンションと SendMessage の統合</h3>
+                <p>これまで他セッションへのメッセージ送信は、Claude が <code class="inline">SendMessage</code> ツールを使う際に ref による確認を挟む場合があった。v2.1.232 では 2 つの改善が入っている。第一に、プロンプト入力中に <code class="inline">@</code> を入力するとライブセッションを名前で補完でき、ユーザーが宛先を明示すると Claude が <code class="inline">SendMessage</code> で直接そのセッションに連絡する。第二に、名前のみの指定でもライブセッション 1 件と完全一致すれば確認なしで配信される。</p>
+                <p>この前提として、同一マシン上のセッション名が一意であることが必要なため、重複する名前には <code class="inline">name-word-word</code> 形式のバリアントが自動的に割り当てられる仕組みが同時に導入された。受信側の制御は <code class="inline">/config</code> の「Messages from your other sessions」で許可 / 保留 / 拒否を選択できる。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🦊 GitLab トークンのレダクション</h3>
+                <p>シークレットレダクションは、トランスクリプトやログに含まれる認証情報を自動的にマスクする機能である。従来は GitHub トークン (<code class="inline">ghp_</code> など) が中心だったが、v2.1.232 で GitLab の 9 種類のトークンファミリーに対応した。特に <code class="inline">glpat-</code> (パーソナルアクセストークン) と <code class="inline">gldt-</code> (デプロイトークン) のルーティング可能な形式は完全レダクションの対象となる。</p>
+                <p>また、<code class="inline">glab</code> CLI の設定ストアが <code class="inline">gh</code> CLI と同等の保護を受けるため、サンドボックス内のコマンドから GitLab の認証情報パスへのアクセスが制限される。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🪟 PowerShell と Windows の権限バイパス</h3>
+                <p>v2.1.232 には Windows 環境に関わる 2 件の権限バイパス修正が含まれる。1 件目は PowerShell の <code class="inline">$PSDefaultParameterValues</code> に関するもので、変数書き込みパラメータを通じてこの自動変数をサイレントに上書きすると、後続コマンドのファイルアクセス先をリダイレクトできてしまう問題だった。</p>
+                <p>2 件目は Git Bash の Cygwin 形式シンボリックリンクに関するもので、パス検証はこれらを通常ファイルとして扱う一方、Git Bash 自体はリンクを辿るため、検証をすり抜けた書き込みが可能だった。修正後は、シンボリックリンク経由の書き込みに権限承認が必要となる。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>📁 ネストされた git リポジトリの信頼分離</h3>
+                <p>従来、信頼済みディレクトリの配下にある git リポジトリは親の信頼を継承していた。この動作は、たとえばクローンしてきた未検証のリポジトリを信頼済みワークスペース内に配置した場合に、確認なしでそのリポジトリのフック類が有効になるリスクがあった。v2.1.232 以降、各リポジトリは個別に信頼確認を必要とする。信頼済みディレクトリ内にサブリポジトリを持つモノレポ的な構成では、初回アクセス時に追加の確認プロンプトが表示される点に留意が必要である。</p>
+            </div>
+        </section>
+
+        <!-- Impact / Audience -->
+        <section class="section">
+            <h2 class="section-title">👥 開発者への影響: 対象</h2>
+            <div class="fix-list">
+                <div class="fix-item">
+                    <span class="fix-icon">🛡️</span>
+                    <div class="fix-text">
+                        <strong>すべてのユーザー</strong>
+                        <span>PowerShell 権限バイパス、Windows シンボリックリンクバイパス、ネストされた git リポジトリの信頼継承、Bash 入力リダイレクトの権限チェックなど、複数のセキュリティ修正が含まれるため、速やかなアップデートを推奨</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🔀</span>
+                    <div class="fix-text">
+                        <strong>マルチエージェントワークフローの利用者</strong>
+                        <span>フォーク型サブエージェントがデフォルトで有効になり、会話とプロンプトキャッシュを継承した分岐作業が標準機能として利用可能に</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🗣️</span>
+                    <div class="fix-text">
+                        <strong>複数セッションを併用するユーザー</strong>
+                        <span><code class="inline">@</code> メンションによるセッション指定と <code class="inline">SendMessage</code> の名前解決改善により、セッション間の連携が UI から直接行えるようになった</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🦊</span>
+                    <div class="fix-text">
+                        <strong>GitLab を利用する組織</strong>
+                        <span>トークンのレダクション、<code class="inline">glab</code> CLI の保護、プラグインマーケットプレイスの <code class="inline">gitlab.com</code> 対応により、GitLab 中心の環境でも GitHub と同等の保護と利便性を得られる</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🔑</span>
+                    <div class="fix-text">
+                        <strong>Slack など MCP OAuth 利用者</strong>
+                        <span>v2.1.231 でリダイレクト URI 不一致によるサインイン失敗が修正済み</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">📱</span>
+                    <div class="fix-text">
+                        <strong>Remote Control 利用者</strong>
+                        <span>再接続の継続、既存セッションへの再アタッチ、状態表示の明確化など、多数の安定性改善が含まれる</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">☁️</span>
+                    <div class="fix-text">
+                        <strong>Bedrock / Vertex / ゲートウェイ利用者</strong>
+                        <span>ストリームアイドルタイムアウトからの回復、不正リージョン値のフォールバック、mTLS 証明書の自動リロードにより、エンタープライズ環境での信頼性が向上</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🧭</span>
+                    <div class="fix-text">
+                        <strong>Fable アクセスを持つ組織</strong>
+                        <span><code class="inline">/advisor</code> で Fable 5 が再び選択可能になった</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="section">
+            <h2 class="section-title">✅ 必要なアクション</h2>
+            <div class="action-list">
+                <div class="action-item">
+                    <div class="action-number">1</div>
+                    <div class="action-content">
+                        <strong>最新バージョンへの更新 (推奨)</strong>
+                        <span>セキュリティ修正が多数含まれるため、下記のコマンドで速やかに更新する。更新後は <code class="inline">claude --version</code> でバージョンを確認する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">2</div>
+                    <div class="action-content">
+                        <strong>ネストされた git リポジトリを含むワークスペースの利用者</strong>
+                        <span>各サブリポジトリで個別の信頼確認が求められるようになるため、初回アクセス時のプロンプトに留意する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">3</div>
+                    <div class="action-content">
+                        <strong>プロジェクト設定で <code class="inline">sandbox.ripgrep</code> を指定している場合</strong>
+                        <span>プロジェクト設定からの上書きが無効になったため、必要であればユーザー設定、管理設定、または <code class="inline">--settings</code> に移行する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">4</div>
+                    <div class="action-content">
+                        <strong>マーケットプレイス設定の管理者</strong>
+                        <span><code class="inline">additionalMarketplaces</code> / <code class="inline">allowedMarketplaces</code> エイリアスの利用を検討。既存の <code class="inline">extraKnownMarketplaces</code> / <code class="inline">strictKnownMarketplaces</code> も引き続き有効</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">5</div>
+                    <div class="action-content">
+                        <strong>ゲートウェイ管理者</strong>
+                        <span><code class="inline">desktop:</code> オーバーレイの不明・無効キー、空の <code class="inline">match.groups</code> / <code class="inline">admin_groups</code>、不正な <code class="inline">email_domain</code> 値が起動失敗となるため、更新前に設定を検証しておく</span>
+                    </div>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップグレード方法</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">🔀 移行ガイド</h2>
+            <p class="section-lead">本リリースには、動作変更を伴う項目がいくつか含まれる。</p>
+            <div class="migration-note">
+                <h3>🔀 サブエージェントのバックグラウンド実行</h3>
+                <p>インタラクティブセッションでは、チームメイト以外のエージェント起動がデフォルトでバックグラウンド実行となった。従来のフォアグラウンド実行を前提としたワークフローでは、<code class="inline">/tasks</code> で進行中のバックグラウンドエージェントを確認する運用に切り替える。</p>
+            </div>
+            <div class="migration-note">
+                <h3>📁 ネストされた git リポジトリの信頼</h3>
+                <p>親ディレクトリの信頼を継承しなくなったため、自動化スクリプトなどでサブリポジトリを扱う場合は、事前に各リポジトリを信頼済みにしておく必要がある。</p>
+            </div>
+            <div class="migration-note">
+                <h3>🖥️ ゲートウェイの起動時検証の厳格化</h3>
+                <p><code class="inline">desktop:</code> オーバーレイや <code class="inline">managed.policies</code> の不正な設定値は、従来サイレントに無視または誤動作していたが、今後は起動失敗となる。アップデート前に設定ファイルの妥当性を確認しておくこと。</p>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">💡 ユースケース</h2>
+            <div class="use-case">
+                <h4>🔀 長い調査の続きをフォークして並行作業する</h4>
+                <p>フォーク型サブエージェント (<code class="inline">subagent_type: "fork"</code>) は親セッションの会話全体を継承するため、これまでの調査結果や方針決定を再説明することなく作業を分岐できる。プロンプトキャッシュも継承されるため、長大なコンテキストを引き継いでも追加コストとレイテンシが抑えられる。バックグラウンド実行のデフォルト化により、メインの会話を止めずに並行作業を進められる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🗣️ フロントエンドとバックエンドのセッションを連携させる</h4>
+                <p>プロンプトで <code class="inline">@backend-session</code> のように入力すると、他のライブセッションを名前で指定して Claude が <code class="inline">SendMessage</code> で直接連絡する。API のエンドポイント一覧の共有など、セッション間の情報連携が UI から直接行える。受信側は <code class="inline">/config</code> の「Messages from your other sessions」で許可 / 保留 / 拒否を制御できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🦊 GitLab 中心の企業環境で安全にプラグインを配布する</h4>
+                <p><code class="inline">gitlab.com</code> のリポジトリ URL (ネストされたサブグループを含む) をそのままプラグインマーケットプレイスとして利用できる。GitLab の 9 種類のトークンファミリーがレダクションされ、<code class="inline">glab</code> CLI の設定ストアも保護されるため、GitHub と同水準の安全性で運用できる。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">📝 まとめ</h2>
+            <div class="summary-box">
+                <h3>マルチエージェント機能の標準化とセキュリティ強化を柱とするリリース</h3>
+                <p><strong>第一に、サブエージェントフォークのデフォルト有効化</strong>。会話とプロンプトキャッシュを継承する <code class="inline">subagent_type: "fork"</code> が標準機能となり、コンテキストの再説明なしに作業を分岐できるようになった。バックグラウンド実行のデフォルト化と合わせ、並行作業のワークフローが大きく整備された。</p>
+                <p><strong>第二に、@ メンションによるセッション間メッセージング</strong>。プロンプトから他セッションを名前で直接指定でき、セッション名の一意性保証や受信制御の設定と合わせて、複数セッションの協調動作が実用段階に入った。</p>
+                <p><strong>第三に、GitLab 対応の拡充</strong>。トークンレダクション、<code class="inline">glab</code> CLI の保護、プラグインマーケットプレイスの対応により、GitLab を採用する企業でも GitHub と同水準の体験が得られる。</p>
+                <p><strong>第四に、セキュリティ修正の集中投入</strong>。PowerShell と Windows シンボリックリンクの権限バイパス、ネストされた git リポジトリの信頼継承、共有 <code class="inline">/tmp</code> 上のソケットディレクトリ保護など、権限モデルの抜け穴が広範に塞がれた。</p>
+                <p>セキュリティ修正が多数含まれるため、すべてのユーザーに速やかなアップデートを推奨する。特に Windows ユーザー、および信頼済みワークスペース内で外部リポジトリを扱うユーザーは早期の適用が望ましい。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></li>
+                <li><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li><a href="2026-08-12-claude-code-v2-1-229.html">Claude Code v2.1.229</a></li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-08-13 | カテゴリ: Claude Code アップデート | Anthropic News Summary</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-08-13](2026/2026-08-13-claude-code-v2-1-231-v2-1-232.md) - Claude Code v2.1.231 & v2.1.232 リリース — サブエージェントフォークのデフォルト有効化、@ メンションによるセッション間メッセージング、GitLab 対応、セキュリティ修正多数
 - [2026-08-12](2026/2026-08-12-claude-code-v2-1-229.md) - Claude Code v2.1.229 リリース — プラグインマーケットプレイスの command ソース、SSE キープアライブ ping、/commit-push-pr の危険フラグ自動承認撤廃
 - [2026-08-11](2026/2026-08-11-compliance-api-local-sessions.md) - Compliance API がローカルセッションのトランスクリプト取得に対応、`anthropic-workspace-id` レスポンスヘッダーを追加
 - [2026-08-11](2026/2026-08-11-claude-code-v2-1-228.md) - Claude Code v2.1.228 リリース — 再描画停止の修正、claude.ai 同期スキルのハードニング、Write ツールの上書きルール変更
