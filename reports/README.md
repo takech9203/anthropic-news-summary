@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-08-14](2026/2026-08-14-claude-text-watermark.md) - Claude のテキスト透かしの仕組み: 鍵付き擬似乱数サンプリングによる生成テキストの識別
+- [2026-08-14](2026/2026-08-14-claude-code-v2-1-233.md) - Claude Code v2.1.233 リリース — GitLab MR の worktree 対応、Bash メモリ制限、Todo ツールの新モデル無効化、Windows リグレッション修正
 - [2026-08-13](2026/2026-08-13-claude-code-v2-1-231-v2-1-232.md) - Claude Code v2.1.231 & v2.1.232 リリース — サブエージェントフォークのデフォルト有効化、@ メンションによるセッション間メッセージング、GitLab 対応、セキュリティ修正多数
 - [2026-08-12](2026/2026-08-12-claude-code-v2-1-229.md) - Claude Code v2.1.229 リリース — プラグインマーケットプレイスの command ソース、SSE キープアライブ ping、/commit-push-pr の危険フラグ自動承認撤廃
 - [2026-08-11](2026/2026-08-11-compliance-api-local-sessions.md) - Compliance API がローカルセッションのトランスクリプト取得に対応、`anthropic-workspace-id` レスポンスヘッダーを追加

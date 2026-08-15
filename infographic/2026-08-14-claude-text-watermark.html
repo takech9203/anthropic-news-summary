@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude のテキスト透かしの仕組み: 鍵付き擬似乱数サンプリングによる生成テキストの識別 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Warning Section */
+        .section.warning-section {
+            background: #FFFBF5;
+            border: 2px solid #FF9800;
+            box-shadow: 0 4px 20px rgba(255, 152, 0, 0.12);
+        }
+
+        .section.warning-section .section-title::before {
+            background: #FF9800;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .comparison-card li {
+            font-size: 13.5px;
+            color: var(--text-primary);
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .comparison-card.before li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Flow Steps */
+        .flow-steps {
+            display: grid;
+            gap: 12px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .flow-step-num {
+            width: 32px;
+            height: 32px;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .flow-step p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Info List */
+        .info-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .info-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 10px 16px 10px 36px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .info-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 14px;
+            color: var(--anthropic-coral);
+        }
+
+        .info-list.limits li {
+            background: #FFF3E0;
+        }
+
+        .info-list.limits li::before {
+            content: '⚠️';
+            font-size: 12px;
+            left: 12px;
+        }
+
+        .info-list.privacy li {
+            background: #EFF6FF;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .info-list.privacy li::before {
+            content: '🔒';
+            font-size: 12px;
+            left: 12px;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0;
+        }
+
+        .info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .info-table th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .info-table th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .info-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .info-table tr:nth-child(even) td {
+            background: var(--anthropic-cream);
+        }
+
+        .info-table td:first-child {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Callout */
+        .callout {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+
+        .callout.summary {
+            background: var(--anthropic-cream);
+            border-color: var(--anthropic-coral);
+        }
+
+        .callout.note {
+            background: #EFF6FF;
+            border-color: #3B82F6;
+        }
+
+        .callout-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .callout p {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 0;
+        }
+
+        /* Inline code */
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            border-radius: 4px;
+            padding: 1px 6px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Links List */
+        .links-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .links-list li {
+            font-size: 14px;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .links-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+            top: 3px;
+        }
+
+        .links-list a {
+            color: #B8874F;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .links-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #B8874F;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">透明性</span>
+                <span class="category-badge">責任ある AI</span>
+                <span class="category-badge">規制対応</span>
+                <h1>Claude のテキスト透かしの仕組み: 鍵付き擬似乱数サンプリングによる生成テキストの識別</h1>
+                <p class="date">📅 2026-08-14 | ソース: Anthropic News</p>
+                <p class="lead">今後の Claude モデルが生成するテキストに透かし (watermark) が入ります。テキストには何も追加されず、品質への影響もありません。鍵を持つ者だけが「Claude が生成した確率」を統計的に算出できます。</p>
+            </div>
+        </header>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>発表日</td>
+                        <td>2026-08-14</td>
+                    </tr>
+                    <tr>
+                        <td>ソース</td>
+                        <td>Anthropic News</td>
+                    </tr>
+                    <tr>
+                        <td>カテゴリ</td>
+                        <td>透明性 / 責任ある AI / 規制対応</td>
+                    </tr>
+                    <tr>
+                        <td>公式リンク</td>
+                        <td><a href="https://www.anthropic.com/news/claude-text-watermark" target="_blank" rel="noopener noreferrer" style="color: #B8874F;">https://www.anthropic.com/news/claude-text-watermark</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 / キーポイント</h2>
+            <p>Anthropic は 2026 年 8 月 14 日、今後の Claude モデルが生成するテキストに透かしを含める仕組みを解説する記事を公開しました。EU AI 法への準拠を目的とした対応であり、Anthropic は 2026 年 7 月に「EU Code of Practice on Transparency of AI-Generated Content」に約 190 の署名者とともに署名しています。他の主要 AI 開発企業も同様に、それぞれ独自の透かしを実装する予定です。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">💧</div>
+                    <div class="key-point-content">
+                        <h3>乱数の「源」を置き換える透かし</h3>
+                        <p>単語選択に使う乱数を、鍵と直前の数語に基づく擬似乱数に置き換えます。Google DeepMind が 2024 年に Nature 誌で発表した SynthID-Text の一種であり、テキストに文字やトークンを追加するものではありません。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">✨</div>
+                    <div class="key-point-content">
+                        <h3>品質への影響なし</h3>
+                        <p>読者には透かしの有無を区別できず、内部テストでは品質、創造性、可読性への影響がないことが確認されています。追加トークンも不要なため、速度とコストへの影響はごく僅かです。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗝️</div>
+                    <div class="key-point-content">
+                        <h3>検出には鍵が必要</h3>
+                        <p>鍵を持つ者だけが、単語の並びが Claude の選択パターンと一致するかを統計的に検証し、Claude が生成した確率を算出できます。透かし検出 API は近日提供予定です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🇪🇺</div>
+                    <div class="key-point-content">
+                        <h3>EU AI 法への準拠が背景</h3>
+                        <p>EU AI 法の透明性要件への対応として実装されます。地域を限定した実装方法が未確立のため、当面はグローバルに適用されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🖼️</div>
+                    <div class="key-point-content">
+                        <h3>画像などのファイルは C2PA で対応</h3>
+                        <p>.png、.jpg、.svg などのファイルには透かしではなく、オープン標準 C2PA による暗号署名付きメタデータ (コンテンツクレデンシャル) を付与します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <ul class="info-list">
+                <li><strong>EU AI 法の透明性要件</strong>: EU AI 法は、AI が生成したコンテンツの透明性を求めており、Anthropic は 2026 年 7 月に「EU Code of Practice on Transparency of AI-Generated Content」に署名しました。今回の透かしはこの準拠のための実装です。</li>
+                <li><strong>当面はグローバルに適用</strong>: 地域を限定した実装方法が未確立のため、特定地域だけでなくグローバルに適用されます。</li>
+                <li><strong>手法の系譜</strong>: 採用された手法は、2022 年の Scott Aaronson の提案に遡る手法群に属し、直接的には DeepMind の SynthID-Text (Nature、2024 年) の一種です。</li>
+                <li><strong>Gemini での実績</strong>: DeepMind の論文では Gemini の一部トラフィックで検証が行われ、評価において「統計的有意差なし」と報告されています。</li>
+            </ul>
+        </section>
+
+        <!-- Main Changes -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>💧 将来のモデルに透かしが入る</h3>
+                    <p>将来の Claude モデルが生成するテキストに透かしが入ります。テキスト自体には何も追加されず、隠し文字も存在しません。追加トークンも不要で、速度とコストへの影響はごく僅かです。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏳ 旧モデルには移行期間</h3>
+                    <p>2026 年 8 月 2 日以前のモデルには移行期間が設けられ、今後数か月で順次対応します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🖼️ ファイルは別の仕組み</h3>
+                    <p>.png、.jpg、.svg などのファイルには透かしではなく、オープン標準 C2PA による暗号署名付きメタデータ (コンテンツクレデンシャル) を付与します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 検出 API を近日提供予定</h3>
+                    <p>透かし検出 API は近日提供予定であり、詳細は検討中とされています。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details: Mechanism -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細: 動作原理</h2>
+            <p>LLM は 1 語ずつテキストを生成し、次の単語を確率付きの候補リストから選択します。「overcast」と「grey」のように意味がほぼ変わらない低リスクな選択では、通常は乱数によって単語が決定されます。</p>
+            <p>透かしは、この乱数の「源」を変える手法です。任意の乱数生成器の代わりに、<strong>鍵と直前の数語</strong>から導出した擬似乱数で単語を決定します。単語選択は依然としてランダムに見えますが、鍵を持つ者は単語の並びが Claude の選択パターンと一致するかを確認でき、そのテキストを Claude が生成した確率を算出できます。モデルが本来選ばない単語 (例: 「nubilous」のような難解語) を選ばせることはないため、出力の自然さは保たれます。</p>
+            <div class="callout note">
+                <span class="callout-icon">🎲</span>
+                <p><strong>モノポリーの比喩</strong>: 記事はこの仕組みを、モノポリーでサイコロの代わりに円周率の桁を使ってコマを進める比喩で説明しています。プレイヤーにとってはランダムであることに変わりありませんが、後から手順を確認すれば円周率が使われたかを判定できます。</p>
+            </div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Generation["🤖 Claude のテキスト生成"]
+        Prompt(["👤 ユーザーのプロンプト"])
+        Candidates["📝 次の単語の候補リスト&lt;br/&gt;確率付きで算出"]
+        Choice{"選択の余地が&lt;br/&gt;あるか"}
+        Seed["🔑 鍵 + 直前の数語から&lt;br/&gt;擬似乱数を導出"]
+        Forced["📌 事実上一意の単語&lt;br/&gt;透かしは疎になる"]
+        Output["📄 生成テキスト&lt;br/&gt;見た目は通常と同一"]
+    end
+
+    subgraph Detection["🔍 検出側"]
+        Verifier["🗝️ 鍵の保有者&lt;br/&gt;検出 API を近日提供予定"]
+        Score["📊 選択パターンの一致度から&lt;br/&gt;Claude 生成の確率を算出"]
+    end
+
+    Prompt --&gt; Candidates
+    Candidates --&gt; Choice
+    Choice --&gt;|はい| Seed
+    Choice --&gt;|いいえ| Forced
+    Seed --&gt; Output
+    Forced --&gt; Output
+    Output --&gt; Verifier
+    Verifier --&gt; Score
+
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class Generation,Detection container
+    class Prompt input
+    class Candidates,Output process
+    class Choice decision
+    class Seed,Verifier internal
+    class Forced,Score warning
+                </pre>
+            </div>
+        </section>
+
+        <!-- Output impact and privacy -->
+        <section class="section">
+            <h2 class="section-title">出力への影響とプライバシー</h2>
+            <h3 class="subsection-title">✅ 出力への影響</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🎨 品質への影響なし</h3>
+                    <p>内部テストで品質、創造性、可読性への影響がないことを確認済みです。読者には透かしの有無を区別できません。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 テキストへの追加なし</h3>
+                    <p>隠し文字や特殊なトークンは一切挿入されません。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ 速度とコスト</h3>
+                    <p>追加トークンが不要なため、影響はごく僅かです。</p>
+                </div>
+            </div>
+            <h3 class="subsection-title">🔒 プライバシー</h3>
+            <ul class="info-list privacy">
+                <li>透かしから個人、組織、チャットを特定することはできません</li>
+                <li>鍵にもユーザー情報を復元できる要素は含まれていません</li>
+            </ul>
+        </section>
+
+        <!-- Limitations -->
+        <section class="section warning-section">
+            <h2 class="section-title">⚠️ 制限事項</h2>
+            <p>検出結果の解釈には以下の制限事項の理解が不可欠です。</p>
+            <ul class="info-list limits">
+                <li><strong>判定できるのは「Claude が関与した可能性」のみ</strong>: 人間が書いたことや、他の AI が書いたことは確認できません。他社は別の鍵と手法を使用します。</li>
+                <li><strong>短いテキストでは検出精度が低い</strong>: 長文ほど信頼度が上がります。</li>
+                <li><strong>事実記述では透かしが疎になる</strong>: 例えば「Principia」の次は「Mathematica」しかないような箇所では単語の選択肢がなく、透かしを埋め込む余地がありません。</li>
+                <li><strong>校正や軽微な編集にはほとんど付かない</strong>: 大半が人間の言葉のままであるため、透かしが入る余地がほとんどありません。</li>
+                <li><strong>コードには少ない</strong>: 正確性が要求されるため透かしは少ないですが、コメントなど任意選択がある部分には適用できます。</li>
+                <li><strong>編集への耐性</strong>: 軽い編集では透かしは完全には消えませんが、全面的な書き直しでは消えます。</li>
+                <li><strong>「書いた」と「大幅に編集した」の区別は不可</strong>: どちらも Claude の関与として検出されます。</li>
+            </ul>
+        </section>
+
+        <!-- Scope -->
+        <section class="section">
+            <h2 class="section-title">適用範囲</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>対象</th>
+                        <th>扱い</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>通常のテキスト生成</td>
+                        <td>透かしを適用</td>
+                    </tr>
+                    <tr>
+                        <td>翻訳</td>
+                        <td>全単語を Claude が選ぶため透かしが付く</td>
+                    </tr>
+                    <tr>
+                        <td>コード</td>
+                        <td>正確性の制約により疎。コメント等には適用可能</td>
+                    </tr>
+                    <tr>
+                        <td>画像等のファイル (.png、.jpg、.svg)</td>
+                        <td>透かしではなく C2PA のコンテンツクレデンシャルを付与</td>
+                    </tr>
+                    <tr>
+                        <td>2026 年 8 月 2 日以前のモデル</td>
+                        <td>移行期間あり。今後数か月で順次対応</td>
+                    </tr>
+                    <tr>
+                        <td>適用地域</td>
+                        <td>当面はグローバルに適用</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Comparison with existing AI detection -->
+        <section class="section">
+            <h2 class="section-title">既存の AI 検出ツールとの違い</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>既存の AI 検出ソフトウェア</h4>
+                    <ul>
+                        <li>Pangram などが該当し、鍵を持たない</li>
+                        <li>AI 特有の言い回し (「quietly」の多用など) を統計的に分析する</li>
+                        <li>文体の特徴に基づく推定</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>Claude の透かし</h4>
+                    <ul>
+                        <li>鍵に基づく擬似乱数パターンの照合</li>
+                        <li>鍵の保有者だけが検証できる</li>
+                        <li>原理が根本的に異なる検証手段</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">🎯 対象</h3>
+            <ul class="info-list">
+                <li><strong>Claude API を利用する開発者</strong>: 将来のモデルが生成するテキストに透かしが含まれるようになりますが、出力形式や品質に変化はありません。</li>
+                <li><strong>コンテンツプラットフォームの運営者</strong>: 近日提供予定の透かし検出 API により、Claude 生成テキストの識別が可能になる見込みです。</li>
+                <li><strong>EU AI 法への対応を進める企業</strong>: AI 生成コンテンツの透明性要件への準拠状況を把握する担当者。</li>
+                <li><strong>教育機関や出版などで AI 検出を行う組織</strong>: 既存の統計的 AI 検出ツールとは異なる、鍵に基づく検証手段が加わります。</li>
+            </ul>
+
+            <h3 class="subsection-title">🛠️ 必要なアクション</h3>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="flow-step-num">1</div>
+                    <p><strong>アプリケーションへの影響確認</strong>: 透かしはテキストに文字を追加せず、品質にも影響しないため、既存のアプリケーションで対応が必要な変更はありません。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">2</div>
+                    <p><strong>検出 API の続報の確認</strong>: 透かし検出 API は近日提供予定であり、詳細は検討中とされているため、公式発表を待つ必要があります。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">3</div>
+                    <p><strong>検出結果の解釈の整理</strong>: 検出できるのは「Claude が関与した可能性」であり、人間が書いたことの証明や他の AI の識別はできません。短文や事実記述、コードでは信頼度が下がる点を運用ポリシーに織り込みます。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">4</div>
+                    <p><strong>法的位置づけの理解</strong>: 透かしは所有権、著作権、法的責任に影響しません。</p>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">🔄 移行ガイド</h3>
+            <div class="callout note">
+                <span class="callout-icon">📅</span>
+                <p>2026 年 8 月 2 日以前のモデルには移行期間が設けられ、今後数か月で順次透かしが適用されます。開発者側での移行作業は不要です。</p>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🔍 コンテンツの出所確認</h4>
+                <p>近日提供予定の透かし検出 API により、コンテンツプラットフォームは投稿されたテキストを Claude が生成した確率を算出し、コンテンツの出所確認という新しいユースケースが開ける可能性があります。</p>
+            </div>
+            <div class="use-case">
+                <h4>🇪🇺 EU AI 法への準拠状況の把握</h4>
+                <p>AI 生成コンテンツの透明性要件への対応を進める企業は、Claude の透かしが EU Code of Practice への署名に基づく準拠実装であることを把握し、自社の対応方針に反映できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🎓 教育機関や出版での AI 検出</h4>
+                <p>既存の統計的 AI 検出ツール (文体分析) とは原理が異なる、鍵に基づく検証手段が加わります。ただし短文、事実記述、コード、軽微な編集では検出力が下がる制限を運用に織り込む必要があります。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p>今回の発表は、EU AI 法への準拠を背景に、Claude の生成テキストへ透かしを導入する技術的な仕組みを説明したものです。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🎲</div>
+                    <div class="key-point-content">
+                        <h3>仕組みは「乱数の源の置き換え」</h3>
+                        <p>単語選択の乱数を、鍵と直前の数語に基づく擬似乱数に置き換えます。DeepMind の SynthID-Text の一種であり、テキストには何も追加されません。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">✨</div>
+                    <div class="key-point-content">
+                        <h3>出力への実質的な影響はない</h3>
+                        <p>品質、創造性、可読性への影響は内部テストで確認されておらず、追加トークンも不要なため速度とコストへの影響もごく僅かです。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗝️</div>
+                    <div class="key-point-content">
+                        <h3>検出には鍵が必要で、判定は確率的</h3>
+                        <p>鍵の保有者だけが Claude 生成の確率を算出できます。短文、事実記述、コード、軽微な編集では検出力が下がり、全面的な書き直しでは消えます。判定できるのは「Claude の関与」のみです。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>プライバシーへの配慮</h3>
+                        <p>透かしから個人、組織、チャットを特定することはできません。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🖼️</div>
+                    <div class="key-point-content">
+                        <h3>テキスト以外は C2PA で対応</h3>
+                        <p>画像などのファイルには暗号署名付きメタデータのコンテンツクレデンシャルを付与し、透かしと役割を分担します。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="callout summary">
+                <span class="callout-icon">💡</span>
+                <p>開発者にとって当面の対応は不要ですが、近日提供予定の透かし検出 API は、コンテンツの出所確認という新しいユースケースを開く可能性があります。検出結果の解釈には制限事項の理解が不可欠であり、続報を注視したいところです。</p>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="links-list">
+                <li><a href="https://www.anthropic.com/news/claude-text-watermark" target="_blank" rel="noopener noreferrer">How Claude's text watermark works</a></li>
+                <li><a href="https://www.nature.com/articles/s41586-024-08025-4" target="_blank" rel="noopener noreferrer">SynthID-Text 論文 (Nature)</a></li>
+                <li><a href="https://c2pa.org/" target="_blank" rel="noopener noreferrer">C2PA (Coalition for Content Provenance and Authenticity)</a></li>
+                <li><a href="https://digital-strategy.ec.europa.eu/" target="_blank" rel="noopener noreferrer">EU Code of Practice on Transparency of AI-Generated Content (European Commission)</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <p><a href="https://www.anthropic.com/news/claude-text-watermark" target="_blank" rel="noopener noreferrer">https://www.anthropic.com/news/claude-text-watermark</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-08-14 | カテゴリ: 透明性 / 責任ある AI / 規制対応</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

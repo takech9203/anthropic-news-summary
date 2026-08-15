@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.233: GitLab MR の worktree 対応、Bash メモリ制限、Todo ツールの新モデル無効化、Windows リグレッション修正 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --danger: #DC2626;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: #E8F1FF;
+            color: #1565C0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 8px;
+            border: 1px solid #90CAF9;
+        }
+
+        .security-badge {
+            display: inline-block;
+            background: #FFF3E0;
+            color: #E65100;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 8px;
+            border: 1px solid #FFB74D;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .count-badge {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .count-badge.added {
+            background: linear-gradient(135deg, #E9F7EC 0%, #A7F3D0 100%);
+            color: #1B5E20;
+        }
+
+        .count-badge.fixed {
+            background: linear-gradient(135deg, #E8F1FF 0%, #C5DDF9 100%);
+            color: #1565C0;
+        }
+
+        .count-badge.improved {
+            background: linear-gradient(135deg, #E9F7EC 0%, #C8E6C9 100%);
+            color: #2E7D32;
+        }
+
+        .count-badge.security {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            color: #E65100;
+        }
+
+        .count-badge.changed {
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+            color: #6A1B9A;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card.priority {
+            border-color: #F87171;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FEE9E9 100%);
+        }
+
+        .feature-card.security {
+            border-color: #FF9800;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFF3E0 100%);
+        }
+
+        .feature-card.highlight {
+            border-color: #66BB6A;
+            background: linear-gradient(135deg, #FFFFFF 0%, #EAF8EE 100%);
+        }
+
+        .item-no {
+            display: inline-block;
+            min-width: 26px;
+            height: 26px;
+            line-height: 26px;
+            text-align: center;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Fix / Change List */
+        .fix-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .fix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .fix-item .fix-icon {
+            flex-shrink: 0;
+            font-size: 18px;
+            line-height: 1.4;
+        }
+
+        .fix-item .fix-text strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .fix-item .fix-text span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Tech Detail Blocks */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tech-detail p + p {
+            margin-top: 10px;
+        }
+
+        .tech-detail ul {
+            margin: 10px 0 0 22px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tech-detail li {
+            margin-bottom: 6px;
+        }
+
+        /* Warning / Breaking Change */
+        .warning-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .warning-box .warning-label {
+            display: inline-block;
+            background: #FF9800;
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 3px 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .warning-box h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 10px;
+        }
+
+        .warning-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box p + p {
+            margin-top: 10px;
+        }
+
+        /* Security Section */
+        .security-section {
+            background: linear-gradient(135deg, #FFFDF7 0%, #FFF3E0 100%);
+            border: 2px dashed #FF9800;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .security-card {
+            background: #FFFFFF;
+            border: 2px solid #FFCC80;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .security-card .shield {
+            font-size: 26px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .security-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 8px;
+        }
+
+        .security-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        /* Highlight Section */
+        .highlight-section {
+            background: linear-gradient(135deg, #FBFFFC 0%, #EAF8EE 100%);
+            border: 2px dashed #66BB6A;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stat-card.total {
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-value {
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-label {
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action List */
+        .action-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .action-number {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-content strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .action-content span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Notes */
+        .migration-note {
+            background: #E9F7EC;
+            border: 2px solid #66BB6A;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .migration-note h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2E7D32;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .migration-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        code.inline {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            margin: 8px 0 0 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .security-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <span class="version-badge">v2.1.233</span>
+                <span class="security-badge">🛡️ NTLM 漏洩ベクトル修正</span>
+                <h1>Claude Code v2.1.233<br>GitLab MR の worktree 対応、Bash メモリ制限、Todo ツールの新モデル無効化、Windows リグレッション修正</h1>
+                <p class="date">📅 リリース日: 2026 年 8 月 14 日 | ソース: Claude Code Changelog (npm レジストリ基準)</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">📊 数字で見る v2.1.233</h2>
+            <p class="section-lead">GitLab マージリクエスト URL の <code class="inline">--worktree</code> フラグ対応、Linux での Bash ツール向けメモリ cgroup サポート、WebFetch キャッシュ TTL の設定など約 20 項目を含むリリースである。</p>
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-value">20</div>
+                    <div class="stat-label">全変更点</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">✨ 新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">🔧 修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">📈 改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">🔄 変更</div>
+                </div>
+            </div>
+            <p class="section-lead" style="margin-top: 20px; margin-bottom: 0;">主要テーマは 4 つ。<strong>GitLab 対応の継続拡充</strong>、<strong>リソース制御と運用性の強化</strong>、<strong>新世代モデルでの Todo / タスク管理ツールの無効化</strong>、そして <strong>v2.1.232 リグレッションへの対応</strong>である。</p>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">🎯 概要: 主要テーマは 4 点 + セキュリティ修正</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🦊</div>
+                    <div class="key-point-content">
+                        <h3>1. GitLab 対応の継続拡充</h3>
+                        <p>v2.1.232 のトークンレダクションとプラグインマーケットプレイス対応に続き、マージリクエスト URL が <code class="inline">--worktree</code> フラグと <code class="inline">claude agents</code> ビューで扱えるようになった。MR は <code class="inline">!N</code> 形式で表示される。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚙️</div>
+                    <div class="key-point-content">
+                        <h3>2. リソース制御と運用性の強化</h3>
+                        <p><code class="inline">CLAUDE_CODE_TOOL_MEMORY_LIMIT</code> による Bash コマンドのメモリ制限、<code class="inline">CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS</code> による WebFetch キャッシュ TTL の調整、ユーザー単位のコスト帰属を可能にする <code class="inline">forward_user_identity</code> ゲートウェイ設定が追加された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📝</div>
+                    <div class="key-point-content">
+                        <h3>3. 新世代モデルでの Todo / タスク管理ツールの無効化</h3>
+                        <p>Opus 4.8、Sonnet 5、Fable 5、Mythos 5 以降では TaskCreate や TodoWrite などが提供されなくなった。<code class="inline">CLAUDE_CODE_ENABLE_TODO_TOOLS=1</code> で復活できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔁</div>
+                    <div class="key-point-content">
+                        <h3>4. v2.1.232 リグレッションへの対応</h3>
+                        <p>Windows の auto モードで通常のコマンドが手動承認を繰り返し求める問題の修正と、Cygwin 形式シンボリックリンクおよび入力リダイレクトに関する Bash 権限変更のリバートが含まれる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>セキュリティ: NT デバイスプレフィックスの検証バイパス修正</h3>
+                        <p>Windows の NT <code class="inline">\??\</code> デバイスプレフィックスパスによる UNC パス検証バイパス (NTLM 資格情報漏洩ベクトル) が修正された。Windows ユーザーには速やかなアップデートを推奨する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">📖 背景</h2>
+            <div class="tech-detail">
+                <h3>🔁 v2.1.232 の Windows リグレッション</h3>
+                <p>v2.1.232 は約 50 項目を含む大規模リリースだったが、Windows 環境で 2 件のリグレッションを引き起こしていた。auto モードが <code class="inline">cd &lt;dir&gt; &amp;&amp; &lt;command&gt; &gt; file</code> のような通常のコマンドで手動承認を繰り返し求める問題と、Cygwin 形式シンボリックリンクや入力リダイレクトに対する権限チェックの副作用である。v2.1.233 は前者を修正し、後者の権限変更をいったんリバートした (より限定的なバージョンが後のリリースで再導入される予定)。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🦊 GitLab 対応の流れの継続</h3>
+                <p>GitLab 対応は v2.1.232 で始まった流れの継続であり、今回のマージリクエスト URL 対応により、GitLab を利用する開発者もワークツリーやエージェントビューで GitHub と同様のワークフローを利用できるようになった。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🤖 新世代モデルの自律的なタスク管理能力</h3>
+                <p>モデル面では、新世代モデル (Opus 4.8、Sonnet 5、Fable 5、Mythos 5 以降) が自律的なタスク管理能力を備えていることを背景に、Todo / タスク管理ツールがこれらのモデルではデフォルトで提供されなくなった。</p>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">🏗️ v2.1.233 の全体像</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph GitLab["🦊 GitLab 対応の継続"]
+        direction LR
+        MR["🔀 MR URL 対応<br/>--worktree と claude agents"]
+        Tip["💡 GitHub ヒント非表示<br/>gitlab.com / bitbucket.org"]
+        MR ~~~ Tip
+    end
+
+    subgraph Ops["⚙️ リソース制御と運用性"]
+        direction LR
+        Cgroup["🧠 メモリ cgroup 制限<br/>CLAUDE_CODE_TOOL_MEMORY_LIMIT"]
+        TTL["⏱️ WebFetch キャッシュ TTL<br/>CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS"]
+        Identity["👥 forward_user_identity<br/>ユーザー単位のコスト帰属"]
+        Cgroup ~~~ TTL ~~~ Identity
+    end
+
+    subgraph Model["🤖 モデル動作の変更"]
+        direction LR
+        Todo["📝 Todo ツール無効化<br/>Opus 4.8 / Sonnet 5 以降"]
+        Diag["🔍 unrecognized_model<br/>stderr 診断行"]
+        Todo ~~~ Diag
+    end
+
+    subgraph Fix["🛡️ セキュリティとリグレッション"]
+        direction LR
+        NT["⚠️ NT デバイスプレフィックス<br/>UNC 検証バイパス修正"]
+        Auto["🔁 Windows auto モード<br/>承認リグレッション修正"]
+        Revert["↩️ Bash 権限変更リバート<br/>限定版を後日再導入"]
+        NT ~~~ Auto ~~~ Revert
+    end
+
+    User(["👤 ユーザー"]) --> GitLab
+    User --> Ops
+    Ops -.-> Model
+    GitLab -.-> Fix
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef gitlab fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef ops fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef model fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef fix fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class User user
+    class MR,Tip gitlab
+    class Cgroup,TTL,Identity ops
+    class Todo,Diag model
+    class NT,Auto,Revert fix
+    class GitLab,Ops,Model,Fix layer
+                </pre>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section highlight-section">
+            <h2 class="section-title">✨ 新機能 <span class="count-badge added">4 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">1</span> 🔀 GitLab マージリクエスト URL の対応</h3>
+                    <p><code class="inline">--worktree</code> フラグと <code class="inline">claude agents</code> ビューで GitLab のマージリクエスト URL がサポートされた。MR は <code class="inline">!N</code> 形式で表示される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">2</span> 👥 <code class="inline">forward_user_identity</code> ゲートウェイ設定</h3>
+                    <p>Anthropic アップストリームでのオプトイン設定として追加。サインイン中のユーザーの識別情報をヘッダーとして送信するため、ゲートウェイの背後にあるプロキシがユーザー単位で支出を帰属できる。</p>
+                </div>
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">3</span> 🧠 Bash ツールのメモリ cgroup サポート (Linux)</h3>
+                    <p><code class="inline">CLAUDE_CODE_TOOL_MEMORY_LIMIT</code> によるオプトインのメモリ制限が追加され、暴走したビルドがセッション全体を停止させることを防げる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">4</span> ⏱️ WebFetch キャッシュ TTL の設定</h3>
+                    <p><code class="inline">CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS</code> 環境変数で、WebFetch のセッション URL キャッシュ TTL を設定できるようになった (デフォルトは従来どおり 15 分)。</p>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">GitLab マージリクエストのワークツリー展開</span>
+                </div>
+                <pre><code class="language-bash"># GitLab の MR URL を --worktree フラグで直接指定
+claude --worktree https://gitlab.com/my-group/my-project/-/merge_requests/42
+
+# claude agents ビューでは MR が !42 形式で表示される
+claude agents</code></pre>
+            </div>
+        </section>
+
+        <!-- Fixes -->
+        <section class="section">
+            <h2 class="section-title">🔧 修正 <span class="count-badge fixed">9 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">5</span> ☁️ クラウドセッションの lost 判定の修正</h3>
+                    <p>Claude が権限プロンプトの応答を待機している間に環境がシャットダウンすると、セッションが lost と誤判定されることがある問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">6</span> 🔌 MCP v2 接続の再オープンループの修正</h3>
+                    <p>長時間保持されるストリームを固定タイムアウトで切断するサーバー (サーバーレスホストなど) に対して、subscriptions/listen ストリームを際限なく再オープンする問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">7</span> 🔔 Notification フックの発火修正</h3>
+                    <p>Claude Desktop や VS Code 配下で実行中に、権限プロンプトに対して Notification フックが発火しない問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">8</span> 🐧 Linux アイドル時の CPU 占有の修正</h3>
+                    <p>サンドボックス有効時に、アイドル状態のセッションが CPU 1 コアを 100% 占有し続けることがある問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">9</span> 🏷️ バンドルスキルエイリアスの修正</h3>
+                    <p>ユーザーまたはプロジェクトのスキルがバンドルスキルをシャドウしている場合に、<code class="inline">/checkup</code> や <code class="inline">/review</code> などのエイリアスが <code class="inline">-p</code> モードやプラグイン / MCP 読み込み時に「Unknown command」となる問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">10</span> 🔁 引数置換の再展開防止</h3>
+                    <p>スキル / コマンドの引数置換で、引数の値がテンプレートマーカーとして再展開されることを防止。</p>
+                </div>
+                <div class="feature-card security">
+                    <h3><span class="item-no">11</span> 🛡️ NT デバイスプレフィックスパスの検証バイパス修正 (Windows)</h3>
+                    <p>NT の <code class="inline">\??\</code> デバイスプレフィックスで表記されたパスが UNC パス検証をバイパスする問題を修正し、NTLM 資格情報漏洩のベクトルを閉鎖した。</p>
+                </div>
+                <div class="feature-card priority">
+                    <h3><span class="item-no">12</span> 🪟 Windows auto モードの承認リグレッション修正</h3>
+                    <p>通常の <code class="inline">cd &lt;dir&gt; &amp;&amp; &lt;command&gt; &gt; file</code> 形式の Bash コマンドに対して、auto モードが手動承認を繰り返し求める問題を修正 (v2.1.232 のリグレッション)。</p>
+                </div>
+                <div class="feature-card priority">
+                    <h3><span class="item-no">13</span> ↩️ v2.1.232 の Bash 権限変更のリバート</h3>
+                    <p>Windows の Cygwin 形式シンボリックリンクと入力リダイレクト (<code class="inline">&lt; file</code>) に対する権限変更をリバート。より限定的なバージョンが後のリリースで再導入される予定。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improvements -->
+        <section class="section">
+            <h2 class="section-title">📈 改善 <span class="count-badge improved">5 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">14</span> ⚡ <code class="inline">claude self-hosted-runner</code> の起動高速化</h3>
+                    <p>セッションブランチが作業ツリーを書き換えずに作成されるようになり、2 回のサーバーラウンドトリップがエージェントの起動をブロックしなくなった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">15</span> 🌉 apps gateway のエラー転送改善</h3>
+                    <p>Vertex、Foundry、Claude Platform on AWS の各アップストリームからの 400 / 413 エラーが、アップストリーム自身のメッセージを保持して転送されるようになった。apps gateway での自動コンパクトに関するバグも修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">16</span> ✅ <code class="inline">claude plugin validate</code> の検証範囲拡大</h3>
+                    <p>プレーンな <code class="inline">.claude/skills</code> ディレクトリを検証し、フロントマターの解析に失敗する SKILL.md ファイルを報告するようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">17</span> 🗣️ スクリーンリーダーモードの改善</h3>
+                    <p><code class="inline">/effort</code> セレクタが番号付きリストと数字入力のプロンプトとして描画され、ヒントおよびダイアログのテキストが切り詰められなくなった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">18</span> 🔍 print モード診断の改善</h3>
+                    <p>Claude Code が認識しないモデル ID でリクエストが送信される際、<code class="inline">[claude-code:unrecognized_model]</code> 行が stderr に出力される。<code class="inline">modelOverrides</code> でマッピングすると抑制できる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Changes -->
+        <section class="section">
+            <h2 class="section-title">🔄 変更 <span class="count-badge changed">2 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">19</span> 💡 GitHub アプリセットアップのヒント表示条件の変更</h3>
+                    <p>origin リモートが gitlab.com または bitbucket.org のリポジトリでは、GitHub アプリセットアップのヒントが表示されなくなった。GitHub 以外の社内 git ホストはエンタープライズマーケットプレイスのヒントの対象となる。</p>
+                </div>
+                <div class="feature-card priority">
+                    <h3><span class="item-no">20</span> 📝 新世代モデルでの Todo / タスク管理ツールの無効化</h3>
+                    <p>TaskCreate / TaskGet / TaskUpdate / TaskList および TodoWrite が、Opus 4.8、Sonnet 5、Fable 5、Mythos 5 以降のモデルでは提供されなくなった。<code class="inline">CLAUDE_CODE_ENABLE_TODO_TOOLS=1</code> を設定すると復活する。</p>
+                </div>
+            </div>
+            <div class="warning-box" style="margin-top: 20px; margin-bottom: 0;">
+                <span class="warning-label">動作変更に注意</span>
+                <h3>📝 Todo / タスク管理ツールに依存する運用への影響</h3>
+                <p>新世代モデルは明示的なタスク管理ツールに依存せずに複数ステップの作業を進行できるため、これらのツールがツールセットから除外される。既存のワークフローやフック、自動化がこれらのツールの呼び出しを前提としている場合は、<code class="inline">CLAUDE_CODE_ENABLE_TODO_TOOLS=1</code> を設定することで従来どおり利用できる。</p>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">🔬 技術的な詳細</h2>
+            <div class="tech-detail">
+                <h3>🧠 Bash ツールのメモリ cgroup 制限</h3>
+                <p>Linux の cgroup (control group) は、プロセスグループのリソース使用量をカーネルレベルで制限する仕組みである。<code class="inline">CLAUDE_CODE_TOOL_MEMORY_LIMIT</code> を設定すると、Bash ツールで実行されるコマンドがメモリ cgroup の管理下に置かれ、メモリを大量消費するビルドやテストが発生してもセッション本体が巻き込まれて停止することを防げる。オプトイン方式のため、設定しない限り従来の動作は変わらない。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>👥 forward_user_identity によるコスト帰属</h3>
+                <p>apps gateway を経由して Anthropic アップストリームに接続する構成では、これまでゲートウェイの背後のプロキシからは個々のユーザーを区別できなかった。<code class="inline">forward_user_identity</code> を有効にすると、サインイン中のユーザーの識別情報が HTTP ヘッダーとして送信されるため、プロキシ側でユーザー単位の支出集計 (チャージバックやショーバック) を実装できる。オプトイン設定であり、デフォルトでは識別情報は送信されない。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🛡️ NT デバイスプレフィックスパスの検証バイパス</h3>
+                <p>Windows では、<code class="inline">\??\</code> で始まる NT デバイスプレフィックス形式のパス表記が存在する。従来の UNC パス検証はこの形式を考慮しておらず、<code class="inline">\??\UNC\...</code> のような表記でリモート共有への参照を検証をすり抜けて発行できた。UNC パスへのアクセスは NTLM 認証のハンドシェイクを誘発するため、攻撃者が用意したホストへ資格情報ハッシュが送信される漏洩ベクトルとなり得る。v2.1.233 でこの表記も検証対象となり、当該ベクトルは閉鎖された。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>📝 Todo / タスク管理ツールの無効化</h3>
+                <p>Opus 4.8、Sonnet 5、Fable 5、Mythos 5 以降のモデルでは、TaskCreate / TaskGet / TaskUpdate / TaskList および TodoWrite の各ツールがツールセットから除外される。これらの新世代モデルは明示的なタスク管理ツールに依存せずに複数ステップの作業を進行できるためである。既存のワークフローやフック、自動化がこれらのツールの呼び出しを前提としている場合は、<code class="inline">CLAUDE_CODE_ENABLE_TODO_TOOLS=1</code> を設定することで従来どおり利用できる。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🔁 v2.1.232 リグレッションへの対応</h3>
+                <p>v2.1.232 では Bash の権限モデルに複数の変更が入ったが、Windows 環境で副作用が確認された。auto モードが <code class="inline">cd &lt;dir&gt; &amp;&amp; &lt;command&gt; &gt; file</code> という一般的なコマンドパターンに対して手動承認を繰り返し要求する問題は v2.1.233 で修正された。</p>
+                <p>一方、Cygwin 形式シンボリックリンクの権限チェックと入力リダイレクト (<code class="inline">&lt; file</code>) の権限チェックは、影響範囲を絞った再設計のためいったんリバートされた。これらのチェックが提供していた保護は一時的に v2.1.231 以前の水準に戻るため、より限定的なバージョンの再導入を待つ形となる。</p>
+            </div>
+        </section>
+
+        <!-- Impact / Audience -->
+        <section class="section">
+            <h2 class="section-title">👥 開発者への影響: 対象</h2>
+            <div class="fix-list">
+                <div class="fix-item">
+                    <span class="fix-icon">🪟</span>
+                    <div class="fix-text">
+                        <strong>Windows ユーザー</strong>
+                        <span>NT <code class="inline">\??\</code> デバイスプレフィックスによる UNC パス検証バイパス (NTLM 資格情報漏洩ベクトル) の修正と、auto モードの承認リグレッション修正が含まれるため、速やかなアップデートを推奨</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🔁</span>
+                    <div class="fix-text">
+                        <strong>v2.1.232 で auto モードに支障が出ていたユーザー</strong>
+                        <span><code class="inline">cd &lt;dir&gt; &amp;&amp; &lt;command&gt; &gt; file</code> 形式のコマンドで承認を繰り返し求められる問題が解消される</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🦊</span>
+                    <div class="fix-text">
+                        <strong>GitLab を利用する開発者</strong>
+                        <span>マージリクエスト URL を <code class="inline">--worktree</code> フラグや <code class="inline">claude agents</code> ビューで直接扱えるようになり、GitHub の PR と同等のワークフローが可能に</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🤖</span>
+                    <div class="fix-text">
+                        <strong>新世代モデル (Opus 4.8、Sonnet 5、Fable 5、Mythos 5 以降) の利用者</strong>
+                        <span>Todo / タスク管理ツールがデフォルトで無効化される。これらのツールに依存するフックや自動化がある場合は対応が必要</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🐧</span>
+                    <div class="fix-text">
+                        <strong>Linux でサンドボックスを有効にしているユーザー</strong>
+                        <span>アイドル時の CPU 100% 占有の修正と、Bash コマンドのメモリ制限機能が利用可能に</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🌉</span>
+                    <div class="fix-text">
+                        <strong>ゲートウェイ管理者</strong>
+                        <span><code class="inline">forward_user_identity</code> によるユーザー単位のコスト帰属と、Vertex / Foundry / Claude Platform on AWS のエラーメッセージ転送改善が利用可能に</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🔔</span>
+                    <div class="fix-text">
+                        <strong>Claude Desktop / VS Code 利用者</strong>
+                        <span>権限プロンプトに対する Notification フックが正しく発火するようになった</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🔌</span>
+                    <div class="fix-text">
+                        <strong>MCP v2 サーバーの利用者</strong>
+                        <span>サーバーレスホストなどタイムアウトでストリームを切断するサーバーに対する再オープンループが解消される</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🧩</span>
+                    <div class="fix-text">
+                        <strong>プラグイン / スキル開発者</strong>
+                        <span><code class="inline">claude plugin validate</code> が <code class="inline">.claude/skills</code> ディレクトリの SKILL.md フロントマターを検証するようになり、引数置換の再展開も防止される</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="section">
+            <h2 class="section-title">✅ 必要なアクション</h2>
+            <div class="action-list">
+                <div class="action-item">
+                    <div class="action-number">1</div>
+                    <div class="action-content">
+                        <strong>最新バージョンへの更新 (推奨)</strong>
+                        <span>NTLM 資格情報漏洩ベクトルの修正が含まれるため、特に Windows ユーザーは下記のコマンドで速やかに更新する。更新後は <code class="inline">claude --version</code> でバージョンを確認する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">2</div>
+                    <div class="action-content">
+                        <strong>Todo / タスク管理ツールに依存するワークフローの利用者</strong>
+                        <span>新世代モデルではデフォルトで無効化されるため、必要な場合は <code class="inline">CLAUDE_CODE_ENABLE_TODO_TOOLS=1</code> を設定する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">3</div>
+                    <div class="action-content">
+                        <strong>Linux でビルドの暴走に悩まされている場合</strong>
+                        <span><code class="inline">CLAUDE_CODE_TOOL_MEMORY_LIMIT</code> の設定を検討する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">4</div>
+                    <div class="action-content">
+                        <strong>認識されないモデル ID を使用している場合</strong>
+                        <span>print モードで stderr に <code class="inline">[claude-code:unrecognized_model]</code> が出力されるようになるため、<code class="inline">modelOverrides</code> でのマッピングを検討する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">5</div>
+                    <div class="action-content">
+                        <strong>ユーザー単位のコスト集計が必要なゲートウェイ管理者</strong>
+                        <span>Anthropic アップストリームで <code class="inline">forward_user_identity</code> の有効化を検討する</span>
+                    </div>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップグレード方法</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">🔀 移行ガイド</h2>
+            <p class="section-lead">本リリースには、動作変更を伴う項目がいくつか含まれる。</p>
+            <div class="migration-note">
+                <h3>📝 Todo / タスク管理ツールの無効化</h3>
+                <p>Opus 4.8、Sonnet 5、Fable 5、Mythos 5 以降のモデルでは、TaskCreate / TaskGet / TaskUpdate / TaskList / TodoWrite がツールセットから除外される。これらのツールの呼び出しをフックで監視している場合や、タスクリストの出力を前提とした自動化がある場合は、<code class="inline">CLAUDE_CODE_ENABLE_TODO_TOOLS=1</code> を設定して従来の動作を維持するか、ツールに依存しない形へワークフローを見直す。</p>
+            </div>
+            <div class="migration-note">
+                <h3>↩️ Bash 権限変更のリバート</h3>
+                <p>v2.1.232 で導入された Cygwin 形式シンボリックリンクと入力リダイレクト (<code class="inline">&lt; file</code>) の権限チェックはリバートされた。これらのチェックを前提としたセキュリティ運用をしている場合は、より限定的なバージョンが後のリリースで再導入されるまで、当該保護が v2.1.231 以前の水準に戻る点に留意する。</p>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">💻 コード例</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Bash ツールのメモリ制限 (Linux)</span>
+                </div>
+                <pre><code class="language-bash"># Bash ツールで実行されるコマンドにメモリ上限を設定 (オプトイン)
+export CLAUDE_CODE_TOOL_MEMORY_LIMIT=4G
+claude</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">WebFetch キャッシュ TTL の設定</span>
+                </div>
+                <pre><code class="language-bash"># WebFetch のセッション URL キャッシュ TTL を 5 分に短縮
+# (デフォルトは 15 分)
+export CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS=300000
+claude</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">GitLab マージリクエストのワークツリー展開</span>
+                </div>
+                <pre><code class="language-bash"># GitLab の MR URL を --worktree フラグで直接指定
+claude --worktree https://gitlab.com/my-group/my-project/-/merge_requests/42
+
+# claude agents ビューでは MR が !42 形式で表示される
+claude agents</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Todo ツールの再有効化</span>
+                </div>
+                <pre><code class="language-bash"># 新世代モデルで Todo / タスク管理ツールを復活させる
+export CLAUDE_CODE_ENABLE_TODO_TOOLS=1
+claude</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">💡 ユースケース</h2>
+            <div class="use-case">
+                <h4>🦊 GitLab の MR レビューをワークツリーで並行処理する</h4>
+                <p>GitLab のマージリクエスト URL を <code class="inline">claude --worktree</code> に直接渡すことで、レビュー対象の MR を独立したワークツリーに展開して作業できる。<code class="inline">claude agents</code> ビューでは MR が <code class="inline">!42</code> 形式で表示され、GitHub の PR と同等のワークフローが GitLab でも利用可能になった。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧠 メモリを大量消費するビルドからセッションを守る</h4>
+                <p>Linux で <code class="inline">CLAUDE_CODE_TOOL_MEMORY_LIMIT</code> を設定すると、Bash ツールで実行されるコマンドがメモリ cgroup の管理下に置かれる。暴走したビルドやテストがメモリを食い潰しても、セッション本体が巻き込まれて停止することを防げる。オプトイン方式のため既存の動作には影響しない。</p>
+            </div>
+            <div class="use-case">
+                <h4>👥 ゲートウェイ経由の利用コストをユーザー単位で集計する</h4>
+                <p>apps gateway の Anthropic アップストリームで <code class="inline">forward_user_identity</code> を有効にすると、サインイン中のユーザーの識別情報が HTTP ヘッダーとして送信される。ゲートウェイの背後のプロキシでユーザー単位の支出集計 (チャージバックやショーバック) を実装でき、エンタープライズでのコスト管理が容易になる。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">📝 まとめ</h2>
+            <div class="summary-box">
+                <h3>GitLab 対応の継続、リソース制御の追加、Todo ツール無効化、リグレッション対応を柱とするリリース</h3>
+                <p><strong>第一に、GitLab マージリクエストのワークフロー統合</strong>。<code class="inline">--worktree</code> フラグと <code class="inline">claude agents</code> ビューで MR URL を扱えるようになり、前バージョンから続く GitLab 対応がワークフロー面でも GitHub と同等に近づいた。</p>
+                <p><strong>第二に、リソース制御と運用性の強化</strong>。Bash コマンドのメモリ cgroup 制限、WebFetch キャッシュ TTL の調整、<code class="inline">forward_user_identity</code> によるユーザー単位のコスト帰属など、エンタープライズ運用に有用な機能が揃った。</p>
+                <p><strong>第三に、新世代モデルでの Todo / タスク管理ツールの無効化</strong>。Opus 4.8、Sonnet 5、Fable 5、Mythos 5 以降ではデフォルトで提供されなくなるため、これらのツールに依存する運用は <code class="inline">CLAUDE_CODE_ENABLE_TODO_TOOLS=1</code> での対応またはワークフローの見直しが必要となる。</p>
+                <p><strong>第四に、Windows 環境の安定化とセキュリティ修正</strong>。NT <code class="inline">\??\</code> デバイスプレフィックスによる NTLM 資格情報漏洩ベクトルの閉鎖に加え、v2.1.232 の auto モード承認リグレッションが修正された。</p>
+                <p>NTLM 資格情報漏洩ベクトルの修正が含まれるため、特に Windows ユーザーには速やかなアップデートを推奨する。v2.1.232 の auto モードリグレッションの影響を受けていたユーザーも、本バージョンで通常の運用に復帰できる。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></li>
+                <li><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li><a href="2026-08-13-claude-code-v2-1-231-v2-1-232.html">Claude Code v2.1.231 &amp; v2.1.232</a></li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-08-14 | カテゴリ: Claude Code アップデート | Anthropic News Summary</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
