@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.234: 使用制限リセット時の自動継続、NT パス検証の強化、claude-api スキルのコンテキスト大幅削減、Remote Control 同期改善 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --danger: #DC2626;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: #E8F1FF;
+            color: #1565C0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 8px;
+            border: 1px solid #90CAF9;
+        }
+
+        .security-badge {
+            display: inline-block;
+            background: #FFF3E0;
+            color: #E65100;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 8px;
+            border: 1px solid #FFB74D;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .count-badge {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .count-badge.added {
+            background: linear-gradient(135deg, #E9F7EC 0%, #A7F3D0 100%);
+            color: #1B5E20;
+        }
+
+        .count-badge.fixed {
+            background: linear-gradient(135deg, #E8F1FF 0%, #C5DDF9 100%);
+            color: #1565C0;
+        }
+
+        .count-badge.changed {
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+            color: #6A1B9A;
+        }
+
+        .count-badge.removed {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            color: #B71C1C;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card.priority {
+            border-color: #F87171;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FEE9E9 100%);
+        }
+
+        .feature-card.security {
+            border-color: #FF9800;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFF3E0 100%);
+        }
+
+        .feature-card.highlight {
+            border-color: #66BB6A;
+            background: linear-gradient(135deg, #FFFFFF 0%, #EAF8EE 100%);
+        }
+
+        .item-no {
+            display: inline-block;
+            min-width: 26px;
+            height: 26px;
+            line-height: 26px;
+            text-align: center;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Fix / Change List */
+        .fix-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .fix-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .fix-item .fix-icon {
+            flex-shrink: 0;
+            font-size: 18px;
+            line-height: 1.4;
+        }
+
+        .fix-item .fix-text strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .fix-item .fix-text span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Tech Detail Blocks */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tech-detail p + p {
+            margin-top: 10px;
+        }
+
+        .tech-detail ul {
+            margin: 10px 0 0 22px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tech-detail li {
+            margin-bottom: 6px;
+        }
+
+        /* Warning / Breaking Change */
+        .warning-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .warning-box .warning-label {
+            display: inline-block;
+            background: #FF9800;
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 3px 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .warning-box h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 10px;
+        }
+
+        .warning-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box p + p {
+            margin-top: 10px;
+        }
+
+        /* Highlight Section */
+        .highlight-section {
+            background: linear-gradient(135deg, #FBFFFC 0%, #EAF8EE 100%);
+            border: 2px dashed #66BB6A;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stat-card.total {
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-value {
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-label {
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action List */
+        .action-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .action-number {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-content strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .action-content span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Notes */
+        .migration-note {
+            background: #E9F7EC;
+            border: 2px solid #66BB6A;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .migration-note h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2E7D32;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .migration-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        code.inline {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            margin: 8px 0 0 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <span class="version-badge">v2.1.234</span>
+                <span class="security-badge">🛡️ NT パス拒否の拡大</span>
+                <h1>Claude Code v2.1.234<br>使用制限リセット時の自動継続、NT パス検証の強化、claude-api スキルのコンテキスト大幅削減、Remote Control 同期改善</h1>
+                <p class="date">📅 リリース日: 2026 年 8 月 17 日 | ソース: Claude Code Changelog (npm レジストリ基準)</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">📊 数字で見る v2.1.234</h2>
+            <p class="section-lead">claude.ai 使用制限リセット時のセッション自動継続、Windows NT 名前空間パス拒否の拡大、組み込み <code class="inline">claude-api</code> スキルのコンテキストコスト削減、Remote Control の状態同期改善など、60 項目を超える変更を含む大規模リリースである。</p>
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-value">60+</div>
+                    <div class="stat-label">全変更点</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">✨ 新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">🔄 変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">21</div>
+                    <div class="stat-label">🔧 修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">🗑️ 削除</div>
+                </div>
+            </div>
+            <div class="comparison" style="margin-top: 24px;">
+                <div class="comparison-card before">
+                    <h4>Before: claude-api スキル</h4>
+                    <p>リファレンスドキュメントを一括読み込みし、<strong>約 200k トークン超</strong>のコンテキストコストが発生。コンテキストウィンドウを大きく圧迫していた。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After: オンデマンド読み込み</h4>
+                    <p>必要なリファレンスドキュメントのみをオンデマンドで読み込み、コストは<strong>約 25k トークン (約 8 分の 1)</strong> に削減。自動コンパクトの頻度低減も期待できる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">🎯 概要: 主要テーマは 4 点 + 操作性の改善</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">⏰</div>
+                    <div class="key-point-content">
+                        <h3>1. 使用制限リセット時の自動継続</h3>
+                        <p>claude.ai の使用制限に達して中断したセッションが、制限のリセット時に自動的に再開されるようになった。不要な場合は <code class="inline">/config</code> の「Continue automatically at usage limit」で無効化できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>2. セキュリティの継続強化</h3>
+                        <p>v2.1.233 で修正された NT <code class="inline">\??\</code> パスによる NTLM 資格情報漏洩ベクトルへの対策が、リモートファイル読み取り、セッション復元、CLAUDE.md インクルード、ワークフロースクリプト、ファイルアップロードといった事前承認前のファイルアクセス経路にも拡大された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>3. コンテキスト効率の大幅改善</h3>
+                        <p>組み込み <code class="inline">claude-api</code> スキルの読み込みコストが、リファレンスドキュメントのオンデマンド読み込みへの変更により約 200k トークン超から約 25k トークンへと約 8 分の 1 に削減された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📱</div>
+                    <div class="key-point-content">
+                        <h3>4. Remote Control の状態同期と信頼性の改善</h3>
+                        <p>権限モード、モデル、effort レベルがホストセッションと携帯電話 / claude.ai/code の間で双方向に同期されるようになり、別アカウントへのサインイン時は数秒以内に理由付きで停止するなど挙動も明確になった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🖱️</div>
+                    <div class="key-point-content">
+                        <h3>操作性とマスキングの改善</h3>
+                        <p><code class="inline">/permissions</code> や <code class="inline">/add-dir</code> などのダイアログを Claude の作業中に開けるようになった。権限プレビューの資格情報マスキングに関する複数の修正、フルスクリーン TUI の多数の修正、GitLab MR バッジの表示も含まれる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">📖 背景</h2>
+            <div class="tech-detail">
+                <h3>🛡️ NT パス対策の完成へ</h3>
+                <p>v2.1.233 では、Windows の NT <code class="inline">\??\</code> デバイスプレフィックスパスが UNC パス検証をバイパスする問題 (NTLM 資格情報漏洩ベクトル) が修正された。v2.1.234 はこの対策を、権限承認を経ずに実行され得る残りのファイルアクセス経路 (リモートファイル読み取り、セッション復元、CLAUDE.md インクルード、ワークフロースクリプト、ファイルアップロード) へと拡大し、同ベクトルへの防御を完成に近づけた。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>📱 Remote Control の継続的な拡充</h3>
+                <p>近年のリリースで継続的に拡充されてきた Remote Control (携帯電話や claude.ai/code からターミナルセッションを操作する機能) は、本バージョンで権限モード、モデル、effort レベルの同期が双方向化され、複数クライアント間での状態の一貫性が大きく向上した。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🧠 claude-api スキルの読み込みコスト問題</h3>
+                <p>組み込み <code class="inline">claude-api</code> スキルはリファレンスドキュメントを一括で読み込む設計だったため、読み込み時に 200k トークンを超えるコストが発生していた。本バージョンでオンデマンド読み込みに変更され、約 25k トークンまで削減された。</p>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">🏗️ v2.1.234 の全体像</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Session["🔄 セッション継続性"]
+        direction LR
+        Limit["⏰ 使用制限リセット時の<br/>自動継続"]
+        Goal["🎯 /goal のチェックインと<br/>自動解除"]
+        Limit ~~~ Goal
+    end
+
+    subgraph Security["🛡️ セキュリティ強化"]
+        direction LR
+        NT["⚠️ NT 名前空間パス拒否<br/>事前承認前アクセスへ拡大"]
+        Mask["🔒 権限プレビューの<br/>中継とマスキング修正"]
+        Email["📧 アカウントメールの<br/>利用範囲の明確化"]
+        NT ~~~ Mask ~~~ Email
+    end
+
+    subgraph Context["🧠 コンテキスト効率"]
+        direction LR
+        Skill["📚 claude-api スキル<br/>200k 超 → 約 25k トークン"]
+        Reminder["📨 バックグラウンド通知の<br/>system-reminder 統一"]
+        Skill ~~~ Reminder
+    end
+
+    subgraph Remote["📱 Remote Control"]
+        direction LR
+        Sync["🔁 権限モード / モデル /<br/>effort の同期"]
+        Stop["🛑 アカウント切り替え時の<br/>即時停止"]
+        Upload["📤 送信ファイルの<br/>アップロード対応"]
+        Sync ~~~ Stop ~~~ Upload
+    end
+
+    User(["👤 ユーザー"]) --> Session
+    User --> Remote
+    Session -.-> Context
+    Remote -.-> Security
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef session fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef security fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef context fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef remote fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class User user
+    class Limit,Goal session
+    class NT,Mask,Email security
+    class Skill,Reminder context
+    class Sync,Stop,Upload remote
+    class Session,Security,Context,Remote layer
+                </pre>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section highlight-section">
+            <h2 class="section-title">✨ 新機能 <span class="count-badge added">4 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">1</span> 📁 <code class="inline">CLAUDE_CODE_PROJECT_DIR_NAME</code> 環境変数</h3>
+                    <p>セッションごとに独自の設定ディレクトリを与えるホスト環境向けに、プロジェクト単位のトランスクリプトディレクトリの短縮名を指定できるオプション環境変数が追加された。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">2</span> ⌨️ <code class="inline">selection:clear</code> キーバインドアクション</h3>
+                    <p>アプリ内のテキスト選択を解除するキーを割り当てられるようになった。エージェントビューでも動作する。</p>
+                </div>
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">3</span> 🦊 GitLab マージリクエストバッジ</h3>
+                    <p>GitLab リモートを持ち、認証済みの glab CLI があるリポジトリでは、フッターとステータスラインに <code class="inline">MR !N</code> バッジが表示される。ドラフト / ペンディング / グリーンの状態も反映される。</p>
+                </div>
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">4</span> 🖱️ 作業中のダイアログ操作</h3>
+                    <p><code class="inline">/add-dir &lt;path&gt;</code> が Claude の作業中に使用可能になった。また、<code class="inline">/add-dir</code>、<code class="inline">/autocompact</code>、<code class="inline">/theme</code>、<code class="inline">/help</code>、<code class="inline">/config</code>、<code class="inline">/advisor</code> の各ダイアログがフルスクリーン TUI でターン中に開けるようになった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Changes -->
+        <section class="section">
+            <h2 class="section-title">🔄 変更 <span class="count-badge changed">18 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card priority">
+                    <h3><span class="item-no">5</span> ⏰ 使用制限リセット時の自動継続</h3>
+                    <p>claude.ai の使用制限に達して中断した場合、制限のリセット時にセッションが自動的に継続されるようになった。<code class="inline">/config</code> の「Continue automatically at usage limit」で無効化できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">6</span> 📧 アカウントメールの利用範囲の明確化</h3>
+                    <p>Claude はアカウントのメールアドレスをユーザーの識別のみに使用し、ユーザーが依頼しない限り無関係なサービスへ送信しないよう指示されるようになった。</p>
+                </div>
+                <div class="feature-card security">
+                    <h3><span class="item-no">7</span> 🛡️ NT 名前空間パス拒否の拡大 (セキュリティ)</h3>
+                    <p>リモートファイル読み取り、セッション復元、CLAUDE.md インクルード、ワークフロースクリプト、ファイルアップロードが Windows NT 名前空間 (<code class="inline">\??\</code>) パスを拒否するようになり、事前承認前のファイルアクセスにおける NTLM 資格情報漏洩ベクトルへの防御が強化された。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">8</span> 🛑 Remote Control: アカウント切り替え時の即時停止</h3>
+                    <p>このコンピュータを別の claude.ai アカウントまたは組織にサインインさせた場合、実行中のセッションが数秒以内に理由を表示して停止するようになった。従来は数時間後に誤解を招く HTTP 404 が返っていた。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">9</span> 🔁 Remote Control: 権限モードとモデルの同期</h3>
+                    <p>Claude Code Desktop や VS Code から開始した Remote Control セッションで、権限モードの変更が携帯電話と claude.ai/code に (モデルの変更は claude.ai/code に) 反映されるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">10</span> ↔️ Remote Control: effort レベルの双方向同期</h3>
+                    <p>携帯電話や claude.ai/code で選択した effort が、ターミナルおよび Desktop / VS Code ホストのセッションに適用されるようになった。セッション側も自身の effort レベルを接続中のクライアントに公開する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">11</span> 📋 <code class="inline">SendMessage</code> / <code class="inline">ListAgents</code> の完全性表示</h3>
+                    <p>アカウントのセッションリストが長すぎて完全に確認できなかった場合、未確認のセッションを不在として扱う代わりに、その旨を伝えるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">12</span> 🔑 期限切れ資格情報の案内改善</h3>
+                    <p>Anthropic プロファイル資格情報が期限切れで、claude.ai ログインが優先される状況では、<code class="inline">/login</code> を案内するようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">13</span> 📝 トランスクリプトの Markdown レンダリング</h3>
+                    <p>ユーザー自身のプロンプトも、返信と同様に Markdown (ハイライト付きコードブロック、インラインコード、リスト) でレンダリングされるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">14</span> 🔍 API エラーメッセージの詳細化</h3>
+                    <p>「API returned an empty or malformed response」エラーが、返ってきた内容 (コンテンツタイプ、ボディの種類、サイズ、リクエスト ID) と、元のストリーミングリクエストが失敗した理由を表示するようになった。</p>
+                </div>
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">15</span> 🧠 <code class="inline">claude-api</code> スキルのコンテキスト削減</h3>
+                    <p>組み込み <code class="inline">claude-api</code> スキルの読み込みコストが、リファレンスドキュメントのオンデマンド読み込みにより約 200k トークン超から約 25k トークンに削減された。</p>
+                </div>
+                <div class="feature-card highlight">
+                    <h3><span class="item-no">16</span> 🔐 作業中の <code class="inline">/permissions</code> 操作</h3>
+                    <p>Claude の作業中に <code class="inline">/permissions</code> を開けるようになった。ルールの変更は現在のターンの残りにも適用される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">17</span> 🎯 <code class="inline">/goal</code> の改善</h3>
+                    <p>ターンが回復不能なエラーで終了した場合、<code class="inline">/goal</code> が通知を出して自動的に解除されるようになった。また、バックグラウンドタスクがゴールを 30 分以上待機させている場合、Claude が状況を確認しに行くようになった (<code class="inline">CLAUDE_CODE_GOAL_CHECKIN_MINUTES=0</code> でオプトアウト可能)。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">18</span> ✅ <code class="inline">claude setup-token</code> の引数検証</h3>
+                    <p>予期しない余分な引数を黙って無視する代わりに、拒否するようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">19</span> 🖥️ フルスクリーンモードの Esc 挙動変更</h3>
+                    <p>Esc キーがマウスによるテキスト選択を解除しなくなった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">20</span> 🎨 UI の微調整</h3>
+                    <p>実行中ツールのヘッダーにある経過時間カウンターが淡色表示になった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">21</span> 📨 バックグラウンドタスク通知の形式統一</h3>
+                    <p>ターン間に配信されるバックグラウンドタスク通知が、ターン中の配信と同様に <code class="inline">&lt;system-reminder&gt;</code> タグ内でモデルへ送信されるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">22</span> 🪟 Windows 起動の安定化</h3>
+                    <p><code class="inline">~/.claude.json</code> が読み取り専用の場合に、リネームの再試行の繰り返しで起動が停滞しなくなった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fixes -->
+        <section class="section">
+            <h2 class="section-title">🔧 修正 <span class="count-badge fixed">21 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">23</span> 🌐 auto モードのネットワークアクセス再チェック修正</h3>
+                    <p>非常に長いセッションで会話がコンパクトされた後、auto モードがサンドボックス化されたコマンドのネットワークアクセスを繰り返し再チェックして拒否する問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">24</span> 🤖 バックグラウンドサブエージェントの権限応答の保持</h3>
+                    <p>バックグラウンドサブエージェントのツール権限プロンプトに応答した際、セッションスコープの権限応答 (拒否を含む) が失われる問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">25</span> 💥 非ストリーミングフォールバックのクラッシュ修正</h3>
+                    <p>thinking フィールドを欠いた thinking ブロック、または text フィールドを欠いた text ブロックを含む API レスポンスでクラッシュする問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">26</span> 🐢 Markdown レンダリングの速度低下修正</h3>
+                    <p>特殊な Unicode シーケンスを含む一部のメッセージで、レンダリングが極端に遅くなる問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">27</span> 📮 <code class="inline">SendMessage</code> の受信者名の修正</h3>
+                    <p>セッション名が 200 文字の上限に達している、または絵文字が多い場合に、<code class="inline">ListAgents</code> からコピーした受信者が拒否される問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">28</span> 🔎 リポジトリ検出の修正</h3>
+                    <p>特殊な userinfo を持つ git リモートのホストを誤読する問題を修正。</p>
+                </div>
+                <div class="feature-card security">
+                    <h3><span class="item-no">29</span> 🤐 MCP 診断のシークレット漏洩防止</h3>
+                    <p>スコープ競合の警告が、解決済みのシークレットではなく設定された <code class="inline">${VAR}</code> 形式を表示するようになった。</p>
+                </div>
+                <div class="feature-card security">
+                    <h3><span class="item-no">30</span> 🔒 <code class="inline">strictKnownMarketplaces</code> の検証強化</h3>
+                    <p>git が実際に接続するホストと異なるホストを持つ SCP 形式の git マーケットプレイスソースを、許可リストが受け入れてしまう問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">31</span> 📋 フルスクリーンのコピー修正</h3>
+                    <p><code class="inline">/login</code> の OAuth URL などのモーダルテキストをフルスクリーンでコピーした際に文字が欠落する問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">32</span> ➖ Markdown 水平線の描画修正</h3>
+                    <p>レンダリングされた <code class="inline">---</code> 水平線が次の行に食い込む問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">33</span> 🐚 シェルコマンド行の分割修正</h3>
+                    <p>todo / タスク更新が間に挟まった場合に、連続するシェルコマンドが複数の「Ran 1 shell command」行に分割される問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">34</span> ❗ <code class="inline">!</code> シェルコマンド関連の修正</h3>
+                    <p><code class="inline">!</code> シェルコマンド実行中に開いた <code class="inline">/permissions</code> などのダイアログが、コマンド終了時に閉じられる問題を修正。キュー済みの <code class="inline">!</code> シェルコマンドが、上矢印キーで編集した後にプレーンテキストとしてモデルへ送信される問題も修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">35</span> 🗂️ キュー済みメッセージの履歴表示修正</h3>
+                    <p>キュー中のメッセージがプロンプト履歴に再表示される問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">36</span> 🖥️ フルスクリーンレンダラー移行時の設定保持</h3>
+                    <p>「Try the new fullscreen renderer?」プロンプトを承諾した際に、権限モード、ツールの許可 / 拒否ルール、モデル、effort フラグを引き継がずにセッションが再起動する問題を修正。<code class="inline">/tui</code> が再起動時に起動時の <code class="inline">--allowed-tools</code> / <code class="inline">--disallowed-tools</code> ルールを失う問題も修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">37</span> ⚠️ 信頼プロンプトの警告表示修正</h3>
+                    <p>リポジトリが存在する前にディレクトリが最初に認識されていた場合に、信頼プロンプトがリポジトリ全体スコープの警告を省略する問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">38</span> 🧩 IDE diff タブと権限プロンプトの干渉修正</h3>
+                    <p>権限の再プロンプト中に IDE の diff タブが閉じられると、新しいプロンプトが前回の入力で応答されてしまうケースを修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">39</span> 📤 Remote Control のファイルアップロード修正</h3>
+                    <p>Claude Code Desktop や VS Code がホストする Remote Control セッションでユーザーに送信されたファイルがアップロードされるようになり、携帯電話や Web で開けるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">40</span> 🧾 古いトークンの注意書きの漏洩防止</h3>
+                    <p><code class="inline">CLAUDE_CODE_OAUTH_TOKEN</code> 設定中に <code class="inline">/login</code> した後、古いトークンに関する注意書きが自動再開されたターンに漏れ込む問題を修正。</p>
+                </div>
+                <div class="feature-card security">
+                    <h3><span class="item-no">41</span> 🛡️ 権限プレビューの中継とマスキングの修正 (セキュリティ)</h3>
+                    <p>権限プレビューが、インバウンド信頼ゲートで許可されたチャネルサーバーにのみ中継されるようになった。中継された権限プレビューの資格情報マスキングが、コマンド、パス、宛先を承認者から隠せなくなった。また、シェル区切り文字が直後に続く場合でもプロバイダー API トークンがマスクされるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">42</span> 💬 セッション間メッセージの修正</h3>
+                    <p>クロスセッションメッセージングが無効と読み取られた場合に、Claude Desktop のセッション間メッセージが受信側で黙って破棄される問題を修正。</p>
+                </div>
+                <div class="feature-card">
+                    <h3><span class="item-no">43</span> 🏷️ セッションタイトルの改善</h3>
+                    <p>自動生成されるセッションタイトルが、短く具体的な名前になるよう改善された。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Removed -->
+        <section class="section">
+            <h2 class="section-title">🗑️ 削除 <span class="count-badge removed">2 件</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><span class="item-no">44</span> 🤖 auto モードの冗長表示の削除</h3>
+                    <p>auto モードがすべての Agent ツール呼び出しの下に表示していた冗長な「Allowed by auto mode classifier」行が削除された。</p>
+                </div>
+                <div class="feature-card priority">
+                    <h3><span class="item-no">45</span> ⚙️ 「Default teammate model」設定の削除</h3>
+                    <p><code class="inline">/config</code> から「Default teammate model」設定が削除された。エージェントチームのチームメイトは、スポーン時に指定がない限りリーダーのモデルを使用する。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">🔬 技術的な詳細</h2>
+            <div class="tech-detail">
+                <h3>⏰ 使用制限リセット時の自動継続</h3>
+                <p>claude.ai プランで Claude Code を利用している場合、使用制限に達するとセッションが中断され、従来はリセット後に手動で再開する必要があった。v2.1.234 では、制限がリセットされた時点でセッションが自動的に継続される。長時間のタスクを夜間や休日に走らせる場合、制限による中断がワークフローを止めなくなる。一方、意図しないトークン消費を避けたい場合は、<code class="inline">/config</code> の「Continue automatically at usage limit」設定で無効化できる。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🛡️ NT 名前空間パス拒否の拡大</h3>
+                <p>Windows の NT 名前空間パス (<code class="inline">\??\</code> プレフィックス) は、<code class="inline">\??\UNC\...</code> の形でリモート共有への参照を表現でき、UNC パスへのアクセスは NTLM 認証ハンドシェイクを誘発するため、資格情報ハッシュの漏洩ベクトルとなり得る。v2.1.233 で UNC パス検証のバイパスが修正されたのに続き、v2.1.234 では権限承認を経ずに実行され得るファイルアクセス経路 (リモートファイル読み取り、セッション復元、CLAUDE.md インクルード、ワークフロースクリプト、ファイルアップロード) がこの形式のパスを拒否するようになった。悪意あるリポジトリの CLAUDE.md やワークフロースクリプトを経由した攻撃面が閉鎖される。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🧠 claude-api スキルのオンデマンド読み込み</h3>
+                <p>組み込みの <code class="inline">claude-api</code> スキル (Claude API / Anthropic SDK のリファレンス) は、従来リファレンスドキュメント全体を読み込むため 200k トークンを超えるコンテキストコストが発生していた。v2.1.234 では、必要なリファレンスドキュメントをオンデマンドで読み込む方式に変更され、コストが約 25k トークンまで削減された。コンテキストウィンドウの圧迫が大幅に緩和されるため、API 関連の作業でスキルを使用してもセッションの他の作業への影響が小さくなり、自動コンパクトの発生頻度の低減も期待できる。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>📱 Remote Control の状態同期</h3>
+                <p>Remote Control では、ターミナルや Desktop / VS Code でホストされるセッションを携帯電話や claude.ai/code から操作できる。v2.1.234 では以下の同期が強化された。</p>
+                <ul>
+                    <li><strong>権限モード</strong>: Desktop / VS Code ホストのセッションで変更された権限モードが、携帯電話と claude.ai/code に反映される</li>
+                    <li><strong>モデル</strong>: モデルの変更が claude.ai/code に反映される</li>
+                    <li><strong>effort レベル</strong>: 携帯電話や claude.ai/code での effort 選択がホストセッションに適用され、セッション側も自身の effort を接続クライアントへ公開する (双方向)</li>
+                </ul>
+                <p>また、コンピュータを別の claude.ai アカウントや組織にサインインさせた場合、実行中のセッションは数秒以内に理由付きで停止する。従来は数時間後に HTTP 404 という誤解を招くエラーで発覚していたため、トラブルシューティングの負担が大きく軽減される。</p>
+            </div>
+            <div class="tech-detail">
+                <h3>🔒 権限プレビューの中継とマスキングの強化</h3>
+                <p>リモートの承認者に表示される権限プレビューについて、3 つの問題が修正された。第一に、プレビューはインバウンド信頼ゲートで許可されたチャネルサーバーにのみ中継されるようになった。第二に、資格情報マスキングが過剰に適用され、承認者が判断に必要なコマンド、パス、宛先まで隠してしまう問題が修正された。第三に、シェル区切り文字が直後に続くプロバイダー API トークンがマスクされない問題が修正された。承認者は必要な情報を確認しつつ、シークレットは確実に秘匿されるバランスが改善されている。</p>
+            </div>
+        </section>
+
+        <!-- Impact / Audience -->
+        <section class="section">
+            <h2 class="section-title">👥 開発者への影響: 対象</h2>
+            <div class="fix-list">
+                <div class="fix-item">
+                    <span class="fix-icon">⏰</span>
+                    <div class="fix-text">
+                        <strong>claude.ai プランの利用者</strong>
+                        <span>使用制限リセット時にセッションが自動継続されるようになる。意図しない自動継続を避けたい場合は <code class="inline">/config</code> での無効化を検討する</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🪟</span>
+                    <div class="fix-text">
+                        <strong>Windows ユーザー</strong>
+                        <span>NT 名前空間 (<code class="inline">\??\</code>) パスの拒否が事前承認前のファイルアクセス経路に拡大され、NTLM 資格情報漏洩ベクトルへの防御が強化された。速やかなアップデートを推奨</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🧠</span>
+                    <div class="fix-text">
+                        <strong><code class="inline">claude-api</code> スキルの利用者</strong>
+                        <span>読み込み時のコンテキストコストが約 8 分の 1 (約 25k トークン) になり、API 関連の作業でのコンテキスト圧迫が大幅に緩和される</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">📱</span>
+                    <div class="fix-text">
+                        <strong>Remote Control の利用者</strong>
+                        <span>権限モード、モデル、effort レベルがクライアント間で同期され、Desktop / VS Code ホストのセッションからのファイル送信も携帯電話や Web で開けるようになった</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">✅</span>
+                    <div class="fix-text">
+                        <strong>リモート承認を運用するチーム</strong>
+                        <span>権限プレビューの中継先が信頼ゲートで制御され、マスキングの過不足も修正されたため、承認判断の信頼性が向上する</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🕐</span>
+                    <div class="fix-text">
+                        <strong>長時間セッションの利用者</strong>
+                        <span>コンパクト後に auto モードがサンドボックスコマンドのネットワークアクセスを繰り返し拒否する問題が修正された</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🤖</span>
+                    <div class="fix-text">
+                        <strong>マルチエージェント / セッション間メッセージングの利用者</strong>
+                        <span><code class="inline">SendMessage</code> / <code class="inline">ListAgents</code> のセッションリスト完全性表示、200 文字上限や絵文字を含むセッション名の扱い、Claude Desktop でのメッセージ破棄の修正が含まれる</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🖥️</span>
+                    <div class="fix-text">
+                        <strong>フルスクリーン TUI の利用者</strong>
+                        <span>モーダルテキストのコピー欠落、レンダラー移行時の設定消失、Esc によるテキスト選択解除など多数の修正が入った</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">🦊</span>
+                    <div class="fix-text">
+                        <strong>GitLab を利用する開発者</strong>
+                        <span>認証済みの glab CLI があれば、フッターとステータスラインに MR バッジが表示されるようになった</span>
+                    </div>
+                </div>
+                <div class="fix-item">
+                    <span class="fix-icon">👥</span>
+                    <div class="fix-text">
+                        <strong>エージェントチームの利用者</strong>
+                        <span>「Default teammate model」設定が削除され、チームメイトはスポーン時の指定がない限りリーダーのモデルを使用する</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="section">
+            <h2 class="section-title">✅ 必要なアクション</h2>
+            <div class="action-list">
+                <div class="action-item">
+                    <div class="action-number">1</div>
+                    <div class="action-content">
+                        <strong>最新バージョンへの更新 (推奨)</strong>
+                        <span>NTLM 資格情報漏洩ベクトルへの防御拡大が含まれるため、特に Windows ユーザーは下記のコマンドで速やかに更新する。更新後は <code class="inline">claude --version</code> でバージョンを確認する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">2</div>
+                    <div class="action-content">
+                        <strong>使用制限での自動継続を望まない場合</strong>
+                        <span><code class="inline">/config</code> の「Continue automatically at usage limit」を無効化する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">3</div>
+                    <div class="action-content">
+                        <strong><code class="inline">/goal</code> で長時間のバックグラウンドタスクを扱う場合</strong>
+                        <span>30 分以上の待機で Claude がチェックインする動作が不要であれば、<code class="inline">CLAUDE_CODE_GOAL_CHECKIN_MINUTES=0</code> を設定する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">4</div>
+                    <div class="action-content">
+                        <strong>セッションごとに設定ディレクトリを分離するホスト環境の管理者</strong>
+                        <span><code class="inline">CLAUDE_CODE_PROJECT_DIR_NAME</code> によるトランスクリプトディレクトリ名の指定を検討する</span>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-number">5</div>
+                    <div class="action-content">
+                        <strong>「Default teammate model」設定に依存していた場合</strong>
+                        <span>チームメイトのモデルはスポーン時に明示的に指定する運用へ移行する</span>
+                    </div>
+                </div>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">アップグレード方法</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+        </section>
+
+        <!-- Migration Guide -->
+        <section class="section">
+            <h2 class="section-title">🔀 移行ガイド</h2>
+            <p class="section-lead">本リリースには、動作変更を伴う項目がいくつか含まれる。</p>
+            <div class="migration-note">
+                <h3>⏰ 使用制限リセット時の自動継続</h3>
+                <p>本機能はデフォルトで有効となる。CI や共有環境などで、制限リセット後の自動的なトークン消費を避けたい場合は、<code class="inline">/config</code> の「Continue automatically at usage limit」を無効化する。</p>
+            </div>
+            <div class="migration-note">
+                <h3>⚙️ 「Default teammate model」設定の削除</h3>
+                <p><code class="inline">/config</code> の「Default teammate model」設定は削除された。エージェントチームのチームメイトは、スポーン時にモデルが指定されない限りリーダーのモデルを使用する。従来この設定でチームメイトのモデルを固定していた場合は、スポーン時の指定へ移行する。</p>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">💻 コード例</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">使用制限リセット時の自動継続の設定</span>
+                </div>
+                <pre><code class="language-bash"># /config を開き「Continue automatically at usage limit」で切り替える
+claude
+# セッション内で
+/config</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/goal のチェックイン間隔の調整</span>
+                </div>
+                <pre><code class="language-bash"># バックグラウンドタスク待機時のチェックインをオプトアウト
+export CLAUDE_CODE_GOAL_CHECKIN_MINUTES=0
+claude</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">プロジェクト単位のトランスクリプトディレクトリ名の指定</span>
+                </div>
+                <pre><code class="language-bash"># セッションごとに設定ディレクトリを分離するホスト環境向け
+export CLAUDE_CODE_PROJECT_DIR_NAME=my-project
+claude</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">作業中のディレクトリ追加と権限変更</span>
+                </div>
+                <pre><code class="language-bash"># Claude の作業中でも実行可能になった
+/add-dir /path/to/another/project
+/permissions</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">💡 ユースケース</h2>
+            <div class="use-case">
+                <h4>⏰ 夜間や休日の長時間タスクを中断なく走らせる</h4>
+                <p>claude.ai プランで使用制限に達しても、リセット時にセッションが自動的に継続されるため、夜間バッチ的な長時間タスクが制限で止まったままにならない。CI や共有環境などで意図しないトークン消費を避けたい場合は、<code class="inline">/config</code> の「Continue automatically at usage limit」を無効化して従来の手動再開に戻せる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧠 API 関連の作業でコンテキストを節約する</h4>
+                <p><code class="inline">claude-api</code> スキルを使う API 実装やデバッグの作業で、スキル読み込みのコストが約 200k トークン超から約 25k トークンに削減された。コンテキストウィンドウの圧迫が大幅に緩和されるため、スキルを使用してもセッションの他の作業への影響が小さくなり、自動コンパクトの発生頻度の低減も期待できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>📱 外出先から携帯電話でセッションを一貫して操作する</h4>
+                <p>Remote Control で権限モード、モデル、effort レベルがホストセッションと携帯電話 / claude.ai/code の間で同期されるため、どのクライアントから見ても状態が一致する。Desktop / VS Code ホストのセッションから送信されたファイルもアップロードされ、携帯電話や Web で開けるようになった。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">📝 まとめ</h2>
+            <div class="summary-box">
+                <h3>使用制限リセット時の自動継続、セキュリティ強化、コンテキスト削減、Remote Control 改善を柱とする大規模リリース</h3>
+                <p><strong>第一に、使用制限リセット時の自動継続</strong>。claude.ai の使用制限による中断がワークフローを止めなくなり、長時間タスクの運用性が向上した。不要な場合は <code class="inline">/config</code> で無効化できる。</p>
+                <p><strong>第二に、セキュリティの継続強化</strong>。v2.1.233 の NT <code class="inline">\??\</code> パス対策が事前承認前のファイルアクセス経路全体へ拡大され、NTLM 資格情報漏洩ベクトルへの防御が強化された。権限プレビューの中継制御とマスキング修正も含まれる。</p>
+                <p><strong>第三に、<code class="inline">claude-api</code> スキルのコンテキスト削減</strong>。リファレンスドキュメントのオンデマンド読み込みにより、読み込みコストが約 200k トークン超から約 25k トークンへと約 8 分の 1 になり、コンテキストウィンドウの圧迫が大幅に緩和された。</p>
+                <p><strong>第四に、Remote Control の信頼性向上</strong>。権限モード、モデル、effort レベルのクライアント間同期、アカウント切り替え時の即時停止、ファイルアップロード対応により、携帯電話や claude.ai/code からの操作体験が大きく改善された。</p>
+                <p>NTLM 資格情報漏洩ベクトルへの防御拡大が含まれるため、特に Windows ユーザーには速やかなアップデートを推奨する。長時間セッションでの auto モードの不具合修正やフルスクリーン TUI の多数の修正も含まれており、全ユーザーにとって安定性の向上が期待できるリリースである。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></li>
+                <li><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li><a href="2026-08-14-claude-code-v2-1-233.html">Claude Code v2.1.233</a></li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-08-17 | カテゴリ: Claude Code アップデート | Anthropic News Summary</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
