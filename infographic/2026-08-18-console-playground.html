@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Console の Workbench が Playground に刷新 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Warning Section */
+        .section.warning-section {
+            background: #FFFBF5;
+            border: 2px solid #FF9800;
+            box-shadow: 0 4px 20px rgba(255, 152, 0, 0.12);
+        }
+
+        .section.warning-section .section-title::before {
+            background: #FF9800;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .comparison-card li {
+            font-size: 13.5px;
+            color: var(--text-primary);
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .comparison-card.before li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Flow Steps */
+        .flow-steps {
+            display: grid;
+            gap: 12px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .flow-step-num {
+            width: 32px;
+            height: 32px;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .flow-step p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Info List */
+        .info-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .info-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 10px 16px 10px 36px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .info-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 14px;
+            color: var(--anthropic-coral);
+        }
+
+        .info-list.excluded li {
+            background: #FFEBEE;
+            border: 1px solid rgba(244, 67, 54, 0.35);
+            color: var(--text-primary);
+        }
+
+        .info-list.excluded li::before {
+            content: '🚫';
+            font-size: 12px;
+            left: 12px;
+        }
+
+        .info-list.limits li {
+            background: #FFF3E0;
+        }
+
+        .info-list.limits li::before {
+            content: '⚠️';
+            font-size: 12px;
+            left: 12px;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0;
+        }
+
+        .info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .info-table th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .info-table th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .info-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .info-table tr:nth-child(even) td {
+            background: var(--anthropic-cream);
+        }
+
+        .info-table td:first-child {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .table-ok {
+            color: #059669;
+            font-weight: 700;
+        }
+
+        .table-ng {
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Callout */
+        .callout {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+
+        .callout.summary {
+            background: var(--anthropic-cream);
+            border-color: var(--anthropic-coral);
+        }
+
+        .callout.critical {
+            background: #FFEBEE;
+            border-color: #F44336;
+        }
+
+        .callout.note {
+            background: #EFF6FF;
+            border-color: #3B82F6;
+        }
+
+        .callout-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .callout p {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 0;
+        }
+
+        /* Deadline Banner */
+        .deadline-banner {
+            background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+            border: 2px solid #F44336;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin: 16px 0;
+        }
+
+        .deadline-banner .deadline-date {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #C62828;
+            line-height: 1.3;
+        }
+
+        .deadline-banner p {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 0;
+        }
+
+        /* Inline code */
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            border-radius: 4px;
+            padding: 1px 6px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Links List */
+        .links-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .links-list li {
+            font-size: 14px;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .links-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+            top: 3px;
+        }
+
+        .links-list a {
+            color: #B8874F;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .links-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #B8874F;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <span class="category-badge">Console</span>
+                <span class="category-badge">開発者ツール</span>
+                <h1>Claude Console の Workbench が Playground に刷新、Messages API 全パラメータ対応と SDK リクエスト / レスポンスの完全表示を実現</h1>
+                <p class="date">📅 2026-08-18 | ソース: Claude Developer Platform Release Notes</p>
+                <p class="lead">Playground は Messages API のすべてのパラメータをサポートし、コード実行や Web 検索などの API 機能を示すテンプレートを収録。実行のたびに完全な SDK リクエストと API レスポンスを表示し、API の構造の理解とアプリケーション開発を支援します。https://platform.claude.com/playground から利用できます。</p>
+            </div>
+        </header>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>発表日</td>
+                        <td>2026-08-18</td>
+                    </tr>
+                    <tr>
+                        <td>ソース</td>
+                        <td>Claude Developer Platform Release Notes</td>
+                    </tr>
+                    <tr>
+                        <td>カテゴリ</td>
+                        <td>Claude API / Console / 開発者ツール</td>
+                    </tr>
+                    <tr>
+                        <td>公式リンク</td>
+                        <td><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer" style="color: #B8874F;">https://platform.claude.com/docs/en/release-notes/overview</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 / キーポイント</h2>
+            <p>Anthropic は 2026 年 8 月 18 日、Claude Console の Workbench を <strong>Playground</strong> として刷新したことをリリースノートで発表しました。公式ヘルプセンターによると、Playground は公開されている Messages API の上に直接構築されており、Playground で組み立てたリクエストはコードから送信するものと同一です。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🧪</div>
+                    <div class="key-point-content">
+                        <h3>Workbench が Playground へ世代交代</h3>
+                        <p>ツールの位置づけが「プロンプト管理ツール」から「API の学習と実験のための実行環境」へ転換されました。Playground は https://platform.claude.com/playground から利用できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎛️</div>
+                    <div class="key-point-content">
+                        <h3>Messages API の全パラメータをサポート</h3>
+                        <p>モデルセレクターでの Claude モデル切り替えに加え、temperature や最大出力トークン数などのパラメータをモデル設定から調整できます。コード実行や Web 検索などの API 機能を示すテンプレートも収録されています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📨</div>
+                    <div class="key-point-content">
+                        <h3>完全な SDK リクエストと API レスポンスを表示</h3>
+                        <p>実行ごとに、完全なメッセージ構造、stop reason、usage を含む生の API リクエストとレスポンスを表示します。画面上の表示とコードの挙動が一致することが保証されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>ステートレスな設計へ転換</h3>
+                        <p>プロンプトや会話は Anthropic のサーバーに保存されず、下書きはブラウザ内に留まります。一方で、旧 Workbench のプロンプト履歴の保存やプロンプト評価 (evals) はサポートされません。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⏰</div>
+                    <div class="key-point-content">
+                        <h3>旧 Workbench データのエクスポート期限は 2026 年 9 月 1 日</h3>
+                        <p>旧 Workbench (legacy) に保存されていたデータは 2026 年 9 月 1 日まで Console の設定からエクスポート可能で、それ以降は復元できなくなります。利用者は期限までにエクスポートを完了する必要があります。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p>Workbench は Claude Console 内でプロンプトを作成、テスト、保存できるツールとして提供されてきました。プロンプトの保存、バージョン管理、評価 (evals)、共有といった機能を持つ一方、Console 上の表示と実際の API リクエストの対応関係が必ずしも明確ではありませんでした。</p>
+            <p>今回の刷新は、ツールの位置づけを「プロンプト管理ツール」から「API の学習と実験のための実行環境」へと転換するものです。ヘルプセンターは Playground の用途を以下のように整理しています。</p>
+            <ul class="info-list">
+                <li>コードを書く前にモデルや新しい API 機能を試す</li>
+                <li>プロンプトを反復改善し、完全なレスポンスを確認する</li>
+                <li>API リクエスト / レスポンスの構造を学ぶ</li>
+                <li>作業内容を自分のアプリケーションで実行できるコードスニペットとしてエクスポートする</li>
+            </ul>
+        </section>
+
+        <!-- Before / After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: Workbench → Playground</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before: Workbench (legacy)</h4>
+                    <ul>
+                        <li>プロンプト、履歴をサーバーに保存</li>
+                        <li>Messages API パラメータは一部のみ対応</li>
+                        <li>リクエスト / レスポンス表示は限定的</li>
+                        <li>API 機能を示すテンプレートはなし</li>
+                        <li>Console 上の表示と実際の API リクエストの対応関係が不明確</li>
+                        <li>位置づけは「プロンプト管理ツール」</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After: Playground (2026-08-18 以降)</h4>
+                    <ul>
+                        <li>サーバーに保存しないステートレス設計。下書きはブラウザ内のみ</li>
+                        <li>Messages API のすべてのパラメータをサポート</li>
+                        <li>完全な SDK リクエストと API レスポンスを表示</li>
+                        <li>コード実行、Web 検索などのテンプレートを収録</li>
+                        <li>公開 Messages API 上に直接構築され、画面とコードが同一</li>
+                        <li>位置づけは「API の学習と実験のための実行環境」</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout summary">
+                <span class="callout-icon">💡</span>
+                <p>Playground で組み立てたリクエストはコードから送信するものと同一であり、「Console では動くがコードでは動かない」という乖離が起きにくくなりました。一方、旧 Workbench の保存プロンプト、バージョン管理、evals、共有は Playground には含まれません。</p>
+            </div>
+        </section>
+
+        <!-- Deadline warning -->
+        <section class="section warning-section">
+            <h2 class="section-title">⚠️ 最重要: 旧 Workbench データのエクスポート期限</h2>
+            <div class="deadline-banner">
+                <div class="deadline-date">2026 年 9 月 1 日</div>
+                <p>旧 Workbench (legacy) に保存されていたデータのエクスポート期限。それ以降はアクセスできなくなり、復元できません。</p>
+            </div>
+            <p>旧 Workbench に保存されていたデータは、Console の設定 (https://platform.claude.com/settings/privacy) から JSON 形式でエクスポートできます。手順は以下の通りです。</p>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="flow-step-num">1</div>
+                    <p>Console のプライバシー設定にアクセスする。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">2</div>
+                    <p>[Export Workbench data] ダイアログで、プロンプトに加えて含める内容を選択する。<strong>Model completions</strong> (過去の実行で保存されたレスポンス) と <strong>Uploaded files</strong> (プロンプトに添付した画像や PDF) を選択でき、いずれを含めてもエクスポートサイズが大幅に増加する可能性がある。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">3</div>
+                    <p>[Export] を選択する。データは JSON 形式でパッケージ化され、準備完了後にダウンロードリンクがメールで届く。</p>
+                </div>
+            </div>
+            <div class="callout note">
+                <span class="callout-icon">👥</span>
+                <p><strong>組織全体のエクスポート</strong>: Primary Owner または Admin は、組織全体のデータをエクスポートするオプションも利用できます。</p>
+            </div>
+            <div class="callout critical">
+                <span class="callout-icon">🚫</span>
+                <p><strong>Playground へのインポートは不可</strong>: エクスポートした Workbench データを Playground にインポートすることはできません。Playground はプロンプトや会話を保存しないため、インポート先が存在しません。エクスポートはデータのコピーを保持したり、自社のツールへ移行したりするためのものです。</p>
+            </div>
+        </section>
+
+        <!-- Main changes -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🎛️ 1. Messages API の全パラメータをサポート</h3>
+                    <p>Playground は Messages API のすべてのパラメータをサポートします。モデルセレクターで Claude モデルを切り替えられるほか、temperature や最大出力トークン数などをモデル設定から調整できます。同一のプロンプトを異なるモデルや設定で実行し、レスポンスの変化を比較する用途に適しています。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📚 2. API 機能を示すテンプレートを収録</h3>
+                    <p>コード実行や Web 検索などの API 機能の使い方を示すテンプレートを、読み込んで編集した上で実行できます。ツール定義を追加してツール使用 (tool use) をテストしたり、構造化出力 (structured outputs) で定義した形式のデータを返させたりすることも可能です。レスポンス内のツール呼び出しとツール結果も表示され、API 上での表現方法を正確に確認できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📨 3. 完全な SDK リクエストと API レスポンスの表示</h3>
+                    <p>実行ごとに、完全なメッセージ構造、stop reason、usage を含む生の API リクエストとレスポンスを表示します。アプリケーションが実際に送受信するものと同じ形式であり、画面上の表示とコードの挙動が一致します。トークン数と使用量も実行ごとに確認できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💻 4. コード生成と「Open in Playground」</h3>
+                    <p>「code」トグルをクリックすると、現在のリクエストをコードスニペットとしてエクスポートできます。スニペットは Playground でテストした内容を正確に反映し、自分の API キーでそのまま実行できます。公式ドキュメント内のコード例には「Open in Playground」オプションが追加され、例を Playground に読み込んで実行、編集できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 5. ステートレスな設計への転換</h3>
+                    <p>Playground はプロンプトや会話を Anthropic のサーバーに保存しません。下書きはブラウザ内に留まり、リクエストのコピーは「code」タブから保持できます。旧 Workbench の保存プロンプト、プロンプトのバージョン管理、プロンプト評価 (evals)、プロンプト共有は Playground には含まれません。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical details: usage steps -->
+        <section class="section">
+            <h2 class="section-title">技術詳細: Playground の利用手順</h2>
+            <p>ヘルプセンターに記載されている利用手順は以下の通りです。</p>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="flow-step-num">1</div>
+                    <p>Claude Console (https://platform.claude.com/) にログインする。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">2</div>
+                    <p>ナビゲーションから [Playground] を選択する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">3</div>
+                    <p>組織がワークスペースを使用している場合は、作業するワークスペースを選択する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">4</div>
+                    <p>プロンプト欄にユーザーメッセージを入力する。システムプロンプトの追加も可能。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">5</div>
+                    <p>[Run] をクリックしてリクエストを送信する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">6</div>
+                    <p>Claude のレスポンスと、そのリクエストのトークン数、使用量を確認する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">7</div>
+                    <p>プロンプトを編集して再実行し、反復改善する。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison table -->
+        <section class="section">
+            <h2 class="section-title">旧 Workbench との比較</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>Playground</th>
+                        <th>Workbench (legacy)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>データ保存</td>
+                        <td>サーバーに保存しない。下書きはブラウザ内のみ</td>
+                        <td>プロンプト、履歴をサーバーに保存</td>
+                    </tr>
+                    <tr>
+                        <td>Messages API パラメータ</td>
+                        <td><span class="table-ok">すべてサポート</span></td>
+                        <td>一部</td>
+                    </tr>
+                    <tr>
+                        <td>リクエスト / レスポンス表示</td>
+                        <td><span class="table-ok">完全な SDK リクエストと API レスポンスを表示</span></td>
+                        <td>限定的</td>
+                    </tr>
+                    <tr>
+                        <td>テンプレート</td>
+                        <td><span class="table-ok">コード実行、Web 検索などの API 機能を示すテンプレートを収録</span></td>
+                        <td><span class="table-ng">なし</span></td>
+                    </tr>
+                    <tr>
+                        <td>プロンプト履歴 / バージョン管理</td>
+                        <td><span class="table-ng">非対応</span></td>
+                        <td><span class="table-ok">対応</span></td>
+                    </tr>
+                    <tr>
+                        <td>プロンプト評価 (evals)</td>
+                        <td><span class="table-ng">非対応</span></td>
+                        <td><span class="table-ok">対応</span></td>
+                    </tr>
+                    <tr>
+                        <td>プロンプト共有</td>
+                        <td><span class="table-ng">非対応</span></td>
+                        <td><span class="table-ok">対応</span></td>
+                    </tr>
+                    <tr>
+                        <td>コードエクスポート</td>
+                        <td><span class="table-ok">「code」トグルでスニペットをエクスポート</span></td>
+                        <td><span class="table-ok">対応</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Architecture (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <p>開発者が Playground でプロンプトを組み立て、Messages API を実行し、SDK リクエスト / レスポンスの確認からコードスニペットのエクスポート、自社アプリケーションへの反映までを一続きのフローとして表しています。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Developer(["👤 開発者"])
+
+    subgraph Console["🏢 Claude Console"]
+        subgraph PG["🧪 Playground"]
+            direction LR
+            Editor["✏️ プロンプトエディター&lt;br/&gt;システムプロンプト対応"]
+            Params["🎛️ モデル / パラメータ設定&lt;br/&gt;Messages API 全パラメータ"]
+            Templates["📚 テンプレート&lt;br/&gt;コード実行 / Web 検索"]
+            Editor ~~~ Params ~~~ Templates
+        end
+        subgraph Output["📊 実行結果ビュー"]
+            direction LR
+            RawView["📨 SDK リクエスト /&lt;br/&gt;API レスポンス完全表示"]
+            CodeTab["💻 code タブ&lt;br/&gt;スニペットのエクスポート"]
+            RawView ~~~ CodeTab
+        end
+    end
+
+    subgraph API["🔌 Claude API"]
+        Messages["📬 Messages API"]
+    end
+
+    subgraph Dev["🛠️ 開発ワークフロー"]
+        direction LR
+        Docs["📖 公式ドキュメント&lt;br/&gt;Open in Playground"]
+        App["🚀 自社アプリケーション&lt;br/&gt;API キーで実行"]
+        Docs ~~~ App
+    end
+
+    Developer --&gt; Editor
+    Docs -.-&gt; Editor
+    Editor --&gt; Messages
+    Params -.-&gt; Messages
+    Templates -.-&gt; Editor
+    Messages --&gt; RawView
+    RawView --&gt; CodeTab
+    CodeTab --&gt; App
+
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+
+    class Console,PG,Output,API,Dev container
+    class Developer user
+    class Editor,Templates input
+    class Messages api
+    class RawView,CodeTab process
+    class Params,Docs,App internal
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code sample -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p>Playground の「code」トグルからエクスポートされるコードスニペットは、画面上で実行したリクエストと同一の内容になります。以下は Web 検索ツールを有効にしたリクエストの例です。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">code トグルからエクスポートされるスニペットの例 (Web 検索ツール有効)</span>
+                </div>
+                <pre><code class="language-python"># Playground でテストしたリクエストは、code トグルから
+# そのまま実行可能なスニペットとしてエクスポートできる
+import anthropic
+
+client = anthropic.Anthropic()
+
+response = client.messages.create(
+    model="claude-sonnet-4-5",
+    max_tokens=1024,
+    temperature=1.0,
+    system="お客様の質問に日本語で簡潔に回答してください。",
+    messages=[
+        {
+            "role": "user",
+            "content": "Anthropic の最新の発表を教えてください。",
+        }
+    ],
+    tools=[
+        {
+            "type": "web_search_20250305",
+            "name": "web_search",
+            "max_uses": 3,
+        }
+    ],
+)
+
+# Playground と同様に stop_reason と usage を確認できる
+print(f"Stop reason: {response.stop_reason}")
+print(f"Usage: {response.usage}")
+for block in response.content:
+    if block.type == "text":
+        print(block.text)</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">🎯 対象</h3>
+            <ul class="info-list">
+                <li><strong>Claude API を学習中の開発者</strong>: 実行ごとに完全な SDK リクエストと API レスポンスが表示されるため、コードを書く前に API の構造を正確に把握できます。</li>
+                <li><strong>新機能を検証したい開発者</strong>: コード実行や Web 検索などのテンプレートから、新しい API 機能を実装前に試せます。</li>
+                <li><strong>プロンプトを反復改善する開発者</strong>: モデルやパラメータを切り替えながら同一プロンプトの挙動を比較できます。</li>
+                <li><strong>旧 Workbench の利用者</strong>: 保存プロンプト、履歴、evals が利用できなくなるため、データのエクスポートとワークフローの見直しが必要になります。</li>
+            </ul>
+
+            <h3 class="subsection-title">🛠️ 必要なアクション</h3>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="flow-step-num">1</div>
+                    <p><strong>旧 Workbench データのエクスポート</strong>: 2026 年 9 月 1 日の期限までに、Console のプライバシー設定から保存プロンプト、Model completions、Uploaded files をエクスポートする。期限を過ぎるとデータは復元できない。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">2</div>
+                    <p><strong>組織全体のエクスポートの検討</strong>: Primary Owner または Admin は、個々のメンバーに任せず組織全体のデータを一括エクスポートすることを検討する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">3</div>
+                    <p><strong>evals ワークフローの代替手段の検討</strong>: Playground はプロンプト評価をサポートしないため、旧 Workbench の evals に依存していた場合は代替の評価基盤を用意する。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">4</div>
+                    <p><strong>プロンプト管理の移行</strong>: サーバー側にプロンプトが保存されなくなるため、プロンプトのバージョン管理はリポジトリなど自社の管理基盤へ移行する。「code」タブからエクスポートしたスニペットをコードとして管理する運用が推奨される。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">5</div>
+                    <p><strong>Playground の試用</strong>: https://platform.claude.com/playground にアクセスし、テンプレートや SDK リクエスト表示を確認する。</p>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">🔄 移行ガイド: Workbench からの運用差分</h3>
+            <p>旧 Workbench から Playground への移行では、以下の差分を前提に運用を組み立てる必要があります。</p>
+            <div class="use-case">
+                <h4>💾 保存の概念がない</h4>
+                <p>プロンプトの永続化はブラウザ内の下書きとコードエクスポートのみ。継続的に使うプロンプトは、エクスポートしたコードスニペットとしてバージョン管理システムで管理します。</p>
+            </div>
+            <div class="use-case">
+                <h4>📊 evals の移行</h4>
+                <p>評価が必要な場合は、エクスポートしたプロンプトを自社の評価パイプラインやサードパーティの評価ツールに移します。</p>
+            </div>
+            <div class="use-case">
+                <h4>🤝 共有の移行</h4>
+                <p>プロンプト共有機能がないため、チーム内の共有はコードリポジトリやドキュメントで行います。</p>
+            </div>
+            <div class="use-case">
+                <h4>📖 ドキュメントとの連携</h4>
+                <p>公式ドキュメントの「Open in Playground」から例を読み込めるため、学習フローはドキュメント起点に切り替えると効率的です。</p>
+            </div>
+        </section>
+
+        <!-- Use cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🎓 API 構造の学習</h4>
+                <p>コードを書く前にモデルや新しい API 機能を試し、実行ごとに表示される完全な SDK リクエストと API レスポンス (メッセージ構造、stop reason、usage) から、API リクエスト / レスポンスの構造を正確に学べます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧪 新機能の実装前検証</h4>
+                <p>コード実行や Web 検索などのテンプレートを読み込んで編集し、ツール定義の追加によるツール使用 (tool use) のテストや、構造化出力 (structured outputs) の形式確認を実装前に行えます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔁 プロンプトの反復改善とモデル比較</h4>
+                <p>モデルセレクターと Messages API 全パラメータの調整により、同一のプロンプトを異なるモデルや設定で実行してレスポンスの変化を比較できます。仕上がったリクエストは「code」トグルからスニペットとしてエクスポートし、自分の API キーでそのまま実行できます。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p>2026 年 8 月 18 日の発表により、Claude Console の実験環境は Workbench から Playground へと世代交代しました。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🎯</div>
+                    <div class="key-point-content">
+                        <h3>API との一致性が中心的な価値</h3>
+                        <p>Playground は公開 Messages API の上に直接構築されており、画面で組み立てたリクエストとコードから送信するリクエストが同一になります。実行ごとに完全な SDK リクエストと API レスポンスが表示されるため、「Console では動くがコードでは動かない」という乖離が起きにくくなります。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛤️</div>
+                    <div class="key-point-content">
+                        <h3>学習から実装への導線が整備された</h3>
+                        <p>コード実行や Web 検索などのテンプレート、ドキュメントからの「Open in Playground」、code タブからのスニペットエクスポートにより、API 機能の学習、検証、実装コードへの反映が一続きのフローになりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚖️</div>
+                    <div class="key-point-content">
+                        <h3>ステートレス化はトレードオフを伴う</h3>
+                        <p>プロンプトや会話がサーバーに保存されないためプライバシー面の懸念は減る一方、保存プロンプト、バージョン管理、evals、共有は失われました。これらに依存していたチームは、コードリポジトリや外部の評価基盤への移行が必要になります。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⏰</div>
+                    <div class="key-point-content">
+                        <h3>最重要の期限は 2026 年 9 月 1 日</h3>
+                        <p>旧 Workbench のデータはこの日までしかエクスポートできず、以降は復元不可となります。旧 Workbench を利用していた組織は、期限前に Model completions と Uploaded files を含めたエクスポートの要否を判断し、実行しておくべきです。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="links-list">
+                <li><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude Developer Platform Release Notes</a></li>
+                <li><a href="https://platform.claude.com/playground" target="_blank" rel="noopener noreferrer">Playground</a></li>
+                <li><a href="https://support.claude.com/en/articles/8606378-how-do-i-use-playground" target="_blank" rel="noopener noreferrer">How do I use the playground? (Claude Help Center)</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/working-with-messages" target="_blank" rel="noopener noreferrer">Working with Messages</a></li>
+                <li><a href="https://platform.claude.com/settings/privacy" target="_blank" rel="noopener noreferrer">Console のプライバシー設定 (Workbench データのエクスポート)</a></li>
+                <li><a href="https://support.claude.com/en/articles/8114521" target="_blank" rel="noopener noreferrer">How can I access the Claude API?</a></li>
+                <li><a href="https://support.claude.com/en/articles/10186004" target="_blank" rel="noopener noreferrer">Claude Console roles and permissions</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <p><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p><a href="https://platform.claude.com/playground" target="_blank" rel="noopener noreferrer">https://platform.claude.com/playground</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-08-18 | カテゴリ: Claude API / Console / 開発者ツール</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

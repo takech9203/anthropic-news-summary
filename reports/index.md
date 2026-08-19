@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-08-18](2026/2026-08-18-console-playground.md) - Claude Console の Workbench が Playground に刷新、Messages API 全パラメータ対応と SDK リクエスト / レスポンスの完全表示を実現
+- [2026-08-18](2026/2026-08-18-claude-code-v2-1-235.md) - Claude Code v2.1.235 リリース — プロンプト入力のスペルチェック追加、権限ダイアログの表示整合性改善、クラウドセッションのパフォーマンス改善
 - [2026-08-17](2026/2026-08-17-claude-code-v2-1-234.md) - Claude Code v2.1.234 リリース — 使用制限リセット時の自動継続、NT パス検証の強化、claude-api スキルのコンテキスト大幅削減、Remote Control 同期改善
 - [2026-08-14](2026/2026-08-14-claude-text-watermark.md) - Claude のテキスト透かしの仕組み: 鍵付き擬似乱数サンプリングによる生成テキストの識別
 - [2026-08-14](2026/2026-08-14-claude-code-v2-1-233.md) - Claude Code v2.1.233 リリース — GitLab MR の worktree 対応、Bash メモリ制限、Todo ツールの新モデル無効化、Windows リグレッション修正
