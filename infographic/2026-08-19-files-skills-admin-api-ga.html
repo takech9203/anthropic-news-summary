@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Files API・Agent Skills・Admin API ユーザー管理が一般提供開始 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 16px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .sub-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 28px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .section p.desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding-left: 18px;
+        }
+
+        .comparison-card ul li {
+            margin-bottom: 6px;
+        }
+
+        .comparison-card code {
+            font-size: 12px;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding-left: 18px;
+            margin-top: 8px;
+        }
+
+        .feature-card ul li {
+            margin-bottom: 6px;
+        }
+
+        .ga-tag {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            letter-spacing: 1px;
+            vertical-align: middle;
+        }
+
+        .new-tag {
+            display: inline-block;
+            background: var(--info);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            letter-spacing: 1px;
+            vertical-align: middle;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 12px 0 8px;
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            font-weight: 700;
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 2px solid var(--anthropic-coral);
+            white-space: nowrap;
+        }
+
+        .info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px dashed rgba(212, 165, 116, 0.4);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .info-table code {
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #8B5E34;
+            word-break: break-all;
+        }
+
+        code.inline {
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #8B5E34;
+        }
+
+        /* Note / Warning boxes */
+        .note-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 13px;
+            color: #5D4037;
+            margin: 16px 0;
+        }
+
+        .note-box strong {
+            color: #E65100;
+        }
+
+        .info-box {
+            background: #E8F1FF;
+            border: 2px solid #4A90E2;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 13px;
+            color: #1E3A5F;
+            margin: 16px 0;
+        }
+
+        /* Checklist */
+        .action-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-check {
+            color: var(--success);
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+            line-height: 1.4;
+        }
+
+        .action-item strong {
+            color: var(--text-primary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .footer ul li {
+            margin-bottom: 6px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .info-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API アップデート</span>
+                <span class="category-badge">一般提供 GA</span>
+                <span class="category-badge">Managed Agents</span>
+                <h1>Files API・Agent Skills・Admin API ユーザー管理が一般提供開始、Managed Agents も機能強化</h1>
+                <p class="date">📅 2026-08-19 | ソース: Claude Developer Platform Release Notes</p>
+                <p class="lead">3 つの主要 API がベータヘッダー不要の GA へ同時到達。Managed Agents にはドメイン制限・メモリストア・セッションビューア刷新が追加</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — 5 つのキーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📁</div>
+                    <div class="key-point-content">
+                        <h3>Files API が GA</h3>
+                        <p><code class="inline">/v1/files</code> と Messages API でのファイル参照からベータヘッダーが不要に。ファイル有効期限 (<code class="inline">expires_in_seconds</code> / <code class="inline">expires_at</code>)、カーソルベースのページネーション (<code class="inline">page</code> / <code class="inline">next_page</code>)、<code class="inline">ids[]</code> フィルタが新たに追加</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>Agent Skills と Skills API が GA</h3>
+                        <p><code class="inline">/v1/skills</code> と <code class="inline">container</code> パラメータ経由の読み込みが <code class="inline">skills-2025-10-02</code> ヘッダーなしで利用可能。事前構築済み Skills とカスタム Skills を本番環境で正式サポート</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>Admin API ユーザー管理が GA</h3>
+                        <p>Claude Enterprise (claude.ai) 組織向けのメンバー、招待、グループ、カスタムロールのエンドポイントが <code class="inline">ce-user-management-2026-07-13</code> ヘッダーなしで利用可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-content">
+                        <h3>Managed Agents: Web ツールのドメイン制限</h3>
+                        <p><code class="inline">web_search</code> / <code class="inline">web_fetch</code> が到達できるサイトを <code class="inline">allowed_domains</code> / <code class="inline">blocked_domains</code> で制御。セキュリティ境界を維持したエージェント運用が可能に</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>メモリストアのセルフホスト対応とセッションビューア刷新</h3>
+                        <p>セルフホスト型サンドボックスでメモリストアをアタッチ可能に。Claude Console のセッションビューアも再設計され、タイムラインミニマップと Inspector パネルが追加</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After — ベータから GA へ</h2>
+            <p class="desc">Files API は 2025 年 4 月、Agent Skills は 2025 年 10 月にベータヘッダー付きで公開された。今回の GA により、ベータヘッダーなしで利用できる安定した API となり、エンタープライズでの本番採用に向けた基盤が整った。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (ベータ)</h4>
+                    <ul>
+                        <li>Files API: <code>files-api-2025-04-14</code> ヘッダーが必須 (2025 年 4 月公開)</li>
+                        <li>Agent Skills: <code>skills-2025-10-02</code> ヘッダーが必須 (2025 年 10 月公開)</li>
+                        <li>ユーザー管理: <code>ce-user-management-2026-07-13</code> ヘッダーが必須</li>
+                        <li>ファイルの自動失効・カーソルページネーションなし</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (GA)</h4>
+                    <ul>
+                        <li>3 つの API すべてでベータヘッダーが不要に</li>
+                        <li>本番環境での利用を正式サポート</li>
+                        <li>Files API に有効期限・ページネーション・<code>ids[]</code> フィルタを追加</li>
+                        <li>後方互換性を維持: 従来のヘッダーを送るリクエストも引き続き動作</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な変更点 — 6 つのアップデート</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📁 Files API <span class="ga-tag">GA</span></h3>
+                    <p>GA レスポンス形式では以下が追加。</p>
+                    <ul>
+                        <li><strong>有効期限</strong>: <code class="inline">expires_in_seconds</code> は 3,600 秒 (1 時間) から 7,776,000 秒 (90 日)。RFC 3339 形式の <code class="inline">expires_at</code> を返す (無期限は <code class="inline">null</code>)。アップロード時のみ設定可能で後から変更不可</li>
+                        <li><strong>ページネーション</strong>: デフォルト 20 件、最大 1,000 件。<code class="inline">next_page</code> カーソルを <code class="inline">page</code> に渡してページ送り。新しい順に返却</li>
+                        <li><strong><code class="inline">ids[]</code> フィルタ</strong>: 最大 100 件の ID を 1 リクエストで確認。常に単一ページを返し、解決できない ID は黙って除外。<code class="inline">page</code> / <code class="inline">limit</code> と併用不可</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🧩 Agent Skills / Skills API <span class="ga-tag">GA</span></h3>
+                    <p>指示・メタデータ・オプションのリソース (スクリプト、テンプレート) をパッケージ化したモジュール型の機能拡張。</p>
+                    <ul>
+                        <li>事前構築済み Skills: <code class="inline">pptx</code>、<code class="inline">xlsx</code>、<code class="inline">docx</code>、<code class="inline">pdf</code> の <code class="inline">skill_id</code> を指定</li>
+                        <li>カスタム Skills は Skills API 経由でアップロードし、ワークスペース全体で共有</li>
+                        <li>ネットワークアクセスなし・実行時パッケージインストール不可のサンドボックスで実行。コード実行ツールが前提条件</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ Admin API ユーザー管理 <span class="ga-tag">GA</span></h3>
+                    <p>Claude Enterprise 組織のメンバー、招待、グループ、カスタムロールを API で管理。</p>
+                    <ul>
+                        <li><code class="inline">read:members</code> / <code class="inline">write:members</code> / <code class="inline">read:rbac_groups</code> / <code class="inline">write:rbac_groups</code> スコープの Admin API キーが必要</li>
+                        <li>API が割り当て可能なロールは <code class="inline">user</code> と <code class="inline">managed</code> のみ。管理系ロール (<code class="inline">owner</code> など) は claude.ai の組織設定で管理</li>
+                        <li>従来ヘッダーを送るリクエストも同一の動作</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🌐 Web ツールのドメイン制限 <span class="new-tag">NEW</span></h3>
+                    <p><code class="inline">agent_toolset_20260401</code> の <code class="inline">configs</code> 配列で設定。</p>
+                    <ul>
+                        <li><code class="inline">allowed_domains</code>: 到達可能なホストを限定。同一エントリで <code class="inline">blocked_domains</code> と併用不可</li>
+                        <li><code class="inline">blocked_domains</code>: 到達できないホストを指定</li>
+                        <li><code class="inline">max_content_tokens</code> (<code class="inline">web_fetch</code> のみ): 取得コンテンツ量の上限</li>
+                        <li><code class="inline">user_location</code> (<code class="inline">web_search</code> のみ): 検索結果のローカライズ</li>
+                        <li>各リスト 1 - 64 ドメイン。サブドメインもカバー。違反 URL は <code class="inline">url_not_allowed</code> エラー、検索は除外</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🧠 メモリストアのセルフホスト対応 <span class="new-tag">NEW</span></h3>
+                    <p>SDK ワーカー (Python / TypeScript / Go) が各ストアを <code class="inline">/mnt/memory/</code> 配下の <code class="inline">mount_path</code> にダウンロードして同期。</p>
+                    <ul>
+                        <li>同期間隔: デフォルト 15 秒、最小 5 秒。ツール呼び出し後に双方向で照合</li>
+                        <li>終了時は最終同期を実行し、保留中のアップロードを最大 30 秒フラッシュ</li>
+                        <li>Anthropic 側ストアが source of truth。競合時はストア版が優先</li>
+                        <li>1 セッションあたり最大 8 ストア。<code class="inline">ant</code> CLI ワーカーは非対応で SDK ワーカーが必須</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 セッションビューアの再設計 <span class="new-tag">NEW</span></h3>
+                    <p>Claude Console のセッションビューアが刷新。</p>
+                    <ul>
+                        <li><strong>タイムラインミニマップ</strong>: セッション全体の流れを俯瞰</li>
+                        <li><strong>モデルリクエスト単位のトランスクリプト</strong>: 会話履歴をリクエストごとにグループ化</li>
+                        <li><strong>Inspector パネル</strong>: セッション詳細、コスト、生イベント、ツールごとの統計、マウントされたリソース、スレッドごとのアクティビティを確認可能</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="note-box">
+                <strong>⚠️ 失効ファイルの挙動</strong>: 失効したファイルはコンテンツのダウンロードが 404 エラーになり、参照する Messages リクエストは推論前に失敗する。メタデータは失効後も最大 30 日間読み取り可能で一覧にも表示されるため、<code class="inline">expires_at</code> と現在時刻を比較してフィルタリングする必要がある。
+            </div>
+        </section>
+
+        <!-- Admin API Resources Table -->
+        <section class="section">
+            <h2 class="section-title">Admin API で利用できるリソース</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>リソース</th>
+                        <th>主なエンドポイント</th>
+                        <th>用途</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>👤 メンバー</td>
+                        <td><code>GET/POST/DELETE /v1/organizations/users</code></td>
+                        <td>メンバー一覧、メールでの検索、ロール変更、削除</td>
+                    </tr>
+                    <tr>
+                        <td>✉️ 招待</td>
+                        <td><code>GET/POST/DELETE /v1/organizations/invites</code></td>
+                        <td>招待の送信、状態確認、取り下げ</td>
+                    </tr>
+                    <tr>
+                        <td>👥 グループ</td>
+                        <td><code>GET/POST/DELETE /v1/organizations/rbac_groups</code></td>
+                        <td>グループの作成、名前変更、削除</td>
+                    </tr>
+                    <tr>
+                        <td>🔗 グループメンバー</td>
+                        <td><code>GET/POST/DELETE /v1/organizations/rbac_groups/{group_id}/members</code></td>
+                        <td>グループメンバーの参照、追加、削除</td>
+                    </tr>
+                    <tr>
+                        <td>🎭 カスタムロール</td>
+                        <td><code>GET /v1/organizations/rbac_roles</code></td>
+                        <td>ロールと権限の参照 (読み取り専用)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る技術仕様</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">500 MB</div>
+                    <div class="stat-label">1 ファイルあたりの最大サイズ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1 TB</div>
+                    <div class="stat-label">組織あたりの合計ストレージ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">約 500</div>
+                    <div class="stat-label">ファイル API の毎分リクエスト上限</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1h - 90d</div>
+                    <div class="stat-label">ファイル有効期限の設定範囲</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8 個</div>
+                    <div class="stat-label">1 セッションの最大メモリストア数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">64</div>
+                    <div class="stat-label">ドメインリストの最大エントリ数</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+            <h3 class="sub-title">🔐 ワークスペースによる分離</h3>
+            <p class="desc">Files API のファイルは、アップロードした API キーのワークスペースにスコープされる。同一ワークスペース内のどの API キーからもアクセスできるため、エンドユーザーなど信頼できないソースから <code class="inline">file_id</code> を受け取ってはならない。マルチテナントアプリケーションでは、テナントごとに別のワークスペースを作成することが分離境界として推奨されている。</p>
+
+            <h3 class="sub-title">💰 課金とレート制限</h3>
+            <p class="desc">Files API の操作 (アップロード、ダウンロード、一覧、メタデータ取得、削除) 自体は無料で、Messages リクエストで使用されるファイルコンテンツが入力トークンとして課金される。ファイル関連の API 呼び出しは毎分約 500 リクエストに制限される。</p>
+
+            <h3 class="sub-title">📑 Admin API の 2 つのページネーション方式</h3>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>方式</th>
+                        <th>対象リソース</th>
+                        <th>パラメータ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ID ベース</td>
+                        <td>メンバー、招待の一覧</td>
+                        <td><code>before_id</code> / <code>after_id</code> と <code>first_id</code> / <code>last_id</code></td>
+                    </tr>
+                    <tr>
+                        <td>不透明カーソル</td>
+                        <td>グループ、カスタムロールの一覧</td>
+                        <td><code>next_page</code> を <code>page</code> に渡す (Files API の GA と同じ方式)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <strong>ℹ️ ネットワーク設定との関係</strong>: 環境の <code class="inline">networking</code> 設定はサンドボックス自身のアウトバウンド通信を制御するもので、Anthropic のサーバー上で動作する <code class="inline">web_search</code> / <code class="inline">web_fetch</code> には影響しない。
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ — 今回のアップデート全体像</h2>
+            <p class="desc">今回 GA となった 3 つの API と Managed Agents 強化点の全体像。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Platform["🏢 Claude API Platform"]
+        subgraph GA["✅ 一般提供開始 GA"]
+            direction LR
+            Files["📁 Files API&lt;br/&gt;/v1/files"]
+            Skills["🧩 Skills API&lt;br/&gt;/v1/skills"]
+            Admin["🛡️ Admin API&lt;br/&gt;ユーザー管理"]
+            Files ~~~ Skills ~~~ Admin
+        end
+        subgraph MA["🤖 Managed Agents 強化"]
+            direction LR
+            WebTools["🌐 Web ツール&lt;br/&gt;ドメイン制限"]
+            Memory[("🧠 メモリストア&lt;br/&gt;セルフホスト対応")]
+            Viewer["📊 セッション&lt;br/&gt;ビューア刷新"]
+            WebTools ~~~ Memory ~~~ Viewer
+        end
+    end
+
+    Dev(["👤 開発者"]) --> Files
+    Dev --> Skills
+    Ops(["👥 Enterprise 管理者"]) --> Admin
+    Agent(["🤖 エージェント運用者"]) --> WebTools
+    Agent --> Memory
+    Agent --> Viewer
+
+    Files -.->|"expires_in_seconds&lt;br/&gt;page / ids フィルタ"| Msg["📨 Messages API"]
+    Skills -.->|"container パラメータ"| Msg
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+
+    class Platform platform
+    class GA,MA layer
+    class Files,Skills,Admin api
+    class WebTools,Viewer internal
+    class Memory storage
+    class Dev,Ops,Agent user
+    class Msg process
+                </pre>
+            </div>
+
+            <p class="desc">セルフホスト型サンドボックスでのメモリストア同期フロー。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant A as 🏢 Anthropic メモリストア
+    participant W as ⚙️ SDK ワーカー
+    participant S as 📦 セルフホストサンドボックス
+
+    W->>A: ワークアイテムをクレーム
+    A-->>W: セッション単位の secret
+    W->>S: 各ストアを mount_path にダウンロード
+    Note over S: /mnt/memory/ 配下に配置
+    loop 同期間隔 デフォルト 15 秒
+        S->>W: エージェントによるファイル変更
+        W->>A: 変更をアップロード
+        A-->>W: リモート側の変更
+        W->>S: ディスクへ反映
+    end
+    W->>A: 最終同期 最大 30 秒フラッシュ
+    W->>S: ストアディレクトリを削除
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <p class="desc">有効期限付きでファイルをアップロードし、Messages API で参照する例。ベータヘッダーは不要になった。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Files API: 有効期限付きアップロードと Messages API での参照</span>
+                </div>
+                <pre><code class="language-bash"># 24 時間で失効するファイルをアップロード
+FILE_ID=$(curl -X POST https://api.anthropic.com/v1/files \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -F "file=@/path/to/document.pdf" \
+  -F "expires_in_seconds=86400" | jq -r '.id')
+
+# アップロードしたファイルを Messages API で参照
+curl -X POST https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{
+    "model": "claude-opus-5",
+    "max_tokens": 1024,
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {"type": "text", "text": "このドキュメントを要約してください。"},
+          {"type": "document", "source": {"type": "file", "file_id": "'"$FILE_ID"'"}}
+        ]
+      }
+    ]
+  }'</code></pre>
+            </div>
+
+            <p class="desc">Managed Agents で Web ツールのドメイン制限を設定するツールセットの例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">Managed Agents: Web ツールのドメイン制限設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "type": "agent_toolset_20260401",
+  "configs": [
+    {
+      "type": "web_search",
+      "name": "web_search",
+      "allowed_domains": ["docs.example.com", "arxiv.org"],
+      "user_location": {
+        "type": "approximate",
+        "country": "US",
+        "timezone": "America/Los_Angeles"
+      }
+    },
+    {
+      "type": "web_fetch",
+      "name": "web_fetch",
+      "blocked_domains": ["ads.example.com"],
+      "max_content_tokens": 50000
+    }
+  ]
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Impact / Actions -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響と必要なアクション</h2>
+            <h3 class="sub-title">🎯 対象となる開発者</h3>
+            <ul style="font-size: 14px; color: var(--text-secondary); padding-left: 20px; margin-bottom: 8px;">
+                <li>Files API をベータヘッダー付きで利用しているすべての開発者</li>
+                <li>Agent Skills / Skills API を利用する開発者 (ドキュメント生成、カスタム Skills)</li>
+                <li>Claude Enterprise 組織のメンバー管理を自動化する管理者・IT チーム</li>
+                <li>Managed Agents でリサーチエージェントや自律エージェントを構築する開発者</li>
+                <li>セルフホスト型サンドボックスで永続的なコンテキストが必要なエージェント運用者</li>
+            </ul>
+
+            <h3 class="sub-title">✅ 必要なアクション</h3>
+            <div class="action-list">
+                <div class="action-item">
+                    <span class="action-check">☑</span>
+                    <span><strong>Files API 利用者</strong>: <code class="inline">files-api-2025-04-14</code> ベータヘッダーを削除し、GA レスポンス形式 (特に <code class="inline">expires_at</code> フィールドと <code class="inline">next_page</code> ページネーション) に対応する。一時ファイルには <code class="inline">expires_in_seconds</code> を設定してストレージクォータを自動管理する</span>
+                </div>
+                <div class="action-item">
+                    <span class="action-check">☑</span>
+                    <span><strong>Skills 利用者</strong>: <code class="inline">skills-2025-10-02</code> ベータヘッダーを削除する。<code class="inline">container</code> パラメータ経由の読み込みも同様</span>
+                </div>
+                <div class="action-item">
+                    <span class="action-check">☑</span>
+                    <span><strong>Enterprise 管理者</strong>: <code class="inline">ce-user-management-2026-07-13</code> ヘッダーを削除する。オンボーディング / オフボーディングの自動化を本番導入できる</span>
+                </div>
+                <div class="action-item">
+                    <span class="action-check">☑</span>
+                    <span><strong>Managed Agents 利用者</strong>: エージェントの Web ツールにドメイン制限を設定し、到達可能なサイトを業務上必要な範囲に限定することを検討する</span>
+                </div>
+            </div>
+
+            <h3 class="sub-title">🔄 移行ガイド</h3>
+            <p class="desc">3 つの GA はいずれも後方互換性が維持されている。従来のベータヘッダーを送り続けるリクエストは引き続き動作し、Files API の場合は以前のレスポンス形式が返される。移行はヘッダーの削除と、Files API の新しいレスポンスフィールド (<code class="inline">expires_at</code>、<code class="inline">next_page</code>) のハンドリング追加のみで完了する。</p>
+            <div class="note-box">
+                <strong>⚠️ ドメイン制限の注意点</strong>: <code class="inline">allowed_domains</code> と <code class="inline">blocked_domains</code> は同一エントリに設定できない。ドメインはスキームやポートなしのプレーンなホスト名で記述する (<code class="inline">example.com</code> であり <code class="inline">https://example.com</code> ではない)。IP アドレスやワイルドカードは受け付けない。形式違反はエージェントやセッションの作成・更新時に 400 エラーで拒否される。
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>📁 一時ファイルの自動クリーンアップ</h4>
+                <p>ドキュメント要約や分析パイプラインで扱う一時ファイルに <code class="inline">expires_in_seconds</code> を設定すれば、組織あたり 1 TB のストレージクォータを自動管理できる。<code class="inline">ids[]</code> フィルタにより、既知のファイル群の生存確認も 1 リクエストで完了する。マルチテナントアプリケーションでは、テナントごとに別ワークスペースを作成して分離境界を確保する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🛡️ Enterprise のオンボーディング / オフボーディング自動化</h4>
+                <p>GA となった Admin API ユーザー管理エンドポイントを使えば、人事システムと連携した招待の送信、グループへの追加、退職時のメンバー削除といったライフサイクル管理を本番環境で自動化できる。<code class="inline">read:members</code> / <code class="inline">write:members</code> などのスコープを持つ Admin API キーで、IT チームの運用負荷を削減する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 セキュリティ境界を維持した自律リサーチエージェント</h4>
+                <p><code class="inline">allowed_domains</code> で <code class="inline">web_search</code> / <code class="inline">web_fetch</code> の到達先を社内ドキュメントや信頼できる情報源 (例: <code class="inline">arxiv.org</code>) に限定し、セルフホスト型サンドボックスのメモリストアで調査結果を永続化する。再設計されたセッションビューアの Inspector パネルで、コストやツールごとの統計を監視しながら運用できる。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>今回のリリースは、2025 年から段階的にベータ提供されてきた <strong>Files API</strong>、<strong>Agent Skills</strong>、<strong>Enterprise ユーザー管理</strong>という 3 つの主要機能が同時に GA へ到達した節目である。ベータヘッダーの削除という最小限の移行コストで本番利用への正式な保証が得られ、Files API の有効期限や <strong>ids[] フィルタ</strong>など運用に直結する改善も加わった。Managed Agents の<strong>ドメイン制限</strong>とセルフホスト環境での<strong>メモリストア対応</strong>は、エンタープライズがセキュリティ境界を維持しながら自律エージェントを運用するための実用的な制御手段を提供する。エージェント基盤の本番採用を検討するチームにとって、導入判断を後押しするアップデートといえる。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📄 <a href="https://platform.claude.com/docs/en/build-with-claude/files" target="_blank" rel="noopener noreferrer">Files API ドキュメント</a></li>
+                <li>🧩 <a href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview" target="_blank" rel="noopener noreferrer">Agent Skills 概要</a></li>
+                <li>🛡️ <a href="https://platform.claude.com/docs/en/manage-claude/user-management" target="_blank" rel="noopener noreferrer">User Management (Admin API)</a></li>
+                <li>🌐 <a href="https://platform.claude.com/docs/en/managed-agents/tools#restrict-web-search-and-web-fetch-domains" target="_blank" rel="noopener noreferrer">Managed Agents: Tools (ドメイン制限)</a></li>
+                <li>🧠 <a href="https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes#use-memory-stores" target="_blank" rel="noopener noreferrer">Managed Agents: Self-hosted Sandboxes (メモリストア)</a></li>
+            </ul>
+            <p style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed #ccc;">発表日: 2026-08-19 | ソース: Claude Developer Platform Release Notes | カテゴリ: API アップデート / 一般提供 (GA) / Managed Agents</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

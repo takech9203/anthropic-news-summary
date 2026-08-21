@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.238 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .meta-tags {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .meta-tag {
+            background: rgba(212, 165, 116, 0.15);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            color: #E8C9A8;
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-size: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 28px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .subsection-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .lead-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .lead-text strong, .feature-card strong, .use-case strong, .key-point-content strong {
+            color: var(--anthropic-dark);
+        }
+
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.88em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.35);
+            border-radius: 6px;
+            padding: 1px 6px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.4;
+        }
+
+        .feature-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card.added {
+            border-color: rgba(16, 185, 129, 0.35);
+        }
+
+        .feature-card.fixed {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .feature-card.improved {
+            border-color: rgba(245, 158, 11, 0.35);
+        }
+
+        .feature-card.changed {
+            border-color: rgba(123, 97, 255, 0.3);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .badge.added { background: #D1FAE5; color: #059669; }
+        .badge.fixed { background: #DBEAFE; color: #2563EB; }
+        .badge.improved { background: #FEF3C7; color: #B45309; }
+        .badge.changed { background: #EDE9FE; color: #6D28D9; }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li {
+            padding-left: 1.4em;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Detail list */
+        .detail-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .detail-list li {
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .detail-list li .li-icon {
+            flex-shrink: 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+            display: block;
+            overflow-x: auto;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Attention box */
+        .attention-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+        }
+
+        .attention-box h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #B45309;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .attention-box p, .attention-box ul {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+        }
+
+        .attention-box ul {
+            list-style: none;
+        }
+
+        .attention-box ul li {
+            padding-left: 1.4em;
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .attention-box ul li::before {
+            content: '⚠';
+            position: absolute;
+            left: 0;
+            color: #F59E0B;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary numbered points */
+        .summary-point {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .summary-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .summary-point-content h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .summary-point-content p {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #B4824C;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .footer ul li {
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code アップデート</span>
+                <h1>Claude Code v2.1.238 リリース<br>keybindingFlavor 設定の追加、プラグインマーケットプレイスの headersHelper 対応、長時間セッションのメモリ増加修正と Remote Control の大規模な安定化</h1>
+                <p class="date">📅 発表日: 2026-08-20 | ソース: Claude Code Changelog</p>
+                <div class="meta-tags">
+                    <span class="meta-tag">⌨️ 入力と設定の柔軟性</span>
+                    <span class="meta-tag">🔐 認証付き配布・通信</span>
+                    <span class="meta-tag">🧠 長時間セッションの安定性</span>
+                    <span class="meta-tag">📡 Remote Control の信頼性</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Overview / Key Points -->
+        <section class="section">
+            <h2 class="section-title">📋 概要 — 4 つの主要テーマ</h2>
+            <p class="lead-text">Claude Code v2.1.238 (2026 年 8 月 20 日、npm レジストリ基準) がリリースされた。<strong>全 40 項目</strong>におよぶ変更を含む大規模なリリースで、macOS での起動高速化、自動更新チェックの遅延実行、MCP の <code class="inline">headersHelper</code> に対するセキュリティ強化も含まれる。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">⌨️</div>
+                    <div class="key-point-content">
+                        <h3>入力と設定の柔軟性向上</h3>
+                        <p>新しい <code class="inline">keybindingFlavor</code> 設定を <code class="inline">"readline"</code> にすると、プロンプト内の Ctrl+W が Bash と同様に直前の空白まで削除する挙動になる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔐</div>
+                    <div class="key-point-content">
+                        <h3>認証が必要な配布 / 通信経路への対応</h3>
+                        <p>プラグインマーケットプレイスの <code class="inline">headersHelper</code> で短命トークンなどの HTTP ヘッダー発行コマンドを指定可能に。self-hosted runner には SIGTERM 後の猶予付きシャットダウンと egress プロキシ認証 (<code class="inline">Proxy-Authorization</code>) が追加された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>長時間セッションの安定性</h3>
+                        <p>サブエージェントのツール結果が表示ウィンドウを離れた時点で解放され、際限のないメモリ増加が修正された。出力スタイルがセッション途中でデフォルトの口調に戻るドリフトも解消。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📡</div>
+                    <div class="key-point-content">
+                        <h3>Remote Control とクロスセッションメッセージングの信頼性向上</h3>
+                        <p>途中送信メッセージの消失、モデル選択の非反映、ネットワーク断による「login expired」切断など、10 件を超える修正が含まれる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>起動高速化とセキュリティ強化</h3>
+                        <p>macOS での起動高速化、自動更新チェックの遅延実行による応答性改善に加え、MCP の <code class="inline">headersHelper</code> に信頼ダイアログ要件と認証情報環境変数の分離が導入された。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">🔢 数字で見る v2.1.238</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">40</div>
+                    <div class="stat-label">変更項目の総数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10+</div>
+                    <div class="stat-label">Remote Control 関連の修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">主要テーマ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">新機能 (Added)</div>
+                </div>
+            </div>
+            <p class="lead-text" style="margin-bottom: 0;"><strong>背景</strong>: Ctrl+W の単語削除の挙動が Bash の readline と異なるというシェルユーザーの指摘、社内マーケットプレイスやエンタープライズ環境での認証付きカタログ取得 / egress プロキシ通信のニーズ増加、Remote Control (Web / Desktop / モバイル) の利用拡大に伴う信頼性問題の多数報告に応えたリリースである。外部コマンドを実行する <code class="inline">headersHelper</code> には、信頼確認や認証情報の分離といったガードレールが同時に導入された。</p>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">🗺️ 全体像 — アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Config["⌨️ 入力と設定"]
+        direction LR
+        Keybind["🎛️ keybindingFlavor&lt;br/&gt;readline 風 Ctrl+W"]
+        CtrlL["🖥️ Ctrl+L / Cmd+K&lt;br/&gt;再描画のみに変更"]
+        Keybind ~~~ CtrlL
+    end
+
+    subgraph Auth["🔐 認証付き配布・通信"]
+        direction LR
+        Marketplace["🧩 マーケットプレイス&lt;br/&gt;headersHelper"]
+        Runner["🏃 self-hosted-runner&lt;br/&gt;プロキシ認証・猶予終了"]
+        MCPSec["🛡️ MCP headersHelper&lt;br/&gt;信頼要件と認証分離"]
+        Marketplace ~~~ Runner ~~~ MCPSec
+    end
+
+    subgraph Stability["⚡ 長時間セッションの安定性"]
+        direction LR
+        Memory["🧠 サブエージェント結果の&lt;br/&gt;メモリ解放"]
+        Style["🎨 出力スタイルの&lt;br/&gt;ドリフト修正"]
+        Memory ~~~ Style
+    end
+
+    subgraph Remote["📡 Remote Control の信頼性"]
+        direction LR
+        Message["✉️ メッセージ消失の修正"]
+        Connect["🔄 再接続と 403 許容"]
+        Sync["📱 モデル選択の同期"]
+        Message ~~~ Connect ~~~ Sync
+    end
+
+    User(["👤 ユーザー"]) --> Config
+    User --> Remote
+    Admin(["🏢 管理者"]) --> Auth
+    Config -.-> Stability
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef config fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef auth fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef stability fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef remote fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class User,Admin user
+    class Keybind,CtrlL config
+    class Marketplace,Runner,MCPSec auth
+    class Memory,Style stability
+    class Message,Connect,Sync remote
+    class Config,Auth,Stability,Remote layer
+                </pre>
+            </div>
+        </section>
+
+        <!-- Added -->
+        <section class="section">
+            <h2 class="section-title">✨ 新機能 <span class="badge added">Added</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card added">
+                    <h3>🎛️ keybindingFlavor 設定の追加</h3>
+                    <p><code class="inline">"readline"</code> に設定すると、プロンプト内の Ctrl+W が Bash と同様に直前の空白まで削除するようになる。デフォルト (<code class="inline">"classic"</code>) の挙動は変更なし。</p>
+                </div>
+                <div class="feature-card added">
+                    <h3>🧩 プラグインマーケットプレイスの headersHelper</h3>
+                    <p>URL マーケットプレイスまたはカタログエントリに <code class="inline">headersHelper</code> を指定すると、カタログおよび同一オリジンのアーカイブ取得時に HTTP ヘッダー (短命トークンなど) を発行するコマンドが実行される。</p>
+                </div>
+                <div class="feature-card added">
+                    <h3>✅ カタログエントリの headersHelper の実行確認</h3>
+                    <p>カタログエントリの <code class="inline">headersHelper</code> は、該当プラグインのインストールまたは更新時にのみ、コマンド内容の表示後に実行される。<code class="inline">claude plugin install/update</code> は <code class="inline">[y/N]</code> の確認を求める (<code class="inline">-y</code> で省略可能)。</p>
+                </div>
+                <div class="feature-card added">
+                    <h3>⏳ --defer-shutdown-max-min &lt;minutes&gt;</h3>
+                    <p><code class="inline">claude self-hosted-runner</code> が SIGTERM 受信後もアタッチ中のセッションへの応答を継続し、指定した分数の経過後に残りをパーク (退避) して終了する。</p>
+                </div>
+                <div class="feature-card added">
+                    <h3>🔑 --proxy-authorization-command / --proxy-authorization-file</h3>
+                    <p>接続のたびに新しく発行された <code class="inline">Proxy-Authorization</code> ヘッダーを要求する egress プロキシに対応。コマンド実行またはファイル参照でヘッダー値を供給できる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fixed: session & stability -->
+        <section class="section">
+            <h2 class="section-title">🔧 修正 <span class="badge fixed">Fixed</span> — セッションと安定性</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>長時間セッションでメモリが際限なく増加</li>
+                        <li>出力スタイルが途中でデフォルトの口調に戻る</li>
+                        <li>ポーリング 1 回の遅延で runner が誤削除される</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>サブエージェントのツール結果を表示ウィンドウ外で解放</li>
+                        <li>カスタム / プロジェクト / プラグインのスタイルを維持</li>
+                        <li>正常なセッションが別 runner に引き渡されない</li>
+                    </ul>
+                </div>
+            </div>
+            <ul class="detail-list">
+                <li><span class="li-icon">🧠</span><span><strong>長時間セッションのメモリ増加修正</strong>: 長時間の対話セッションでの際限のないメモリ増加を修正。サブエージェントのツール結果が、直近の表示ウィンドウを離れた時点で解放されるようになった</span></li>
+                <li><span class="li-icon">🎨</span><span><strong>出力スタイルのドリフト修正</strong>: カスタム、プロジェクト、プラグインの出力スタイルが、セッション途中でデフォルトの口調に戻ってしまう問題を修正</span></li>
+                <li><span class="li-icon">💡</span><span><strong>プロンプト提案の維持</strong>: <code class="inline">CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=true</code> を設定していても、アカウントが使用量上限に近い (超過していない) 場合にプロンプト提案が無効になる問題を修正</span></li>
+                <li><span class="li-icon">🌳</span><span><strong>worktree 分離時の Bash 拒否メッセージ修正</strong>: リダイレクトを含まないコマンドに対して、リダイレクトの削除を求める誤ったメッセージが表示される問題を修正</span></li>
+                <li><span class="li-icon">🏃</span><span><strong>self-hosted runner の誤削除修正</strong>: 1 回のポーリング要求の遅延や喪失だけでサーバーから runner が削除され、正常なセッションが別の runner に引き渡されてしまう問題を修正</span></li>
+                <li><span class="li-icon">🗑️</span><span><strong>一時ファイルの残留修正</strong>: Bash コマンドが強制終了、タイムアウト、中断された際に <code class="inline">/tmp/claude-*-cwd</code> ファイルが残る問題を修正</span></li>
+                <li><span class="li-icon">⌫</span><span><strong>Backspace 長押しの取りこぼし修正</strong>: Backspace として Ctrl+H を送信するターミナルで、キー入力が大きなバーストで届く場合 (低速な SSH / mosh 接続) に長押しが無視される問題を修正</span></li>
+                <li><span class="li-icon">🖥️</span><span><strong>サスペンド中のセッション終了時の端末状態修正</strong>: サスペンド中 (Ctrl+Z) のセッションを強制終了した際に、ターミナルが bracketed-paste モードのまま、カーソルが非表示のまま残ることがある問題を修正</span></li>
+            </ul>
+        </section>
+
+        <!-- Fixed: UI & permissions / MCP -->
+        <section class="section">
+            <h2 class="section-title">🖼️ 修正 <span class="badge fixed">Fixed</span> — UI・権限・MCP</h2>
+            <h3 class="subsection-title">🎛️ UI と権限</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">💬</span><span><strong>MCP elicitation ダイアログの修正</strong>: 4,096 文字を超える URL で何も表示されない問題を修正。また、プロジェクトパスがターミナル幅に収まらない場合に権限プロンプトから「don't ask again」オプションが消える問題も修正</span></li>
+                <li><span class="li-icon">📏</span><span><strong>権限プロンプトの diff 折り返し修正</strong>: 絵文字などの複数コードポイントからなる全角文字やタブを含む行が途中で切り取られる問題を修正</span></li>
+                <li><span class="li-icon">🔕</span><span><strong>キャッシュミス警告の抑制</strong>: プロンプトキャッシュがすでに期限切れの場合に、<code class="inline">/model</code> と <code class="inline">/effort</code> のキャッシュミス警告が表示されないようになった</span></li>
+            </ul>
+            <h3 class="subsection-title">🔌 MCP</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">🚦</span><span><strong>stdio MCP サーバーの初期化順序修正</strong>: <code class="inline">initialize</code> の前に <code class="inline">server/discover</code> リクエストが送られ、遅延起動型のサーバーがセッションを開くたびにバックエンドを起動させられる問題を修正</span></li>
+                <li><span class="li-icon">🛑</span><span><strong>プロキシ拒否エラーの明確化</strong>: プロキシによる接続拒否が、一般的なネットワークエラーではなくプロキシ名を含めて報告されるようになった</span></li>
+            </ul>
+        </section>
+
+        <!-- Fixed: Remote Control -->
+        <section class="section">
+            <h2 class="section-title">📡 修正 <span class="badge fixed">Fixed</span> — Remote Control とクロスセッションメッセージング</h2>
+            <p class="lead-text">Web / Desktop / モバイルから CLI セッションを操作するワークフローに関わる <strong>12 件</strong>の修正が集中的に行われた。</p>
+            <ul class="detail-list">
+                <li><span class="li-icon">⏹️</span><span><strong>タスクごとの Stop 修正</strong>: Remote Control のタスクパネルからのタスクごとの Stop が、CLI ホストのセッションで機能しない問題を修正</span></li>
+                <li><span class="li-icon">🚫</span><span><strong>不正ロールメッセージによる終了の修正</strong>: クライアントが有効な role を持たないユーザーメッセージを送った際に、リモートセッションが終了してしまう問題を修正</span></li>
+                <li><span class="li-icon">🌱</span><span><strong>環境変数の継承修正</strong>: <code class="inline">claude remote-control</code> で開始した Remote Control セッションが、起動元シェルのセッションスコープ環境変数を継承してしまう問題を修正</span></li>
+                <li><span class="li-icon">♻️</span><span><strong>クラッシュしたセッションの再利用</strong>: プロセスがクラッシュした Remote Control セッションが <code class="inline">claude remote-control</code> の再起動まで利用不能のままになる問題を修正。次にメッセージを送った時点で再利用できるようになった</span></li>
+                <li><span class="li-icon">✉️</span><span><strong>ターン中に送信したメッセージの消失修正</strong>: Claude の応答中に Web や Desktop から送信した Remote Control メッセージが、ターン終了後にトランスクリプトから消える問題を修正</span></li>
+                <li><span class="li-icon">📱</span><span><strong>モデル選択の反映修正</strong>: スマートフォンや Web で行った Remote Control のモデル選択が、ターミナルに表示されるモデルに反映されない問題を修正</span></li>
+                <li><span class="li-icon">🔐</span><span><strong>「login expired」切断の修正</strong>: サインインの更新が短時間のネットワーク不調で遅延した際に「login expired」で切断される問題を修正。再試行して接続を維持するようになった</span></li>
+                <li><span class="li-icon">👋</span><span><strong>サインアウト時の表示修正</strong>: サインアウト時に再接続失敗として報告される問題を修正。明確なメッセージとともにセッションが終了するようになった</span></li>
+                <li><span class="li-icon">🔗</span><span><strong>ListAgents / SendMessage の接続認識修正</strong>: <code class="inline">claude remote-control</code> (サーバーモード) や Desktop / IDE ホストで実行中のセッションで「Remote Control is not connected」と報告される問題を修正。Remote Control ピアの列挙と到達が可能になった</span></li>
+                <li><span class="li-icon">🫥</span><span><strong>事前ウォームアップワーカーの非表示化</strong>: エージェントビューが次のバックグラウンドセッション用に事前起動するアイドルワーカーが <code class="inline">ListAgents</code> / <code class="inline">SendMessage</code> に露出する問題を修正。タスクが確保した時点でのみ表示されるようになった</span></li>
+                <li><span class="li-icon">🙅</span><span><strong>受信拒否の明示化</strong>: 受信を拒否する設定 (<code class="inline">crossSessionInbound: "refuse"</code> など) のセッションへの送信が、暗黙の成功ではなく「refused」として送信側に報告されるようになった</span></li>
+                <li><span class="li-icon">📥</span><span><strong>受信箱でのメッセージ破棄の通知</strong>: レート制限や受信キューの満杯によりメッセージが破棄された場合、黙って消える代わりに送信側のセッションに通知されるようになった</span></li>
+            </ul>
+        </section>
+
+        <!-- Improved & Changed -->
+        <section class="section">
+            <h2 class="section-title">⚡ 改善 <span class="badge improved">Improved</span> と変更 <span class="badge changed">Changed</span></h2>
+            <h3 class="subsection-title">📈 改善 (Improved)</h3>
+            <div class="feature-grid">
+                <div class="feature-card improved">
+                    <h3>🍎 macOS での起動高速化</h3>
+                    <p>引数なしの <code class="inline">claude</code> の起動が macOS で速くなった。</p>
+                </div>
+                <div class="feature-card improved">
+                    <h3>🐚 zsh 固有構文の権限チェック改善</h3>
+                    <p>シェル条件式内の zsh 固有構文に対する Bash ツールの権限チェックが改善された。</p>
+                </div>
+                <div class="feature-card improved">
+                    <h3>🛜 Remote Control の接続耐性向上</h3>
+                    <p>ネットワークエッジ、VPN、プロキシからの短時間の HTTP 403 拒否を最大 3 分間許容し、ブロックが継続する場合は拒否元の名前を表示するようになった。</p>
+                </div>
+                <div class="feature-card improved">
+                    <h3>⏲️ 自動更新チェックの遅延実行</h3>
+                    <p>自動更新チェックが起動と CPU を奪い合う代わりに、起動の約 10 秒後に実行されるようになった。</p>
+                </div>
+                <div class="feature-card improved">
+                    <h3>📚 バンドル claude-api スキルの更新</h3>
+                    <p>Managed Agents の 8 月 19 日リリース (Web 検索 / フェッチのドメイン設定、self-hosted サンドボックスのメモリストア) に対応。</p>
+                </div>
+            </div>
+            <h3 class="subsection-title">🔄 変更 (Changed)</h3>
+            <div class="feature-grid">
+                <div class="feature-card changed">
+                    <h3>🖥️ フルスクリーンの Ctrl+L / Cmd+K の挙動変更</h3>
+                    <p>常に再描画のみを行うようになり、二度押しによる <code class="inline">/clear</code> ショートカットは削除された。1 行の nvim ターミナルで自動的な <code class="inline">/clear</code> ループが発生することもなくなった。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>⊘ 無効化された MCP サーバーの表示変更</h3>
+                    <p><code class="inline">claude mcp list</code> と <code class="inline">claude mcp get</code> が、無効化されたサーバーに接続してヘルスチェックする代わりに <code class="inline">⊘ Disabled</code> と表示するようになった。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>🛡️ MCP headersHelper の信頼要件</h3>
+                    <p>プロジェクトの <code class="inline">.mcp.json</code> 内の <code class="inline">headersHelper</code>、およびプロジェクトや <code class="inline">--add-dir</code> のエージェントファイル内のインライン MCP サーバーは、該当フォルダーの信頼ダイアログの承認が必要になった (<code class="inline">claude -p</code> 実行時も同様)。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>🔒 MCP headersHelper の認証情報分離</h3>
+                    <p>プロジェクトの <code class="inline">.mcp.json</code>、プラグイン、エージェントファイル由来の <code class="inline">headersHelper</code> は、継承された認証情報環境変数なしで実行されるようになった。ユーザー、managed、claude.ai スコープのヘルパーは Claude 設定ディレクトリから実行される。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical details -->
+        <section class="section">
+            <h2 class="section-title">🔬 技術的な詳細</h2>
+
+            <h3 class="subsection-title">🎛️ keybindingFlavor 設定</h3>
+            <p class="lead-text"><code class="inline">keybindingFlavor</code> を <code class="inline">"readline"</code> にすると、プロンプト入力欄の Ctrl+W が Bash の readline と同じく「直前の空白まで削除」する挙動になる。デフォルトは <code class="inline">"classic"</code> で、従来の挙動から変更はない。シェル操作に慣れたユーザーが、ターミナルと Claude Code の間でキー操作の一貫性を保てるようになる。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings.json — keybindingFlavor の設定</span>
+                </div>
+                <pre><code class="language-json">{
+  "keybindingFlavor": "readline"
+}</code></pre>
+            </div>
+
+            <h3 class="subsection-title">🧩 プラグインマーケットプレイスの headersHelper</h3>
+            <p class="lead-text">URL マーケットプレイスまたはカタログエントリに <code class="inline">headersHelper</code> を指定すると、カタログおよび同一オリジンのアーカイブ取得の際に、HTTP ヘッダーを発行するコマンドが実行される。短命トークンを都度発行する社内認証基盤との連携が典型的なユースケースである。セキュリティ面のガードレールとして、カタログエントリの <code class="inline">headersHelper</code> は該当プラグインのインストールまたは更新時にのみ実行され、実行前にコマンド内容が表示される。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">マーケットプレイス定義の例</span>
+                </div>
+                <pre><code class="language-json">{
+  "name": "internal-marketplace",
+  "url": "https://plugins.example.com/catalog.json",
+  "headersHelper": "get-marketplace-token.sh"
+}</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">プラグインのインストール</span>
+                </div>
+                <pre><code class="language-bash"># インストール時に headersHelper のコマンドが表示され、確認を求められる
+claude plugin install my-plugin
+# CI などで確認を省略する場合
+claude plugin install my-plugin -y</code></pre>
+            </div>
+            <div class="attention-box">
+                <h4>🛡️ MCP 側の headersHelper にも制限を導入</h4>
+                <p>プロジェクトの <code class="inline">.mcp.json</code> やエージェントファイル内のヘルパーはフォルダーの信頼ダイアログの承認が前提となり、継承された認証情報環境変数なしで実行される。リポジトリ内のファイル経由で任意コマンドが認証情報にアクセスする経路が閉じられた形である。</p>
+            </div>
+
+            <h3 class="subsection-title">🏃 self-hosted runner の運用オプション</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">⏳</span><span><strong><code class="inline">--defer-shutdown-max-min &lt;minutes&gt;</code></strong>: SIGTERM を受信しても即座に終了せず、アタッチ中のセッションへの応答を継続する。指定した分数が経過した時点で残りのセッションをパークして終了するため、ローリングアップデートやスケールインの際にユーザーのセッションを中断させずに済む</span></li>
+                <li><span class="li-icon">🔑</span><span><strong><code class="inline">--proxy-authorization-command</code> / <code class="inline">--proxy-authorization-file</code></strong>: 接続ごとに新しい <code class="inline">Proxy-Authorization</code> ヘッダーの発行を要求する egress プロキシに対応する。コマンド実行またはファイル参照でヘッダー値を供給できる</span></li>
+                <li><span class="li-icon">🛠️</span><span><strong>誤削除の修正</strong>: 1 回のポーリング要求の遅延や喪失だけで runner がサーバーから削除され、正常なセッションが別の runner に引き渡されてしまう問題も修正され、ネットワークが不安定な環境での運用信頼性が向上した</span></li>
+            </ul>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">self-hosted runner の運用オプション</span>
+                </div>
+                <pre><code class="language-bash"># SIGTERM 後 30 分間はアタッチ中のセッションへの応答を継続し、その後パークして終了
+claude self-hosted-runner --defer-shutdown-max-min 30
+
+# 接続ごとに Proxy-Authorization ヘッダーを発行する egress プロキシに対応
+claude self-hosted-runner --proxy-authorization-command "get-proxy-token.sh"
+claude self-hosted-runner --proxy-authorization-file /run/secrets/proxy-auth</code></pre>
+            </div>
+
+            <h3 class="subsection-title">🧠 長時間セッションのメモリ管理</h3>
+            <p class="lead-text">長時間の対話セッションで、サブエージェントのツール結果が解放されずにメモリが際限なく増加する問題が修正された。ツール結果は直近の表示ウィンドウを離れた時点で解放されるようになった。サブエージェントを多用する長時間のセッションほど効果が大きい。あわせて、カスタム / プロジェクト / プラグインの出力スタイルがセッション途中でデフォルトの口調に戻る「ドリフト」も修正され、長時間セッションでの一貫性が改善された。</p>
+
+            <h3 class="subsection-title">📡 Remote Control の安定化</h3>
+            <p class="lead-text" style="margin-bottom: 0;">メッセージの消失 (ターン中の送信がトランスクリプトから消える、受信箱での破棄が通知されない)、接続の信頼性 (ネットワーク不調による「login expired」切断、短時間の HTTP 403 の許容)、状態の同期 (モバイル / Web でのモデル選択がターミナルに反映されない)、セッションのライフサイクル (クラッシュしたセッションの再利用、サインアウト時の明確な終了) など、広範囲の修正が入った。Web / Desktop / モバイルから CLI セッションを操作するワークフローの実用性が大きく向上している。</p>
+        </section>
+
+        <!-- Use cases / Developer impact -->
+        <section class="section">
+            <h2 class="section-title">💼 ユースケース / 開発者への影響</h2>
+            <div class="use-case">
+                <h4>🏢 エンタープライズ環境の管理者 — 認証付き配布とプロキシ運用</h4>
+                <p>社内プラグインマーケットプレイスの運用者は <code class="inline">headersHelper</code> により、短命トークンなどの認証ヘッダーを必要とするカタログ / アーカイブ配布に対応できる。self-hosted runner の運用者は <code class="inline">--defer-shutdown-max-min</code> による猶予付きシャットダウンでローリングアップデート時のセッション中断を回避し、<code class="inline">--proxy-authorization-command</code> / <code class="inline">--proxy-authorization-file</code> で egress プロキシ認証に対応できる。ポーリング遅延による runner の誤削除も修正された。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧠 長時間セッション / サブエージェント / カスタム出力スタイルの利用者</h4>
+                <p>メモリの際限のない増加が修正され、長時間の作業でも安定して動作する。カスタム出力スタイルがセッション途中でデフォルトの口調に戻るドリフトも修正された。シェル操作に慣れたユーザーは <code class="inline">keybindingFlavor</code> を <code class="inline">"readline"</code> に設定すると、Ctrl+W が Bash と同じ「直前の空白まで削除」の挙動になる。低速な SSH / mosh 接続の利用者は Backspace 長押しの取りこぼし修正の恩恵を受ける。</p>
+            </div>
+            <div class="use-case">
+                <h4>📡 Remote Control / クロスセッションメッセージング / MCP の利用者</h4>
+                <p>Remote Control (Web / Desktop / モバイル) では、メッセージ消失、モデル選択の非反映、ネットワーク不調による切断など多数の問題が修正され、実用性が大きく向上した。クロスセッションメッセージングでは受信拒否やレート制限による破棄が送信側に明示され、メッセージが黙って消えることがなくなった。MCP では stdio サーバーの初期化順序が修正され、遅延起動型サーバーの不要なバックエンド起動がなくなり、無効化したサーバーは <code class="inline">claude mcp list</code> でヘルスチェックなしに <code class="inline">⊘ Disabled</code> と表示される。</p>
+            </div>
+        </section>
+
+        <!-- Actions & migration -->
+        <section class="section">
+            <h2 class="section-title">🚀 必要なアクションと移行ガイド</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">最新バージョンへの更新</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+            <div class="attention-box">
+                <h4>⚠️ 推奨される確認事項</h4>
+                <ul>
+                    <li><strong>フルスクリーンで Ctrl+L / Cmd+K の二度押しによる <code class="inline">/clear</code> を利用していた場合</strong>: このショートカットは削除されたため、<code class="inline">/clear</code> コマンドを直接実行する運用に切り替える</li>
+                    <li><strong>プロジェクトの <code class="inline">.mcp.json</code> で <code class="inline">headersHelper</code> を利用している場合</strong>: フォルダーの信頼ダイアログの承認が前提となり、認証情報環境変数が継承されなくなったため、ヘルパーの動作を確認する</li>
+                    <li><strong>クロスセッションメッセージングを利用している場合</strong>: 受信拒否や破棄が「refused」などのエラーとして返るようになったため、暗黙の成功を前提としたロジックがあれば見直す</li>
+                </ul>
+            </div>
+            <h3 class="subsection-title">🧭 移行ガイド</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">🔒</span><span><strong>MCP <code class="inline">headersHelper</code> の実行環境変更</strong>: プロジェクトの <code class="inline">.mcp.json</code>、プラグイン、エージェントファイル由来の <code class="inline">headersHelper</code> は、v2.1.238 以降、継承された認証情報環境変数なしで実行される。シェルの環境変数からトークンを読み取っていたヘルパーは動作しなくなる可能性があるため、ファイルや専用コマンドからの取得に切り替える必要がある。ユーザー、managed、claude.ai スコープのヘルパーは Claude 設定ディレクトリから実行される点にも注意する</span></li>
+                <li><span class="li-icon">🖥️</span><span><strong>フルスクリーンの Ctrl+L / Cmd+K</strong>: 二度押しによる <code class="inline">/clear</code> ショートカットは削除され、常に再描画のみが行われる。会話のクリアには <code class="inline">/clear</code> コマンドを使用する</span></li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">📝 まとめ</h2>
+            <p class="lead-text">Claude Code v2.1.238 は、全 40 項目という大規模なリリースであり、入力設定の柔軟性、エンタープライズ向けの認証対応、長時間セッションの安定性、Remote Control の信頼性という 4 つの軸で改善が行われた。</p>
+            <div class="summary-point">
+                <div class="summary-number">1</div>
+                <div class="summary-point-content">
+                    <h4>エンタープライズ環境への対応強化</h4>
+                    <p>プラグインマーケットプレイスの <code class="inline">headersHelper</code> により認証付きの社内配布が可能になり、self-hosted runner には猶予付きシャットダウンと egress プロキシ認証が追加された。同時に、MCP の <code class="inline">headersHelper</code> には信頼ダイアログ要件と認証情報の分離が導入され、利便性とセキュリティの両面が強化された。</p>
+                </div>
+            </div>
+            <div class="summary-point">
+                <div class="summary-number">2</div>
+                <div class="summary-point-content">
+                    <h4>長時間セッションの安定性</h4>
+                    <p>サブエージェントのツール結果の解放によるメモリ増加の修正と、出力スタイルのドリフト修正により、長時間の作業でも一貫した動作が期待できるようになった。</p>
+                </div>
+            </div>
+            <div class="summary-point">
+                <div class="summary-number">3</div>
+                <div class="summary-point-content">
+                    <h4>Remote Control の大規模な安定化</h4>
+                    <p>メッセージ消失、モデル選択の非反映、ネットワーク不調による切断など 10 件を超える修正が入り、Web / Desktop / モバイルから CLI セッションを操作するワークフローの実用性が大きく向上した。</p>
+                </div>
+            </div>
+            <div class="attention-box" style="margin-top: 20px;">
+                <h4>💡 アップデート推奨</h4>
+                <p>長時間セッションのメモリ増加は多くのユーザーに影響する問題であるため、サブエージェントを多用するユーザーや Remote Control の利用者には速やかなアップデートを推奨する。プロジェクトの <code class="inline">.mcp.json</code> で <code class="inline">headersHelper</code> を利用しているチームは、信頼要件と環境変数の分離による影響を事前に確認しておきたい。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📋 <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></li>
+                <li>💻 <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li>📖 <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li>🗒️ 前バージョン: Claude Code v2.1.236 / v2.1.237 (2026-08-19)</li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-08-20 | カテゴリ: Claude Code アップデート | 本インフォグラフィックは Claude Code Changelog のレポートを基に作成</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

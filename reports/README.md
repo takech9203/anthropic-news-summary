@@ -5,6 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-08-20](2026/2026-08-20-claude-code-v2-1-238.md) - Claude Code v2.1.238 リリース — keybindingFlavor 設定の追加、プラグインマーケットプレイスの headersHelper 対応、長時間セッションのメモリ増加修正と Remote Control の大規模な安定化
+- [2026-08-19](2026/2026-08-19-files-skills-admin-api-ga.md) - Files API・Agent Skills・Admin API ユーザー管理が一般提供開始、Managed Agents も機能強化
+- [2026-08-19](2026/2026-08-19-computer-use-ga-browser-use-tool.md) - Computer Use ツールが GA、ブラウザ操作専用の Browser Use ツールが新登場
+- [2026-08-19](2026/2026-08-19-claude-code-v2-1-236-v2-1-237.md) - Claude Code v2.1.236 / v2.1.237 リリース — ANTHROPIC_DEFAULT_MODEL 環境変数、組み込み Concise 出力スタイル、macOS サンドボックスの読み取り拒否強化、auto mode の大幅改善
 - [2026-08-18](2026/2026-08-18-console-playground.md) - Claude Console の Workbench が Playground に刷新、Messages API 全パラメータ対応と SDK リクエスト / レスポンスの完全表示を実現
 - [2026-08-18](2026/2026-08-18-claude-code-v2-1-235.md) - Claude Code v2.1.235 リリース — プロンプト入力のスペルチェック追加、権限ダイアログの表示整合性改善、クラウドセッションのパフォーマンス改善
 - [2026-08-17](2026/2026-08-17-claude-code-v2-1-234.md) - Claude Code v2.1.234 リリース — 使用制限リセット時の自動継続、NT パス検証の強化、claude-api スキルのコンテキスト大幅削減、Remote Control 同期改善
