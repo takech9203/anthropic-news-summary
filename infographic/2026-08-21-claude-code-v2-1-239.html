@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.239 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .meta-tags {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .meta-tag {
+            background: rgba(212, 165, 116, 0.15);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            color: #E8C9A8;
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-size: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 28px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .subsection-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .lead-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .lead-text strong, .feature-card strong, .use-case strong, .key-point-content strong {
+            color: var(--anthropic-dark);
+        }
+
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.88em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.35);
+            border-radius: 6px;
+            padding: 1px 6px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.4;
+        }
+
+        .feature-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card.added {
+            border-color: rgba(16, 185, 129, 0.35);
+        }
+
+        .feature-card.fixed {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .feature-card.improved {
+            border-color: rgba(245, 158, 11, 0.35);
+        }
+
+        .feature-card.changed {
+            border-color: rgba(123, 97, 255, 0.3);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .badge.added { background: #D1FAE5; color: #059669; }
+        .badge.fixed { background: #DBEAFE; color: #2563EB; }
+        .badge.improved { background: #FEF3C7; color: #B45309; }
+        .badge.changed { background: #EDE9FE; color: #6D28D9; }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li {
+            padding-left: 1.4em;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Detail list */
+        .detail-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .detail-list li {
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .detail-list li .li-icon {
+            flex-shrink: 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+            display: block;
+            overflow-x: auto;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Attention box */
+        .attention-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+        }
+
+        .attention-box h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #B45309;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .attention-box p, .attention-box ul {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+        }
+
+        .attention-box ul {
+            list-style: none;
+        }
+
+        .attention-box ul li {
+            padding-left: 1.4em;
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .attention-box ul li::before {
+            content: '⚠';
+            position: absolute;
+            left: 0;
+            color: #F59E0B;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary numbered points */
+        .summary-point {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .summary-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .summary-point-content h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .summary-point-content p {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #B4824C;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .footer ul li {
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code / リリース</span>
+                <h1>Claude Code v2.1.239 リリース<br>Bedrock ストリーミング課金 2 倍問題の修正、Python SDK 1.x 移行コマンド /claude-api upgrade の追加、Windows クロスセッションメッセージング対応</h1>
+                <p class="date">📅 発表日: 2026-08-21 | ソース: Claude Code Changelog</p>
+                <div class="meta-tags">
+                    <span class="meta-tag">💰 コストと課金の正確性</span>
+                    <span class="meta-tag">🐍 Python SDK 移行支援</span>
+                    <span class="meta-tag">🖥️ クロスプラットフォーム拡充</span>
+                    <span class="meta-tag">⚡ セッションの信頼性</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Overview / Key Points -->
+        <section class="section">
+            <h2 class="section-title">📋 概要 — 4 つの主要テーマ</h2>
+            <p class="lead-text">Claude Code v2.1.239 (2026 年 8 月 21 日、npm レジストリ基準) がリリースされた。<strong>約 60 項目</strong>におよぶ大規模なリリースであり、コスト・課金に関する重要な修正、Python SDK の移行支援、クロスプラットフォーム対応の拡充、セッション管理と UI の多数の修正を含む。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">💰</div>
+                    <div class="key-point-content">
+                        <h3>コストと課金の正確性 (最重要)</h3>
+                        <p>プロキシが Content-Type ヘッダーを除去する環境での Bedrock ストリーミングで、全ターンが非ストリーミングで再実行され、課金対象の API 呼び出しが<strong>静かに 2 倍</strong>になっていた問題を修正。あわせて、コスト見積もり (<code class="inline">/cost</code>、ステータスライン、<code class="inline">--max-budget-usd</code>) がデータレジデンシーワークスペースの米国内推論プレミアム 1.1 倍を含むようになった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🐍</div>
+                    <div class="key-point-content">
+                        <h3>Python SDK 1.x への移行支援</h3>
+                        <p>新コマンド <code class="inline">/claude-api upgrade</code> により、Python プロジェクトを <code class="inline">anthropic</code> パッケージの 0.x から 1.x へ移行できるようになった。バンドルされている <code class="inline">claude-api</code> スキルの Python リファレンスも 1.x に更新された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🖥️</div>
+                    <div class="key-point-content">
+                        <h3>クロスプラットフォーム対応の拡充</h3>
+                        <p>Windows でクロスセッションメッセージング (<code class="inline">SendMessage</code> / <code class="inline">ListAgents</code>) が利用可能に。Alpine/musl ビルドではネイティブの画像貼り付け・クリップボード・音声キャプチャのアドオンが読み込めるようになり、Bedrock / Vertex / Foundry などにもフルスクリーンレンダラーの初回提案が拡大された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>セッションと操作の信頼性</h3>
+                        <p>Esc キー押下時のレースコンディション、WebFetch のメモリ保持、<code class="inline">/resume</code> 関連の複数の問題、OpenTelemetry トレース断片化など、広範囲の修正が入った。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">🔢 数字で見る v2.1.239</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">60</div>
+                    <div class="stat-label">変更項目 (約)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2 倍</div>
+                    <div class="stat-label">修正前の Bedrock<br>課金重複</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1.1 倍</div>
+                    <div class="stat-label">米国内推論プレミアム<br>を見積もりに反映</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">主要テーマ</div>
+                </div>
+            </div>
+            <p class="lead-text" style="margin-bottom: 0;"><strong>背景</strong>: Claude Code は Anthropic API に加えて Amazon Bedrock、Google Vertex AI、Microsoft Foundry 経由でも利用され、エンタープライズ環境ではプロキシ経由の通信が一般的である。プロキシが応答ヘッダーを書き換える構成では、ストリーミングの判定に失敗して非ストリーミングでの再実行が発生し、ユーザーが気付かないまま課金が倍増するという深刻な問題が存在していた。また、<code class="inline">anthropic</code> Python SDK はメジャーバージョン 1.x への移行期にあり、クロスセッションメッセージングは macOS / Linux 限定でプラットフォーム間の機能差が残っていた。</p>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">🗺️ 全体像 — アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Cost["💰 コストと課金の正確性"]
+        direction LR
+        Bedrock["🛠️ Bedrock ストリーミング&lt;br/&gt;課金 2 倍問題を修正"]
+        Premium["📊 コスト見積もりに&lt;br/&gt;米国内推論 1.1 倍を反映"]
+        Watchdog["⏱️ リトライモードの&lt;br/&gt;支出上限エラー即時失敗"]
+        Bedrock ~~~ Premium ~~~ Watchdog
+    end
+
+    subgraph SDK["🐍 Python SDK 移行支援"]
+        direction LR
+        Upgrade["🔧 /claude-api upgrade&lt;br/&gt;0.x から 1.x へ移行"]
+        Skill["📚 claude-api スキル&lt;br/&gt;1.x リファレンス更新"]
+        Upgrade ~~~ Skill
+    end
+
+    subgraph Platform["🖥️ クロスプラットフォーム拡充"]
+        direction LR
+        Windows["🪟 Windows&lt;br/&gt;クロスセッションメッセージング"]
+        Musl["🐧 Alpine musl&lt;br/&gt;ネイティブアドオン対応"]
+        Fullscreen["🖼️ Bedrock / Vertex / Foundry&lt;br/&gt;フルスクリーン提案"]
+        Windows ~~~ Musl ~~~ Fullscreen
+    end
+
+    subgraph Reliability["⚡ セッションの信頼性"]
+        direction LR
+        Esc["⌨️ Esc レース&lt;br/&gt;コンディション修正"]
+        Resume["🔄 /resume 関連の&lt;br/&gt;複数修正"]
+        Memory["🧠 WebFetch メモリ&lt;br/&gt;保持の修正"]
+        Esc ~~~ Resume ~~~ Memory
+    end
+
+    User(["👤 開発者"]) --> SDK
+    User --> Reliability
+    Admin(["🏢 エンタープライズ利用者"]) --> Cost
+    Admin --> Platform
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef cost fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef sdk fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef platform fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef reliability fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class User,Admin user
+    class Bedrock,Premium,Watchdog cost
+    class Upgrade,Skill sdk
+    class Windows,Musl,Fullscreen platform
+    class Esc,Resume,Memory reliability
+    class Cost,SDK,Platform,Reliability layer
+                </pre>
+            </div>
+        </section>
+
+        <!-- Highlight: Bedrock billing fix -->
+        <section class="section">
+            <h2 class="section-title">💰 最重要 — Bedrock ストリーミング課金 2 倍問題の修正 <span class="badge fixed">Fixed</span></h2>
+            <p class="lead-text">Claude Code は通常、Bedrock との通信にストリーミング応答を使用する。一部のプロキシは応答の Content-Type ヘッダーを除去するため、Claude Code がストリーミング応答を正しく認識できず、フォールバックとして全ターンを非ストリーミングで再実行していた。この結果、<strong>すべてのターンで課金対象の API 呼び出しが 2 回発生</strong>し、ユーザーが気付かないまま API コストが 2 倍になっていた。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>プロキシが Content-Type を除去するとストリーミング判定に失敗</li>
+                        <li>全ターンが非ストリーミングで再実行される</li>
+                        <li>課金対象の API 呼び出しが静かに 2 倍に</li>
+                        <li>コスト見積もりが 1.1 倍プレミアムを含まず約 9% 過少</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>ストリーミング判定が修正され再実行が発生しない</li>
+                        <li>該当環境では API コストが実質的に半減する可能性</li>
+                        <li><code class="inline">/cost</code> / ステータスライン / <code class="inline">--max-budget-usd</code> が 1.1 倍プレミアムを反映</li>
+                        <li>予算制御が実際の請求額に基づいて機能</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="attention-box">
+                <h4>⚠️ 優先的なアップデートを推奨</h4>
+                <p>プロキシ経由で Bedrock を利用している組織は、このバージョンへの更新により API コストが実質的に半減する可能性がある。あわせて、HTTPS プロキシと Bedrock SSO プロファイル (<code class="inline">awsAuthRefresh</code>) の組み合わせでの起動時ハングも解消され、認証情報の事前チェックが <code class="inline">HTTPS_PROXY</code> を尊重するようになった。</p>
+            </div>
+        </section>
+
+        <!-- Added -->
+        <section class="section">
+            <h2 class="section-title">✨ 新機能 <span class="badge added">Added</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card added">
+                    <h3>🔧 /claude-api upgrade コマンドの追加</h3>
+                    <p>Python プロジェクトを <code class="inline">anthropic</code> パッケージの 0.x から 1.x へ移行するコマンド。バンドルされている <code class="inline">claude-api</code> スキルの Python リファレンスも 1.x に更新された (タイムアウトには <code class="inline">httpx.Timeout</code> ではなく <code class="inline">anthropic.Timeout</code> を使用)。</p>
+                </div>
+                <div class="feature-card added">
+                    <h3>🖼️ フルスクリーンレンダラーの対象環境拡大</h3>
+                    <p>Bedrock、Vertex、Foundry などこれまで対象外だった環境で、フルスクリーンレンダラーの初回提案が表示されるようになった。これらの環境での新規インストールはフルスクリーンで開始される。</p>
+                </div>
+                <div class="feature-card added">
+                    <h3>🐧 Alpine/musl ビルドのネイティブアドオン対応</h3>
+                    <p>ネイティブの画像貼り付け、クリップボード、音声キャプチャのアドオンが読み込み可能になった。ランタイムに拒否されていた glibc ビルドのバイナリに代わり、musl ビルドのバイナリが使用される。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Changed -->
+        <section class="section">
+            <h2 class="section-title">🔄 変更 <span class="badge changed">Changed</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card changed">
+                    <h3>📊 コスト見積もりへの米国内推論プレミアムの反映</h3>
+                    <p><code class="inline">/cost</code>、ステータスライン、<code class="inline">--max-budget-usd</code> のコスト見積もりが、データレジデンシーワークスペースの米国内推論プレミアム 1.1 倍を含むようになった。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>🪟 Windows でのクロスセッションメッセージング対応</h3>
+                    <p>macOS / Linux と同様に、Windows でも複数マシンにまたがるセッションが <code class="inline">SendMessage</code> で相互にメッセージを送信し、<code class="inline">ListAgents</code> で相互に発見できるようになった。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>🧩 クラウドセッションの同期プラグイン表示</h3>
+                    <p>claude.ai から同期されたプラグインは <code class="inline">name@synced</code> と表示され、<code class="inline">claude plugin enable/disable</code> で操作できる。ユーザーがインストールした同名のプラグインを上書きしない。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>🎯 /goal のチェックインバックオフとゴール復元</h3>
+                    <p>繰り返しのチェックインが 30 分固定から 30 分 → 1 時間 → 2 時間へバックオフ。<code class="inline">claude --resume</code> ピッカーからの再開でアクティブなゴールが復元される。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>👥 ListAgents の自己認識とライブチームメイト表示</h3>
+                    <p><code class="inline">ListAgents</code> がセッション自身の名前を通知し、ライブのチームメイトも一覧に表示されるようになった。自分自身への <code class="inline">SendMessage</code> はその旨を返す。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>⏱️ 持続リトライモードの即時失敗</h3>
+                    <p><code class="inline">CLAUDE_CODE_RETRY_WATCHDOG</code> が、組織の支出上限エラーとクレジット切れエラーに対して、リセットを無期限に待機する代わりに即座に失敗する。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>⌨️ keybindingFlavor readline の単語キー対応</h3>
+                    <p>Alt+F と Ctrl/Option+→ が単語の末尾で停止し、Alt+D は単語末尾まで削除 (Ctrl+Y で貼り戻し可能)。句読点が単語の区切りとして扱われ、Bash の挙動に近づいた。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>📈 使用量上限メッセージの改善</h3>
+                    <p>月間支出上限に到達した際のメッセージに、セッションおよび週次リミットのリセット時刻も表示されるようになった。</p>
+                </div>
+            </div>
+            <h3 class="subsection-title">🧭 その他の変更</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">🌐</span><span><strong>Claude in Chrome のタブグループ管理</strong>: <code class="inline">/clear</code> がセッションの Chrome タブグループを閉じ、空のグループは <code class="inline">/resume</code> 時と終了時に閉じられる</span></li>
+                <li><span class="li-icon">📱</span><span><strong>モバイルからの画像アップロードのパス通知</strong>: リモートセッションで、アップロードした画像に保存先のファイルパスが含まれ、Claude が作成するファイルへ画像をコピーできる</span></li>
+                <li><span class="li-icon">🛜</span><span><strong>Web 版のネットワークプロキシ適用範囲拡大</strong>: Bash などのツールから API 以外の anthropic.com ホスト (www、docs など) への要求もセッションのネットワークプロキシを経由し、許可ドメイン設定が適用される</span></li>
+                <li><span class="li-icon">🗜️</span><span><strong>コンパクション後のリマインダー改善</strong>: スキルの元の引数が新しいリクエストとして再実行されなくなった</span></li>
+                <li><span class="li-icon">🧹</span><span><strong>その他の改善</strong>: 長いファイルパスの中央省略表示、長時間フック実行中のキープアライブ送信 (コンテナのアイドル回収防止)、Remote Control 無効時の文言明確化、VSCode 使用量上限バナーのインライン表示</span></li>
+            </ul>
+        </section>
+
+        <!-- Fixed: session & resume -->
+        <section class="section">
+            <h2 class="section-title">🔧 修正 <span class="badge fixed">Fixed</span> — セッションと再開</h2>
+            <ul class="detail-list">
+                <li><span class="li-icon">⌨️</span><span><strong>Esc キーのレースコンディション修正</strong>: プロンプトがキューにある状態で Esc を押すと、次のターンが早期に完了し、Claude が作業を継続しているのにセッションがアイドル表示になり、後からの再送信で操作が繰り返される可能性があった問題を修正</span></li>
+                <li><span class="li-icon">🧠</span><span><strong>WebFetch のメモリ保持修正</strong>: 期限切れのページコンテンツを本来の 15 分ではなくセッション全体にわたってメモリに保持していた問題を修正</span></li>
+                <li><span class="li-icon">📝</span><span><strong>クラウドセッションのプランモード維持</strong>: アイドル状態のワーカー再起動後にプランモードから外れて再開される問題を修正</span></li>
+                <li><span class="li-icon">🔄</span><span><strong>/resume 関連の複数修正</strong>: <code class="inline">_</code>、<code class="inline">-</code>、<code class="inline">.</code> などの文字だけが異なるパスの別ディレクトリのセッション誤取得、単に再オープンされただけのセッションの誤った並べ替え、削除済みディレクトリへの <code class="inline">cd</code> 指示 (現在のディレクトリで再開されるように修正) を修正</span></li>
+                <li><span class="li-icon">🏷️</span><span><strong>カスタムセッションタイトルの消失修正</strong>: リネーム後に約 64 KB を超える会話が書き込まれるとタイトルが <code class="inline">/resume</code> から消える問題を修正</span></li>
+                <li><span class="li-icon">🔁</span><span><strong>セッションタイトル同期の暴走修正</strong>: 2 つのプロセスが 1 つのバックグラウンドジョブの状態を共有した際の同期暴走 (v2.1.232 のリグレッション) を修正。タイトル更新は重複排除およびレート制限される</span></li>
+                <li><span class="li-icon">🔤</span><span><strong><code class="inline">/</code> で始まるタイトルのセッション修正</strong>: <code class="inline">SendMessage</code> で指定できず <code class="inline">ListAgents</code> で「(untitled)」と表示される問題を修正</span></li>
+                <li><span class="li-icon">🗂️</span><span><strong>削除済みディレクトリ関連の修正</strong>: 存在しないディレクトリからの起動時のクラッシュダンプに代わり明確なメッセージを表示。作業ディレクトリ削除後のフックの「posix_spawn ENOENT」失敗も修正され、プロジェクトルートまたはホームディレクトリから実行される</span></li>
+            </ul>
+        </section>
+
+        <!-- Fixed: UI, input, integrations -->
+        <section class="section">
+            <h2 class="section-title">🖼️ 修正 <span class="badge fixed">Fixed</span> — UI・入力・統合</h2>
+            <h3 class="subsection-title">🖥️ UI とフルスクリーン</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">📋</span><span><strong>MCP elicitation フォームのクリッピング修正</strong>: ターミナルより背の高いフォームが切り取られる問題を修正。スクロールで全フィールドに到達でき、Accept/Decline は常に表示される</span></li>
+                <li><span class="li-icon">🖱️</span><span><strong>フォーカスクリック誤動作修正</strong>: ターミナルウィンドウをクリックしただけで権限プロンプトへの回答やボタン押下が発生する問題を修正</span></li>
+                <li><span class="li-icon">🗨️</span><span><strong>スラッシュコマンドパネルの表示修正</strong>: フルスクリーンモードで <code class="inline">/config</code> や <code class="inline">/model</code> のパネルが最新メッセージを覆う問題を修正。会話はパネルの上に固定表示される</span></li>
+                <li><span class="li-icon">🎨</span><span><strong>その他の UI 修正</strong>: <code class="inline">dark-ansi</code> テーマでのツール結果の同色描画、フルスクリーン提案の毎回表示 (3 回で停止)、<code class="inline">/workflows</code> ダイアログのオーバーフロー、ステータスバッジのテーマ上書き無視、ブラウザベースターミナルでのマウス移動によるテキスト挿入を修正</span></li>
+            </ul>
+            <h3 class="subsection-title">⌨️ 入力とキーバインド</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">📎</span><span><strong>貼り付けプレースホルダーの破損修正</strong>: Ctrl+W、Ctrl+U、Ctrl+K、Option+Backspace、Option+D および vim の <code class="inline">df</code>/<code class="inline">dt</code> が壊れた <code class="inline">[Pasted text #N]</code> を残す問題を修正</span></li>
+                <li><span class="li-icon">🔒</span><span><strong>マスク入力の漏えい修正</strong>: ログインコード入力欄などのマスク入力のテキストが Ctrl+Y で貼り戻せたり、プロンプト履歴に保存されたりする問題を修正</span></li>
+                <li><span class="li-icon">✂️</span><span><strong>その他の入力修正</strong>: 検索ボックスの Ctrl+Backspace、シェルモードの Tab 補完での <code class="inline">./</code> 欠落、エージェントビューの vim モードでの Escape によるテキストクリア、Shift+矢印選択の <code class="inline">selection:copy</code> 破棄、<code class="inline">voice.enabled</code> 設定後の <code class="inline">/voice</code> ヒント表示を修正</span></li>
+            </ul>
+            <h3 class="subsection-title">🔌 開発環境と統合</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">🧰</span><span><strong>JetBrains IDE での遅延修正</strong>: プラグイン接続時に Edit と Write の呼び出しが約 5 秒間停止する問題を修正</span></li>
+                <li><span class="li-icon">🐧</span><span><strong>Linux サンドボックスの git 修正</strong>: <code class="inline">extensions.worktreeConfig</code> 設定リポジトリで、存在しない <code class="inline">.git/config.worktree</code> によりサンドボックス化されたすべての git コマンドが失敗する問題を修正</span></li>
+                <li><span class="li-icon">📊</span><span><strong>OpenTelemetry トレース断片化の修正</strong>: <code class="inline">PreToolUse</code> フックによって遅延されたツール実行が、新しいトレースを開始する代わりに元のターンのトレース内で再開される</span></li>
+                <li><span class="li-icon">🔁</span><span><strong>リモート MCP サーバーの再接続修正</strong>: セッション途中の再接続で、一時的な 5xx の後にリモート MCP サーバーが失敗状態のままになる問題を修正</span></li>
+                <li><span class="li-icon">⚙️</span><span><strong>設定・プラグイン関連の修正</strong>: <code class="inline">.worktreeinclude</code> の <code class="inline">**/</code> パターン、UTF-8 BOM 付き <code class="inline">.md</code> ファイルの無視、マーケットプレイスの <code class="inline">metadata.pluginRoot</code>、<code class="inline">claudeMdExcludes</code> のシンボリックリンク除外を修正</span></li>
+                <li><span class="li-icon">🧷</span><span><strong>その他の修正</strong>: <code class="inline">/insights</code> のリテラル <code class="inline">&lt;message&gt;</code> タグ混入、組織ポリシーチェックで拒否されたリクエストの表示前再送信を修正</span></li>
+            </ul>
+        </section>
+
+        <!-- Technical details -->
+        <section class="section">
+            <h2 class="section-title">🔬 技術的な詳細</h2>
+
+            <h3 class="subsection-title">🐍 /claude-api upgrade による Python SDK 1.x 移行</h3>
+            <p class="lead-text"><code class="inline">anthropic</code> Python パッケージの 1.x はメジャーバージョンアップであり、API の変更を含む。<code class="inline">/claude-api upgrade</code> コマンドは対象の Python プロジェクトを解析し、0.x から 1.x への移行を実行する。代表的な変更点として、タイムアウト指定に <code class="inline">httpx.Timeout</code> ではなく <code class="inline">anthropic.Timeout</code> を使用する点が挙げられる。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Claude Code のセッション内で実行</span>
+                </div>
+                <pre><code class="language-bash">/claude-api upgrade</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">1.x でのタイムアウト指定</span>
+                </div>
+                <pre><code class="language-python"># httpx.Timeout ではなく anthropic.Timeout を使用
+import anthropic
+
+client = anthropic.Anthropic(
+    timeout=anthropic.Timeout(60.0, connect=5.0),
+)</code></pre>
+            </div>
+
+            <h3 class="subsection-title">📊 コスト見積もりとデータレジデンシー</h3>
+            <p class="lead-text">データレジデンシーワークスペース (推論を米国内に限定する設定) では、API 料金に 1.1 倍のプレミアムが適用される。これまでコスト見積もりはこのプレミアムを含んでいなかったため、実際の請求額より<strong>約 9% 低く</strong>見積もられていた。v2.1.239 で見積もりにプレミアムが反映され、<code class="inline">--max-budget-usd</code> による予算制御も実際の請求額に基づいて機能するようになった。</p>
+
+            <h3 class="subsection-title">🪟 Windows のクロスセッションメッセージング</h3>
+            <p class="lead-text">クロスセッションメッセージングは、複数の Claude Code セッションが <code class="inline">SendMessage</code> で相互にメッセージを交換し、<code class="inline">ListAgents</code> で相互を発見できる機能である。これまで macOS / Linux 限定だったが、Windows でも利用可能になった。あわせて <code class="inline">ListAgents</code> がセッション自身の名前を通知し、ライブのチームメイトも一覧に表示されるようになったため、マルチセッション連携の構成が把握しやすくなった。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Text</span>
+                    <span class="code-title">クロスセッションメッセージング (Windows でも利用可能に)</span>
+                </div>
+                <pre><code class="language-plaintext"># セッション内で他のセッションを一覧表示 (自分自身の名前も通知される)
+ListAgents
+
+# 別のセッションにメッセージを送信
+SendMessage で対象セッション名を指定</code></pre>
+            </div>
+
+            <h3 class="subsection-title">🧩 同期プラグインの操作</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">claude.ai から同期されたプラグインの操作</span>
+                </div>
+                <pre><code class="language-bash"># claude.ai から同期されたプラグインは name@synced と表示される
+claude plugin enable my-plugin@synced
+claude plugin disable my-plugin@synced</code></pre>
+            </div>
+
+            <h3 class="subsection-title">⌨️ Esc キーのレースコンディション</h3>
+            <p class="lead-text" style="margin-bottom: 0;">プロンプトがキューにある状態で Esc を押すと、内部のレースコンディションにより次のターンが早期に「完了」扱いとなることがあった。この場合、Claude は実際には作業を継続しているにもかかわらずセッションはアイドルと表示され、ユーザーが同じ指示を再送信すると操作が二重に実行される危険があった。ファイル編集やコマンド実行が繰り返されると意図しない変更につながるため、実害のある修正である。</p>
+        </section>
+
+        <!-- Use cases / Developer impact -->
+        <section class="section">
+            <h2 class="section-title">💼 ユースケース / 開発者への影響</h2>
+            <div class="use-case">
+                <h4>🏢 プロキシ経由で Bedrock を利用する組織 — コストの正常化 (最重要)</h4>
+                <p>Content-Type ヘッダーを除去するプロキシ配下で、課金対象の API 呼び出しが 2 倍になっていた問題が修正された。該当環境では API コストが実質的に半減する可能性があるため、速やかなアップデートを強く推奨する。SSO プロファイルと <code class="inline">awsAuthRefresh</code> を使う環境では、HTTPS プロキシ配下での起動時ハングも解消された。データレジデンシーワークスペースの利用者は、コスト見積もりが 1.1 倍プレミアム込みの実際の請求額を反映するようになった点に注意する (<code class="inline">--max-budget-usd</code> は従来より早く上限に到達する)。</p>
+            </div>
+            <div class="use-case">
+                <h4>🐍 anthropic Python SDK 0.x を利用するプロジェクト — 移行の自動化</h4>
+                <p><code class="inline">/claude-api upgrade</code> により 1.x への移行を自動化できる。1.x ではタイムアウト指定が <code class="inline">httpx.Timeout</code> から <code class="inline">anthropic.Timeout</code> に変わるなどの API 変更があるため、移行後はテストの実行による動作確認を推奨する。<code class="inline">CLAUDE_CODE_RETRY_WATCHDOG</code> を利用する自動化パイプラインは、支出上限・クレジット切れエラーが即時失敗になるため、無期限の待機を前提としたワークフローのエラーハンドリングを確認する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🪟 Windows / Alpine ユーザーと日常利用者 — 機能差の解消と信頼性向上</h4>
+                <p>Windows でクロスセッションメッセージングが利用可能になり、macOS / Linux との機能差が解消された。Alpine/musl 環境では画像貼り付け、クリップボード、音声キャプチャのネイティブアドオンが動作する。日常利用では、Esc キーのレースコンディションによる操作の二重実行、<code class="inline">/resume</code> の別ディレクトリセッション誤取得やカスタムタイトル消失、JetBrains IDE での約 5 秒の停止、OpenTelemetry トレース断片化などが修正された。</p>
+            </div>
+        </section>
+
+        <!-- Actions & migration -->
+        <section class="section">
+            <h2 class="section-title">🚀 必要なアクションと移行ガイド</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">最新バージョンへの更新</span>
+                </div>
+                <pre><code class="language-bash"># npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# Homebrew でのアップデート
+brew upgrade claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+            <div class="attention-box">
+                <h4>⚠️ 推奨される確認事項</h4>
+                <ul>
+                    <li><strong>プロキシ経由で Bedrock を利用している場合</strong>: アップデート後、API の呼び出し回数とコストの推移を確認する。修正前の期間について、想定より高いコストが発生していなかったかの確認も推奨される</li>
+                    <li><strong>データレジデンシーワークスペースで <code class="inline">--max-budget-usd</code> を利用している場合</strong>: 見積もりに 1.1 倍プレミアムが含まれるようになったため、必要に応じて予算値を見直す</li>
+                    <li><strong><code class="inline">CLAUDE_CODE_RETRY_WATCHDOG</code> を利用している場合</strong>: 支出上限・クレジット切れエラーが即時失敗になるため、リトライを前提とした自動化フローのエラーハンドリングを確認する</li>
+                </ul>
+            </div>
+            <h3 class="subsection-title">🧭 移行ガイド — Python SDK 0.x から 1.x へ</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">🐍</span><span><strong><code class="inline">/claude-api upgrade</code> の実行</strong>: <code class="inline">anthropic</code> パッケージ 0.x を利用している Python プロジェクトでは、Claude Code 上で <code class="inline">/claude-api upgrade</code> を実行することで 1.x への移行を自動化できる。1.x ではタイムアウト指定が <code class="inline">httpx.Timeout</code> から <code class="inline">anthropic.Timeout</code> に変わるなどの API 変更があるため、移行後はテストの実行による動作確認を推奨する</span></li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">📝 まとめ</h2>
+            <p class="lead-text">Claude Code v2.1.239 は約 60 項目におよぶ大規模なリリースであり、特にエンタープライズ環境でのコストの正確性と信頼性に直結する修正が多く含まれる。</p>
+            <div class="summary-point">
+                <div class="summary-number">1</div>
+                <div class="summary-point-content">
+                    <h4>Bedrock ストリーミング課金 2 倍問題の修正が最大の目玉</h4>
+                    <p>Content-Type ヘッダーを除去するプロキシ配下では、全ターンが非ストリーミングで再実行され、課金対象の API 呼び出しが静かに 2 倍になっていた。該当する組織はアップデートによりコストが実質的に半減する可能性があり、優先的な適用が推奨される。データレジデンシーの 1.1 倍プレミアムがコスト見積もりに反映され、予算管理の正確性も向上した。</p>
+                </div>
+            </div>
+            <div class="summary-point">
+                <div class="summary-number">2</div>
+                <div class="summary-point-content">
+                    <h4>Python SDK 移行の自動化とプラットフォーム対応の拡充</h4>
+                    <p><code class="inline">/claude-api upgrade</code> による Python SDK 0.x から 1.x への移行自動化が追加され、SDK のメジャーバージョンアップへの対応が容易になった。Windows でのクロスセッションメッセージング対応によりプラットフォーム間の機能差が解消され、Alpine/musl 環境のネイティブアドオン対応と合わせて利用環境の裾野が広がった。</p>
+                </div>
+            </div>
+            <div class="summary-point">
+                <div class="summary-number">3</div>
+                <div class="summary-point-content">
+                    <h4>日常利用に効く広範囲の信頼性修正</h4>
+                    <p>Esc キーのレースコンディションによる操作の二重実行、WebFetch のメモリ保持、<code class="inline">/resume</code> 関連の複数の問題、OpenTelemetry トレース断片化、Linux サンドボックスでの git コマンド失敗など、日常的な利用に影響する修正が広範囲に入った。</p>
+                </div>
+            </div>
+            <div class="attention-box" style="margin-top: 20px;">
+                <h4>💡 アップデート推奨</h4>
+                <p>プロキシ経由で Bedrock を利用する組織を筆頭に、すべてのユーザーに速やかなアップデートを推奨する。修正前の期間に想定より高いコストが発生していなかったかの確認もあわせて行いたい。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📋 <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></li>
+                <li>💻 <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li>📖 <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li>🛠️ <a href="https://docs.anthropic.com/en/docs/claude-code/amazon-bedrock" target="_blank" rel="noopener noreferrer">Amazon Bedrock での Claude Code 利用</a></li>
+                <li>🗒️ 前バージョン: Claude Code v2.1.238 (2026-08-20)</li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-08-21 (npm 公開: 2026-08-21 17:18 UTC) | カテゴリ: Claude Code アップデート | 本インフォグラフィックは Claude Code Changelog のレポートを基に作成</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

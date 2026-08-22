@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python SDK v1.0 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Warning Section */
+        .section.warning-section {
+            background: #FFFBF5;
+            border: 2px solid #FF9800;
+            box-shadow: 0 4px 20px rgba(255, 152, 0, 0.12);
+        }
+
+        .section.warning-section .section-title::before {
+            background: #FF9800;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .comparison-card li {
+            font-size: 13.5px;
+            color: var(--text-primary);
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .comparison-card.before li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Flow Steps */
+        .flow-steps {
+            display: grid;
+            gap: 12px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .flow-step-num {
+            width: 32px;
+            height: 32px;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .flow-step p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Info List */
+        .info-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .info-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 10px 16px 10px 36px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .info-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 14px;
+            color: var(--anthropic-coral);
+        }
+
+        .info-list.removed li {
+            background: #FFEBEE;
+            border: 1px solid rgba(244, 67, 54, 0.35);
+            color: var(--text-primary);
+        }
+
+        .info-list.removed li::before {
+            content: '🗑️';
+            font-size: 12px;
+            left: 12px;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0;
+        }
+
+        .info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .info-table th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .info-table th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .info-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .info-table tr:nth-child(even) td {
+            background: var(--anthropic-cream);
+        }
+
+        .info-table td:first-child {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .table-ok {
+            color: #059669;
+            font-weight: 700;
+        }
+
+        .table-ng {
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Callout */
+        .callout {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+
+        .callout.summary {
+            background: var(--anthropic-cream);
+            border-color: var(--anthropic-coral);
+        }
+
+        .callout.critical {
+            background: #FFEBEE;
+            border-color: #F44336;
+        }
+
+        .callout.note {
+            background: #EFF6FF;
+            border-color: #3B82F6;
+        }
+
+        .callout-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .callout p {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 0;
+        }
+
+        /* Inline code */
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            border-radius: 4px;
+            padding: 1px 6px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Links List */
+        .links-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .links-list li {
+            font-size: 14px;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .links-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+            top: 3px;
+        }
+
+        .links-list a {
+            color: #B8874F;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .links-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #B8874F;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">SDK</span>
+                <span class="category-badge">メジャーリリース</span>
+                <span class="category-badge">破壊的変更</span>
+                <h1>Python SDK v1.0 リリース: httpx2 への移行と非推奨機能の削除を伴うメジャーアップデート</h1>
+                <p class="date">📅 2026-08-20 | ソース: Claude Developer Platform Release Notes</p>
+                <p class="lead">長らく 0.x 系で提供されてきた anthropic Python SDK の初のメジャーバージョン。HTTP レイヤーの httpx2 への移行、Python 3.10+ 必須化、レガシー Text Completions API や旧サンプリングパラメータの削除など、複数の破壊的変更を含む基盤刷新のリリースです。</p>
+            </div>
+        </header>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>発表日</td>
+                        <td>2026-08-20</td>
+                    </tr>
+                    <tr>
+                        <td>ソース</td>
+                        <td>Claude Developer Platform Release Notes</td>
+                    </tr>
+                    <tr>
+                        <td>カテゴリ</td>
+                        <td>SDK / メジャーリリース / 破壊的変更</td>
+                    </tr>
+                    <tr>
+                        <td>公式リンク</td>
+                        <td><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer" style="color: #B8874F;">https://platform.claude.com/docs/en/release-notes/overview</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 / キーポイント</h2>
+            <p>2026 年 8 月 20 日、Anthropic は Python SDK (<code class="inline">anthropic</code>) の v1.0 をリリースしました。新機能の追加ではなく、基盤の刷新と負債の整理に焦点を当てたメジャーリリースであり、安定した基盤の上でセマンティックバージョニングを開始します。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>HTTP レイヤーが httpx から httpx2 へ移行</h3>
+                        <p>最大の変更点。httpx2 は Pydantic チームがメンテナンスする API 互換フォークで、プレーンな値 (<code class="inline">timeout=30.0</code> など) を渡しているユーザーは変更不要です。カスタム http_client やトランスポートを構築している場合は httpx2 からのインポートが必要になります。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🐍</div>
+                    <div class="key-point-content">
+                        <h3>Python 3.10 以降が必須</h3>
+                        <p>サポートする Python の最低バージョンが 3.9 から 3.10 に引き上げられました。それ以外のランタイム要件は変わらず、Pydantic は v1 / v2 の両方が引き続きサポートされます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗑️</div>
+                    <div class="key-point-content">
+                        <h3>長期間非推奨だった API を削除</h3>
+                        <p>レガシーの Text Completions API、Messages メソッドの temperature / top_p / top_k パラメータ、ツールランナーのクライアントサイド compaction_control などが削除されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">☁️</div>
+                    <div class="key-point-content">
+                        <h3>AnthropicBedrock のリージョン必須化</h3>
+                        <p>AWS リージョン未設定時に us-east-1 へ暗黙にフォールバックする挙動が廃止され、構築時に ValueError を送出するようになりました。boto3 プロファイルからのリージョン解決が新たにサポートされます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔍</div>
+                    <div class="key-point-content">
+                        <h3>型チェッカーで破壊的変更の大半を検出可能</h3>
+                        <p>公式の v1 移行ガイド (MIGRATION.md) にすべての変更点が移行前後のコードスニペット付きで記載されています。アップグレード後に pyright や mypy を実行すると、破壊的変更の大半を検出できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p>Python SDK は 0.x 系のまま長期間運用されてきましたが、その間に非推奨化された API サーフェス (Text Completions API、サンプリングパラメータの直接指定など) が蓄積していました。</p>
+            <p>また、SDK が依存する HTTP ライブラリ <code class="inline">httpx</code> は活発なメンテナンスが行われなくなっており、Pydantic チームが API 互換フォークとして <code class="inline">httpx2</code> (https://httpx2.pydantic.dev) の保守を引き継いでいます。v1.0 は、これらの負債を一括で整理し、安定した基盤の上でセマンティックバージョニングを開始するためのメジャーリリースです。</p>
+        </section>
+
+        <!-- Before / After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: v0.x → v1.0 の破壊的変更</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before: v0.x</h4>
+                    <ul>
+                        <li>HTTP レイヤーは httpx (メンテナンス停滞)</li>
+                        <li>Python 3.9 をサポート</li>
+                        <li>Text Completions API (client.completions.create) が利用可能</li>
+                        <li>Messages メソッドで temperature / top_p / top_k を直接指定可能</li>
+                        <li>非同期の with_raw_response は response.parse() を同期呼び出し</li>
+                        <li>AnthropicBedrock はリージョン未設定時に警告を出して us-east-1 にフォールバック</li>
+                        <li>ツールランナーはクライアントサイドの compaction_control</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After: v1.0</h4>
+                    <ul>
+                        <li>HTTP レイヤーは httpx2 (Pydantic チームが保守する API 互換フォーク)</li>
+                        <li>Python 3.10 以降が必須。Pydantic v1 / v2 は継続サポート</li>
+                        <li>Text Completions API は削除。Messages API に一本化</li>
+                        <li>temperature / top_p / top_k は削除。旧モデル利用時は extra_body で指定</li>
+                        <li>非同期では await response.parse()。.text / .content はメソッド化</li>
+                        <li>リージョン未設定は構築時に ValueError。boto3 プロファイル解決を新サポート</li>
+                        <li>サーバーサイドのコンテキスト圧縮 (context_management) に移行</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout summary">
+                <span class="callout-icon">💡</span>
+                <p>多くのユーザーにとって移行コストは小さい一方、カスタム HTTP クライアント、非同期の <code class="inline">.with_raw_response</code>、リージョン未設定の Bedrock クライアントを使っているコードは修正が必須です。旧 <code class="inline">httpx.Client</code> を <code class="inline">http_client=</code> に渡すと構築時に TypeError が発生する (サイレントに失敗しない) 設計になっています。</p>
+            </div>
+        </section>
+
+        <!-- Main changes -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔌 1. httpx から httpx2 への移行</h3>
+                    <p>プレーンな値を渡すユーザーは変更不要。カスタムの http_client、Timeout、トランスポートは httpx2 からインポートします。DefaultHttpxClient / DefaultAioHttpClient ヘルパーは変更なしで利用可能。OpenTelemetry、Sentry、respx、pytest-httpx、vcrpy など httpx をパッチするライブラリ併用時は、起動時 (httpx のインポート前) に httpx2.alias_httpx() を呼び出します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🐍 2. Python 3.10 以降が必須</h3>
+                    <p>最低バージョンが 3.9 から 3.10 に引き上げられました。それ以外のランタイム要件は変わらず、Pydantic は v1 / v2 の両方が引き続きサポートされます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🗑️ 3. レガシー Text Completions API の削除</h3>
+                    <p>client.completions.create() (/v1/complete エンドポイント)、Completion / CompletionCreateParams 型、HUMAN_PROMPT / AI_PROMPT 定数が削除されました。Messages API への移行が必要です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎛️ 4. temperature / top_p / top_k の削除</h3>
+                    <p>messages.create()、stream()、parse()、beta 版の各メソッド、tool_runner()、バッチパラメータから削除され、渡すと TypeError になります。現行モデルはこれらを無視するため実質的な影響はありませんが、解釈する旧モデルでは extra_body 経由で渡せます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📄 5. 非同期の .with_raw_response の変更</h3>
+                    <p>戻り値が LegacyAPIResponse から APIResponse / AsyncAPIResponse に変更。非同期では await response.parse() が必要になり、.text / .content はメソッド化 (response.text() / response.read()) されました。.headers や .status_code などのメタデータは従来どおり属性アクセスのままです。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>☁️ 6. AnthropicBedrock のリージョン必須化</h3>
+                    <p>リージョン未設定時の us-east-1 フォールバックが廃止され、構築時に ValueError を送出します。aws_region= 引数、AWS_REGION / AWS_DEFAULT_REGION 環境変数、aws_profile の boto3 セッション設定の順で解決されます。Bedrock ストリーミングの未知イベントはスキップされるようになりました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧰 7. compaction_control の削除</h3>
+                    <p>tool_runner() のクライアントサイド compaction_control が削除され、サーバーサイドのコンテキスト圧縮 (betas=["compact-2026-01-12"] と context_management) に置き換えられました。トリガーのしきい値は 50,000 トークン以上である必要があります。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細: その他の変更点</h2>
+            <p>主な変更点以外にも、以下の変更が含まれます。</p>
+            <ul class="info-list">
+                <li><strong><code class="inline">messages.parse(stream=True)</code> の削除</strong>: 元々機能していなかったパラメータ。構造化出力のストリーミングには <code class="inline">messages.stream(..., output_format=Order)</code> ヘルパーを使用します。</li>
+                <li><strong>beta Messages の <code class="inline">output_format</code> (スキーマ辞書形式) の削除</strong>: <code class="inline">beta.messages.create()</code> / <code class="inline">count_tokens()</code> / バッチパラメータでは <code class="inline">output_config={"format": {...}}</code> を使用。ヘルパーの <code class="inline">output_format=</code> は型 (Pydantic モデルなど) のみを受け付け、スキーマ辞書は TypeError になります。</li>
+                <li><strong>低レベルメソッドの <code class="inline">body=</code></strong>: 常に JSON シリアライズされるようになり、生バイト列の送信には <code class="inline">content=</code> を使用します (ストリーミングアップロード用のイテレータも受け付けます)。</li>
+                <li><strong>ヘッダー処理</strong>: <code class="inline">default_headers</code> / <code class="inline">extra_headers</code> / <code class="inline">with_options()</code> / <code class="inline">ANTHROPIC_CUSTOM_HEADERS</code> のエントリは大文字小文字を区別せずに同名ヘッダーを置換。bytes 型のヘッダー値はエラーになるため、事前に <code class="inline">.decode()</code> が必要です。</li>
+                <li><strong>型エイリアスの削除</strong>: <code class="inline">BetaBase64PDFBlockParam</code> → <code class="inline">BetaRequestDocumentBlockParam</code>、<code class="inline">agent_toolset.READ_MAX_BYTES</code> → <code class="inline">agent_toolset.DEFAULT_MAX_FILE_BYTES</code> など。</li>
+                <li><strong>ストリームの型判定</strong>: <code class="inline">isinstance(x, Stream)</code> はメッセージストリームにマッチしなくなりました。<code class="inline">anthropic.lib.streaming</code> の <code class="inline">MessageStream</code> に対して判定します。</li>
+                <li><strong><code class="inline">anthropic.Transport</code> / <code class="inline">anthropic.ProxiesTypes</code> などの再エクスポート削除</strong>: <code class="inline">httpx2.BaseTransport</code> / <code class="inline">httpx2.AsyncBaseTransport</code> / <code class="inline">httpx2.Proxy</code> を直接使用します。<code class="inline">APIStatusError.response</code> などの戻り値は httpx2 の型になるため、isinstance チェックと型注釈の更新が必要になる場合があります。</li>
+            </ul>
+        </section>
+
+        <!-- Architecture (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <p>v1.0 における SDK の構成変更の全体像です。HTTP レイヤーが httpx2 に置き換わり、非推奨だった API サーフェスが削除されています。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph App["🖥️ アプリケーション"]
+        direction LR
+        Code["📝 ユーザーコード"]
+        Patch["🔍 トレーシング / モック&lt;br/&gt;ライブラリ"]
+        Code ~~~ Patch
+    end
+
+    subgraph SDK["📦 anthropic Python SDK v1.0"]
+        Client["🤖 Anthropic クライアント&lt;br/&gt;Python 3.10+"]
+        Bedrock["☁️ AnthropicBedrock&lt;br/&gt;リージョン必須"]
+        Raw["📄 with_raw_response&lt;br/&gt;await parse に変更"]
+    end
+
+    subgraph HTTP["🔌 HTTP レイヤー"]
+        Httpx2["🆕 httpx2&lt;br/&gt;メンテナンス継続フォーク"]
+        Alias["🔗 alias_httpx&lt;br/&gt;互換エイリアス"]
+    end
+
+    subgraph Removed["🗑️ v1.0 で削除"]
+        direction LR
+        TC["❌ Text Completions API"]
+        Params["❌ temperature / top_p / top_k"]
+        Compact["❌ compaction_control"]
+        TC ~~~ Params ~~~ Compact
+    end
+
+    Code --&gt; Client
+    Code --&gt; Bedrock
+    Client --&gt; Raw
+    Client --&gt; Httpx2
+    Bedrock --&gt; Httpx2
+    Patch -.-&gt;|"httpx を参照"| Alias
+    Alias -.-&gt; Httpx2
+    SDK -.-&gt;|"移行"| Removed
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef warn fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#5D4037
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#B71C1C
+
+    class App,SDK,HTTP platform
+    class Removed warn
+    class Code,Patch input
+    class Client,Bedrock,Raw process
+    class Httpx2,Alias internal
+    class TC,Params,Compact error
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code samples -->
+        <section class="section">
+            <h2 class="section-title">コード例: 移行前後の比較</h2>
+
+            <h3 class="subsection-title">📦 アップグレードコマンド</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Shell</span>
+                    <span class="code-title">v1.0 へのアップグレード</span>
+                </div>
+                <pre><code class="language-sh">pip install --upgrade "anthropic&gt;=1,&lt;2"</code></pre>
+            </div>
+
+            <h3 class="subsection-title">🔌 カスタム HTTP クライアントの移行</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">httpx → httpx2: インポートの差し替えだけで残りは同一</span>
+                </div>
+                <pre><code class="language-python"># 移行前 (v0.x)
+import httpx
+from anthropic import Anthropic, DefaultHttpxClient
+
+client = Anthropic(
+    timeout=httpx.Timeout(60.0, connect=5.0),
+    http_client=DefaultHttpxClient(
+        proxy="http://my.proxy.example",
+        transport=httpx.HTTPTransport(local_address="0.0.0.0"),
+    ),
+)
+
+# 移行後 (v1.0): インポートを差し替えるだけで残りは同一
+import httpx2 as httpx
+from anthropic import Anthropic, DefaultHttpxClient
+
+client = Anthropic(
+    timeout=httpx.Timeout(60.0, connect=5.0),
+    http_client=DefaultHttpxClient(
+        proxy="http://my.proxy.example",
+        transport=httpx.HTTPTransport(local_address="0.0.0.0"),
+    ),
+)</code></pre>
+            </div>
+
+            <h3 class="subsection-title">🔗 パッチ系ライブラリ併用時のエイリアス設定</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">トレーシング / モックライブラリ利用時の alias_httpx</span>
+                </div>
+                <pre><code class="language-python"># アプリケーションの起動時、httpx がインポートされる前に実行する
+import httpx2
+
+httpx2.alias_httpx()
+
+import httpx  # 以降、httpx は httpx2 モジュールを指す
+assert httpx.Client is httpx2.Client</code></pre>
+            </div>
+
+            <h3 class="subsection-title">📄 非同期クライアントの .with_raw_response の移行</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">response.parse() → await response.parse()</span>
+                </div>
+                <pre><code class="language-python"># 移行前 (v0.x)
+response = await client.messages.with_raw_response.create(...)
+message = response.parse()
+
+# 移行後 (v1.0)
+response = await client.messages.with_raw_response.create(...)
+print(response.headers["request-id"])  # メタデータは従来どおり属性アクセス
+message = await response.parse()</code></pre>
+            </div>
+
+            <h3 class="subsection-title">☁️ Bedrock のリージョン指定と旧モデル向け temperature</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">AnthropicBedrock のリージョン明示と extra_body の利用</span>
+                </div>
+                <pre><code class="language-python">from anthropic import AnthropicBedrock
+
+# v1.0 ではリージョンの明示的な設定が必須
+client = AnthropicBedrock(aws_region="us-east-1")
+
+# temperature などを解釈する旧モデルでは extra_body で指定
+message = client.messages.create(
+    model="claude-sonnet-4-6",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "こんにちは"}],
+    extra_body={"temperature": 0.2},
+)</code></pre>
+            </div>
+
+            <h3 class="subsection-title">🧰 ツールランナーのコンテキスト圧縮のサーバーサイド移行</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">compaction_control → context_management</span>
+                </div>
+                <pre><code class="language-python"># 移行前 (v0.x): クライアントサイドの compaction_control
+runner = client.beta.messages.tool_runner(
+    ...,
+    compaction_control={"enabled": True, "context_token_threshold": 100_000},
+)
+
+# 移行後 (v1.0): サーバーサイドのコンテキスト圧縮
+runner = client.beta.messages.tool_runner(
+    ...,
+    betas=["compact-2026-01-12"],
+    context_management={
+        "edits": [
+            {
+                "type": "compact_20260112",
+                "trigger": {"type": "input_tokens", "value": 100_000},
+            }
+        ]
+    },
+)</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">🎯 対象</h3>
+            <ul class="info-list">
+                <li><strong>Python SDK (anthropic パッケージ) を利用するすべての開発者</strong></li>
+                <li><strong>カスタム http_client / Timeout / トランスポートを構築している開発者</strong></li>
+                <li><strong>httpx をパッチするトレーシング / モック / テストライブラリを併用している開発者</strong></li>
+                <li><strong>Amazon Bedrock 経由で AnthropicBedrock クライアントを利用する開発者</strong></li>
+                <li><strong>レガシー Text Completions API や temperature などの旧パラメータを使い続けているコードベースの保守者</strong></li>
+            </ul>
+
+            <h3 class="subsection-title">🛠️ 必要なアクション: 影響度別の整理</h3>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>変更点</th>
+                        <th>影響を受けるケース</th>
+                        <th>対応</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Python 3.10+ 必須</td>
+                        <td>Python 3.9 環境</td>
+                        <td>ランタイムを 3.10 以降に更新</td>
+                    </tr>
+                    <tr>
+                        <td>httpx → httpx2</td>
+                        <td>カスタム HTTP クライアント / トランスポート</td>
+                        <td><code class="inline">import httpx2 as httpx</code> に置換。パッチ系ライブラリ併用時は起動時に <code class="inline">httpx2.alias_httpx()</code> を呼ぶ</td>
+                    </tr>
+                    <tr>
+                        <td>Text Completions API 削除</td>
+                        <td><code class="inline">client.completions.create()</code> 利用コード</td>
+                        <td>Messages API に移行</td>
+                    </tr>
+                    <tr>
+                        <td>temperature / top_p / top_k 削除</td>
+                        <td>Messages メソッドで直接指定しているコード</td>
+                        <td>削除するか、旧モデル利用時は <code class="inline">extra_body</code> で指定</td>
+                    </tr>
+                    <tr>
+                        <td>.with_raw_response の変更</td>
+                        <td>非同期クライアントで <code class="inline">response.parse()</code> を呼ぶコード</td>
+                        <td><code class="inline">await response.parse()</code> に変更。<code class="inline">.text</code> / <code class="inline">.content</code> はメソッド呼び出しに変更</td>
+                    </tr>
+                    <tr>
+                        <td>Bedrock リージョン必須化</td>
+                        <td>リージョン未設定で us-east-1 に暗黙依存</td>
+                        <td><code class="inline">aws_region=</code> または環境変数で明示的に設定</td>
+                    </tr>
+                    <tr>
+                        <td>compaction_control 削除</td>
+                        <td>ツールランナーでクライアントサイド圧縮を利用</td>
+                        <td>サーバーサイド圧縮 (<code class="inline">context_management</code>) に移行</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="subsection-title">🔄 移行のポイント</h3>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="flow-step-num">1</div>
+                    <p><strong>公式移行ガイドを参照</strong>: MIGRATION.md にすべての変更が移行前後のスニペット付きで記載されています。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">2</div>
+                    <p><strong>自動移行の活用</strong>: Claude Code ユーザーは <code class="inline">/claude-api upgrade python</code> で自動移行を実行できます。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">3</div>
+                    <p><strong>型チェッカーの実行</strong>: アップグレード後に pyright / mypy などの型チェッカーを実行すると、破壊的変更の大半が検出されます。</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-num">4</div>
+                    <p><strong>alias_httpx の呼び出し位置に注意</strong>: <code class="inline">httpx2.alias_httpx()</code> はアプリケーションだけが呼び出すべきで、ライブラリからは呼びません。httpx がすでにインポート済みの場合は RuntimeError になるため、エントリポイントの先頭で呼びます (pytest では早期ロードされるプラグインとして登録します)。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🚀 標準的な利用者: 最小コストでのアップグレード</h4>
+                <p>プレーンな値 (timeout=30.0 など) だけを渡している一般的な利用では、<code class="inline">pip install --upgrade "anthropic&gt;=1,&lt;2"</code> の実行と Python 3.10+ の確認だけで移行できます。DefaultHttpxClient / DefaultAioHttpClient ヘルパーも変更なしでそのまま利用できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔍 監視 / テスト基盤を持つチーム: alias_httpx による互換維持</h4>
+                <p>OpenTelemetry や Sentry によるトレーシング、respx / pytest-httpx / vcrpy によるモックなど httpx をパッチするライブラリを併用しているチームは、エントリポイントの先頭で <code class="inline">httpx2.alias_httpx()</code> を呼ぶことで既存のトレーシング / テスト基盤を維持したまま v1.0 に移行できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>☁️ Bedrock 利用の本番環境: リージョン設定の明示化</h4>
+                <p>リージョン未設定で us-east-1 に暗黙依存していた AnthropicBedrock クライアントは構築時に ValueError で即座に検出されるため、意図しないリージョンでの実行を防げます。boto3 プロファイルからのリージョン解決の新サポートにより、既存の AWS 設定との統合も容易になります。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p>Python SDK v1.0 は、新機能の追加ではなく基盤の刷新と負債の整理に焦点を当てたメジャーリリースです。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>HTTP レイヤーの持続性を確保</h3>
+                        <p>メンテナンスが継続される httpx2 への移行により、HTTP レイヤーの持続性が確保されました。API 互換フォークのため、多くのユーザーは変更不要です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧹</div>
+                    <div class="key-point-content">
+                        <h3>API サーフェスの簡潔化</h3>
+                        <p>Text Completions API や旧サンプリングパラメータなどの非推奨サーフェスの削除により、API が簡潔になりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚠️</div>
+                    <div class="key-point-content">
+                        <h3>修正必須のコードを確認</h3>
+                        <p>カスタム HTTP クライアント、非同期の .with_raw_response、リージョン未設定の Bedrock クライアントを使っているコードは修正が必須です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📋</div>
+                    <div class="key-point-content">
+                        <h3>計画的なアップグレードを推奨</h3>
+                        <p>型チェッカーで大半の破壊的変更を検出できるため、公式移行ガイドを参照しながら計画的にアップグレードすることが推奨されます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="links-list">
+                <li><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude Developer Platform Release Notes</a></li>
+                <li><a href="https://github.com/anthropics/anthropic-sdk-python/blob/main/MIGRATION.md" target="_blank" rel="noopener noreferrer">Python SDK v1 移行ガイド (MIGRATION.md)</a></li>
+                <li><a href="https://platform.claude.com/docs/en/cli-sdks-libraries/sdks/python" target="_blank" rel="noopener noreferrer">Python SDK ドキュメント</a></li>
+                <li><a href="https://github.com/anthropics/anthropic-sdk-python" target="_blank" rel="noopener noreferrer">anthropic-sdk-python リポジトリ</a></li>
+                <li><a href="https://httpx2.pydantic.dev" target="_blank" rel="noopener noreferrer">httpx2 公式サイト</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong></p>
+            <p><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p><a href="https://github.com/anthropics/anthropic-sdk-python/blob/main/MIGRATION.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/anthropic-sdk-python/blob/main/MIGRATION.md</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-08-20 | カテゴリ: SDK / メジャーリリース / 破壊的変更</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

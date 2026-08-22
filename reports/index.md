@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-08-21](2026/2026-08-21-claude-code-v2-1-239.md) - Claude Code v2.1.239 リリース — Bedrock ストリーミング課金 2 倍問題の修正、Python SDK 1.x 移行コマンド `/claude-api upgrade` の追加、Windows クロスセッションメッセージング対応
+- [2026-08-20](2026/2026-08-20-python-sdk-v1-0.md) - Python SDK v1.0 リリース: httpx2 への移行と非推奨機能の削除を伴うメジャーアップデート
 - [2026-08-20](2026/2026-08-20-claude-code-v2-1-238.md) - Claude Code v2.1.238 リリース — keybindingFlavor 設定の追加、プラグインマーケットプレイスの headersHelper 対応、長時間セッションのメモリ増加修正と Remote Control の大規模な安定化
 - [2026-08-19](2026/2026-08-19-files-skills-admin-api-ga.md) - Files API・Agent Skills・Admin API ユーザー管理が一般提供開始、Managed Agents も機能強化
 - [2026-08-19](2026/2026-08-19-computer-use-ga-browser-use-tool.md) - Computer Use ツールが GA、ブラウザ操作専用の Browser Use ツールが新登場
