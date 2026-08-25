@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.243 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .meta-tags {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .meta-tag {
+            background: rgba(212, 165, 116, 0.15);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            color: #E8C9A8;
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-size: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 28px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .subsection-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .lead-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .lead-text strong, .feature-card strong, .use-case strong, .key-point-content strong {
+            color: var(--anthropic-dark);
+        }
+
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.88em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.35);
+            border-radius: 6px;
+            padding: 1px 6px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.4;
+        }
+
+        .feature-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card.added {
+            border-color: rgba(16, 185, 129, 0.35);
+        }
+
+        .feature-card.fixed {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .feature-card.improved {
+            border-color: rgba(245, 158, 11, 0.35);
+        }
+
+        .feature-card.changed {
+            border-color: rgba(123, 97, 255, 0.3);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .badge.added { background: #D1FAE5; color: #059669; }
+        .badge.fixed { background: #DBEAFE; color: #2563EB; }
+        .badge.improved { background: #FEF3C7; color: #B45309; }
+        .badge.changed { background: #EDE9FE; color: #6D28D9; }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li {
+            padding-left: 1.4em;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Size bar visualization */
+        .size-bars {
+            margin: 16px 0 8px;
+        }
+
+        .size-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .size-bar-label {
+            flex-shrink: 0;
+            width: 90px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .size-bar-track {
+            flex: 1;
+        }
+
+        .size-bar {
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            min-width: 90px;
+        }
+
+        .size-bar.before-bar {
+            width: 100%;
+            background: linear-gradient(135deg, #F87171 0%, #DC2626 100%);
+        }
+
+        .size-bar.after-bar {
+            width: 22%;
+            background: linear-gradient(135deg, #34D399 0%, #059669 100%);
+        }
+
+        .size-arrow {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin: 4px 0 12px;
+        }
+
+        /* Detail list */
+        .detail-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .detail-list li {
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .detail-list li .li-icon {
+            flex-shrink: 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* Settings table */
+        .settings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            margin: 16px 0;
+        }
+
+        .settings-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .settings-table th:first-child { border-radius: 10px 0 0 0; }
+        .settings-table th:last-child { border-radius: 0 10px 0 0; }
+
+        .settings-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .settings-table tr:nth-child(even) td {
+            background: var(--anthropic-cream);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+            display: block;
+            overflow-x: auto;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Attention box */
+        .attention-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+        }
+
+        .attention-box h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #B45309;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .attention-box p, .attention-box ul {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+        }
+
+        .attention-box ul {
+            list-style: none;
+        }
+
+        .attention-box ul li {
+            padding-left: 1.4em;
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .attention-box ul li::before {
+            content: '⚠';
+            position: absolute;
+            left: 0;
+            color: #F59E0B;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary numbered points */
+        .summary-point {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .summary-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .summary-point-content h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .summary-point-content p {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #B4824C;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .footer ul li {
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .size-bar-label {
+                width: 60px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.243 リリース<br>プロンプトキャッシュ TTL 設定・モデルピッカーのカスタマイズ・大幅な起動とメモリの改善</h1>
+                <p class="date">📅 発表日: 2026-08-25 | ソース: Claude Code Changelog</p>
+                <div class="meta-tags">
+                    <span class="meta-tag">💰 コスト管理・可視化</span>
+                    <span class="meta-tag">🗄️ キャッシュ TTL 制御</span>
+                    <span class="meta-tag">🏢 組織向け機能の強化</span>
+                    <span class="meta-tag">⚡ 起動・メモリ・サイズ改善</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Overview / Key Points -->
+        <section class="section">
+            <h2 class="section-title">📋 概要 — 4 つのキーポイント</h2>
+            <p class="lead-text">Claude Code v2.1.243 がリリースされた。<strong>約 60 項目</strong>におよぶ大規模なリリースであり、コスト管理とエンタープライズ運用に関わる新機能が多数追加された。v2.1.239 (8 月 21 日) の大規模リリース、v2.1.240 / v2.1.241 (8 月 22 日) のパッチリリースに続き、<strong>コスト可視化、キャッシュ戦略の制御、組織管理機能の強化</strong>という方向性が明確に表れている。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">💰</div>
+                    <div class="key-point-content">
+                        <h3>コスト管理・可視化の強化</h3>
+                        <p><code class="inline">/usage</code> に <strong>Loops 内訳</strong>が追加され、<code class="inline">/loop</code> タスクごとの実行回数・合計トークン数・実行あたりのトークン数・最終実行時刻を表示。暴走したループタスクを容易に発見できる。<code class="inline">modelPricing</code> 管理設定により、組織の契約単価とディスカウント率をコスト表示に反映できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗄️</div>
+                    <div class="key-point-content">
+                        <h3>モデル・キャッシュ設定の柔軟化</h3>
+                        <p><code class="inline">modelPicker</code> 設定で <code class="inline">/model</code> ピッカーの表示モデルをカスタマイズ可能に。<code class="inline">promptCacheTtl</code> / <code class="inline">subagentPromptCacheTtl</code> 設定により、メイン会話のプロンプトキャッシュを 1 時間に延長しつつサブエージェントは 5 分のまま維持するといった制御ができる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏢</div>
+                    <div class="key-point-content">
+                        <h3>認証・組織管理の強化</h3>
+                        <p>Anthropic Console アカウントでの<strong>キーレスサインイン</strong>が追加され、API キーの発行を許可していない組織でもサインインできる。<code class="inline">/status</code> の <code class="inline">Skipped sources</code> 行、<code class="inline">/mcp</code> と <code class="inline">/plugins</code> の <code class="inline">managed</code> マーカーで管理状態の可視性が向上した。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>大幅なパフォーマンス改善と信頼性修正</h3>
+                        <p>起動時のサンドボックスと MCP の初期化が初回描画をブロックしなくなり、バイナリは zstd 圧縮で<strong>約 340 MB から約 75 MB</strong> (Linux x64) に縮小、メモリは<strong>約 40〜70 MB 削減</strong>。リモート MCP サーバーの自動再接続、API 無応答時のタイムアウト処理など信頼性修正も多数含まれる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">🔢 数字で見る v2.1.243</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">60</div>
+                    <div class="stat-label">変更項目 (約)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">-78%</div>
+                    <div class="stat-label">ダウンロードサイズ<br>約 340 MB → 約 75 MB</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">40〜70</div>
+                    <div class="stat-label">メモリ削減 (MB /<br>セッションあたり)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">新しい設定項目</div>
+                </div>
+            </div>
+            <h3 class="subsection-title">📦 ダウンロードサイズの変化 (Linux x64)</h3>
+            <div class="size-bars">
+                <div class="size-bar-row">
+                    <div class="size-bar-label">Before</div>
+                    <div class="size-bar-track"><div class="size-bar before-bar">約 340 MB</div></div>
+                </div>
+                <div class="size-bar-row">
+                    <div class="size-bar-label">After</div>
+                    <div class="size-bar-track"><div class="size-bar after-bar">約 75 MB</div></div>
+                </div>
+            </div>
+            <p class="size-arrow">⬇ zstd 圧縮により約 78% 削減 ⬇</p>
+            <p class="lead-text" style="margin-bottom: 0;"><strong>背景</strong>: v2.1.239 (2026 年 8 月 21 日) の大規模リリースの後、v2.1.240 / v2.1.241 (8 月 22 日) は「バグ修正と信頼性の改善」のみのパッチリリースであった。v2.1.243 は再び多数の変更を含むリリースとなり、コスト可視化 (Loops 内訳、契約単価の反映)、キャッシュ戦略の制御、組織管理機能の強化という方向性が明確に表れている。</p>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">🗺️ 全体像 — アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Cost["💰 コスト管理・可視化"]
+        direction LR
+        Usage["📊 /usage に&lt;br/&gt;Loops 内訳を追加"]
+        Pricing["🏷️ modelPricing で&lt;br/&gt;契約単価を反映"]
+        Usage ~~~ Pricing
+    end
+
+    subgraph Cache["🗄️ モデル・キャッシュ設定"]
+        direction LR
+        Picker["🎛️ modelPicker で&lt;br/&gt;/model をカスタマイズ"]
+        Ttl["⏱️ promptCacheTtl /&lt;br/&gt;subagentPromptCacheTtl"]
+        Picker ~~~ Ttl
+    end
+
+    subgraph Org["🏢 認証・組織管理"]
+        direction LR
+        Keyless["🔑 Console アカウントの&lt;br/&gt;キーレスサインイン"]
+        Skipped["📋 /status に&lt;br/&gt;Skipped sources 行"]
+        Managed["🔖 /mcp と /plugins に&lt;br/&gt;managed マーカー"]
+        Keyless ~~~ Skipped ~~~ Managed
+    end
+
+    subgraph Perf["⚡ パフォーマンス・信頼性"]
+        direction LR
+        Startup["🚀 起動時間の改善&lt;br/&gt;初回描画をブロックしない"]
+        Binary["📦 バイナリ zstd 圧縮&lt;br/&gt;約 340 MB → 約 75 MB"]
+        Memory["🧠 メモリ&lt;br/&gt;約 40〜70 MB 削減"]
+        Mcp["🔌 リモート MCP&lt;br/&gt;自動再接続"]
+        Startup ~~~ Binary ~~~ Memory ~~~ Mcp
+    end
+
+    User(["👤 開発者"]) --> Cache
+    User --> Perf
+    Admin(["🏢 組織管理者"]) --> Cost
+    Admin --> Org
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef cost fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef cache fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef org fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef perf fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class User,Admin user
+    class Usage,Pricing cost
+    class Picker,Ttl cache
+    class Keyless,Skipped,Managed org
+    class Startup,Binary,Memory,Mcp perf
+    class Cost,Cache,Org,Perf layer
+                </pre>
+            </div>
+        </section>
+
+        <!-- Performance Before/After -->
+        <section class="section">
+            <h2 class="section-title">⚡ パフォーマンス改善 — Before / After <span class="badge improved">Improved</span></h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>サンドボックスと MCP の初期化が初回フレーム描画をブロック</li>
+                        <li>ネイティブバイナリのダウンロードサイズは約 340 MB (Linux x64)</li>
+                        <li>コードが起動時に一括読み込みされメモリを消費</li>
+                        <li>長時間セッションでヒープ増大時の GC が遅れがち</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>初期化が初回描画をブロックせず、引数なし起動ではサブコマンド登録をスキップ</li>
+                        <li>zstd 圧縮により約 75 MB に縮小 (約 78% 削減)</li>
+                        <li>コードのオンデマンド読み込みでセッションあたり約 40〜70 MB のメモリ削減</li>
+                        <li>ヒープ増大時により早くガベージコレクションが実行される</li>
+                    </ul>
+                </div>
+            </div>
+            <ul class="detail-list" style="margin-top: 16px;">
+                <li><span class="li-icon">🧰</span><span><strong>起動処理の軽量化</strong>: ワークフロー検出、設定、トラストストア処理も軽量化された</span></li>
+                <li><span class="li-icon">🔐</span><span><strong>SSH 経由の <code class="inline">/login</code> を改善</strong>: サインイン URL が即座に表示され、<code class="inline">c</code> キーによるコピーの結果が正確に報告される</span></li>
+                <li><span class="li-icon">🔁</span><span><strong><code class="inline">/loop</code> の表示改善</strong>: Claude が何もすることのない連続起床を、ターミナル上で 1 行にまとめて表示</span></li>
+            </ul>
+        </section>
+
+        <!-- Added -->
+        <section class="section">
+            <h2 class="section-title">✨ 新機能 <span class="badge added">Added</span></h2>
+            <h3 class="subsection-title">💰 コスト管理・可視化</h3>
+            <div class="feature-grid">
+                <div class="feature-card added">
+                    <h3>📊 /usage に Loops 内訳を追加</h3>
+                    <p><code class="inline">/loop</code> タスクごとの実行回数、合計トークン数、実行あたりのトークン数、最終実行時刻を表示する。暴走したり無駄に会話の多いループタスクを容易に発見できる。</p>
+                </div>
+                <div class="feature-card added">
+                    <h3>🏷️ modelPricing 管理設定</h3>
+                    <p>組織が契約しているモデル別単価とディスカウント率を設定でき、<code class="inline">/cost</code>、ステータスライン、テレメトリのコスト表示に定価ではなく<strong>契約価格</strong>が使用される。</p>
+                </div>
+            </div>
+            <h3 class="subsection-title">🗄️ モデル・キャッシュ設定</h3>
+            <div class="feature-grid">
+                <div class="feature-card added">
+                    <h3>🎛️ modelPicker 設定</h3>
+                    <p><code class="inline">/model</code> ピッカーに表示するモデルを、順序付き・ラベル付きのリストでカスタマイズできる。Vertex / Bedrock 形式を含む任意のモデル ID 表記に対応し、組み込みリストへの追加または置き換えが可能。</p>
+                </div>
+                <div class="feature-card added">
+                    <h3>⏱️ promptCacheTtl / subagentPromptCacheTtl 設定</h3>
+                    <p>API キーおよびクラウドプロバイダー経由のユーザーが、メイン会話のプロンプトキャッシュを 1 時間に延長しつつ、サブエージェントは 5 分のまま維持するといった制御ができる。</p>
+                </div>
+            </div>
+            <h3 class="subsection-title">🏢 認証・組織管理</h3>
+            <div class="feature-grid">
+                <div class="feature-card added">
+                    <h3>🔑 Console アカウントでのキーレスサインイン</h3>
+                    <p><code class="inline">/login</code> → Anthropic Console に「Sign in with your Console account」(推奨) が追加された。API キーの発行を許可していない組織でもサインインできる。</p>
+                </div>
+                <div class="feature-card added">
+                    <h3>📋 /status に Skipped sources 行を追加</h3>
+                    <p>より優先度の高い管理ソースが有効なために適用されなかった管理設定ソース (例: <code class="inline">managed-settings.json</code>) を一覧表示する。</p>
+                </div>
+                <div class="feature-card added">
+                    <h3>🔖 /mcp と /plugins に managed マーカーを追加</h3>
+                    <p>組織が認証を管理している claude.ai コネクタを識別できる。</p>
+                </div>
+            </div>
+            <h3 class="subsection-title">🧭 その他の新機能</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">🤖</span><span><strong>サブエージェントのモデルと effort レベル表示</strong>: <code class="inline">/tasks</code> とエージェント詳細ダイアログに、各サブエージェントが実行されたモデルと effort レベルを表示</span></li>
+                <li><span class="li-icon">🌐</span><span><strong>Claude Code on the web の接続状態表示</strong>: <code class="inline">/status</code> に Claude Code on the web (Pro/Max) の GitHub 接続状態を表示し、未接続の場合は <code class="inline">/web-setup</code> を案内</span></li>
+            </ul>
+        </section>
+
+        <!-- Fixed -->
+        <section class="section">
+            <h2 class="section-title">🔧 修正 <span class="badge fixed">Fixed</span></h2>
+            <h3 class="subsection-title">🔌 接続・信頼性</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">🔁</span><span><strong>リモート MCP サーバーの再接続</strong>: 非対話モード (<code class="inline">-p</code>) および SDK セッションで、リモート MCP サーバーが切断後に復帰しない問題を修正。自動的に再接続するか、失敗として報告されるようになった</span></li>
+                <li><span class="li-icon">⏲️</span><span><strong>API 無応答時のタイムアウト処理</strong>: Anthropic API が応答を開始しないままセッションが 10 分以上沈黙する問題を修正。約 3 分でタイムアウトして 1 回リトライし、それでも失敗した場合は <code class="inline">API Error: No response from API</code> を表示する</span></li>
+                <li><span class="li-icon">🏗️</span><span><strong>CI でのワークロードアイデンティティフェデレーション</strong>: 同一ジョブ内のプロセスが交換済みトークンを共有するようになり、単回使用トークンの再交換による失敗がなくなった</span></li>
+                <li><span class="li-icon">🚦</span><span><strong>過負荷時のツール呼び出し拒否</strong>: API が一時的に過負荷の際、auto モードのツール呼び出しが約 1 分の待機後に「temporarily unavailable」として拒否される問題を修正</span></li>
+                <li><span class="li-icon">💤</span><span><strong>バックグラウンドサブエージェントの起床</strong>: バックグラウンドの Bash タスク完了時にバックグラウンドサブエージェントが起床しない問題を修正</span></li>
+            </ul>
+            <h3 class="subsection-title">⚙️ 設定・CLI</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">🧩</span><span><strong><code class="inline">--agents</code> のエラー処理</strong>: 不正な JSON やエージェント定義を黙って無視していた問題を修正。<code class="inline">--mcp-config</code> と同様に明確なエラーで終了する</span></li>
+                <li><span class="li-icon">🪝</span><span><strong>hook の <code class="inline">if</code> 条件の誤発火</strong>: 条件 (例: <code class="inline">Bash(cat *)</code>) が、<code class="inline">$()</code> やバッククォートによるコマンド置換を含む無関係な Bash コマンドで発火する問題を修正</span></li>
+                <li><span class="li-icon">🔄</span><span><strong><code class="inline">/resume</code> の表示件数</strong>: 直近 50 セッションしか表示しなかった問題を修正。スクロールで追加読み込みされる</span></li>
+                <li><span class="li-icon">🛜</span><span><strong>プロキシ設定の大文字・小文字対応</strong>: <code class="inline">HTTPS_PROXY</code> 環境で <code class="inline">NO_PROXY</code> の大文字表記しか設定していない場合に、ローカル IDE 接続がプロキシ経由になる問題を修正 (小文字表記 <code class="inline">no_proxy</code> との両対応)</span></li>
+                <li><span class="li-icon">⌨️</span><span><strong>履歴検索の破損耐性</strong>: Ctrl+R 履歴検索と上矢印履歴が、<code class="inline">~/.claude/history.jsonl</code> の破損エントリで壊れる問題を修正</span></li>
+                <li><span class="li-icon">🧱</span><span><strong>サンドボックス違反の詳細表示</strong>: ネットワーク違反の詳細が、ブロックされたコマンドの終了コードが 0 の場合に Bash ツール結果から欠落する問題を修正</span></li>
+            </ul>
+            <h3 class="subsection-title">🧩 VSCode 拡張</h3>
+            <ul class="detail-list">
+                <li><span class="li-icon">🚩</span><span><strong>権限モードの初期化</strong>: 機能フラグ取得前に開始したセッション (インストール直後など) が、auto モードや設定済みのデフォルトモードではなくデフォルト権限モードで開く問題を修正</span></li>
+                <li><span class="li-icon">🔍</span><span><strong>Focus ビューの折りたたみ</strong>: サブエージェントのツールアクティビティ中に、展開した Focus ビューのセクションが勝手に折りたたまれる問題を修正</span></li>
+            </ul>
+        </section>
+
+        <!-- Changed -->
+        <section class="section">
+            <h2 class="section-title">🔄 変更 <span class="badge changed">Changed</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card changed">
+                    <h3>🌐 サンドボックスのネットワークホスト一覧を削除</h3>
+                    <p>サンドボックス化された Bash ツールのプロンプトから許可済みネットワークホストの一覧を削除。Claude が未掲載のホストをブロック済みと仮定せずリクエストを試行し、ユーザーが新しいホストを承認できるようになった。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>💲 Sonnet 5 の価格表示を標準の定価に</h3>
+                    <p><code class="inline">/model</code> ピッカーと同梱の <code class="inline">claude-api</code> スキルで、Sonnet 5 の $2/$10 per Mtok 価格を期間限定プロモーションではなく標準の定価として表示。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>⚡ /model・/fast・/effort の即時実行</h3>
+                    <p>Bedrock / Vertex / Foundry 環境およびテレメトリ無効時も、ターン終了を待たず即座に実行されるようになった。</p>
+                </div>
+                <div class="feature-card changed">
+                    <h3>🖥️ macOS computer use の Finder 権限</h3>
+                    <p>デスクトップ・Dock・Finder ウィンドウのクリックには、他のアプリと同様に Finder へのアクセス許可が必要になった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical details -->
+        <section class="section">
+            <h2 class="section-title">🔬 技術的な詳細 — 新しい設定項目</h2>
+            <p class="lead-text">新しい設定項目の位置付けは以下のとおりである。</p>
+            <table class="settings-table">
+                <thead>
+                    <tr>
+                        <th>設定</th>
+                        <th>種別</th>
+                        <th>用途</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">modelPicker</code></td>
+                        <td>ユーザー / 組織設定</td>
+                        <td><code class="inline">/model</code> ピッカーの表示モデルをカスタマイズ</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">promptCacheTtl</code></td>
+                        <td>ユーザー設定</td>
+                        <td>メイン会話のプロンプトキャッシュ TTL (例: 1 時間)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">subagentPromptCacheTtl</code></td>
+                        <td>ユーザー設定</td>
+                        <td>サブエージェントのキャッシュ TTL (デフォルト 5 分相当)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">modelPricing</code></td>
+                        <td>管理設定 (managed)</td>
+                        <td>組織の契約単価・ディスカウント率をコスト表示に反映</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="subsection-title">⏱️ プロンプトキャッシュ TTL の使い分け</h3>
+            <p class="lead-text">プロンプトキャッシュの TTL 制御は、API キーおよび Bedrock / Vertex などのクラウドプロバイダー経由の利用者が対象である。長時間の作業では<strong>メイン会話のキャッシュを 1 時間に延長</strong>することでキャッシュミスによる再課金を抑えられる一方、<strong>短命なサブエージェントは 5 分のまま</strong>にしてキャッシュ書き込みコストを抑える、といった使い分けができる。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    Session(["👤 Claude Code セッション"]) --> Main["💬 メイン会話"]
+    Session --> Sub["🤖 サブエージェント"]
+    Main --> MainCache["🗄️ プロンプトキャッシュ&lt;br/&gt;promptCacheTtl: 1h&lt;br/&gt;長時間作業の再課金を抑制"]
+    Sub --> SubCache["🗄️ プロンプトキャッシュ&lt;br/&gt;subagentPromptCacheTtl: 5m&lt;br/&gt;書き込みコストを抑制"]
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+
+    class Session user
+    class Main,Sub process
+    class MainCache,SubCache storage
+                </pre>
+            </div>
+
+            <h3 class="subsection-title">📝 設定例 — settings.json</h3>
+            <p class="lead-text">新しい設定を利用する場合は、<code class="inline">settings.json</code> (組織の場合は managed settings) に追記する。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings.json — promptCacheTtl と modelPicker の設定例</span>
+                </div>
+                <pre><code class="language-json">{
+  "promptCacheTtl": "1h",
+  "modelPicker": [
+    { "label": "Opus 4.6", "model": "claude-opus-4-6" },
+    { "label": "Sonnet on Bedrock", "model": "us.anthropic.claude-sonnet-4-6" }
+  ]
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Use cases / Developer impact -->
+        <section class="section">
+            <h2 class="section-title">💼 ユースケース / 開発者への影響</h2>
+            <p class="lead-text"><strong>対象</strong>: Claude Code を利用しているすべてのユーザー (起動時間・メモリ・ダウンロードサイズの改善)、<code class="inline">/loop</code> を活用しているユーザー、API キーや Bedrock / Vertex 経由でキャッシュコストを最適化したいユーザー、契約単価でコストを管理したい組織や API キー発行を許可していない組織の管理者、非対話モードや SDK でリモート MCP サーバーを利用しているユーザー、CI でワークロードアイデンティティフェデレーションを利用しているチーム。</p>
+            <div class="use-case">
+                <h4>💰 キャッシュコストを最適化したい API キー / Bedrock / Vertex 利用者</h4>
+                <p><code class="inline">promptCacheTtl</code> でメイン会話のキャッシュを 1 時間に延長すれば、長時間の作業でキャッシュミスによる再課金を抑えられる。<code class="inline">subagentPromptCacheTtl</code> により短命なサブエージェントは 5 分のままにしてキャッシュ書き込みコストを抑える、という使い分けができる。<code class="inline">/usage</code> の Loops 内訳とあわせて、トークン消費の多いループタスクの発見とコスト最適化のサイクルを回せる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏢 契約単価でコストを管理したい組織・API キー発行を制限している組織</h4>
+                <p><code class="inline">modelPricing</code> 管理設定により、<code class="inline">/cost</code>、ステータスライン、テレメトリのコスト表示が定価ではなく組織の契約価格を反映するようになり、実際の請求額に即したコスト管理ができる。Console アカウントのキーレスサインインにより、API キーの発行を許可していない組織のメンバーもサインイン可能に。<code class="inline">Skipped sources</code> 行と <code class="inline">managed</code> マーカーで、管理設定の適用状況と組織管理のコネクタを可視化できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 SDK・CI・自動化パイプラインで Claude Code を利用するチーム</h4>
+                <p>非対話モード (<code class="inline">-p</code>) および SDK セッションでのリモート MCP サーバーの自動再接続、API 無応答時の約 3 分でのタイムアウトとリトライ、CI でのワークロードアイデンティティフェデレーションのトークン共有修正など、長時間運用や自動化パイプラインでの信頼性に直結する修正が多く、特に恩恵が大きい。</p>
+            </div>
+        </section>
+
+        <!-- Actions & migration -->
+        <section class="section">
+            <h2 class="section-title">🚀 必要なアクションと移行ガイド</h2>
+            <p class="lead-text">以下のいずれかの方法で最新バージョンに更新できる。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">最新バージョンへの更新</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 組み込みコマンド
+claude update
+
+# npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+            <div class="attention-box">
+                <h4>⚠️ 注意事項</h4>
+                <ul>
+                    <li><strong>macOS で computer use を利用している場合</strong>: デスクトップや Finder の操作には Finder へのアクセス許可のダイアログ承認が新たに必要になる</li>
+                    <li><strong>クロスセッションメッセージングのソケットへ投稿するスクリプト</strong>: インボックスソケットは 30 秒以内に完全な行を送信しない接続を切断するようになったため、データの準備ができてから接続するように変更することが推奨される</li>
+                </ul>
+            </div>
+            <ul class="detail-list">
+                <li><span class="li-icon">✅</span><span><strong>破壊的変更はアナウンスされていない</strong>: 速やかなアップデートを推奨する。新しい設定 (<code class="inline">modelPicker</code>、<code class="inline">promptCacheTtl</code> など) は任意で <code class="inline">settings.json</code> または managed settings に追記する</span></li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">📝 まとめ</h2>
+            <p class="lead-text">Claude Code v2.1.243 は、以下の 3 つの軸で大きく前進したリリースである。</p>
+            <div class="summary-point">
+                <div class="summary-number">1</div>
+                <div class="summary-point-content">
+                    <h4>コスト管理 — Loops 内訳・契約単価反映・キャッシュ TTL 制御</h4>
+                    <p><code class="inline">/usage</code> の Loops 内訳でループタスクごとのトークン消費を可視化し、<code class="inline">modelPricing</code> で組織の契約価格をコスト表示に反映。<code class="inline">promptCacheTtl</code> / <code class="inline">subagentPromptCacheTtl</code> によりプロンプトキャッシュのコスト戦略を制御できるようになった。</p>
+                </div>
+            </div>
+            <div class="summary-point">
+                <div class="summary-number">2</div>
+                <div class="summary-point-content">
+                    <h4>組織向け機能 — キーレスサインイン・managed マーカー・Skipped sources 表示</h4>
+                    <p>Console アカウントでのキーレスサインインにより API キー発行を制限している組織でも利用しやすくなり、<code class="inline">/status</code> の Skipped sources 行と <code class="inline">/mcp</code> / <code class="inline">/plugins</code> の managed マーカーで管理状態の透明性が向上した。</p>
+                </div>
+            </div>
+            <div class="summary-point">
+                <div class="summary-number">3</div>
+                <div class="summary-point-content">
+                    <h4>パフォーマンス — 起動高速化・バイナリ約 75 MB への縮小・メモリ約 40〜70 MB 削減</h4>
+                    <p>起動時の初期化が初回描画をブロックしなくなり、バイナリは zstd 圧縮で約 340 MB から約 75 MB (Linux x64) へ縮小、メモリはセッションあたり約 40〜70 MB 削減された。</p>
+                </div>
+            </div>
+            <div class="attention-box" style="margin-top: 20px;">
+                <h4>💡 アップデート推奨</h4>
+                <p>リモート MCP サーバーの自動再接続や API 無応答時のタイムアウト処理など、長時間運用や自動化パイプラインでの信頼性に直結する修正も多く、SDK や CI で Claude Code を利用しているチームには特に恩恵が大きい。破壊的変更はないため、速やかなアップデートを推奨する。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📋 <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog</a></li>
+                <li>📦 <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">Claude Code npm パッケージ</a></li>
+                <li>💻 <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li>📖 <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li>🗒️ 前バージョン: Claude Code v2.1.240 / v2.1.241 (2026-08-22)</li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-08-25 | カテゴリ: Claude Code | 本インフォグラフィックは Claude Code Changelog のレポートを基に作成</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
