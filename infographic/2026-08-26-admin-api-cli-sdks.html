@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin API が ant CLI と 7 言語の SDK で利用可能に - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+        }
+
+        .section > p, .section .desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Before/After */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            padding-left: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card li {
+            margin-bottom: 6px;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0 20px;
+        }
+
+        .info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+        }
+
+        .info-table tr:nth-child(even) td {
+            background: var(--anthropic-light);
+        }
+
+        .info-table code {
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        p code, li code {
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        /* SDK badges */
+        .sdk-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 12px 0 8px;
+        }
+
+        .sdk-badge {
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(212, 165, 116, 0.25);
+        }
+
+        .sdk-badge.cli {
+            background: var(--gradient-header);
+            color: white;
+        }
+
+        /* Note boxes */
+        .note-box {
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .note-box.warning {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            color: #5D4037;
+        }
+
+        .note-box.info {
+            background: #E3F2FD;
+            border: 2px solid #64B5F6;
+            color: #1565C0;
+        }
+
+        .note-box strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action steps */
+        .action-list {
+            counter-reset: step;
+            list-style: none;
+        }
+
+        .action-list li {
+            position: relative;
+            padding: 14px 16px 14px 56px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-list li::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .action-list li strong {
+            color: var(--text-primary);
+        }
+
+        .plain-list {
+            padding-left: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .plain-list li {
+            margin-bottom: 8px;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-top: 8px;
+        }
+
+        .summary-box ul {
+            padding-left: 20px;
+            font-size: 14px;
+        }
+
+        .summary-box li {
+            margin-bottom: 8px;
+        }
+
+        .summary-box code {
+            background: rgba(212, 165, 116, 0.2);
+            color: #E8C9A8;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <h1>🛠️ Admin API が ant CLI と 7 言語の SDK で利用可能に</h1>
+                <p class="date">📅 2026-08-26 | Claude Platform Release Notes</p>
+                <p class="lead">組織管理の自動化が、curl の独自実装から型付きクライアントとコマンドラインへ。推論系 API と同じクライアントで組織を管理できるようになりました。</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">📌 概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📦</div>
+                    <div class="key-point-content">
+                        <h3>7 言語 SDK + ant CLI 対応</h3>
+                        <p>Admin API が Python、TypeScript、C#、Go、Java、PHP、Ruby の SDK と <code>ant</code> CLI から利用可能に。SDK は <code>client.beta.organization</code>、CLI は <code>ant beta:organization</code> の名前空間で提供されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗂️</div>
+                    <div class="key-point-content">
+                        <h3>幅広いリソースをカバー</h3>
+                        <p>組織情報、メンバー、招待、ワークスペースとワークスペースメンバー、API キー、レート制限、サービスアカウント、WIF 発行者・ルール、顧客管理暗号鍵 (CMK) が対象です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔐</div>
+                    <div class="key-point-content">
+                        <h3>2 種類の認証を自動読み込み</h3>
+                        <p>Admin API キー (<code>ANTHROPIC_API_KEY</code>) または <code>org:admin</code> スコープの OAuth ベアラートークン (<code>ANTHROPIC_AUTH_TOKEN</code>) を環境変数から自動的に読み込みます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔁</div>
+                    <div class="key-point-content">
+                        <h3>自動ページネーション</h3>
+                        <p>Python、TypeScript、C#、Go、Java の SDK では、リストメソッドが追加ページを自動取得するイテレーターを返し、手動ページネーションが不要になります。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌀</div>
+                    <div class="key-point-content">
+                        <h3>一部エンドポイントは curl のみ</h3>
+                        <p>使用量・コストレポートおよび Claude Enterprise のユーザー管理・分析エンドポイントは、引き続き curl のみの対応です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">🔄 Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>Admin API の操作は curl などで REST エンドポイントを直接呼び出す必要があった</li>
+                        <li>エラーハンドリング、ページネーション、型安全性をチームごとに作り込む負担</li>
+                        <li>組織管理の自動化における障壁に</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>7 言語の型付き SDK と <code>ant</code> CLI から組織管理を自動化</li>
+                        <li>推論系 API と同じクライアントで組織管理も実行可能</li>
+                        <li>自動ページネーションと型安全性を標準で利用できる</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">✨ 主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⌨️ ant CLI 対応</h3>
+                    <p><code>ant beta:organization</code> 名前空間で、メンバー管理や API キー監査などの組織管理操作をコマンドラインから実行できます。<code>--limit</code> オプションで一覧結果の上限を指定可能です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 7 言語の型付き SDK</h3>
+                    <p>Python、TypeScript、C#、Go、Java、PHP、Ruby の公式 SDK で <code>client.beta.organization</code> 名前空間を提供。型安全なクライアントで組織管理ツールを構築できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔁 自動ページネーション</h3>
+                    <p>Python、TypeScript、C#、Go、Java のリストメソッドは追加ページを自動取得するイテレーターを返します。<code>limit</code> は合計件数ではなくページサイズの指定です。PHP、Ruby と curl は 1 ページ分を返します。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 サービスアカウント / WIF</h3>
+                    <p>WIF トークンが行動する非人間 ID (サービスアカウント) の作成・管理、OIDC 発行者の登録、トークンとサービスアカウントのマッピング管理に対応。CI などの非対話ワークロードで自動トークン交換を利用できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔑 API キー管理と CMK</h3>
+                    <p>API キーの一覧取得、名前変更、有効化・無効化、レート制限の読み取り、顧客管理暗号鍵 (CMK) の管理をサポートします。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Covered Resources -->
+        <section class="section">
+            <h2 class="section-title">🗂️ SDK / CLI でカバーされるリソース</h2>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>リソース</th>
+                            <th>主な操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🏛️ 組織情報</td>
+                            <td><code>/v1/organizations/me</code> による組織 ID・名前の取得</td>
+                        </tr>
+                        <tr>
+                            <td>👥 メンバー</td>
+                            <td>一覧取得、ロール変更、削除</td>
+                        </tr>
+                        <tr>
+                            <td>✉️ 招待</td>
+                            <td>作成、一覧取得、削除</td>
+                        </tr>
+                        <tr>
+                            <td>🗂️ ワークスペース</td>
+                            <td>作成、取得、一覧、更新、アーカイブ</td>
+                        </tr>
+                        <tr>
+                            <td>🧑‍🤝‍🧑 ワークスペースメンバー</td>
+                            <td>追加、一覧、ロール更新、削除</td>
+                        </tr>
+                        <tr>
+                            <td>🔑 API キー</td>
+                            <td>一覧取得、名前変更、有効化・無効化</td>
+                        </tr>
+                        <tr>
+                            <td>⏱️ レート制限</td>
+                            <td>組織・ワークスペースのレート制限の読み取り</td>
+                        </tr>
+                        <tr>
+                            <td>🤖 サービスアカウント</td>
+                            <td>WIF トークンが行動する非人間 ID の作成・管理</td>
+                        </tr>
+                        <tr>
+                            <td>🌐 WIF 発行者・ルール</td>
+                            <td>OIDC 発行者の登録、トークンとサービスアカウントのマッピング管理</td>
+                        </tr>
+                        <tr>
+                            <td>🗝️ 顧客管理暗号鍵</td>
+                            <td>CMK の管理</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note-box warning">
+                <strong>⚠️ curl のみ対応のまま残るエンドポイント</strong>
+                使用量レポートおよびコストレポート (Usage and Cost API)、Claude Enterprise のユーザー管理エンドポイント (グループ、カスタムロールなど)、Claude Enterprise の分析エンドポイント。
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">🏗️ アーキテクチャ</h2>
+            <p class="desc">クライアントから認証を経て Admin API の各リソースへアクセスする構成です。OAuth トークン限定のリソースと curl のみ対応のエンドポイントに注意してください。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Clients["🧰 クライアント"]
+        direction LR
+        CLI["⌨️ ant CLI<br/>ant beta:organization"]
+        SDK["📦 7 言語 SDK<br/>client.beta.organization"]
+        Curl["🌀 curl<br/>REST 直接呼び出し"]
+        CLI ~~~ SDK ~~~ Curl
+    end
+
+    subgraph Auth["🔐 認証"]
+        direction LR
+        AdminKey["🔑 Admin API キー<br/>ANTHROPIC_API_KEY"]
+        OAuth["🎫 OAuth トークン<br/>ANTHROPIC_AUTH_TOKEN<br/>スコープ org:admin"]
+        AdminKey ~~~ OAuth
+    end
+
+    subgraph AdminAPI["🏢 Admin API"]
+        subgraph Common["📋 SDK / CLI 対応リソース"]
+            direction LR
+            Org["🏛️ 組織情報"]
+            Members["👥 メンバー / 招待"]
+            Workspaces["🗂️ ワークスペース"]
+            Keys["🔑 API キー"]
+            Org ~~~ Members ~~~ Workspaces ~~~ Keys
+        end
+        subgraph OAuthOnly["🎫 OAuth トークン限定"]
+            direction LR
+            Svac["🤖 サービスアカウント"]
+            WIF["🌐 WIF 発行者 / ルール"]
+            Svac ~~~ WIF
+        end
+        subgraph CurlOnly["🌀 curl のみ対応"]
+            direction LR
+            Usage["📊 使用量 / コスト"]
+            Enterprise["🏢 Enterprise ユーザー管理 / 分析"]
+            Usage ~~~ Enterprise
+        end
+    end
+
+    CLI --> Auth
+    SDK --> Auth
+    Curl --> Auth
+    Auth --> Common
+    OAuth -.-> OAuthOnly
+    Curl -.-> CurlOnly
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class AdminAPI platform
+    class Clients,Common,OAuthOnly,CurlOnly layer
+    class CLI,SDK,Curl input
+    class AdminKey,OAuth decision
+    class Org,Members,Workspaces,Keys,Svac,WIF process
+    class Usage,Enterprise warning
+                </pre>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">⚙️ 技術詳細</h2>
+
+            <h3 class="subsection-title">🧭 アクセス方法 (名前空間)</h3>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>インターフェース</th>
+                            <th>名前空間</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ant</code> CLI</td>
+                            <td><code>ant beta:organization</code></td>
+                        </tr>
+                        <tr>
+                            <td>Python / TypeScript / PHP / Ruby SDK</td>
+                            <td><code>client.beta.organization</code></td>
+                        </tr>
+                        <tr>
+                            <td>C# SDK</td>
+                            <td><code>client.Beta.Organization</code></td>
+                        </tr>
+                        <tr>
+                            <td>Go SDK</td>
+                            <td><code>client.Beta.Organization</code></td>
+                        </tr>
+                        <tr>
+                            <td>Java SDK</td>
+                            <td><code>client.beta().organization()</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="subsection-title">🔐 認証 (2 種類のクレデンシャル)</h3>
+            <p class="desc">SDK と CLI のデフォルトクライアントは、環境変数から自動的にクレデンシャルを読み込みます。</p>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>クレデンシャル</th>
+                            <th>環境変数</th>
+                            <th>送信ヘッダー</th>
+                            <th>発行できるロール</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🔑 Admin API キー (<code>sk-ant-admin...</code>)</td>
+                            <td><code>ANTHROPIC_API_KEY</code></td>
+                            <td><code>x-api-key</code></td>
+                            <td>admin ロールを持つ組織メンバーのみ</td>
+                        </tr>
+                        <tr>
+                            <td>🎫 OAuth ベアラートークン (<code>org:admin</code> スコープ)</td>
+                            <td><code>ANTHROPIC_AUTH_TOKEN</code></td>
+                            <td><code>authorization: Bearer</code></td>
+                            <td>admin、owner、primary owner ロールのメンバー</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note-box warning">
+                <strong>⚠️ OAuth トークン限定のエンドポイント</strong>
+                サービスアカウント、WIF 発行者、WIF ルールのエンドポイントは <code>org:admin</code> OAuth トークンのみを受け付けます (Admin API キーでは不可)。ベアラートークンを使用する場合は、同じシェルで <code>ANTHROPIC_API_KEY</code> を未設定にしておきます。
+            </div>
+
+            <p class="desc">OAuth トークンは <code>ant</code> CLI で専用プロファイルにログインして取得します。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">OAuth トークンの取得</span>
+                </div>
+                <pre><code class="language-bash">ant auth login --profile admin --scope "org:admin"
+export ANTHROPIC_AUTH_TOKEN=$(ant auth print-credentials --profile admin --access-token)</code></pre>
+            </div>
+            <div class="note-box info">
+                <strong>💡 トークンの更新</strong>
+                対話的に取得したトークンは短命であり、401 が返り始めたら <code>export</code> コマンドを再実行して更新します。CI などの非対話ワークロードでは、WIF による自動トークン交換を利用できます。
+            </div>
+
+            <h3 class="subsection-title">🔁 ページネーションの挙動</h3>
+            <ul class="plain-list">
+                <li><strong>Python、TypeScript、C#、Go、Java の SDK</strong>: リストメソッドは、必要に応じて追加ページを自動取得するイテレーターを返す。<code>limit</code> は合計件数ではなくページサイズを指定する</li>
+                <li><strong>PHP、Ruby の SDK と curl</strong>: 1 ページ分を返す</li>
+                <li><strong>CLI</strong>: <code>--limit</code> がメンバー、招待、ワークスペース、ワークスペースメンバー、API キーの一覧結果の上限として機能する</li>
+            </ul>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">💻 コード例</h2>
+
+            <h3 class="subsection-title">🏛️ 組織情報の取得</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">CLI</span>
+                </div>
+                <pre><code class="language-bash">ant beta:organization retrieve</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">SDK</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()  # ANTHROPIC_API_KEY または ANTHROPIC_AUTH_TOKEN を自動で読み込む
+
+organization = client.beta.organization.retrieve()
+print(f"id: {organization.id}")
+print(f"name: {organization.name}")</code></pre>
+            </div>
+
+            <h3 class="subsection-title">👥 メンバー一覧の取得</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">CLI</span>
+                </div>
+                <pre><code class="language-bash">ant beta:organization:users list --limit 10</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">TypeScript</span>
+                    <span class="code-title">SDK (自動ページネーション)</span>
+                </div>
+                <pre><code class="language-typescript">import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic();
+
+const users = await client.beta.organization.users.list({ limit: 10 });
+
+// 必要に応じて追加ページを自動取得する
+for await (const user of users) {
+  console.log(`${user.id}: ${user.email} (${user.role})`);
+}</code></pre>
+            </div>
+
+            <h3 class="subsection-title">✉️ 招待の作成</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">CLI</span>
+                </div>
+                <pre><code class="language-bash">ant beta:organization:invites create --email user@example.com --role developer</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Go</span>
+                    <span class="code-title">SDK</span>
+                </div>
+                <pre><code class="language-go">client := anthropic.NewClient()
+
+invite, err := client.Beta.Organization.Invites.New(context.Background(), anthropic.BetaOrganizationInviteNewParams{
+	Email: "user@example.com",
+	Role:  anthropic.BetaOrganizationInviteNewParamsRoleDeveloper,
+})
+if err != nil {
+	log.Fatal(err)
+}
+
+fmt.Printf("id: %s\n", invite.ID)
+fmt.Printf("status: %s\n", invite.Status)</code></pre>
+            </div>
+
+            <h3 class="subsection-title">🔍 ワークスペースの API キーを監査</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">CLI</span>
+                </div>
+                <pre><code class="language-bash">ant beta:organization:api-keys list \
+  --limit 10 \
+  --status active \
+  --workspace-id wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Ruby</span>
+                    <span class="code-title">SDK</span>
+                </div>
+                <pre><code class="language-ruby">client = Anthropic::Client.new
+
+api_keys = client.beta.organization.api_keys.list(
+  limit: 10,
+  status: :active,
+  workspace_id: "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ"
+)
+
+api_keys.data.each do |api_key|
+  puts "#{api_key.id}: #{api_key.name} (#{api_key.status})"
+end</code></pre>
+            </div>
+
+            <h3 class="subsection-title">🚫 API キーの無効化</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">CLI</span>
+                </div>
+                <pre><code class="language-bash">ant beta:organization:api-keys update \
+  --api-key-id apikey_01Rj2N8SVvo6BePZj99NhmiT \
+  --status inactive \
+  --name "New Key Name"</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">🎯 ユースケース</h2>
+            <div class="use-case">
+                <h4>🏢 オンボーディング・オフボーディングの自動化</h4>
+                <p>IT チームは、招待の作成、メンバーのロール変更・削除、ワークスペースメンバーの追加・削除を、使い慣れた言語の型付きクライアントや CLI から自動化できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔑 API キーの監査・ローテーションのスクリプト化</h4>
+                <p>管理者は、ワークスペースごとの API キー一覧の取得、名前変更、有効化・無効化を SDK / CLI でスクリプト化し、監査やローテーションの運用を効率化できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🌐 WIF を利用した CI / 自動化ワークロード</h4>
+                <p>プラットフォームチームは、サービスアカウントと WIF 発行者・ルールを管理し、CI などの非対話ワークロードで WIF による自動トークン交換を利用した組織管理を構築できます。</p>
+            </div>
+        </section>
+
+        <!-- API Changes -->
+        <section class="section">
+            <h2 class="section-title">🔌 API 変更点</h2>
+
+            <h3 class="subsection-title">📦 対応 SDK / CLI 一覧</h3>
+            <div class="sdk-grid">
+                <span class="sdk-badge cli">⌨️ ant CLI</span>
+                <span class="sdk-badge">🐍 Python</span>
+                <span class="sdk-badge">🟦 TypeScript</span>
+                <span class="sdk-badge">🎼 C#</span>
+                <span class="sdk-badge">🐹 Go</span>
+                <span class="sdk-badge">☕ Java</span>
+                <span class="sdk-badge">🐘 PHP</span>
+                <span class="sdk-badge">💎 Ruby</span>
+            </div>
+            <p class="desc">7 言語すべての SDK で <code>client.beta.organization</code> 系の名前空間が追加され、CLI では <code>ant beta:organization</code> コマンド群が利用できます。</p>
+
+            <h3 class="subsection-title">🛠️ 必要なアクション</h3>
+            <ol class="action-list">
+                <li><strong>SDK の更新</strong>: <code>client.beta.organization</code> 名前空間を含む最新バージョンの SDK にアップデートする</li>
+                <li><strong>認証情報の設定</strong>: Admin API キーを <code>ANTHROPIC_API_KEY</code> に、または <code>org:admin</code> OAuth トークンを <code>ANTHROPIC_AUTH_TOKEN</code> に設定する</li>
+                <li><strong>既存スクリプトの移行検討</strong>: curl ベースの組織管理スクリプトを SDK / CLI ベースに置き換えることで、型安全性と自動ページネーションの恩恵を受けられる</li>
+            </ol>
+
+            <h3 class="subsection-title">🧳 移行時の注意点</h3>
+            <p class="desc">curl ベースの既存スクリプトは引き続き動作するため、移行は必須ではありません。移行する場合は以下の点に注意してください。</p>
+            <ul class="plain-list">
+                <li>使用量・コストレポートと Claude Enterprise のユーザー管理・分析エンドポイントは SDK / CLI 非対応のため、これらの処理は curl のまま残す</li>
+                <li>Python、TypeScript、C#、Go、Java では、リストメソッドがページを自動取得するイテレーターを返すため、<code>has_more</code> を確認する手動ページネーションのロジックは不要になる</li>
+                <li>サービスアカウントと WIF 関連の操作には <code>org:admin</code> OAuth トークンが必要 (Admin API キーでは不可)</li>
+            </ul>
+
+            <h3 class="subsection-title">👥 対象となる開発者</h3>
+            <ul class="plain-list">
+                <li>組織のオンボーディング・オフボーディングを自動化する IT チーム</li>
+                <li>API キーの監査やローテーションをスクリプト化する管理者</li>
+                <li>WIF を利用した CI / 自動化ワークロードを構築するプラットフォームチーム</li>
+                <li>組織管理ツールを Python、TypeScript、C#、Go、Java、PHP、Ruby で開発するエンジニア</li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">📝 まとめ</h2>
+            <p>今回のアップデートにより、Admin API が <code>ant</code> CLI と 7 言語 SDK から利用できるようになり、組織管理の自動化に curl ベースの独自実装が不要となりました。推論系 API と同じクライアントで、組織情報、メンバー、招待、ワークスペース、API キー、レート制限、サービスアカウント、WIF、CMK を扱えます。</p>
+            <div class="summary-box">
+                <ul>
+                    <li>SDK は <code>client.beta.organization</code>、CLI は <code>ant beta:organization</code> の名前空間で提供される</li>
+                    <li>認証は <code>ANTHROPIC_API_KEY</code> の Admin API キー、または <code>ANTHROPIC_AUTH_TOKEN</code> の <code>org:admin</code> OAuth トークンを自動で読み込む</li>
+                    <li>Python、TypeScript、C#、Go、Java の SDK はリスト取得時にページを自動でたどるイテレーターを返す</li>
+                    <li>サービスアカウントと WIF 関連の操作は <code>org:admin</code> OAuth トークンのみ対応</li>
+                    <li>使用量・コストレポートと Claude Enterprise のユーザー管理・分析エンドポイントは引き続き curl のみの対応</li>
+                </ul>
+            </div>
+            <p style="margin-top: 16px;">2026 年 7 月の Claude Enterprise 向けユーザー管理 API、8 月 19 日の Admin API GA に続く今回の SDK / CLI 対応により、組織管理の開発者体験が大きく向上しました。IT チームはオンボーディング自動化や API キー監査のツールを、使い慣れた言語の型付きクライアントで構築できます。</p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/admin-api" target="_blank" rel="noopener noreferrer">Admin API ガイド</a></li>
+                <li><a href="https://platform.claude.com/docs/en/api/admin" target="_blank" rel="noopener noreferrer">Admin API リファレンス</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/admin-api-keys" target="_blank" rel="noopener noreferrer">Admin API キーの作成</a></li>
+                <li><a href="https://platform.claude.com/docs/en/cli-sdks-libraries/cli/quickstart" target="_blank" rel="noopener noreferrer">ant CLI クイックスタート</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/wif-admin-api" target="_blank" rel="noopener noreferrer">Workload Identity Federation と Admin API</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/usage-cost-api" target="_blank" rel="noopener noreferrer">Usage and Cost API</a></li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-08-26 | ソース: Claude Platform Release Notes | カテゴリ: Claude API</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

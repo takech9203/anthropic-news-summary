@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-08-26](2026/2026-08-26-compliance-api-sessions-ga.md) - Compliance API セッションエンドポイントが GA、Claude Science / Microsoft 365 のローカルセッション対応をベータ提供
+- [2026-08-26](2026/2026-08-26-claude-code-v2-1-247.md) - Claude Code v2.1.247 リリース — SendFeedback ツールの追加、API コスト最適化コマンド、Sonnet 5 の auto-compact ウィンドウ拡大
+- [2026-08-26](2026/2026-08-26-admin-api-cli-sdks.md) - Admin API が ant CLI と 7 言語の SDK で利用可能に
 - [2026-08-25](2026/2026-08-25-wellbeing-research-grants.md) - AI がウェルビーイングに与える影響の評価研究に 500 万ドルの助成金プログラムを開始
 - [2026-08-25](2026/2026-08-25-claude-code-v2-1-245-v2-1-246.md) - Claude Code v2.1.245 / v2.1.246 リリース — glibc 2.44 での起動クラッシュ修正と権限管理・トランスクリプト表示の多数の改善
 - [2026-08-25](2026/2026-08-25-claude-code-v2-1-243.md) - Claude Code v2.1.243 リリース — プロンプトキャッシュ TTL 設定・モデルピッカーのカスタマイズ・大幅な起動とメモリの改善

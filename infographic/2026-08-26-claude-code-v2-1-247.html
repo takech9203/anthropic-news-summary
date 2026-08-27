@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.247 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-chips {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-chip {
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 24px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .tag.added {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .tag.fixed {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .tag.improved {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        .tag.changed {
+            background: #EDE9FE;
+            color: #7C3AED;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Meta Table */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .meta-table th,
+        .meta-table td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .meta-table th {
+            width: 30%;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .meta-table td a {
+            color: var(--anthropic-coral);
+            word-break: break-all;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code,
+        .fix-card code,
+        .use-case code,
+        .key-point-content code,
+        .plain-list code,
+        .section-lead code,
+        .tech-note code {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Fix Grid */
+        .fix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .fix-card {
+            background: #FAFAFA;
+            border: 1px solid rgba(212, 165, 116, 0.25);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+
+        .fix-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .fix-card p,
+        .fix-card li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .fix-card ul {
+            padding-left: 18px;
+            display: grid;
+            gap: 8px;
+        }
+
+        /* Plain List */
+        .plain-list {
+            display: grid;
+            gap: 10px;
+            padding-left: 4px;
+            list-style: none;
+        }
+
+        .plain-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .plain-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 4px;
+            color: var(--anthropic-coral);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Tech Notes */
+        .tech-note {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-note h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tech-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.35rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid,
+            .fix-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.247 リリース<br>SendFeedback ツールの追加、API コスト最適化コマンド、Sonnet 5 の auto-compact ウィンドウ拡大</h1>
+                <p class="date">📅 2026-08-26 (npm 公開) | ソース: Claude Code Changelog</p>
+                <div class="version-chips">
+                    <span class="version-chip">v2.1.247</span>
+                    <span class="version-chip">新機能 5 件</span>
+                    <span class="version-chip">修正・改善 約 20 項目</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">💬</div>
+                    <div class="key-point-content">
+                        <h3><code>SendFeedback</code> ツールの追加</h3>
+                        <p>セッション中に問題が発生した際、Claude 自身がフィードバック報告を下書きし、ユーザーが <code>/feedback</code> から確認して送信できる。<code>feedbackDrafts</code> 設定でオフにできる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💰</div>
+                    <div class="key-point-content">
+                        <h3><code>/claude-api cost-optimize</code> コマンド</h3>
+                        <p>既存プロジェクトの Claude API 支出をプロファイリングし、コスト削減策を計測しながら段階的に適用するコマンドが追加された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💡</div>
+                    <div class="key-point-content">
+                        <h3><code>spinnerTipsOverride</code> の拡張</h3>
+                        <p>組織独自のヒントを組み込みのヒントと一緒にローテーション表示できるようになり、エンタープライズ向けカスタマイズが強化された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>Sonnet 5 の auto-compact ウィンドウをフル 1M に拡大</h3>
+                        <p>auto-compact の発動が約 934K トークンから約 967K トークンに引き上げられ、コンパクト化までに使えるコンテキストが約 33K トークン拡大した。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>安定性・セキュリティの修正 約 20 項目</h3>
+                        <p>サブエージェントのフォールバックモデルチェーン対応、フック大量出力による会話オーバーフローの防止、プラグインマーケットプレイスのハードニングなどが含まれる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="meta-table">
+                <tr>
+                    <th>発表日</th>
+                    <td>2026-08-26 (npm 公開)</td>
+                </tr>
+                <tr>
+                    <th>ソース</th>
+                    <td>Claude Code Changelog</td>
+                </tr>
+                <tr>
+                    <th>カテゴリ</th>
+                    <td>Claude Code アップデート</td>
+                </tr>
+                <tr>
+                    <th>公式リンク</th>
+                    <td><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景 — リリースの流れ</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>前日 v2.1.246</h4>
+                    <p>権限管理の強化と約 60 項目の広範なバグ修正を含むリリース。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>今回 v2.1.247</h4>
+                    <p>フィードバック体験の改善、API コスト最適化の支援、組織独自のスピナーヒントといった新機能に加え、サブエージェント、フック、クラウドセッション、プラグインまわりの安定性修正をまとめたリリース。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要機能 — 新機能 <span class="tag added">Added</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>💬 <code>SendFeedback</code> ツール</h3>
+                    <p>セッション中に問題が発生した場合、Claude がフィードバック報告の下書きを作成し、ユーザーは内容を確認したうえで <code>/feedback</code> から送信できる。<code>feedbackDrafts</code> 設定でオフにできる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💡 <code>spinnerTipsOverride</code> の拡張</h3>
+                    <p><code>{id, text, cooldownSessions, priority}</code> 形式のエントリ、<code>tipsFile</code>、<code>label</code> が追加され、組織が独自のヒントを組み込みのヒントと一緒にローテーション表示できるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Bash 権限プロンプトに auto mode への案内</h3>
+                    <p>auto mode を紹介するヒントが表示され、「Yes, and switch to auto mode」をワンキーで選択できるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💰 <code>/claude-api cost-optimize</code></h3>
+                    <p>既存プロジェクトの Claude API 支出をプロファイリングし、コスト削減策 (キャッシング、トークンハイジーン、バッチ処理、effort、モデル選択) を計測しながら 1 つずつ適用していくコマンド。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏢 <code>/claude-api</code> スキルの Admin API 対応</h3>
+                    <p>組織メンバー、招待、ワークスペース、API キー、レート制限レポート、ワークロードアイデンティティフェデレーション、CMEK をカバーするようになった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fixes -->
+        <section class="section">
+            <h2 class="section-title">修正のハイライト <span class="tag fixed">Fixed</span></h2>
+            <div class="fix-grid">
+                <div class="fix-card">
+                    <h4>⌨️ 入力・キーボード・UI</h4>
+                    <ul>
+                        <li>履歴検索、<code>/config</code>、<code>/mcp</code>、<code>/skills</code>、バックグラウンドタスク、<code>/model</code> で、矢印キーと Enter の素早い連続入力により移動先の 1 つ上の行へ操作が実行される問題を修正</li>
+                        <li>kitty プロトコル対応ターミナルで、非ラテン系 (例: キリル文字) キーボードレイアウト使用時に Ctrl ショートカットが発火しない問題を修正</li>
+                        <li>エスケーププレフィックス直後にマウスレポートが分割されて届いた場合に、<code>&lt;35;150;7M</code> のようなテキストがプロンプトに挿入される問題を修正</li>
+                    </ul>
+                </div>
+                <div class="fix-card">
+                    <h4>🤖 サブエージェント・フック・バックグラウンド</h4>
+                    <ul>
+                        <li>サブエージェントが初回呼び出しのモデル 404 で停止する問題を修正。セッションのフォールバックモデルチェーンを使用し、親へのエラーにはエラー種別、ステータス、リクエスト ID、モデルが含まれる</li>
+                        <li>フックやバックグラウンドエージェントの数メガバイトのエラー出力で会話がオーバーフローし「Prompt is too long」で動かなくなる問題を修正</li>
+                        <li>フックやバックグラウンドタスクの出力ファイルが書き込めない場合にメモリが際限なく増加する問題を修正。出力が失われた箇所はファイルに記録される</li>
+                        <li>フォアグラウンドから引き継がれたシェルコマンドがバックグラウンドで完了した際の内部エラー記録や、誤解を招く <code>[exited with code -1]</code> 表示を修正</li>
+                        <li>ターミナルのホストプロセス終了後、バックグラウンドセッションが <code>claude agents</code> で「opening…」のまま表示され続ける問題を修正。数秒以内に理由付きで失敗と表示され、Enter で再起動できる</li>
+                    </ul>
+                </div>
+                <div class="fix-card">
+                    <h4>🗂️ セッション・設定・ツール連携</h4>
+                    <ul>
+                        <li>Bash サンドボックスのコマンド後クリーンアップが、dotfile 管理 (nix / home-manager、stow) の <code>~/.claude/settings.json</code> シンボリックリンクを削除する問題を修正</li>
+                        <li><code>/terminal-setup</code> が Zed の <code>keymap.json</code> 全体を上書きする問題を修正。キーバインディングをマージするようになった</li>
+                        <li>セッションレジストリを更新できなかった場合に <code>/rename</code> が静かに完了扱いになる問題を修正。他セッションで古い名前が表示される可能性を通知する</li>
+                        <li><code>--agent</code> セッションの <code>/compact</code> と「Summarize from here」が、会話自身のシステムプロンプトではなくデフォルトのシステムプロンプトで要約する問題を修正</li>
+                        <li>SSH 経由の <code>/install-github-app</code> を修正。サインイン URL のコピー結果を正しく表示し、ブラウザを開けない場合は URL を即座に表示する</li>
+                        <li>バージョン指定のないマーケットプレイスプラグインのライブキャッシュディレクトリが、2 つ目のスコープへのインストール時に削除・再作成され、使用中のセッションに影響する問題を修正</li>
+                    </ul>
+                </div>
+                <div class="fix-card">
+                    <h4>☁️ クラウド・リモートセッション</h4>
+                    <ul>
+                        <li><code>/remote-control</code> で開始した Remote Control セッションが、接続クライアントに作業ツリーの diff を報告しない問題を修正</li>
+                        <li>セルフホストランナーのセッションが起動前に <code>running</code> を報告し、Claude デスクトップアプリから早すぎる「Claude is waiting for your input」通知が発生する問題を修正</li>
+                        <li>managed settings で Claude アプリゲートウェイサインインが構成され Anthropic エンドポイントに到達できない場合に、初回セットアップが「Unable to connect to Anthropic services」で終了する問題を修正</li>
+                        <li>クラウドセッション (Claude Code on the web、デスクトップ、モバイルアプリ) で、メッセージ送信直後のモード切り替え時に以前の権限モードが表示される問題を修正</li>
+                        <li>バックグラウンドエージェント、シェル、モニターの実行中にターン間でコンテナが再起動するとクラウドセッションが無応答になる問題を修正。再開したセッションが失われた作業を報告する</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improved / Changed -->
+        <section class="section">
+            <h2 class="section-title">改善と変更</h2>
+
+            <h3 class="section-subtitle">📈 改善 <span class="tag improved">Improved</span></h3>
+            <ul class="plain-list">
+                <li><strong>プラグインマーケットプレイスのハードニング</strong>: 制御文字や不可視文字を含む名前は拒否され、<code>/plugin</code> と <code>claude plugin</code> の出力に含まれるマーケットプレイス提供のテキストはエスケープ処理される</li>
+                <li>Bedrock、Vertex、Foundry のセッション (およびテレメトリが無効なセッション) で、構成済みの MCP サーバーが接続に失敗した場合に、Claude がツールが存在しないと結論づけるのではなく、接続失敗を通知されるようになった</li>
+            </ul>
+
+            <h3 class="section-subtitle">🔀 変更 <span class="tag changed">Changed</span></h3>
+            <ul class="plain-list">
+                <li><strong>Sonnet 5 のデフォルト auto-compact ウィンドウをフル 1M コンテキストに変更</strong>: 1M ウィンドウのセッションは約 934K トークンではなく約 967K トークンで auto-compact されるようになった</li>
+                <li>クロスセッションのピアメッセージがデフォルトで <code>Message from @&lt;sender&gt;: &lt;first line&gt;</code> の 1 行プレビューに折りたたまれるようになった。Ctrl+O で全文を展開できる</li>
+                <li>レンダリングされた markdown 内のターミナルハイパーリンクについて、ネットワークパスや自動マウントパスを指すもの、制御文字を含むもの、不可視文字で始まるものはプレーンテキストとして表示されるようになった</li>
+                <li>プロンプトフッターの PR バッジが、直前のチェックから 1 分未満の場合はターミナルの再フォーカス時に GitHub への再チェックをスキップするようになった</li>
+                <li>managed settings がゲートウェイログインを強制する場合、またはカスタム OAuth デプロイメントが構成されている場合に、アナリティクスがログイン後だけでなく起動時から無効になるようになった</li>
+                <li>Claude アプリゲートウェイのサインインリクエストが Claude Code を識別するようになった (<code>surface=claude_code</code> デバイス認可パラメーターと <code>claude-code/&lt;version&gt;</code> User-Agent)</li>
+                <li>組織のサインイン強制が、ホスト提供またはユーザーごとの Windows レジストリ設定が存在する場合でも、管理者の managed settings を読み取れないときは起動時に終了するように変更</li>
+            </ul>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る auto-compact の変更 (Sonnet 5 / 1M ウィンドウ)</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">934K</div>
+                    <div class="stat-label">変更前の auto-compact 発動点 (トークン)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">967K</div>
+                    <div class="stat-label">変更後の auto-compact 発動点 (トークン)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">+33K</div>
+                    <div class="stat-label">コンパクト化までに利用できるコンテキストの拡大分</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <div class="tech-note">
+                <h4>💬 SendFeedback ツールの仕組み</h4>
+                <p>セッション中の不具合をその場で報告可能にする仕組み。Claude が問題の内容をフィードバック報告として下書きし、ユーザーは <code>/feedback</code> で内容をレビューしてから送信する。自動送信ではなくユーザーの確認を挟む設計で、不要であれば <code>feedbackDrafts</code> 設定で無効化できる。</p>
+            </div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Issue(["⚠️ セッション中に問題が発生"]) --> Draft["🤖 Claude が SendFeedback ツールで<br/>フィードバック報告を下書き"]
+    Draft --> Review{"👤 ユーザーが /feedback で<br/>内容をレビュー"}
+    Review -->|承認| Send["📨 フィードバックを送信"]
+    Review -->|不要| Skip["🚫 送信しない"]
+    Config["⚙️ feedbackDrafts 設定"] -.->|オフで下書き機能を無効化| Draft
+
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warn fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class Issue warn
+    class Draft process
+    class Review decision
+    class Send internal
+    class Skip internal
+    class Config input
+                </pre>
+            </div>
+
+            <div class="tech-note">
+                <h4>💰 /claude-api cost-optimize のワークフロー</h4>
+                <p>Claude API を利用する既存プロジェクトのコスト構造を分析し、プロンプトキャッシング、トークンハイジーン、Batch API、effort パラメーター、モデル選択といったコスト削減レバーを、効果を計測しながら 1 つずつ適用していくワークフローを提供する。同時に <code>/claude-api</code> スキルは Admin API (組織メンバー管理、ワークスペース、API キー、レート制限レポート、CMEK など) にも対応し、組織管理系のタスクにも利用できるようになった。</p>
+            </div>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Start(["👤 /claude-api cost-optimize を実行"]) --> Profile["📊 Claude API 支出を<br/>プロファイリング"]
+    Profile --> Levers["🎛️ コスト削減レバーを特定"]
+    subgraph Options["💡 コスト削減レバー"]
+        direction LR
+        Cache["🗃️ キャッシング"]
+        Hygiene["🧹 トークン<br/>ハイジーン"]
+        Batch["📦 バッチ処理"]
+        Effort["⚙️ effort"]
+        Model["🤖 モデル選択"]
+        Cache ~~~ Hygiene ~~~ Batch ~~~ Effort ~~~ Model
+    end
+    Levers --> Options
+    Options --> Apply["✅ 効果を計測しながら<br/>1 つずつ適用"]
+    Apply -->|次のレバーへ| Options
+
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+
+    class Start input
+    class Profile,Levers process
+    class Cache,Hygiene,Batch,Effort,Model internal
+    class Apply process
+    class Options layer
+                </pre>
+            </div>
+
+            <div class="tech-note">
+                <h4>🧠 コンテキスト管理: auto-compact 発動点の拡大</h4>
+                <p>Sonnet 5 の 1M コンテキストウィンドウを使用するセッションのデフォルト auto-compact 発動点が約 934K トークンから約 967K トークンに変更され、コンパクト化までに利用できるコンテキストが約 33K トークン拡大した。</p>
+            </div>
+
+            <div class="tech-note">
+                <h4>🛡️ セキュリティ面のハードニング</h4>
+                <p>プラグインマーケットプレイスのハードニング (制御文字・不可視文字を含む名前の拒否、出力のエスケープ処理) と、ターミナルハイパーリンクの安全化 (ネットワークパスや制御文字を含むリンク先のプレーンテキスト化) により、悪意あるマーケットプレイスやドキュメントを経由した攻撃面が縮小されている。</p>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="section-subtitle">🎯 対象</h3>
+            <ul class="plain-list">
+                <li>Claude API を利用するプロジェクトのコストを最適化したい開発者 (<code>/claude-api cost-optimize</code>)</li>
+                <li>組織で Claude Code を展開し、独自のヒントを表示したい管理者 (<code>spinnerTipsOverride</code>)</li>
+                <li>Admin API を利用する組織管理者 (<code>/claude-api</code> スキルの対応拡大)</li>
+                <li>Sonnet 5 の 1M コンテキストウィンドウを利用しているユーザー (auto-compact 発動点の変更)</li>
+                <li>サブエージェント、フック、バックグラウンドセッション、クラウドセッションを利用しているユーザー</li>
+                <li>nix / home-manager や stow で <code>~/.claude/settings.json</code> を管理しているユーザー</li>
+                <li>Bedrock、Vertex AI、Foundry 経由で MCP サーバーを利用しているユーザー</li>
+            </ul>
+
+            <h3 class="section-subtitle">🛠️ 必要なアクション — 最新バージョンへの更新</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Claude Code の更新方法</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 組み込みコマンド
+claude update
+
+# npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+            <ul class="plain-list">
+                <li>Claude によるフィードバック下書きが不要な場合は、<code>feedbackDrafts</code> 設定で無効化できる</li>
+                <li>組織独自のヒントを表示したい場合は、<code>spinnerTipsOverride</code> の新しいエントリ形式 (<code>{id, text, cooldownSessions, priority}</code>) や <code>tipsFile</code> を設定に追加する</li>
+                <li>API コストの削減に取り組む場合は、対象プロジェクトで <code>/claude-api cost-optimize</code> を実行し、提示されるコスト削減策を計測しながら適用していくことを検討するとよい</li>
+            </ul>
+
+            <h3 class="section-subtitle">🔀 移行ガイド</h3>
+            <ul class="plain-list">
+                <li>破壊的変更はアナウンスされていないため、移行作業は不要である</li>
+                <li>ただし、Sonnet 5 の 1M コンテキストウィンドウを使用している場合、auto-compact の発動タイミングが約 967K トークンに変わる点に留意する</li>
+            </ul>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>💰 既存プロジェクトの API コスト削減</h4>
+                <p>Claude API を利用するプロジェクトで <code>/claude-api cost-optimize</code> を実行すると、支出のプロファイリングに基づき、キャッシング、トークンハイジーン、バッチ処理、effort、モデル選択といった削減策を効果を計測しながら 1 つずつ適用できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏢 組織向けカスタマイズと管理タスクの自動化</h4>
+                <p>管理者は <code>spinnerTipsOverride</code> で組織独自のヒントをローテーション表示できる。さらに <code>/claude-api</code> スキルが Admin API (組織メンバー、招待、ワークスペース、API キー、レート制限レポート、ワークロードアイデンティティフェデレーション、CMEK) に対応したため、組織管理系のタスクにも利用できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧠 Sonnet 5 での長時間セッション</h4>
+                <p>1M コンテキストウィンドウのセッションでは auto-compact の発動点が約 967K トークンに引き上げられたため、大規模なコードベースの調査や長時間の作業でコンパクト化までに使えるコンテキストが実質的に増加する。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">✨</div>
+                    <div class="key-point-content">
+                        <h3>利用者層ごとに価値のある新機能</h3>
+                        <p><code>SendFeedback</code> ツールによるフィードバック体験の改善、<code>/claude-api cost-optimize</code> による API コスト最適化支援、<code>spinnerTipsOverride</code> の拡張による組織向けカスタマイズが追加された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📏</div>
+                    <div class="key-point-content">
+                        <h3>長時間セッションのコンテキストが実質的に増加</h3>
+                        <p>Sonnet 5 の auto-compact ウィンドウのフル 1M コンテキストへの拡大により、長時間セッションで利用できるコンテキストが実質的に増加した。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>安定性とセキュリティの強化</h3>
+                        <p>サブエージェントのフォールバックモデルチェーン対応やフック出力オーバーフローの防止など安定性の修正、プラグインマーケットプレイスやターミナルハイパーリンクのハードニングも含まれており、幅広いユーザーにアップデートを推奨できる内容となっている。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📦 <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">Claude Code npm パッケージ</a></li>
+                <li>🐙 <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li>📚 <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは reports/2026/2026-08-26-claude-code-v2-1-247.md をもとに生成されました。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
