@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Console の個人キー / サービスアカウントキー対応と SDK beta 名前空間の GA 形式移行 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+        }
+
+        .section > p, .section .desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Before/After */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            padding-left: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card li {
+            margin-bottom: 6px;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0 20px;
+        }
+
+        .info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+        }
+
+        .info-table tr:nth-child(even) td {
+            background: var(--anthropic-light);
+        }
+
+        .info-table code {
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        p code, li code {
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        /* SDK badges */
+        .sdk-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 12px 0 8px;
+        }
+
+        .sdk-badge {
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(212, 165, 116, 0.25);
+        }
+
+        .sdk-badge small {
+            font-weight: 500;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Note boxes */
+        .note-box {
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .note-box.warning {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            color: #5D4037;
+        }
+
+        .note-box.info {
+            background: #E3F2FD;
+            border: 2px solid #64B5F6;
+            color: #1565C0;
+        }
+
+        .note-box strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action steps */
+        .action-list {
+            counter-reset: step;
+            list-style: none;
+        }
+
+        .action-list li {
+            position: relative;
+            padding: 14px 16px 14px 56px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-list li::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .action-list li strong {
+            color: var(--text-primary);
+        }
+
+        .plain-list {
+            padding-left: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .plain-list li {
+            margin-bottom: 8px;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-top: 8px;
+        }
+
+        .summary-box ul {
+            padding-left: 20px;
+            font-size: 14px;
+        }
+
+        .summary-box li {
+            margin-bottom: 8px;
+        }
+
+        .summary-box code {
+            background: rgba(212, 165, 116, 0.2);
+            color: #E8C9A8;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API / SDK</span>
+                <span class="category-badge">認証・セキュリティ</span>
+                <h1>🔑 Console の個人キー / サービスアカウントキー対応と SDK beta 名前空間の GA 形式移行</h1>
+                <p class="date">📅 2026-08-27 | Claude Platform Release Notes</p>
+                <p class="lead">Files / Skills API の GA 化の総仕上げと、「キーが所有者より長生きしない」API キー管理のモダナイゼーション。2 つの重要な更新が発表されました。</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">📌 概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📦</div>
+                    <div class="key-point-content">
+                        <h3>SDK の beta 名前空間が GA 形式に移行</h3>
+                        <p>Python 1.2.0、TypeScript 0.122.0、Go 1.68.0、Java 2.59.0、Ruby 1.67.0、C# 12.44.0 以降、<code>client.beta.files</code> と <code>client.beta.skills</code> は <code>files-api-2025-04-14</code> / <code>skills-2025-10-02</code> beta ヘッダーを送信せず、GA 版と同じレスポンス形式を返します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">👤</div>
+                    <div class="key-point-content">
+                        <h3>Console で個人キー / サービスアカウントキーを作成可能に</h3>
+                        <p>Claude Console の Settings → API keys で、ユーザーまたはサービスアカウントという「アイデンティティ」に紐付くキーを作成できるようになりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚫</div>
+                    <div class="key-point-content">
+                        <h3>キーが所有者より長生きしない</h3>
+                        <p>リンクされたアカウントが組織から削除されると、キーは自動的に動作を停止します。退職者のキーが残り続けるリスクが解消されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>アカウントごとの使用状況の追跡が容易に</h3>
+                        <p>すべてのリクエストがアイデンティティとして動作するため、組織管理者はアカウント単位で API 使用状況を追跡しやすくなります。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗂️</div>
+                    <div class="key-point-content">
+                        <h3>既存統合への影響は限定的</h3>
+                        <p>beta ヘッダーを明示的に送信し続けるリクエストは従来形式を維持し、従来のワークスペース API キーもレガシーオプションとして引き続きサポートされます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">🔄 Before / After</h2>
+
+            <h3 class="subsection-title">📦 SDK の Files / Skills アクセス</h3>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li><code>client.beta.files</code> / <code>client.beta.skills</code> が beta ヘッダーを自動送信</li>
+                        <li>beta 形式のレスポンス (<code>has_more</code> / <code>first_id</code> / <code>last_id</code> ページネーション)</li>
+                        <li>beta と GA でレスポンス形式の二重管理が必要</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>beta ヘッダーは送信されず、GA 版の <code>client.files</code> / <code>client.skills</code> と同じレスポンス形式</li>
+                        <li><code>page</code> / <code>next_page</code> カーソルによる一貫したページネーション</li>
+                        <li>beta ヘッダーを明示送信すれば従来形式を維持可能</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">🔑 API キーの管理</h3>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>ワークスペース API キーは「誰のものでもない」キー</li>
+                        <li>作成者が組織を離れても動作し続ける</li>
+                        <li>キーの所有者と実際の利用者の対応関係が不明瞭</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li>すべての API キーを組織が管理するアイデンティティに紐付け可能</li>
+                        <li>アカウントの削除でキーは自動的に無効化</li>
+                        <li>アカウントごとの使用状況を追跡しやすい</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">✨ 主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>👤 個人キー</h3>
+                    <p>作成したユーザー本人として動作し、そのロールと権限を持ちます。ユーザーが組織またはワークスペースへのアクセスを失うと無効になり、組織から削除されるとキーはアーカイブされます。自身の開発・スクリプト向けです。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 サービスアカウントキー</h3>
+                    <p>サービスアカウントとして動作し、CI や本番サービスなどの共有・無人ワークロード向けです。サービスアカウントがアーカイブされる、または対象ワークスペースから削除されると無効になります。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 SDK beta 名前空間の統合</h3>
+                    <p>6 言語の SDK で <code>client.beta.files</code> / <code>client.beta.skills</code> が GA 形式に統一されました。beta 名前空間は Managed Agents beta の <code>scope_id</code> フィルタリングなど、beta 段階の機能向けの <code>betas</code> 引数を引き続き受け付けます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 キーのスコープ選択</h3>
+                    <p>特定のワークスペースにスコープするか、管理エンドポイント (Admin API) およびアクセス可能な全ワークスペースで動作させるかを、キー作成時に選択できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏰ 有効期限とメール通知</h3>
+                    <p>プリセット (3 時間、1 日、7 日、30 日)、カスタム期間、「Never」から選択可能です。組織に最大有効期限ポリシーがある場合は「Never」は選択できず、期限が近づくと作成者にメール通知が送信されます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Types Comparison -->
+        <section class="section">
+            <h2 class="section-title">🗝️ API キーの種類の比較</h2>
+            <p class="desc">キーの種類は以下の 3 つに整理されます。個人キーとサービスアカウントキーは「アイデンティティ紐付き (identity-backed)」です。</p>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>キーの種類</th>
+                            <th>動作主体</th>
+                            <th>有効範囲</th>
+                            <th>無効になる条件</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>👤 個人キー</td>
+                            <td>作成したユーザー本人 (そのロールと権限)</td>
+                            <td>単一ワークスペース、またはロールが API 利用を許可する全ワークスペース</td>
+                            <td>ユーザーが組織またはワークスペースへのアクセスを失ったとき。組織から削除されるとキーはアーカイブ</td>
+                        </tr>
+                        <tr>
+                            <td>🤖 サービスアカウントキー</td>
+                            <td>サービスアカウント</td>
+                            <td>単一ワークスペース、またはサービスアカウントがアクセスできる範囲</td>
+                            <td>サービスアカウントがアーカイブされる、または対象ワークスペースから削除されたとき</td>
+                        </tr>
+                        <tr>
+                            <td>🗂️ ワークスペースキー (レガシー)</td>
+                            <td>なし (ワークスペース所属)</td>
+                            <td>作成されたワークスペースのみ</td>
+                            <td>期限切れ、無効化・削除、ワークスペースのアーカイブ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note-box info">
+                <strong>💡 アイデンティティ紐付きキーの特徴</strong>
+                すべてのリクエストがそのアイデンティティとして動作し、同じ権限を持ちます。リンクされたアカウントが組織から削除されるとキーは自動的に動作を停止し、組織管理者はアカウントごとの API 使用状況を追跡しやすくなります。
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">🏗️ アーキテクチャ</h2>
+            <p class="desc">API キーの種類と権限の関係を以下に示します。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Console["🖥️ Claude Console"]
+        Create["🔑 API キー作成<br/>Settings → API keys"]
+    end
+
+    subgraph Identity["👥 アイデンティティ紐付きキー"]
+        direction LR
+        Personal["👤 個人キー<br/>ユーザー本人として動作<br/>本人のロールと権限"]
+        Service["🤖 サービスアカウントキー<br/>サービスアカウントとして動作<br/>CI / 本番サービス向け"]
+        Personal ~~~ Service
+    end
+
+    subgraph Legacy["📦 レガシー"]
+        WorkspaceKey["🗂️ ワークスペースキー<br/>ワークスペースに所属<br/>引き続きサポート"]
+    end
+
+    subgraph Scope["🎯 キーのスコープ"]
+        direction LR
+        Single["📍 単一ワークスペース<br/>ヘッダー指定不要"]
+        Multi["🌐 全ワークスペース<br/>Admin API も利用可能<br/>anthropic-workspace-id 必須"]
+        Single ~~~ Multi
+    end
+
+    Revoke{"⚠️ リンクされたアカウントが<br/>組織から削除されたら"}
+    Disabled["🚫 キーは自動的に無効化"]
+
+    Create --> Personal
+    Create --> Service
+    Create -.-> WorkspaceKey
+    Personal --> Scope
+    Service --> Scope
+    WorkspaceKey -.-> Single
+    Personal --> Revoke
+    Service --> Revoke
+    Revoke --> Disabled
+
+    classDef console fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef identity fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef legacy fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#5D4037
+    classDef scope fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#33691E
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#B71C1C
+
+    class Console console
+    class Identity,Legacy,Scope layer
+    class Create console
+    class Personal,Service identity
+    class WorkspaceKey legacy
+    class Single,Multi scope
+    class Revoke decision
+    class Disabled error
+                </pre>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">⚙️ 技術詳細</h2>
+
+            <h3 class="subsection-title">📦 対象 SDK バージョン一覧</h3>
+            <p class="desc">以下のバージョン以降で、<code>client.beta.files</code> / <code>client.beta.skills</code> が GA 形式に統合されます。</p>
+            <div class="sdk-grid">
+                <span class="sdk-badge">🐍 Python <small>1.2.0</small></span>
+                <span class="sdk-badge">🟦 TypeScript <small>0.122.0</small></span>
+                <span class="sdk-badge">🐹 Go <small>1.68.0</small></span>
+                <span class="sdk-badge">☕ Java <small>2.59.0</small></span>
+                <span class="sdk-badge">💎 Ruby <small>1.67.0</small></span>
+                <span class="sdk-badge">🎼 C# <small>12.44.0</small></span>
+            </div>
+
+            <h3 class="subsection-title">🔀 SDK 更新後の変更点</h3>
+            <ul class="plain-list">
+                <li><code>client.beta.files</code> と <code>client.beta.skills</code> は <code>files-api-2025-04-14</code> / <code>skills-2025-10-02</code> beta ヘッダーを送信しない</li>
+                <li>レスポンスは <code>client.files</code> / <code>client.skills</code> と同じ GA 形式 (型名には <code>Beta</code> プレフィックスが付く)</li>
+                <li><code>client.beta.skills.delete()</code> は Skill を全バージョンごと削除する (GA 版の仕様に統一)</li>
+                <li>beta Messages 型 <code>BetaSkill</code> は <code>BetaContainerSkill</code> にリネーム</li>
+                <li>beta 名前空間は beta 段階の機能向けの <code>betas</code> 引数を引き続き受け付ける</li>
+            </ul>
+            <div class="note-box info">
+                <strong>💡 既存統合への影響</strong>
+                beta ヘッダーを明示的に送信し続けるリクエストは従来の beta 形式のレスポンスを維持するため、既存の統合は変更を加えるまで動作し続けます。
+            </div>
+
+            <h3 class="subsection-title">📁 Files API の beta 形式と GA 形式の違い</h3>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th><code>files-api-2025-04-14</code> あり</th>
+                            <th>ヘッダーなし (GA 形式)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>List レスポンス</td>
+                            <td><code>{ data, has_more, first_id, last_id }</code></td>
+                            <td><code>{ data, next_page }</code> (<code>next_page</code> を <code>page</code> クエリパラメータに渡す)</td>
+                        </tr>
+                        <tr>
+                            <td>List カーソル</td>
+                            <td><code>before_id</code>、<code>after_id</code></td>
+                            <td><code>page</code>、または最大 100 件の <code>ids[]</code> (<code>before_id</code> / <code>after_id</code> は 400 エラー)</td>
+                        </tr>
+                        <tr>
+                            <td>ファイルオブジェクトの <code>expires_at</code></td>
+                            <td>返されない</td>
+                            <td>常に存在 (有効期限なしの場合は <code>null</code>)</td>
+                        </tr>
+                        <tr>
+                            <td>アップロード時の <code>Content-Type</code></td>
+                            <td>必須</td>
+                            <td>省略可能 (省略時は自動検出)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="subsection-title">🌐 ワークスペースの選択</h3>
+            <ul class="plain-list">
+                <li>ワークスペースにスコープされていない個人キー / サービスアカウントキーでは、<code>anthropic-workspace-id</code> ヘッダーで対象ワークスペースの ID を指定する</li>
+                <li>ヘッダーを省略すると 400 <code>invalid_request_error</code> が返される</li>
+                <li>特定のワークスペースにスコープしたキーではこのヘッダーは不要</li>
+                <li>Admin API は、ワークスペースにスコープされていない個人キーまたはサービスアカウントキーのみを受け付ける</li>
+            </ul>
+
+            <h3 class="subsection-title">⏰ キーの有効期限</h3>
+            <ul class="plain-list">
+                <li>プリセット (3 時間、1 日、7 日、30 日)、カスタム期間、または「Never」から選択可能</li>
+                <li>組織に最大有効期限ポリシーがある場合は「Never」は選択できない</li>
+                <li>有効期限が近づくと、キーの作成者にメール通知が送信される</li>
+            </ul>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">💻 コード例</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">Python SDK 1.2.0 以降: GA 形式の Files / Skills API</span>
+                </div>
+                <pre><code class="language-python"># Python SDK 1.2.0 以降: GA 形式の Files / Skills API
+from anthropic import Anthropic
+
+client = Anthropic()  # ANTHROPIC_API_KEY を読み込む
+
+# GA 名前空間を使用 (beta ヘッダーは不要)
+files = client.files.list()
+
+# ワークスペースにスコープされていない個人キー / サービスアカウントキーの場合、
+# anthropic-workspace-id ヘッダーが必須
+workspace_client = Anthropic(
+    default_headers={"anthropic-workspace-id": "wrkspc_01JwQvzr7rXLA5AGx3HKfFUJ"},
+)
+
+# Skill の削除は全バージョンを削除する
+# (SDK 1.2.0 以降は client.beta.skills.delete() も同じ動作)
+client.skills.delete(skill_id="skill_01AbCdEfGhIjKlMnOpQrStUv")</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">🎯 ユースケース</h2>
+            <div class="use-case">
+                <h4>👤 自身の開発・スクリプトに個人キー</h4>
+                <p>開発者は、自身のツールやスクリプトに個人キーを使用することで、本人のロールと権限で動作し、組織を離れた際にはキーが自動的に無効化されます。キーの所有者と利用者の対応関係が明確になります。</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 CI / 本番サービスにサービスアカウントキー</h4>
+                <p>CI や本番サービスなどの共有・自動化ワークロードには、特定の個人に依存しないサービスアカウントキーを使用します。担当者の退職によるキーの失効リスクを避けつつ、アイデンティティ単位での追跡が可能です。</p>
+            </div>
+            <div class="use-case">
+                <h4>📦 SDK 更新による Files / Skills API の GA 移行</h4>
+                <p>SDK ユーザーは、対象バージョン以降に更新することで beta と GA の二重管理が解消され、一貫した型とページネーション (<code>page</code> / <code>next_page</code> カーソルや自動ページネーションヘルパー) で実装できます。</p>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">🔌 開発者への影響</h2>
+
+            <h3 class="subsection-title">👥 対象となる開発者</h3>
+            <ul class="plain-list">
+                <li><code>client.beta.files</code> / <code>client.beta.skills</code> を使用している SDK ユーザー (Python、TypeScript、Go、Java、Ruby、C#)</li>
+                <li>beta レスポンス型 (<code>BetaSkill</code> など) に依存しているコードベース</li>
+                <li>ワークスペース API キーで運用している組織の管理者・開発者</li>
+                <li>CI / 本番サービスなどの共有・自動化ワークロードを運用するチーム</li>
+            </ul>
+
+            <h3 class="subsection-title">🛠️ 必要なアクション</h3>
+            <ol class="action-list">
+                <li><strong>SDK 更新時の影響確認</strong>: 対象バージョン以降ではレスポンスが GA 形式に変わる。beta 形式の型 (<code>has_more</code> / <code>first_id</code> / <code>last_id</code> や <code>BetaSkill</code> 型) に依存している場合は、移行完了まで以前のリリースに留まるか、コードを修正する</li>
+                <li><strong><code>client.beta.skills.delete()</code> の動作変更に注意</strong>: Skill を全バージョンごと削除するようになったため、特定バージョンのみ削除する意図のコードは見直しが必要</li>
+                <li><strong>キー戦略の見直し</strong>: 自身の開発・スクリプトには個人キー、CI や本番サービスにはサービスアカウントキーを使用し、新規統合ではアイデンティティ紐付きキーを優先する</li>
+                <li><strong>マルチワークスペースキーのヘッダー対応</strong>: ワークスペースにスコープしないキーでは <code>anthropic-workspace-id</code> ヘッダーを各リクエストに付与する</li>
+            </ol>
+
+            <h3 class="subsection-title">🧳 Files API の移行手順</h3>
+            <p class="desc">移行は任意です。beta ヘッダーを送信し続ける限り従来形式を維持します。</p>
+            <ol class="action-list">
+                <li>beta ヘッダー <code>anthropic-beta: files-api-2025-04-14</code> をリクエストから削除する。SDK では <code>client.beta.files</code> の代わりに <code>client.files</code> を呼び出す</li>
+                <li>ページネーションを <code>after_id</code> / <code>before_id</code> ループから <code>page</code> / <code>next_page</code> カーソル、または SDK の自動ページネーションヘルパーに置き換える</li>
+                <li><code>expires_at</code> フィールドを読み取る (<code>null</code> は有効期限なしを意味する)</li>
+            </ol>
+
+            <h3 class="subsection-title">🔄 ワークスペースキーの置き換え手順</h3>
+            <ol class="action-list">
+                <li>キーの種類を決める (自身のツールは個人キー、共有・無人ワークロードはサービスアカウントキー)</li>
+                <li>必要に応じて組織管理者がサービスアカウントを作成し、対象ワークスペースに追加する</li>
+                <li>新しいキーを作成する (複数ワークスペースが不要なら統合先ワークスペースにスコープする)</li>
+                <li><code>ANTHROPIC_API_KEY</code> 環境変数やシークレットマネージャーのエントリを新しいキーに置き換える</li>
+                <li>リクエストの成功を確認してから、古いワークスペースキーを削除する</li>
+            </ol>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">📝 まとめ</h2>
+            <p>今回のリリースは、Files / Skills API の GA 化の総仕上げと、API キー管理のモダナイゼーションという 2 つの流れを示しています。SDK の beta 名前空間が GA 形式に統一されたことで beta と GA の二重管理が解消され、開発者は一貫した型とページネーションで実装できるようになりました。</p>
+            <div class="summary-box">
+                <ul>
+                    <li>6 言語 SDK で <code>client.beta.files</code> / <code>client.beta.skills</code> が GA 形式のレスポンスに統一</li>
+                    <li>beta ヘッダーを明示的に送信すれば従来形式が維持されるため、既存統合への影響は限定的</li>
+                    <li>個人キー / サービスアカウントキーの導入で「キーが所有者より長生きしない」セキュリティ原則を実現</li>
+                    <li>組織管理者はアカウント単位で使用状況を追跡でき、退職者のキーが残り続けるリスクも解消</li>
+                    <li>ワークスペースキーはレガシーオプションとして引き続きサポート</li>
+                </ul>
+            </div>
+            <p style="margin-top: 16px;">新規統合ではアイデンティティ紐付きキー、あるいはさらに進んで Workload Identity Federation の採用を検討することが推奨されます。</p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/authentication#api-keys" target="_blank" rel="noopener noreferrer">Authentication - API keys</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/files#migrate-from-files-api-2025-04-14" target="_blank" rel="noopener noreferrer">Files API - Migrate from files-api-2025-04-14</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/skills-guide#migrate-from-skills-2025-10-02" target="_blank" rel="noopener noreferrer">Skills Guide - Migrate from skills-2025-10-02</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/workload-identity-federation" target="_blank" rel="noopener noreferrer">Workload Identity Federation</a></li>
+                <li><a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener noreferrer">Claude Console - API keys 設定</a></li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-08-27 | ソース: Claude Platform Release Notes | カテゴリ: API / SDK / 認証・セキュリティ</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
