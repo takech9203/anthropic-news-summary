@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-08-31](2026/2026-08-31-improving-alignment-security-efforts.md) - アライメントとセキュリティへの取り組みの改善
+- [2026-08-31](2026/2026-08-31-claude-code-v2-1-252.md) - Claude Code v2.1.252 リリース — Mac での Bash 失敗、権限保存、Remote Control の停滞、大容量通知によるサイズ超過の修正
 - [2026-08-28](2026/2026-08-28-claude-code-v2-1-251.md) - Claude Code v2.1.251 リリース — モデル切り替えフックの追加、サブエージェントのライブストリーミング、シンボリックリンク経由の権限バイパス修正
 - [2026-08-27](2026/2026-08-27-model-hardware-standard-research-preview.md) - Model Hardware Standard のリサーチプレビュー開始 - AI エージェントが物理デバイスを安全に操作するための共有仕様
 - [2026-08-27](2026/2026-08-27-expanding-support-for-scientists.md) - 科学者向け支援の拡充: Claude チームプラン無料提供と AI for Science プログラムの拡大

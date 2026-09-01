@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.252 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-chips {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-chip {
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 24px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .tag.fixed {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Meta Table */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .meta-table th,
+        .meta-table td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .meta-table th {
+            width: 30%;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .meta-table td a {
+            color: var(--anthropic-coral);
+            word-break: break-all;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code,
+        .use-case code,
+        .key-point-content code,
+        .plain-list code,
+        .section-lead code,
+        .tech-note code,
+        .comparison-card code {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Plain List */
+        .plain-list {
+            display: grid;
+            gap: 10px;
+            padding-left: 4px;
+            list-style: none;
+        }
+
+        .plain-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .plain-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 4px;
+            color: var(--anthropic-coral);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Tech Notes */
+        .tech-note {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-note h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tech-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.35rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <span class="category-badge">リリース</span>
+                <h1>Claude Code v2.1.252 リリース<br>Mac での Bash 失敗、権限保存、Remote Control の停滞、大容量通知によるサイズ超過の修正</h1>
+                <p class="date">📅 2026-08-31 (npm 公開: 17:07 UTC) | ソース: Claude Code Changelog</p>
+                <div class="version-chips">
+                    <span class="version-chip">v2.1.252</span>
+                    <span class="version-chip">修正のみ</span>
+                    <span class="version-chip">バグ修正 4 件</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>新機能を含まない、修正のみのリリース</h3>
+                        <p>v2.1.252 は 4 件の修正 (Fixed) のみで構成されるバグ修正リリース。破壊的変更はなく、設定変更や移行作業は不要である。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🍎</div>
+                    <div class="key-point-content">
+                        <h3>Mac での Bash コマンド失敗と権限保存漏れを修正</h3>
+                        <p>一部の Mac で発生していた「task output swap refused」エラーによる Bash コマンドの失敗と、<code>.claude/settings.local.json</code> が存在しないプロジェクトで「always allow」が保存されない問題が解消された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📡</div>
+                    <div class="key-point-content">
+                        <h3>Remote Control の停滞と API リクエストサイズ超過を修正</h3>
+                        <p>接続品質が低下した際の Remote Control セッションの数分間の停滞と、大容量の失敗出力を持つバックグラウンドタスク通知が API リクエストサイズ上限を超過させる問題が修正された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚀</div>
+                    <div class="key-point-content">
+                        <h3>日常的なワークフローの安定性に直結</h3>
+                        <p>Bash 実行、権限管理、Remote Control、バックグラウンドタスクという日常的に使用される機能の修正であり、該当する症状に遭遇していたユーザーには早期のアップデートを推奨できる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.252</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">破壊的変更</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="meta-table">
+                <tr>
+                    <th>発表日</th>
+                    <td>2026-08-31 (npm 公開: 17:07 UTC)</td>
+                </tr>
+                <tr>
+                    <th>ソース</th>
+                    <td>Claude Code Changelog</td>
+                </tr>
+                <tr>
+                    <th>カテゴリ</th>
+                    <td>Claude Code アップデート</td>
+                </tr>
+                <tr>
+                    <th>公式リンク</th>
+                    <td><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景 — リリースの流れ</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>前回 v2.1.251 (2026-08-28)</h4>
+                    <p>モデル切り替えフックの追加やシンボリックリンク関連のセキュリティ修正を含む大規模なリリース。サンドボックス対策として Bash コマンドの出力ファイルの作成・読み戻し方法も変更された。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>今回 v2.1.252 (2026-08-31)</h4>
+                    <p>直後のフォローアップにあたる小規模なリリース。Mac 環境の Bash 実行、権限設定の永続化、Remote Control の応答性、バックグラウンドタスク通知という 4 つの領域の不具合を修正した。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fixes -->
+        <section class="section">
+            <h2 class="section-title">主要変更点 — 修正 4 件 <span class="tag fixed">Fixed</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🍎 Mac での Bash コマンド失敗の修正</h3>
+                    <p>一部の Mac で、Bash コマンドが「task output swap refused (tasks dir moved or linked)」エラーで失敗する問題を修正。v2.1.251 で導入された出力ファイル差し替え対策の安全機構が、macOS の一部環境で正当な操作を誤検知していたケースであり、チェックの精度が改善された。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💾 「always allow」の保存漏れの修正</h3>
+                    <p><code>.claude/settings.local.json</code> がまだ存在しないプロジェクトで、権限プロンプトの「always allow」(常に許可) 選択が保存されない問題を修正。修正後は、ファイルが存在しない場合でも許可ルールが正しく永続化され、セッションをまたいで同じ確認が再表示されなくなる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📡 Remote Control セッションの停滞の修正</h3>
+                    <p>Claude Desktop または VS Code がホストする Remote Control セッションで、claude.ai への接続品質が低下している場合に、ツールの実行完了後もセッションが数分間停滞する問題を修正。接続が劣化した状況でもツール完了後の応答が停滞しなくなった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 大容量の失敗出力によるサイズ超過の修正</h3>
+                    <p>非常に大きな失敗出力を持つバックグラウンドタスク通知 (例: ディスクフル時の git エラー) が、会話全体を API リクエストサイズの上限を超過させてしまう問題を修正。大容量の失敗出力が原因で会話そのものが機能不全に陥ることがなくなった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+            <p class="section-lead">4 件の修正はいずれも、エッジケースにおける堅牢性の改善という共通点を持つ。</p>
+
+            <div class="tech-note">
+                <h4>🎯 誤検知の解消</h4>
+                <p>Mac での「task output swap refused」は、出力ファイル差し替え対策として導入された安全機構が特定の macOS 環境で正当な操作を誤って拒否していたケースであり、セキュリティチェックの精度が改善された。</p>
+            </div>
+
+            <div class="tech-note">
+                <h4>🌱 初期状態の考慮</h4>
+                <p>「always allow」の保存失敗は、設定ファイルが存在しない初期状態のプロジェクトという境界条件の処理漏れであり、新規プロジェクトでの利用開始時の体験が改善された。</p>
+            </div>
+
+            <div class="tech-note">
+                <h4>🌐 劣化した接続への耐性</h4>
+                <p>Remote Control の停滞修正により、ネットワーク品質が不安定な環境でもホストアプリ経由のセッションが実用的な応答性を維持できるようになった。</p>
+            </div>
+
+            <div class="tech-note">
+                <h4>📏 入力サイズの制御</h4>
+                <p>バックグラウンドタスク通知の修正は、外部要因 (ディスクフルなど) で生成される予測不能なサイズの出力が、API の制約を通じて会話全体を巻き込んで失敗させないための防御である。</p>
+            </div>
+
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Task["🔄 バックグラウンドタスク失敗<br/>例: ディスクフル時の git エラー"] --> Output["📄 巨大な失敗出力"]
+    Output --> Before["⚠️ 従来: 出力全体を<br/>通知として会話に追加"]
+    Before --> Limit["⛔ API リクエストサイズ<br/>上限を超過し会話が継続不能"]
+
+    Output --> After["✅ v2.1.252: 通知サイズを制御"]
+    After --> Safe["💬 会話は上限内に収まり<br/>継続可能"]
+
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef critical fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef safe fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Task internal
+    class Output process
+    class Before warning
+    class Limit critical
+    class After,Safe safe
+                </pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="section-subtitle">🎯 対象</h3>
+            <ul class="plain-list">
+                <li>macOS で Claude Code を使用しており、「task output swap refused」エラーで Bash コマンドが失敗していたユーザー</li>
+                <li>新規プロジェクトや <code>.claude/settings.local.json</code> 未作成のプロジェクトで「always allow」を利用するユーザー</li>
+                <li>Claude Desktop や VS Code から Remote Control セッションをホストしているユーザー (特にネットワーク品質が不安定な環境)</li>
+                <li>バックグラウンドタスクを多用し、大量のエラー出力が発生しうる環境 (CI、ディスク容量が逼迫したマシンなど) で運用しているユーザー</li>
+            </ul>
+
+            <h3 class="section-subtitle">🛠️ 必要なアクション — 最新バージョンへの更新</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Claude Code の更新方法</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 組み込みコマンド
+claude update
+
+# npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+            <ul class="plain-list">
+                <li>設定変更や移行作業は不要である。上記のいずれかの症状に遭遇していた場合は、アップデート後に解消されているか確認するとよい</li>
+                <li>本リリースに破壊的変更はない。API、設定ファイル、フックなどの仕様変更も含まれないため、移行作業は不要である</li>
+            </ul>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🍎 macOS 環境での安定した Bash 実行</h4>
+                <p>「task output swap refused」エラーで Bash コマンドが失敗していた Mac ユーザーは、アップデートにより正当なコマンドが誤って拒否されることなく実行できるようになる。日常のコマンド実行が安定する。</p>
+            </div>
+            <div class="use-case">
+                <h4>💾 新規プロジェクトでのスムーズな権限管理</h4>
+                <p><code>.claude/settings.local.json</code> がまだ存在しない新規プロジェクトでも「always allow」の選択が正しく永続化されるため、セッションをまたぐたびに同じ許可プロンプトに答える手間がなくなり、利用開始時の体験が向上する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🌐 不安定なネットワークや過酷な環境での運用</h4>
+                <p>ネットワーク品質が不安定な環境での Remote Control セッションの応答性が改善され、CI やディスク容量が逼迫したマシンなど大量のエラー出力が発生しうる環境でも、会話が API リクエストサイズ超過で機能不全に陥ることがなくなる。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>4 件の不具合を解消する修正のみの小規模リリース</h3>
+                        <p>一部の Mac における Bash コマンドの実行失敗、設定ファイル未作成プロジェクトでの「always allow」の保存漏れ、接続劣化時の Remote Control セッションの停滞、大容量の失敗出力による API リクエストサイズ超過という 4 件の不具合が修正された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚀</div>
+                    <div class="key-point-content">
+                        <h3>該当環境のユーザーには早めのアップデートを推奨</h3>
+                        <p>新機能はないものの、Bash 実行、権限管理、Remote Control、バックグラウンドタスクという日常的に使用される機能の安定性を高める内容であり、該当する環境で運用しているユーザーには早めのアップデートを推奨する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📦 <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">Claude Code npm パッケージ</a></li>
+                <li>🐙 <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li>📚 <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li>📄 <a href="2026-08-28-claude-code-v2-1-251.html">Claude Code v2.1.251 リリース</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは reports/2026/2026-08-31-claude-code-v2-1-252.md をもとに生成されました。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
