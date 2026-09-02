@@ -5,6 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-09-02](2026/2026-09-02-claude-code-v2-1-257-v2-1-258.md) - Claude Code v2.1.257 / v2.1.258 リリース — Fable 5.1 がデフォルトモデルに、時刻表示設定、Containment Escape ルール、大規模な安定性改善
+- [2026-09-01](2026/2026-09-01-enterprise-frontier-safeguards.md) - Enterprise Frontier Safeguards: 顧客と共に開発するエンタープライズ向けフロンティアセーフガード
+- [2026-09-01](2026/2026-09-01-claude-fable-5-1-mythos-5-1.md) - Claude Fable 5.1 と Claude Mythos 5.1 の発表
+- [2026-09-01](2026/2026-09-01-api-beta-updates.md) - Claude API に 3 つの新ベータ機能が登場: メッセージ単位の effort 変更、ターンスコープのシステムメッセージ、thinking.display の "updates" 値
 - [2026-08-31](2026/2026-08-31-improving-alignment-security-efforts.md) - アライメントとセキュリティへの取り組みの改善
 - [2026-08-31](2026/2026-08-31-claude-code-v2-1-252.md) - Claude Code v2.1.252 リリース — Mac での Bash 失敗、権限保存、Remote Control の停滞、大容量通知によるサイズ超過の修正
 - [2026-08-28](2026/2026-08-28-claude-code-v2-1-251.md) - Claude Code v2.1.251 リリース — モデル切り替えフックの追加、サブエージェントのライブストリーミング、シンボリックリンク経由の権限バイパス修正

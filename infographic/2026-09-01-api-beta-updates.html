@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude API に 3 つの新ベータ機能が登場 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+        }
+
+        .section > p, .section .desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card .beta-tag {
+            display: inline-block;
+            background: #F3E5F5;
+            color: #7B61FF;
+            border: 1px solid #7B61FF;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0 20px;
+        }
+
+        .info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+        }
+
+        .info-table tr:nth-child(even) td {
+            background: var(--anthropic-light);
+        }
+
+        .info-table code {
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        p code, li code {
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Note boxes */
+        .note-box {
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .note-box.warning {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            color: #5D4037;
+        }
+
+        .note-box.info {
+            background: #E3F2FD;
+            border: 2px solid #64B5F6;
+            color: #1565C0;
+        }
+
+        .note-box strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action steps */
+        .action-list {
+            counter-reset: step;
+            list-style: none;
+        }
+
+        .action-list li {
+            position: relative;
+            padding: 14px 16px 14px 56px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-list li::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .action-list li strong {
+            color: var(--text-primary);
+        }
+
+        .plain-list {
+            padding-left: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .plain-list li {
+            margin-bottom: 8px;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-top: 8px;
+        }
+
+        .summary-box ul {
+            padding-left: 20px;
+            font-size: 14px;
+        }
+
+        .summary-box li {
+            margin-bottom: 8px;
+        }
+
+        .summary-box code {
+            background: rgba(212, 165, 116, 0.2);
+            color: #E8C9A8;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API 更新</span>
+                <span class="category-badge">ベータ機能</span>
+                <h1>🧪 Claude API に 3 つの新ベータ機能が登場: メッセージ単位の effort 変更、ターンスコープのシステムメッセージ、thinking.display の "updates" 値</h1>
+                <p class="date">📅 2026-09-01 | Claude API リリースノート</p>
+                <p class="lead">いずれも長時間動作するエージェントワークフローを念頭に置いた機能で、プロンプトキャッシュを維持したまま会話の途中で挙動を調整できる点が共通しています。</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">📌 概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">⚙️</div>
+                    <div class="key-point-content">
+                        <h3>メッセージ単位の effort 変更 (ベータ)</h3>
+                        <p><code>mid-conversation-output-config-2026-07-01</code> ベータヘッダー。プロンプトキャッシュを保持したまま、会話の途中で以降のターンの effort レベル (<code>low</code> 〜 <code>max</code>) を変更できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⏱️</div>
+                    <div class="key-point-content">
+                        <h3>ターンスコープのシステムメッセージ (ベータ)</h3>
+                        <p><code>mid-conversation-system-clear-at-2026-08-21</code> ベータヘッダー。<code>clear_at: "next_user_message"</code> を指定すると、現在のターンのみ有効なリマインダーを設定でき、蓄積によるトークンコスト増加を防げます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📝</div>
+                    <div class="key-point-content">
+                        <h3>thinking.display の第 3 の値 "updates" (ベータ)</h3>
+                        <p><code>thinking-display-updates-2026-08-18</code> ベータヘッダー。推論内容は非表示のまま、ツール呼び出し間の短い進捗更新をテキストで受信できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💾</div>
+                    <div class="key-point-content">
+                        <h3>共通の設計思想: プロンプトキャッシュを壊さない</h3>
+                        <p>3 つの機能はいずれも「会話の先頭側を変更しない」設計になっており、キャッシュされたプレフィックスを維持したまま会話途中の制御が可能です。従来はこれらの操作の多くがキャッシュを無効化し、コストとレイテンシが増加する課題がありました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>同日に Claude Fable 5.1 / Claude Mythos 5.1 もリリース</h3>
+                        <p>2026 年 9 月 1 日には Claude Fable 5.1 / Claude Mythos 5.1 モデルもリリースされていますが、モデル自体の詳細は別レポートで扱います。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">✨ 主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="beta-tag">BETA</span>
+                    <h3>⚙️ メッセージ単位の effort 変更</h3>
+                    <p><code>messages</code> 配列内に、空の <code>content</code> と <code>output_config.effort</code> を持つ <code>role: "system"</code> メッセージを追加すると、次の <code>user</code> ターン以降の effort レベルを変更できます。指定できる値は <code>low</code>、<code>medium</code>、<code>high</code>、<code>xhigh</code>、<code>max</code> の 5 つ。変更点より前のメッセージは一切変わらないため、キャッシュされたプレフィックスがそのまま一致します。対象は Claude Fable 5.1、Claude Mythos 5.1、Claude Opus 5 です。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="beta-tag">BETA</span>
+                    <h3>⏱️ ターンスコープのシステムメッセージ</h3>
+                    <p>会話途中の <code>role: "system"</code> メッセージに <code>clear_at</code> フィールドを設定できます。<code>"next_user_message"</code> を指定すると、後続のユーザーメッセージが存在した時点で「クリア」され、配列には残るものの何もレンダリングせず、入力トークンコストもゼロになります。ツールループでのターンごとのリマインダーに最適で、リマインダーが蓄積しません。</p>
+                </div>
+                <div class="feature-card">
+                    <span class="beta-tag">BETA</span>
+                    <h3>📝 thinking.display: "updates"</h3>
+                    <p>既存の <code>"summarized"</code> と <code>"omitted"</code> に加わる第 3 の値です。推論ブロックは <code>"omitted"</code> と同様に空の <code>thinking</code> フィールドで返りますが、モデルがツール呼び出しの間に書く 1〜2 文の短い進捗更新はテキストとして返ります。推論を隠しつつ、エージェントを見ている人にステータスラインを提供できます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Changes -->
+        <section class="section">
+            <h2 class="section-title">🔌 API 変更点</h2>
+            <p class="desc">いずれもオプトインのベータ機能です。利用するには対応する <code>anthropic-beta</code> ヘッダーをリクエストに追加します。</p>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>機能</th>
+                            <th>ベータヘッダー</th>
+                            <th>対象</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>⚙️ メッセージ単位の effort 変更</td>
+                            <td><code>mid-conversation-output-config-2026-07-01</code></td>
+                            <td>Claude API 上の Claude Fable 5.1、Claude Mythos 5.1、Claude Opus 5</td>
+                        </tr>
+                        <tr>
+                            <td>⏱️ ターンスコープのシステムメッセージ</td>
+                            <td><code>mid-conversation-system-clear-at-2026-08-21</code></td>
+                            <td>会話途中システムメッセージと同じモデル・プラットフォーム</td>
+                        </tr>
+                        <tr>
+                            <td>📝 thinking.display の "updates"</td>
+                            <td><code>thinking-display-updates-2026-08-18</code></td>
+                            <td>進捗更新を書き込むのは Claude Fable 5.1、Claude Mythos 5.1、Claude Fable 5</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note-box info">
+                <strong>💡 ベータヘッダー以外の指定方法</strong>
+                Amazon Bedrock、Google Cloud、Microsoft Foundry では、ベータヘッダーの代わりに各プラットフォームの方法でベータ値を渡します。詳細は公式ドキュメントの Beta headers を参照してください。
+            </div>
+            <div class="note-box warning">
+                <strong>⚠️ 非対応時の挙動</strong>
+                メッセージ単位の effort をサポートしないモデル (Claude Fable 5 を含む) では 400 エラーが返ります。また、ベータヘッダーなしで <code>display: "updates"</code> を指定すると、未知の <code>display</code> 値と同じ 400 <code>invalid_request_error</code> が返ります。
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">🏗️ アーキテクチャ</h2>
+            <p class="desc">3 つのベータ機能とプロンプトキャッシュの関係を示します。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Request["📨 Messages API リクエスト"]
+        direction LR
+        Header["🏷️ anthropic-beta ヘッダー"]
+        Msgs["📚 messages 配列"]
+        Header ~~~ Msgs
+    end
+
+    subgraph Betas["🧪 3 つのベータ機能"]
+        Effort["⚙️ effort のみの system メッセージ<br/>output_config.effort"]
+        ClearAt["⏱️ ターンスコープ system メッセージ<br/>clear_at: next_user_message"]
+        Updates["📝 thinking.display: updates<br/>進捗更新をテキストで受信"]
+    end
+
+    subgraph Model["🤖 対応モデル"]
+        direction LR
+        Fable["⭐ Fable 5.1"]
+        Mythos["🌌 Mythos 5.1"]
+        Opus["🎼 Opus 5"]
+        Fable ~~~ Mythos ~~~ Opus
+    end
+
+    Cache[("💾 プロンプトキャッシュ<br/>プレフィックスを維持")]
+
+    Msgs --> Effort
+    Msgs --> ClearAt
+    Header --> Updates
+    Effort --> Cache
+    ClearAt --> Cache
+    Effort --> Model
+    ClearAt --> Model
+    Updates --> Model
+
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef beta fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef model fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+
+    class Request,Betas,Model layer
+    class Header,Msgs api
+    class Effort,ClearAt,Updates beta
+    class Fable,Mythos,Opus model
+    class Cache storage
+                </pre>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">⚙️ 技術詳細</h2>
+
+            <h3 class="subsection-title">1️⃣ メッセージ単位の effort 変更のポイント</h3>
+            <ul class="plain-list">
+                <li><strong>プロンプトキャッシュを保持</strong>: 変更点より前のメッセージは一切変わらないため、キャッシュされたプレフィックスがそのまま一致する。トップレベルの <code>output_config.effort</code> をリクエスト間で変更する従来の方法では、キャッシュが最初からやり直しになる</li>
+                <li><strong>配置の自由度</strong>: effort のみのシステムメッセージにはテキストが含まれないため、通常の会話途中システムメッセージの配置ルールは適用されない。<code>messages</code> の先頭や <code>assistant</code> ターンと次の <code>user</code> ターンの間を含め、どこにでも配置できる</li>
+                <li><strong>非対応モデルの挙動</strong>: メッセージ単位の effort をサポートしないモデル (Claude Fable 5 を含む) では 400 エラーが返る</li>
+                <li><strong>推奨</strong>: Claude Fable 5.1 ではリクエスト間でトップレベル値を変更するよりこの形式が推奨される。トップレベルの変更はキャッシュを無効化するうえ、モデルが以前のレベルで書かれた過去の応答との一貫性を保とうとするため、ステアリングの効きも弱くなる</li>
+            </ul>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">high で開始し、定型的なフォローアップで low に下げる例</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+response = client.beta.messages.create(
+    model="claude-fable-5-1",
+    max_tokens=4096,
+    output_config={"effort": "high"},
+    messages=[
+        {
+            "role": "user",
+            "content": "Plan a migration from SQLite to PostgreSQL in three short steps.",
+        },
+        {
+            "role": "assistant",
+            "content": "1. Export the SQLite data. 2. Create the PostgreSQL schema. 3. Import the data and verify row counts.",
+        },
+        # effort のみのシステムメッセージ: 次の user ターンから新しいレベルが有効
+        {"role": "system", "content": [], "output_config": {"effort": "low"}},
+        {"role": "user", "content": "Summarize the plan in one sentence."},
+    ],
+    betas=["mid-conversation-output-config-2026-07-01"],
+)</code></pre>
+            </div>
+
+            <h3 class="subsection-title">2️⃣ ターンスコープのシステムメッセージのルール</h3>
+            <p class="desc"><code>clear_at</code> に指定できる値は 2 つです。</p>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th><code>clear_at</code> の値</th>
+                            <th>挙動</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>"never"</code> (デフォルト)</td>
+                            <td>メッセージを含むすべてのリクエストで、その位置にレンダリングされる。フィールドを省略した場合と同じ</td>
+                        </tr>
+                        <tr>
+                            <td><code>"next_user_message"</code></td>
+                            <td>ターンスコープになる。そのメッセージより後に <code>role: "user"</code> メッセージが存在しない間だけレンダリングされ、後続のユーザーメッセージが存在すると「クリア」される。配列には残るものの何もレンダリングせず、入力トークンコストもゼロ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <ul class="plain-list">
+                <li><strong>クリア済みメッセージは一言一句同じ内容で再送する</strong>: 内容の再構築や削除、<code>clear_at</code> 値の変更は過去メッセージの編集と見なされ、その時点からキャッシュミスが発生する</li>
+                <li><strong>テキストのみ</strong>: <code>content</code> はテキストブロック (または文字列) のみ。<code>tool_addition</code> / <code>tool_removal</code> ブロックや <code>output_config</code> は 400 エラーになる</li>
+                <li><strong><code>cache_control</code> は付与不可</strong>: クリア済みメッセージはキャッシュキーに含まれないため、ブレークポイントは直前のユーザーターンの最後のブロックに置く</li>
+                <li><strong>トークンカウントはレンダリング結果に従う</strong>: クリア済みメッセージは <code>usage.input_tokens</code> にもトークンカウントにも加算されない</li>
+            </ul>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">tool_result の後に現在のターンのみ有効なリマインダーを追加する例</span>
+                </div>
+                <pre><code class="language-json">{
+  "role": "system",
+  "clear_at": "next_user_message",
+  "content": "Request independent reads in one turn."
+}</code></pre>
+            </div>
+            <p class="desc">リクエストには <code>anthropic-beta: mid-conversation-system-clear-at-2026-08-21</code> ヘッダーを含めます。後続のユーザーメッセージが追加された後も、このメッセージは配列に残したまま一言一句同じ内容で再送します。<code>messages</code> の先頭側は何も変わらないので、プロンプトキャッシュは一致し続け、Claude Fable 5.1 では後続の thinking ブロックの有効性も保たれます。</p>
+
+            <h3 class="subsection-title">3️⃣ thinking.display の "updates" の挙動</h3>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th><code>display</code> の値</th>
+                            <th>推論内容</th>
+                            <th>進捗更新</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>"summarized"</code></td>
+                            <td>テキスト</td>
+                            <td>テキスト (区別不可)</td>
+                        </tr>
+                        <tr>
+                            <td><code>"omitted"</code></td>
+                            <td>空</td>
+                            <td>空</td>
+                        </tr>
+                        <tr>
+                            <td><code>"updates"</code> (新規・ベータ)</td>
+                            <td>空</td>
+                            <td>テキスト</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <ul class="plain-list">
+                <li><strong>内容</strong>: モデルが直前に見つけたことと次に行うことを 1〜2 文で説明する、エージェントを見ている人向けのテキスト</li>
+                <li><strong>形式</strong>: 各進捗更新は独自の <code>signature</code> を持つ独立した <code>thinking</code> ブロックとして返り、紹介する <code>tool_use</code> または <code>server_tool_use</code> ブロックの直前に配置される。各ツール呼び出しの前に最大 1 つで、モデルはスキップすることもある</li>
+                <li><strong>ハンドリング</strong>: <code>"updates"</code> の下では、テキストが空でない <code>thinking</code> ブロックはすべて進捗更新なので、それだけを表示すればステータスラインとして使える。進捗更新ブロックは他の <code>thinking</code> ブロックと同様、変更せずにそのまま返送する</li>
+                <li><strong>ストリーミング</strong>: <code>"updates"</code> では進捗更新ブロックのみが <code>thinking_delta</code> イベントをストリーミングする。進捗更新ブロックが開くまでに数秒の間が空くのは正常な動作</li>
+                <li><strong>ヘッダーなしの挙動</strong>: ベータヘッダーなしで <code>"updates"</code> を指定すると、未知の <code>display</code> 値と同じ 400 <code>invalid_request_error</code> が返る</li>
+            </ul>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">リクエスト例 (anthropic-beta: thinking-display-updates-2026-08-18 ヘッダーが必要)</span>
+                </div>
+                <pre><code class="language-json">{
+  "model": "claude-fable-5-1",
+  "max_tokens": 16000,
+  "thinking": { "type": "adaptive", "display": "updates" },
+  "messages": [
+    {
+      "role": "user",
+      "content": "The login test fails after an hour of uptime. Find out why and fix it."
+    }
+  ]
+}</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">レスポンス例: 推論ブロックは空、進捗更新のみテキストを持つ</span>
+                </div>
+                <pre><code class="language-json">{
+  "content": [
+    {
+      "type": "thinking",
+      "thinking": "",
+      "signature": "EqMBCkYICxIM..."
+    },
+    {
+      "type": "thinking",
+      "thinking": "Confirmed the retry path never refreshes the expired token. Editing auth.py to add the refresh call.",
+      "signature": "Es8CCkYICxIM..."
+    },
+    {
+      "type": "tool_use",
+      "id": "toolu_01D7FLrfh4GYq7yT1ULFeyMV",
+      "name": "edit_file",
+      "input": { "path": "auth.py", "content": "..." }
+    }
+  ]
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">🎯 ユースケース</h2>
+            <div class="use-case">
+                <h4>⚙️ コストと品質のトレードオフをターン単位で調整</h4>
+                <p>長時間のエージェントタスクで、複雑な計画フェーズは <code>high</code>、定型的なフォローアップは <code>low</code> のように effort をターン単位で切り替えられます。トップレベル値をリクエスト間で変更する従来の方法と異なり、プロンプトキャッシュの無効化を回避でき、ステアリングの効きも良くなります。</p>
+            </div>
+            <div class="use-case">
+                <h4>⏱️ ツールループでのターンごとのリマインダー</h4>
+                <p><code>tool_result</code> メッセージの後にリマインダーを毎回追加しても、モデルには最後のユーザーメッセージ以降のコピーしか見えないため、リマインダーが蓄積しません。従来ユーザーメッセージに埋め込んでいたリマインダーを置き換えることで、蓄積によるトークンコスト増加を防げます。</p>
+            </div>
+            <div class="use-case">
+                <h4>📝 推論を隠しつつエージェントの進捗を可視化する UI</h4>
+                <p>推論内容を非表示にしたまま、ユーザーにエージェントの動作状況を見せたい UI 開発者向けです。テキストが空でない <code>thinking</code> ブロックのみを表示すれば、そのままステータスラインとして使えます。</p>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">🔌 開発者への影響</h2>
+
+            <h3 class="subsection-title">👥 対象となる開発者</h3>
+            <ul class="plain-list">
+                <li>長時間のエージェントループを実装している開発者</li>
+                <li>プロンプトキャッシュのヒット率を維持しながら会話途中の制御を行いたい開発者</li>
+                <li>推論内容を非表示にしつつ、ユーザーにエージェントの進捗を見せたい UI 開発者</li>
+            </ul>
+
+            <h3 class="subsection-title">🛠️ 必要なアクション</h3>
+            <p class="desc">いずれもオプトインのベータ機能であり、既存のリクエスト・レスポンス処理への変更は不要です。利用する場合は以下を行います。</p>
+            <ol class="action-list">
+                <li><strong>ベータヘッダーの追加</strong>: 対応する <code>anthropic-beta</code> ヘッダーをリクエストに追加する</li>
+                <li><strong>モデルの対応状況を確認</strong>: メッセージ単位の effort は対象モデル (Claude Fable 5.1、Claude Mythos 5.1、Claude Opus 5) でのみ利用可能</li>
+                <li><strong>クライアントの実装</strong>: <code>display: "updates"</code> を使う場合、テキストが空でない <code>thinking</code> ブロックのみを表示するようクライアントを実装する</li>
+            </ol>
+
+            <h3 class="subsection-title">🧳 移行ガイド (該当する場合)</h3>
+            <ul class="plain-list">
+                <li><strong>effort 変更</strong>: これまでリクエスト間でトップレベルの <code>output_config.effort</code> を変更していた場合、対応モデルではメッセージ単位の effort への移行によりキャッシュ無効化を回避できる</li>
+                <li><strong>ターンごとのリマインダー</strong>: 従来ユーザーメッセージに埋め込んでいたリマインダーは、ターンスコープのシステムメッセージに置き換えることで、蓄積によるトークンコスト増加を防げる</li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">📝 まとめ</h2>
+            <p>2026 年 9 月 1 日に発表された 3 つのベータ機能は、いずれも「会話の先頭側を変えずに途中の挙動を制御する」という共通の設計思想を持っています。長時間のエージェントワークフローでプロンプトキャッシュに依存する開発者にとって、実用性の高いアップデートです。</p>
+            <div class="summary-box">
+                <ul>
+                    <li>メッセージ単位の effort 変更は、コストと品質のトレードオフをターン単位で調整可能にする</li>
+                    <li>ターンスコープのシステムメッセージは、蓄積しないリマインダーを実現する</li>
+                    <li><code>thinking.display: "updates"</code> は、推論を隠しつつエージェントの進捗を可視化する</li>
+                    <li>3 機能とも <code>messages</code> の先頭側を変更しないため、プロンプトキャッシュとの整合性が保たれる</li>
+                    <li>ベータ機能のため仕様は変更される可能性があり、最新情報は公式ドキュメントを参照</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/effort#change-effort-mid-conversation-beta" target="_blank" rel="noopener noreferrer">Per-message effort (beta)</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/mid-conversation-system-messages#turn-scoped-system-messages" target="_blank" rel="noopener noreferrer">Turn-scoped system messages</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/thinking#progress-updates" target="_blank" rel="noopener noreferrer">Progress updates between tool calls</a></li>
+                <li><a href="https://platform.claude.com/docs/en/api/beta-headers" target="_blank" rel="noopener noreferrer">Beta headers</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-caching" target="_blank" rel="noopener noreferrer">Prompt caching</a></li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-09-01 | ソース: Claude API リリースノート | カテゴリ: API 更新 / ベータ機能</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
