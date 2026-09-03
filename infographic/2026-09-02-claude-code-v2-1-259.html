@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.259 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-chips {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-chip {
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 24px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .tag.new {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .tag.fixed {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .tag.improved {
+            background: #EDE9FE;
+            color: #6D28D9;
+        }
+
+        .tag.changed {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Meta Table */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .meta-table th,
+        .meta-table td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .meta-table th {
+            width: 30%;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .meta-table td a {
+            color: var(--anthropic-coral);
+            word-break: break-all;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code,
+        .use-case code,
+        .key-point-content code,
+        .plain-list code,
+        .section-lead code,
+        .tech-note code,
+        .comparison-card code {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Plain List */
+        .plain-list {
+            display: grid;
+            gap: 10px;
+            padding-left: 4px;
+            list-style: none;
+        }
+
+        .plain-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .plain-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 4px;
+            color: var(--anthropic-coral);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Tech Notes */
+        .tech-note {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-note h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tech-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Cards */
+        .migration-card {
+            background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+            border-left: 4px solid var(--warning);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .migration-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #9A3412;
+        }
+
+        .migration-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .migration-card code {
+            background: rgba(245, 158, 11, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.35rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code 更新</span>
+                <h1>Claude Code v2.1.259 リリース<br>managedMcpServers 管理設定、--permission-prompts none、GitLab MR 認識、権限・管理設定まわりの大規模なセキュリティ修正</h1>
+                <p class="date">📅 2026-09-02 | ソース: Claude Code Changelog</p>
+                <div class="version-chips">
+                    <span class="version-chip">v2.1.259</span>
+                    <span class="version-chip">新機能 4 件</span>
+                    <span class="version-chip">修正 約 28 件</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📦</div>
+                    <div class="key-point-content">
+                        <h3>managedMcpServers で MCP サーバーを組織一元配布</h3>
+                        <p>組織管理者が HTTP/SSE MCP サーバーを全ユーザーに配布できる管理設定が追加された。エントリの形式は <code>.mcp.json</code> と同一で、stdio サーバーはスキップされ、HTTP/SSE サーバーのみが配布対象となる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>--permission-prompts none で無人環境のハングを排除</h3>
+                        <p>プロンプトを表示するはずの操作はすべて自動拒否され、アクティブな権限モード (auto モードを含む) の判定は通常どおり継続する。CI/CD やスケジュール実行での確認待ち停止がなくなる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🦊</div>
+                    <div class="key-point-content">
+                        <h3>GitLab マージリクエストの認識</h3>
+                        <p><code>glab mr create/merge/close/reopen/note/update</code> が認識され、ツールサマリーに <code>MR !N</code> として表示、フッターの MR バッジも更新される。GitHub PR と同等の体験が GitLab でも得られる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>権限・管理設定まわりの大規模なセキュリティ修正</h3>
+                        <p>Bash <code>Read()</code> deny ルールのすり抜け経路 (オプション値、<code>git diff</code> のファイルオペランドなど) の封鎖、管理設定がパースできない場合の起動拒否 (フェイルクローズ化) など、統制の信頼性に直結する修正が多数含まれる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔁</div>
+                    <div class="key-point-content">
+                        <h3>allowedMcpServers の適用範囲変更に注意</h3>
+                        <p><code>allowedMcpServers</code> はユーザー追加サーバーのみが対象になった。allowlist でフィルタリングされていた管理配布サーバーはアップグレード後に読み込まれるため、無効化を継続するには <code>deniedMcpServers</code> への移行が必要である。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.259</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">新機能 (Added)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">約 28</div>
+                    <div class="stat-label">修正 (Fixed)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">改善 (Improved)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">動作変更 (Changed)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">VSCode 拡張の機能追加</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="meta-table">
+                <tr>
+                    <th>発表日</th>
+                    <td>2026-09-02 (CHANGELOG コミット: 22:33 UTC)</td>
+                </tr>
+                <tr>
+                    <th>ソース</th>
+                    <td>Claude Code Changelog</td>
+                </tr>
+                <tr>
+                    <th>カテゴリ</th>
+                    <td>Claude Code アップデート</td>
+                </tr>
+                <tr>
+                    <th>公式リンク</th>
+                    <td><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景 — リリースの位置づけ</h2>
+            <p class="section-lead">前日までのリリース (v2.1.257 / v2.1.258) では Claude Fable 5.1 のデフォルトモデル化と大量の安定性改善が行われた。v2.1.259 はその直後のリリースで、エンタープライズ管理機能 (managed settings、MCP サーバー統制) と、CI/CD やヘッドレス運用 (無人ホスト、GitLab 連携) の強化に焦点が当たっている。特に MCP サーバーの組織配布は、これまでユーザーごとの <code>.mcp.json</code> 設定に依存していた運用を、管理設定による一元配布へ移行できるようにする変更である。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before — v2.1.258 まで</h4>
+                    <p>MCP サーバーはユーザーごとの <code>.mcp.json</code> 設定に依存。管理設定がパースできない場合は黙って未適用のまま起動 (フェイルオープン)。無人環境ではプロンプト確認待ちでセッションがハングする可能性があった。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After — v2.1.259</h4>
+                    <p><code>managedMcpServers</code> による組織一元配布が可能に。パースできない管理設定では起動を拒否し、問題のあるソース名を表示 (フェイルクローズ)。<code>--permission-prompts none</code> でプロンプトを自動拒否し、無人運用が決定的になった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Added -->
+        <section class="section">
+            <h2 class="section-title">新機能 (Added) <span class="tag new">New</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📦 managedMcpServers 管理設定</h3>
+                    <p>組織が HTTP/SSE MCP サーバーを全ユーザーに提供できる管理設定。エントリの形式は <code>.mcp.json</code> と同一である。ローカルでコマンドを実行する形式のエントリ (stdio サーバー) はスキップされ、HTTP/SSE サーバーのみが配布対象となる。社内共通のツール群 (ドキュメント検索、チケット管理など) を管理者側で一括提供するユースケースに対応する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 --permission-prompts none フラグ</h3>
+                    <p>無人ヘッドレスホスト向けのフラグ。プロンプトを表示するはずの操作はすべて自動的に拒否され、その間もアクティブな権限モード (auto モードを含む) は通常どおり判定を続ける。CI/CD パイプラインやスケジュール実行など、人間が応答できない環境で「確認待ちで停止する」ことも「確認なしで危険な操作が通る」こともなくなる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🦊 GitLab マージリクエストの認識</h3>
+                    <p><code>glab mr create/merge/close/reopen/note/update</code> コマンドが認識されるようになり、折りたたまれたツールサマリーに <code>MR !N</code> として表示され、フッターの MR バッジも更新される。GitHub の PR と同等の体験が GitLab でも得られる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧩 claude plugin validate --json</h3>
+                    <p>プラグイン検証の結果を機械可読な JSON レポートとして出力できるようになった。プラグインの CI での自動検証に利用できる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fixed -->
+        <section class="section">
+            <h2 class="section-title">修正 (Fixed) <span class="tag fixed">Fixed</span></h2>
+            <p class="section-lead">約 28 件の修正のうち、影響範囲の広いものをカテゴリ別に整理する。</p>
+
+            <h3 class="section-subtitle">🔒 セキュリティ・権限関連</h3>
+            <ul class="plain-list">
+                <li>Bash の <code>Read()</code> deny ルールが、オプション値として渡されたファイル (<code>--ignore-revs-file=.env</code>、<code>-f.env</code>、<code>@file</code>)、<code>git diff</code> / <code>git grep</code> のファイルオペランド、<code>cd DIR &amp;&amp; cat FILE</code> の複合コマンドをカバーしていなかった問題を修正。また、拒否対象ファイルを含むディレクトリへの <code>grep -r</code> / <code>cp -r</code> は確認を求めるようになった</li>
+                <li>管理設定 (managed-settings ファイル、drop-in、MDM plist、HKLM 値) がパースできない場合に、黙って未適用のまま起動していた問題を修正。今後は Claude Code が起動を拒否し、問題のあるソース名を表示する</li>
+                <li>管理設定の <code>forceRemoteSettingsRefresh</code> が、MDM や管理設定ファイルで構成されたポリシーヘルパーが先に実行済みの場合に起動時に無視される問題を修正</li>
+                <li>リポジトリ検出が、一時的な git プローブ失敗の後に既知のリポジトリ識別情報を失う問題を修正</li>
+            </ul>
+
+            <h3 class="section-subtitle">💾 セッション・設定の信頼性関連</h3>
+            <ul class="plain-list">
+                <li>並行セッションが互いの <code>~/.claude.json</code> の変更を黙って巻き戻す問題を修正。多数のセッションを同時実行しても、ワークスペースの信頼設定がリセットされたり、MCP / プロジェクト状態が失われたりしなくなった</li>
+                <li><code>--resume</code> が失敗し、<code>--continue</code> が空の会話を開く問題 (保存済みセッションにペイロードのないアタッチメントエントリが含まれる場合) を修正</li>
+                <li>thinking が一度拒否された会話が、以降のすべてのターンで拒否され続ける問題を修正</li>
+                <li>テレメトリ無効のセッションで OAuth トークンのリフレッシュ時にプロンプトキャッシュが無効化される問題を修正</li>
+                <li>ブロックする Stop フックの後のターンで、モデルの reasoning が失われ、一部のモデルでプロンプトキャッシュをミスする問題を修正</li>
+            </ul>
+
+            <h3 class="section-subtitle">🎯 モデル選択関連</h3>
+            <ul class="plain-list">
+                <li>コマンドやスキルの frontmatter <code>model:</code> が指定されている場合に、auto モードが未対応モデルでターンを実行する問題を修正。ターンはセッションモデルを維持するようになった</li>
+                <li>カスタムコマンドとスキルの frontmatter <code>model:</code> が対話セッションで無視される問題を修正</li>
+                <li><code>CLAUDE_CODE_MAX_CONTEXT_TOKENS</code> が、Claude Code が認識しないモデルバージョンの Vertex 形式モデル ID (<code>@YYYYMMDD</code> サフィックス) で無視される問題を修正</li>
+            </ul>
+
+            <h3 class="section-subtitle">📡 リモート・バックグラウンド実行関連</h3>
+            <ul class="plain-list">
+                <li>Remote Control セッションで Stop がバックグラウンドエージェントとワークフローを実際には停止しない問題を修正。停止されたタスクはプロセスが終了するまで表示され続け、再停止も可能になった</li>
+                <li>前回の停止した実行がまだ終了処理中のワークフローを再開すると、エージェントの複製が重複実行される可能性があった問題を修正</li>
+                <li>リモート (claude.ai) セッションで、ブラウザホストの MCP サーバーのページが閉じられた後、ターン開始に 60 秒かかる問題を修正</li>
+                <li>リモートおよびスケジュールセッションが、一時停止中に承認されたコネクタツールの権限プロンプトの後、何も実行しない問題を修正</li>
+                <li>worktree 分離が、一般的な Bash ループ、xargs パイプライン、ランチャーでラップされたコマンドを拒否する問題、およびフックが作成した worktree を <code>git rev-parse</code> が想定外のメッセージで失敗するマシンで拒否する問題を修正</li>
+            </ul>
+
+            <h3 class="section-subtitle">🖥️ UI・その他</h3>
+            <ul class="plain-list">
+                <li>フルスクリーンモードで、数百のツール呼び出しを伴う長いターンの後に会話が空白表示になる問題を修正</li>
+                <li>実行中のシェルコマンドのライブ出力プレビューが、前の行が折り返された場合に最新の行を隠す問題を修正</li>
+                <li>ファイル編集の権限ダイアログで、変更行が途中で切れているのにその表示がないことがある問題を修正</li>
+                <li>claude.ai ユーザーで起動のたびに実行されていたバックグラウンドの GitHub 接続チェックを修正し、結果を起動をまたいで記憶するようになった</li>
+                <li>起動時のツールリスト取得中に切断された MCP サーバーが、エラーを報告せず「接続済み・ツールなし」と表示される問題を修正</li>
+                <li>OpenTelemetry のメトリクスとイベントに、クラウドセッションで <code>user.email</code>、<code>organization.id</code>、<code>user.account_uuid</code> 属性が欠落する問題を修正</li>
+                <li>旧バージョンから継続した会話で Artifact の公開が「unexpected parameter <code>note</code>」エラーで一度失敗する問題を修正</li>
+                <li>github.com のマーケットプレイスリポジトリ URL に末尾スラッシュや余分な <code>?</code> / <code>#</code> が付いていると、使用不能な <code>.git</code> クローン URL が生成される問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Improved -->
+        <section class="section">
+            <h2 class="section-title">改善 (Improved) <span class="tag improved">Improved</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⚡ レンダリングパフォーマンス</h3>
+                    <p>テキスト計測結果を再利用することで、ターミナルリサイズ時と長い応答の初回描画のパフォーマンスが向上した。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 /workflows のエージェント詳細</h3>
+                    <p>JSON の outcome がシンタックスカラーと実際の改行付きで整形表示され、長い outcome は展開トグルの背後に折りたたまれるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚀 ヘッドレス / SDK セッションの起動</h3>
+                    <p>MCP サーバーの接続完了時に最初のターンが最大 50 ミリ秒早く開始されるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🦊 /install-github-app</h3>
+                    <p>GitLab リポジトリ内で実行された場合、GitHub 専用であることを説明し、GitLab CI/CD ドキュメントを案内するようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 ネストしたバックグラウンドサブエージェント</h3>
+                    <p>結果が親サブエージェントのトランスクリプトに保存されるようになり、再開したサブエージェントが結果を保持し、共有トランスクリプトにも受け渡しが表示される。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Changed -->
+        <section class="section">
+            <h2 class="section-title">動作変更 (Changed) <span class="tag changed">Changed</span></h2>
+            <div class="migration-card">
+                <h4>🔁 allowedMcpServers の適用範囲の変更</h4>
+                <p><code>allowedMcpServers</code> はユーザーが追加したサーバーのみを対象とするようになった。これまで allowlist でフィルタリングされていた <code>managed-mcp.json</code> のサーバーは、アップグレード後に読み込まれるようになる。管理配布サーバーを引き続き無効化したい場合は <code>deniedMcpServers</code> を使用する。</p>
+            </div>
+        </section>
+
+        <!-- VSCode -->
+        <section class="section">
+            <h2 class="section-title">VSCode 拡張</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔍 セッションリストのクイックフィルター</h3>
+                    <p>セッションリストのサイドバーに「Active」クイックフィルターと、ステータスフィルターメニュー (Needs input、Working、Completed) が追加された。多数のセッションを並行運用する場合に、応答が必要なセッションを素早く見つけられる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+            <p class="section-lead">本リリースの中核テーマは、MCP サーバー統制の 3 層モデルの整備である。<code>managedMcpServers</code> で組織が配布し、<code>allowedMcpServers</code> でユーザー追加分を制限し、<code>deniedMcpServers</code> で例外的に無効化するという役割分担が明確になった。</p>
+
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Org["🏢 組織の管理設定"]
+        Managed["📦 managedMcpServers<br/>HTTP/SSE サーバーを全ユーザーに配布"]
+    end
+
+    subgraph User["👤 ユーザー環境"]
+        UserAdd["➕ ユーザー追加サーバー<br/>.mcp.json など"]
+    end
+
+    Managed --> DenyCheck{"🚫 deniedMcpServers<br/>に該当するか"}
+    UserAdd --> AllowCheck{"✅ allowedMcpServers<br/>に含まれるか"}
+
+    DenyCheck -->|該当しない| Load["🔌 MCP サーバーを読み込み"]
+    DenyCheck -->|該当する| Block["⛔ 読み込まない"]
+    AllowCheck -->|含まれる| DenyCheck
+    AllowCheck -->|含まれない| Block
+
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef critical fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+
+    class Org,User layer
+    class Managed internal
+    class UserAdd input
+    class DenyCheck,AllowCheck decision
+    class Load process
+    class Block critical
+                </pre>
+            </div>
+
+            <div class="tech-note">
+                <h4>🛡️ 権限機構の「すり抜け経路」の封鎖</h4>
+                <p>Bash <code>Read()</code> deny ルールの修正は、<code>--option=file</code> 形式のオプション値、短縮オプション直結 (<code>-f.env</code>)、<code>@file</code> 参照、<code>git diff</code> / <code>git grep</code> のファイルオペランド、<code>cd</code> を伴う複合コマンドといった、従来ルールが検査していなかった読み取り経路をカバーする。また、管理設定がパースできない場合の起動拒否は、「設定ミスが黙って統制の無効化につながる」というフェイルオープンの問題をフェイルクローズに転換する変更であり、エンタープライズ統制の信頼性を高める。</p>
+            </div>
+            <div class="tech-note">
+                <h4>🤖 ヘッドレス運用: 権限判定の決定性</h4>
+                <p><code>--permission-prompts none</code> により権限判定の挙動が決定的になる。auto モードなどのアクティブな権限モードが許可した操作はそのまま実行され、プロンプトが必要になった操作は自動拒否されるため、無人環境でセッションが確認待ちのままハングすることがなくなる。</p>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p class="section-lead"><code>managedMcpServers</code> の設定例 (管理設定ファイル)。エントリの形式は <code>.mcp.json</code> と同じで、HTTP/SSE サーバーのみが対象となる。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">managedMcpServers の設定例</span>
+                </div>
+                <pre><code class="language-json">{
+  "managedMcpServers": {
+    "internal-docs": {
+      "type": "http",
+      "url": "https://mcp.example.com/docs"
+    },
+    "issue-tracker": {
+      "type": "sse",
+      "url": "https://mcp.example.com/issues/sse"
+    }
+  }
+}</code></pre>
+            </div>
+            <p class="section-lead">無人ヘッドレスホストでの実行例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ヘッドレス実行とプラグイン検証</span>
+                </div>
+                <pre><code class="language-bash"># プロンプトが必要な操作はすべて自動拒否し、権限モードの判定は維持する
+claude -p "テストを実行して結果を要約してください" --permission-prompts none
+
+# プラグイン検証を機械可読な形式で出力
+claude plugin validate ./my-plugin --json</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="section-subtitle">🎯 対象</h3>
+            <ul class="plain-list">
+                <li><strong>管理設定 (managed settings) を運用する組織</strong>: <code>managedMcpServers</code> による MCP サーバーの一元配布が可能になる。一方、<code>allowedMcpServers</code> の適用範囲変更とパース失敗時の起動拒否という 2 つの動作変更に注意が必要</li>
+                <li><strong>CI/CD・無人環境で Claude Code を実行するユーザー</strong>: <code>--permission-prompts none</code> で確認待ちによるハングを排除できる。ヘッドレス / SDK セッションの起動高速化も恩恵となる</li>
+                <li><strong>GitLab ユーザー</strong>: <code>glab mr</code> コマンドの認識により、MR 操作の表示が GitHub PR と同等になる。<code>/install-github-app</code> の GitLab 向け案内も追加された</li>
+                <li><strong>並行セッションを多用するユーザー</strong>: <code>~/.claude.json</code> の相互巻き戻し修正により、多数のセッション同時実行時の設定消失がなくなる</li>
+                <li><strong>プラグイン開発者</strong>: <code>claude plugin validate --json</code> で検証を CI に組み込める</li>
+                <li><strong>セキュリティ統制を重視するチーム</strong>: Bash <code>Read()</code> deny ルールの強化により、<code>.env</code> などの機密ファイルの読み取り防止がより堅牢になる</li>
+            </ul>
+
+            <h3 class="section-subtitle">🛠️ 必要なアクション — 最新バージョンへの更新</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Claude Code の更新方法</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 組み込みコマンド
+claude update
+
+# npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+            <p class="section-lead">アップデート後に確認すべき点は以下のとおり。</p>
+            <ul class="plain-list">
+                <li><code>allowedMcpServers</code> で管理配布サーバー (<code>managed-mcp.json</code> のエントリ) をフィルタリングしていた場合、アップグレード後にそれらが読み込まれるようになる。引き続き無効化するには <code>deniedMcpServers</code> に移行する</li>
+                <li>管理設定ファイル、drop-in、MDM plist、HKLM 値にパースエラーがあると Claude Code が起動しなくなるため、配布前に設定ファイルの構文を検証する</li>
+                <li>無人環境で運用しているスクリプトがある場合、<code>--permission-prompts none</code> の採用を検討する</li>
+            </ul>
+
+            <h3 class="section-subtitle">🔀 移行ガイド</h3>
+            <div class="migration-card">
+                <h4>🔁 allowedMcpServers から deniedMcpServers への移行</h4>
+                <p>動作変更は <code>allowedMcpServers</code> の適用範囲変更の 1 件である。組織の allowlist が管理配布サーバーの抑制を兼ねていた場合は、対象サーバーを <code>deniedMcpServers</code> に明示的に列挙する必要がある。</p>
+            </div>
+            <div class="migration-card">
+                <h4>⛔ パースできない管理設定での起動拒否</h4>
+                <p>挙動としては破壊的変更に近いが、これは統制が黙って無効化される状態を防ぐための意図的な変更であり、エラーメッセージに問題のあるソース名が表示されるため対処は容易である。</p>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🏢 社内共通 MCP ツール群の一元配布</h4>
+                <p><code>managedMcpServers</code> を管理設定に記述すれば、ドキュメント検索やチケット管理などの社内共通 HTTP/SSE MCP サーバーを全ユーザーに一括提供できる。ユーザーごとの <code>.mcp.json</code> 設定に依存していた運用を、管理者による一元配布へ移行できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 CI/CD・スケジュール実行での無人運用</h4>
+                <p><code>--permission-prompts none</code> により、人間が応答できない環境で「確認待ちで停止する」ことも「確認なしで危険な操作が通る」こともなくなる。権限モードが許可した操作は実行され、プロンプトが必要な操作は自動拒否されるため、無人環境の挙動が決定的になる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🦊 GitLab ベースの開発フローとプラグイン CI</h4>
+                <p><code>glab mr</code> コマンドの認識により、GitLab のマージリクエスト操作が <code>MR !N</code> として表示され、GitHub PR と同等の体験が得られる。あわせて <code>claude plugin validate --json</code> により、プラグインの検証を CI パイプラインに機械可読な形で組み込める。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📦</div>
+                    <div class="key-point-content">
+                        <h3>新機能 4 件と約 28 件の修正を含むリリース</h3>
+                        <p>Claude Code v2.1.259 は、<code>managedMcpServers</code> による MCP サーバーの組織一元配布、無人環境向けの <code>--permission-prompts none</code>、GitLab MR 認識、<code>claude plugin validate --json</code> という 4 つの新機能に加え、Bash <code>Read()</code> deny ルールのすり抜け経路封鎖や管理設定パース失敗時の起動拒否といったセキュリティ・統制面の重要な修正、並行セッションの設定巻き戻しやリモートセッションの停滞など約 28 件の不具合修正を含む。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚀</div>
+                    <div class="key-point-content">
+                        <h3>管理設定を運用する組織は早期のアップデートを推奨</h3>
+                        <p>エンタープライズ統制と無人運用の双方で実質的な強化が多く、特に管理設定で MCP サーバーを統制している組織は、<code>allowedMcpServers</code> の適用範囲変更を確認したうえで早期にアップデートすることを推奨する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📦 <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">Claude Code npm パッケージ</a></li>
+                <li>🐙 <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li>📚 <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li>📄 <a href="2026-09-02-claude-code-v2-1-257-v2-1-258.html">Claude Code v2.1.257 / v2.1.258 リリース</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは reports/2026/2026-09-02-claude-code-v2-1-259.md をもとに生成されました。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
