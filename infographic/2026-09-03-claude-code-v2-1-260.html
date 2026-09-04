@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.260 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-chips {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-chip {
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 24px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .tag.new {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .tag.fixed {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .tag.improved {
+            background: #EDE9FE;
+            color: #6D28D9;
+        }
+
+        .tag.changed {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        .tag.removed {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Meta Table */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .meta-table th,
+        .meta-table td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .meta-table th {
+            width: 30%;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .meta-table td a {
+            color: var(--anthropic-coral);
+            word-break: break-all;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code,
+        .use-case code,
+        .key-point-content code,
+        .plain-list code,
+        .section-lead code,
+        .tech-note code,
+        .comparison-card code {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Plain List */
+        .plain-list {
+            display: grid;
+            gap: 10px;
+            padding-left: 4px;
+            list-style: none;
+        }
+
+        .plain-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .plain-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 4px;
+            color: var(--anthropic-coral);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Tech Notes */
+        .tech-note {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-note h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tech-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Cards */
+        .migration-card {
+            background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+            border-left: 4px solid var(--warning);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .migration-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #9A3412;
+        }
+
+        .migration-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .migration-card code {
+            background: rgba(245, 158, 11, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.35rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code 更新</span>
+                <h1>Claude Code v2.1.260 リリース<br>/diff 差分パネル、プロンプトキャッシュミス原因の表示、権限ルールの重要修正、Read() deny ルール変更のリバート</h1>
+                <p class="date">📅 2026-09-03 | ソース: Claude Code Changelog</p>
+                <div class="version-chips">
+                    <span class="version-chip">v2.1.260</span>
+                    <span class="version-chip">合計 66 件の変更</span>
+                    <span class="version-chip">新機能 6 件</span>
+                    <span class="version-chip">修正 約 33 件</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🪟</div>
+                    <div class="key-point-content">
+                        <h3>/diff 差分パネルで未コミット変更をリアルタイム表示</h3>
+                        <p>フルスクリーンモードで会話の横に未コミット変更を表示する差分パネルが追加された。Claude が編集を進めるのに合わせて内容が更新され、<code>/diff</code> でトグルできる。レビュー主体のワークフローに適している。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔍</div>
+                    <div class="key-point-content">
+                        <h3>プロンプトキャッシュミスの推定原因を表示</h3>
+                        <p><code>/cost</code> とステータスラインの <code>prompt_cache</code> フィールドに、ツール定義やシステムプロンプトの変更、TTL 超過のアイドルなど、キャッシュミスの推定原因が表示される。コスト最適化の診断に直結する。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>権限機構の重要な修正</h3>
+                        <p>括弧を含むパスの <code>Edit</code>/<code>Write</code>/<code>Read</code> 権限ルールが無効化されていた問題や、zsh のコマンド置換が自動承認をすり抜けていた問題など、実際にすり抜け・誤動作を起こしていた欠陥が修正された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">↩️</div>
+                    <div class="key-point-content">
+                        <h3>Read() deny ルールの Bash 引数適用をリバート</h3>
+                        <p>v2.1.259 で導入された「<code>Read()</code> deny ルールを Bash 引数に適用する」変更は、<code>npm run build</code> の誤拒否などの副作用によりリバートされた。誤検知に遭遇していたユーザーは従来どおりの動作に戻る。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>Claude Fable 5.1 のキャッシュ効率とモデル選択の改善</h3>
+                        <p>ツール結果後コンテキストのキャッシュ漏れ修正、<code>/effort</code> 変更時のキャッシュ保持、<code>/model</code> ピッカーの表示修正が行われ、1M コンテキストモデルの auto-compact も改善された。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.260</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">新機能 (Added)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">約 33</div>
+                    <div class="stat-label">修正 (Fixed)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">19</div>
+                    <div class="stat-label">改善・動作変更 (Changed)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">削除 (Removed)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">VSCode 拡張</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="meta-table">
+                <tr>
+                    <th>発表日</th>
+                    <td>2026-09-03 (npm 公開: 22:32 UTC)</td>
+                </tr>
+                <tr>
+                    <th>ソース</th>
+                    <td>Claude Code Changelog</td>
+                </tr>
+                <tr>
+                    <th>カテゴリ</th>
+                    <td>Claude Code アップデート</td>
+                </tr>
+                <tr>
+                    <th>公式リンク</th>
+                    <td><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景 — リリースの位置づけ</h2>
+            <p class="section-lead">前日リリースの v2.1.259 では、<code>managedMcpServers</code> 管理設定や <code>--permission-prompts none</code> などのエンタープライズ・ヘッドレス向け機能とともに、Bash の <code>Read()</code> deny ルールを引数レベルまで拡張するセキュリティ強化が行われた。v2.1.260 はその直後のリリースであり、この deny ルール拡張が引き起こした誤検知のリバートを含む、権限機構の精度改善が大きなテーマとなっている。あわせて、開発体験 (差分パネル、キャッシュ診断)、Claude Fable 5.1 まわりの安定化、ヘッドレス / デスクトップ / Remote Control といったマルチサーフェス対応の強化が進められている。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before — v2.1.259</h4>
+                    <p><code>Read()</code> deny ルールが Bash 引数まで検査され、<code>Read(./**/build/**)</code> ルールの下で <code>npm run build</code> があらゆるモードで拒否されるなどの誤検知が発生。括弧を含むパスの権限ルールは無効として破棄され、「読み取り専用」のはずのフォルダが書き込み可能なままだった。キャッシュミスの原因はユーザーから見えなかった。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After — v2.1.260</h4>
+                    <p><code>Read()</code> deny ルールの Bash 引数適用はリバートされ、<code>npm run build</code> などが従来どおり動作。括弧を含むパスのルールが正しく適用され、zsh コマンド置換の自動承認すり抜けも封鎖。キャッシュミスの推定原因が <code>/cost</code> とステータスラインで確認できるようになった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Added -->
+        <section class="section">
+            <h2 class="section-title">新機能 (Added) <span class="tag new">New</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🪟 /diff 差分パネル</h3>
+                    <p>フルスクリーンモードで、会話の横に未コミット変更を表示する差分パネルが追加された。Claude が編集を進めるのに合わせて内容が更新され、<code>/diff</code> でトグルできる。編集内容を都度確認しながら対話を続けるレビュー主体のワークフローに適している。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 プロンプトキャッシュミスの原因表示</h3>
+                    <p><code>/cost</code> とステータスラインの <code>prompt_cache</code> フィールドに、キャッシュミスの推定原因が表示されるようになった。ツール定義やシステムプロンプトの変更、TTL を超えたアイドルなど、これまで手掛かりのなかったキャッシュミスの切り分けが容易になり、コスト最適化の診断に直結する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 ヘッドレスセッション向けコマンドの拡充</h3>
+                    <p><code>/reload-plugins</code> がヘッドレスセッションで利用可能になり、Claude Code Desktop と SDK のコマンドリストに表示されるようになった。また、<code>/advisor</code> のテキスト形式 (<code>/advisor</code>、<code>/advisor &lt;model&gt;</code>、<code>/advisor off</code>) が追加され、デスクトップアプリ、Remote Control、その他のヘッドレス (<code>-p</code> / Agent SDK) セッションから操作できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏢 Claude apps gateway の管理機能</h3>
+                    <p>リフレッシュ時に <code>openid</code> スコープを再要求しないと id_token を返さない IdP 向けの <code>oidc.scope_on_refresh</code> 設定と、<code>desktop</code> ポリシーブロックでの新しい Claude Desktop キー (<code>userPluginMarketplacesEnabled</code>、<code>userPluginUploadsEnabled</code>) のサポートが追加された。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fixed -->
+        <section class="section">
+            <h2 class="section-title">修正 (Fixed) <span class="tag fixed">Fixed</span></h2>
+            <p class="section-lead">約 33 件の修正のうち、影響範囲の広いものをカテゴリ別に整理する。</p>
+
+            <h3 class="section-subtitle">🔒 権限・セキュリティ関連</h3>
+            <ul class="plain-list">
+                <li>パスに括弧を含む <code>Edit</code>/<code>Write</code>/<code>Read</code> 権限ルールが、無効として破棄されたり Bash サンドボックスに無視されたりして、「読み取り専用」のはずのフォルダが書き込み可能なままになっていた問題を修正</li>
+                <li>コンパイルできないパターン (閉じられていない <code>[</code> など) を含むファイル権限ルールが 1 つあるだけで、すべてのファイル編集が <code>Invalid regular expression</code> で失敗する問題を修正。そのような deny ルールは、記述されたリテラルパスを保護するようになった</li>
+                <li>zsh の <code>REPORTTIME</code>、<code>REPORTMEMORY</code>、<code>DIRSTACKSIZE</code> への代入にコマンド置換を隠したコマンドが、Bash 権限チェックで自動承認されていた問題を修正。承認プロンプトが表示されるようになった</li>
+                <li>Glob/Grep で、権限チェックの前に検索パスがディスク上で確認されていた問題を修正。Read と同様に、権限の判定後にパスの不存在が報告されるようになった</li>
+                <li><code>permissions.blockReadsOutsideWorkingDirectories</code> が macOS で、サンドボックス化された git からユーザーの git config を隠したり、worktree 分離されたサブエージェント自身のチェックアウトを隠したりする問題を修正</li>
+            </ul>
+
+            <h3 class="section-subtitle">🔑 認証・エンタープライズ関連</h3>
+            <ul class="plain-list">
+                <li>企業のルート CA が OS の証明書ストアにのみ存在する場合に、Bedrock のモデル検出、トークンカウント、AWS SSO/STS 認証情報の呼び出しが「unable to get local issuer certificate」で失敗する問題を修正</li>
+                <li>過去の <code>/login</code> の API キーが残っている claude.ai Enterprise/Team ユーザーで、管理設定が読み込まれない問題を修正</li>
+                <li><code>/status</code> がサインイン済みの claude.ai アカウントと設定済み API キーの両方を有効であるかのように表示していた問題を修正。使用されていない認証情報にはマークが付くようになった</li>
+                <li>バンドルスキルのエイリアス (<code>/doctor</code> に対する <code>checkup</code> など) をキーにした管理 <code>skillOverrides</code> が適用されない問題と、<code>Skill(name)</code> deny ルールが <code>&lt;dir&gt;:name</code> 形式のネストされたスキルをカバーしない問題を修正</li>
+            </ul>
+
+            <h3 class="section-subtitle">🧠 Claude Fable 5.1・モデル選択関連</h3>
+            <ul class="plain-list">
+                <li>Claude Fable 5.1 のプロンプトキャッシュが、ツール結果の後に添付されるコンテキストをカバーせず、ツール呼び出しのたびに未キャッシュ入力として再送信されていた問題を修正</li>
+                <li><code>/model</code> ピッカーに、利用可能な組織でも Fable 5.1 が表示されない問題を修正 (従来は <code>/model claude-fable-5-1</code> と直接入力した場合のみ受け付けられていた)</li>
+                <li><code>model: fable</code> のエージェントが <code>ANTHROPIC_DEFAULT_FABLE_MODEL</code> ピンの <code>[1m]</code> タグを無視し、200K コンテキストウィンドウで暗黙的に動作していた問題を修正</li>
+                <li>プラグインフックの読み込み失敗や組織管理プラグインのマーケットプレイス読み込み失敗の後、セッションの残り時間ずっとモデル切り替えがブロックされる問題を修正。切り替えのたびに再チェックされ、拒否時には原因が表示される</li>
+            </ul>
+
+            <h3 class="section-subtitle">⏪ /rewind・セッション関連</h3>
+            <ul class="plain-list">
+                <li><code>/rewind</code> と <code>--rewind-files</code> が、チェックポイントのバックアップファイルが欠落して実際には何も復元されていないのに成功と報告していた問題を修正</li>
+                <li><code>/rewind</code> が巻き戻したターンのファイル読み取り追跡を残し、外部編集後に「File unchanged since last read」スタブやファイル全体の再注入を引き起こす問題を修正</li>
+                <li>セッションの worktree ディレクトリが git メタデータを失った後、<code>-p --resume</code> / <code>--continue</code> (デスクトップアプリが使用) がリトライのたびに失敗する問題を修正。一度失敗した後は worktree なしで再開する</li>
+            </ul>
+
+            <h3 class="section-subtitle">🤝 エージェント・マルチセッション関連</h3>
+            <ul class="plain-list">
+                <li>SendMessage 経由で別のエージェントを再開したサブエージェントが、そのエージェントの完了通知で起こされない問題を修正 (通知がメイン会話に届いていた)</li>
+                <li>エージェントチームで、長い API リトライ待機中 (<code>CLAUDE_CODE_RETRY_WATCHDOG</code> 使用時など) にリトライ通知が実メッセージを追い出し、インプロセスのチームメイトのトランスクリプトが欠落・空白になる問題を修正</li>
+                <li>バックグラウンドに移動したセッションが ListAgents に二重に表示され (同名の幻の「interactive」セッションとして)、ビューアー側で SendMessage を受信してしまう問題を修正</li>
+                <li>多数のセッションがプロジェクトディレクトリを共有する場合に発生する断続的な「task output swap refused」エラーを修正</li>
+                <li>長いコンテキスト圧縮の実行中に、Workflow ツールのサブエージェントが停止扱いで再起動される問題を修正</li>
+            </ul>
+
+            <h3 class="section-subtitle">🖥️ UI・その他</h3>
+            <ul class="plain-list">
+                <li>国旗・結合絵文字・アクセント付き文字が折り返し行で分断される問題と、ターミナル最終 2 列に掛かった場合に古いテキストが画面に残る問題を修正 (<code>…</code> として表示)</li>
+                <li>フルスクリーンモードで Ctrl+Z を押すと、シェルが代替スクリーンに残り、一時停止したインターフェースの上に描画される問題を修正</li>
+                <li>claude.ai、デスクトップアプリ、モバイル (Remote Control) から操作しているセッションでアーティファクトを公開すると、余分なブラウザタブが開く問題を修正</li>
+                <li>IDE の行選択が、スキルやスラッシュコマンドの実行時に失われる問題を修正 (「N lines selected」のコンテキストが Claude に届くようになった)</li>
+                <li>ネストしたサブグループの GitLab プロジェクト (<code>gitlab.com/group/subgroup/project</code> など) のリポジトリ検出を修正。また、GitLab リポジトリで作業中の <code>owner/repo#123</code> 形式の issue 参照が github.com にリンクされる問題を修正し、gitlab.com の issue にリンクされるようになった</li>
+                <li>クラウドホストの claude.ai セッションで、コネクタの追加・削除時に Claude in Chrome ツールがタスク途中で「Not connected」で失敗する問題を修正</li>
+                <li>SDK 提供の MCP サーバー (Desktop コネクタなど) が最初のターンに現れず、次のターンでのみ利用可能になることがある問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Changed -->
+        <section class="section">
+            <h2 class="section-title">改善・動作変更 (Changed) <span class="tag changed">Changed</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>↩️ Read() deny ルール変更のリバート</h3>
+                    <p>v2.1.259 で導入された「<code>Read()</code> deny ルールを Bash 引数に適用する」変更がリバートされた。<code>Read(./**/build/**)</code> ルールの下であらゆるモードで <code>npm run build</code> が拒否される、auto モードでも <code>cd … &amp;&amp; grep</code> がプロンプトを表示するといった誤検知が理由である。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 1M コンテキストモデルの auto-compact 改善</h3>
+                    <p>Opus および Fable のセッションが 1M トークン制限の直前で圧縮されるようになり、非常に大きなコンテキストでのリカバリー圧縮が 10 分でタイムアウトしなくなった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧠 プロンプトキャッシュの保持</h3>
+                    <p>Claude Fable 5.1 で <code>/effort</code> によりセッション途中で effort を変更しても、プロンプトキャッシュが無効化されなくなった。</p>
+                </div>
+            </div>
+            <h3 class="section-subtitle">その他の主な変更</h3>
+            <ul class="plain-list">
+                <li>Workflow の <code>agent({schema})</code> が、決して満たされない JSON Schema を事前に拒否し、リトライ上限エラーに最後のバリデーション失敗内容を含めるようになった</li>
+                <li>未プッシュのコミットを持つ worktree を伴うバックグラウンドセッションの削除時に、ブランチ名とコミット数が表示され、再度削除すると worktree が破棄されるようになった</li>
+                <li>非対話 (<code>-p</code> / SDK) セッションのアイドル時 CPU 使用率が改善された</li>
+                <li>Amazon Bedrock 上の Claude apps gateway で、中断されたリクエストの入力トークンが AWS の無料 CountTokens API で計上されるようになった (<code>bedrock:CountTokens</code> の許可が必要)</li>
+                <li><code>Edit(C:\dir\(name)\**)</code> のように <code>\(</code> がパス区切りではなくエスケープされた括弧として解釈されるルールに対し、曖昧さのない記述を提案するエラーメッセージが表示されるようになった</li>
+                <li><code>/ultrareview</code> と <code>claude ultrareview</code> が、長時間のクラウドレビューを最大 45 分 (従来 30 分) 待機するようになった</li>
+                <li>フルスクリーンモードの <code>ctrl+l</code> / <code>cmd+k</code> が、ターミナルの <code>clear</code> と同様にトランスクリプト表示をクリアするようになった (スクロールアップで過去のメッセージを表示可能)</li>
+                <li>閉じ括弧の後にテキストが続く権限ルール (<code>Bash(ls) x</code> など、何にもマッチしない) が、黙って無視されるのではなく無効な設定として報告されるようになった</li>
+                <li>サーバー管理設定で、管理 CLAUDE.md (<code>claudeMd</code>) がセキュリティ承認ダイアログを表示しなくなった (フック、シェルコマンド、サンドボックス、unsafe な <code>env</code> 設定は引き続き承認が必要)</li>
+                <li>Claude in Chrome が組織の管理設定に従うようになり、管理者が無効化した場合は <code>--chrome</code>、<code>/chrome</code>、ブラウザツールが利用不可になる</li>
+                <li><code>!</code> bash モードプロンプトで入力されたコマンドが、strict サンドボックスモード (<code>sandbox.allowUnsandboxedCommands: false</code>) でもサンドボックス外で実行されるようになった (自分のターミナルへの入力と同等の扱い)</li>
+                <li>セルフホストランナーの <code>--kill-session-after-min</code> が、ユーザー待ちのみのセッション (一時停止中、次のメッセージで再開可能) を kill して失敗報告する代わりに解放するようになった</li>
+                <li>バンドルされた <code>claude-api</code> スキルの Go、Java、C# サンプルが現行世代のモデル ID を使用するように更新された</li>
+            </ul>
+        </section>
+
+        <!-- Removed -->
+        <section class="section">
+            <h2 class="section-title">削除 (Removed) <span class="tag removed">Removed</span></h2>
+            <ul class="plain-list">
+                <li>サブエージェントが開始したバックグラウンドコマンドの 1 時間の時間制限が撤廃された。メインセッションと同様に、終了するか停止されるまで実行される</li>
+            </ul>
+        </section>
+
+        <!-- VSCode -->
+        <section class="section">
+            <h2 class="section-title">VSCode 拡張</h2>
+            <ul class="plain-list">
+                <li>フッターのモデルピルに選択中の effort レベルが表示されるようになり、モデル切り替え後に古い effort レベルが残る問題が修正され、フッターピルが以前のコンパクトなサイズに戻った</li>
+                <li>セッションリストのステータスフィルターメニューに Open と Closed が追加された</li>
+                <li>Remote Control が自動的にオンになる際に、新規セッションのウェルカム画面が消える問題を修正</li>
+                <li>別のタブで既に開いているセッションをセッション履歴ピッカーから開くと二重に読み込まれる問題を修正し、そのタブへの切り替えに変更</li>
+                <li>タブのビューがリロード中の場合に、セッションタブの Rename コマンドが黙って何もしない問題を修正</li>
+                <li>ドロップされた応答のリトライ後に、書きかけのメッセージ、空のツールカード、余分な「Thought for」行が画面に残る問題を修正</li>
+                <li>「Enable Remote Control for all sessions」が、トグル切り替え時に起動中だったセッションタブに適用されない問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+            <p class="section-lead">本リリースの中核テーマの 1 つは、権限ルール評価の「精度」の調整である。v2.1.259 の <code>Read()</code> deny ルール拡張は検査範囲を広げるフェイルセーフ側の変更だったが、ビルドディレクトリを対象とするルールが <code>npm run build</code> そのものを拒否するなど、引数文字列とファイルアクセスの混同による誤検知が発生した。v2.1.260 はこれをリバートする一方、括弧を含むパスのルール破棄、コンパイル不能パターンによる全編集の失敗、zsh 特殊変数への代入に隠されたコマンド置換の自動承認といった、実際にすり抜け・誤動作を起こしていた欠陥を修正しており、「広く浅く検査する」方向から「定義されたルールを確実に適用する」方向へ調整されたリリースといえる。</p>
+
+            <div class="tech-note">
+                <h4>🧠 プロンプトキャッシュの可観測性と効率</h4>
+                <p>キャッシュミスは API コストに直結するが、原因 (ツール定義の変更、システムプロンプトの変更、TTL 超過) はこれまでユーザーから見えなかった。v2.1.260 では推定原因が <code>/cost</code> とステータスラインに表示され、さらに Fable 5.1 のツール結果後コンテキストのキャッシュ漏れ修正、<code>/effort</code> 変更時のキャッシュ保持とあわせて、長時間セッションのコスト特性が改善されている。</p>
+            </div>
+
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Session["🖥️ Claude Code セッション"]
+        Request["📨 API リクエスト"]
+        Cache{"🧠 プロンプトキャッシュ<br/>ヒット判定"}
+        Diagnose["🔍 ミス原因の推定<br/>ツール定義変更 / システムプロンプト変更 / TTL 超過"]
+    end
+
+    subgraph Display["📊 表示先"]
+        direction LR
+        Cost["💰 /cost コマンド"]
+        Status["📟 ステータスライン<br/>prompt_cache フィールド"]
+        Cost ~~~ Status
+    end
+
+    Request --> Cache
+    Cache -->|ヒット| Hit["✅ キャッシュ読み取り<br/>低コスト"]
+    Cache -->|ミス| Diagnose
+    Diagnose --> Cost
+    Diagnose --> Status
+
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Session,Display layer
+    class Request process
+    class Cache decision
+    class Diagnose internal
+    class Hit,Cost,Status input
+                </pre>
+            </div>
+
+            <div class="tech-note">
+                <h4>🪟 フルスクリーンモードの作業画面化</h4>
+                <p><code>/diff</code> 差分パネルはフルスクリーンモードの活用を前提とした機能であり、<code>ctrl+l</code> / <code>cmd+k</code> によるトランスクリプトクリア、Ctrl+Z の代替スクリーン修正とあわせて、フルスクリーンモードをメインの作業画面として使うワークフローが整備されつつある。</p>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p class="section-lead">フルスクリーンモードでの <code>/diff</code> 差分パネルの利用例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">差分パネルとキャッシュ診断</span>
+                </div>
+                <pre><code class="language-bash"># セッション中に差分パネルをトグル
+/diff
+
+# プロンプトキャッシュの状態とミス原因を確認
+/cost</code></pre>
+            </div>
+            <p class="section-lead">ステータスラインでキャッシュミス原因を利用する例 (statusline スクリプトが受け取る JSON の <code>prompt_cache</code> フィールドに原因情報が含まれる)。ヘッドレスセッションでは <code>/advisor</code> のテキスト形式が利用できる。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ヘッドレスセッションでの /advisor テキストコマンド</span>
+                </div>
+                <pre><code class="language-bash">claude -p "/advisor claude-opus-4-6"
+claude -p "/advisor off"</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="section-subtitle">🎯 対象</h3>
+            <ul class="plain-list">
+                <li><strong>v2.1.259 で Bash コマンドの誤拒否・過剰プロンプトに遭遇したユーザー</strong>: <code>Read()</code> deny ルールの Bash 引数適用がリバートされ、<code>npm run build</code> などが従来どおり動作する</li>
+                <li><strong>権限ルールを運用するチーム</strong>: 括弧を含むパスのルールが正しく適用されるようになったため、これまで意図せず無効化されていたルールが有効になる。設定済みルールの動作を再確認することを推奨する</li>
+                <li><strong>Claude Fable 5.1 ユーザー</strong>: ツール呼び出し多用時のキャッシュ効率が改善され、<code>/model</code> ピッカーからの選択、<code>[1m]</code> タグ付きモデルピンも正しく動作する</li>
+                <li><strong>API コストを監視するユーザー</strong>: <code>/cost</code> とステータスラインでキャッシュミスの原因を確認できるようになり、コスト増の切り分けが容易になる</li>
+                <li><strong>Bedrock を企業プロキシ環境で利用するユーザー</strong>: OS 証明書ストアのみにルート CA がある構成での証明書エラーが解消される</li>
+                <li><strong>エージェントチーム・並行セッションを多用するユーザー</strong>: SendMessage の通知配送、トランスクリプト欠落、セッション二重表示などマルチエージェント運用の安定性が向上する</li>
+                <li><strong>GitLab ユーザー</strong>: ネストしたサブグループのリポジトリ検出と issue 参照リンクが正しく動作する</li>
+            </ul>
+
+            <h3 class="section-subtitle">🛠️ 必要なアクション — 最新バージョンへの更新</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Claude Code の更新方法</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 組み込みコマンド
+claude update
+
+# npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+            <p class="section-lead">アップデート後に確認すべき点は以下のとおり。</p>
+            <ul class="plain-list">
+                <li>v2.1.259 の <code>Read()</code> deny ルール拡張を前提に Bash 引数の検査を期待していた場合、その動作はリバートされているため、機密ファイルの保護は <code>Read()</code> ルール本来の適用範囲と <code>permissions.blockReadsOutsideWorkingDirectories</code> などで確認する</li>
+                <li>括弧を含むパスの <code>Edit</code>/<code>Write</code>/<code>Read</code> ルールが有効化されるため、これまで暗黙的に許可されていた操作が拒否される可能性がある。ルールの意図と実際の挙動を確認する</li>
+                <li>Bedrock 利用時に中断リクエストのトークン計上を正確にするには、IAM で <code>bedrock:CountTokens</code> を許可する</li>
+                <li>閉じ括弧の後にテキストが続く権限ルールは無効な設定として報告されるようになるため、警告が出た場合は記述を修正する</li>
+            </ul>
+
+            <h3 class="section-subtitle">🔀 移行ガイド</h3>
+            <div class="migration-card">
+                <h4>⚠️ strict サンドボックスモードでの ! bash モードの扱い</h4>
+                <p>破壊的変更に近いのは strict サンドボックスモードでの <code>!</code> bash モードの扱いである。<code>sandbox.allowUnsandboxedCommands: false</code> を設定していても、<code>!</code> プロンプトで入力したコマンドはサンドボックス外で実行されるようになった。これはユーザー自身のターミナル入力と同等とみなす意図的な変更だが、strict モードで完全なサンドボックス実行を前提としていた組織はこの挙動を把握しておく必要がある。</p>
+            </div>
+            <div class="migration-card">
+                <h4>🌐 Claude in Chrome の組織管理設定への準拠</h4>
+                <p>Claude in Chrome は組織の管理設定に従うようになったため、管理者が無効化している場合は <code>--chrome</code> / <code>/chrome</code> が利用できなくなる。</p>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🪟 差分パネルを使ったレビュー主体のワークフロー</h4>
+                <p>フルスクリーンモードで <code>/diff</code> をトグルすると、会話の横に未コミット変更がリアルタイム表示される。Claude が編集を進めるのに合わせて内容が更新されるため、編集内容を都度確認しながら対話を続けるレビュー主体のワークフローに適している。<code>ctrl+l</code> / <code>cmd+k</code> のトランスクリプトクリアとあわせて、フルスクリーンモードをメインの作業画面として活用できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>💰 プロンプトキャッシュミスの診断によるコスト最適化</h4>
+                <p>長時間セッションでコストが増加した場合、<code>/cost</code> やステータスラインの <code>prompt_cache</code> フィールドでキャッシュミスの推定原因 (ツール定義変更、システムプロンプト変更、TTL 超過) を確認できる。Fable 5.1 のツール結果後コンテキストのキャッシュ漏れ修正、<code>/effort</code> 変更時のキャッシュ保持とあわせて、コスト増の切り分けと抑制が容易になる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔒 deny ルールで機密パスを保護する組織の設定確認</h4>
+                <p>括弧を含むパスの権限ルールが正しく適用されるようになり、zsh コマンド置換の自動承認すり抜けも封鎖されたため、deny ルールで機密パスを保護している組織は、早期のアップデートと設定の動作確認により統制の実効性を高められる。一方、v2.1.259 の <code>Read()</code> deny ルール拡張はリバートされているため、Bash 引数レベルの検査を前提としていた場合は保護方法を見直す。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📦</div>
+                    <div class="key-point-content">
+                        <h3>合計 66 件の変更を含むリリース</h3>
+                        <p>Claude Code v2.1.260 は、<code>/diff</code> 差分パネルとプロンプトキャッシュミス原因の表示という開発体験の新機能に加え、括弧を含むパスの権限ルール無効化や zsh コマンド置換の自動承認すり抜けといった権限機構の重要な修正、v2.1.259 の <code>Read()</code> deny ルール拡張のリバート、Claude Fable 5.1 のキャッシュ効率とモデル選択の改善、1M コンテキストモデルの auto-compact 改善など、合計 66 件の変更を含むリリースである。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚀</div>
+                    <div class="key-point-content">
+                        <h3>権限ルールを運用する組織は早期のアップデートを推奨</h3>
+                        <p>権限ルールの適用精度に直結する修正が多いため、deny ルールで機密パスを保護している組織や、v2.1.259 で Bash コマンドの誤拒否に遭遇していたユーザーは、早期のアップデートと設定の動作確認を推奨する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📦 <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">Claude Code npm パッケージ</a></li>
+                <li>🐙 <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li>📚 <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li>📄 <a href="2026-09-02-claude-code-v2-1-259.html">Claude Code v2.1.259 リリース</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは reports/2026/2026-09-03-claude-code-v2-1-260.md をもとに生成されました。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

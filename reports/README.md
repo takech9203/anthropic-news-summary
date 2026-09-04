@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-09-03](2026/2026-09-03-claude-code-v2-1-260.md) - Claude Code v2.1.260 リリース — `/diff` 差分パネル、プロンプトキャッシュミス原因の表示、権限ルールの重要修正、`Read()` deny ルール変更のリバート
 - [2026-09-02](2026/2026-09-02-claude-code-v2-1-259.md) - Claude Code v2.1.259 リリース — managedMcpServers 管理設定、`--permission-prompts none`、GitLab MR 認識、権限・管理設定まわりの大規模なセキュリティ修正
 - [2026-09-02](2026/2026-09-02-claude-code-v2-1-257-v2-1-258.md) - Claude Code v2.1.257 / v2.1.258 リリース — Fable 5.1 がデフォルトモデルに、時刻表示設定、Containment Escape ルール、大規模な安定性改善
 - [2026-09-01](2026/2026-09-01-enterprise-frontier-safeguards.md) - Enterprise Frontier Safeguards: 顧客と共に開発するエンタープライズ向けフロンティアセーフガード
