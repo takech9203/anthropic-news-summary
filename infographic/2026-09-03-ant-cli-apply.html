@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ant CLI v1.30.0 - ant apply コマンド追加 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-chips {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-chip {
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 24px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Meta Table */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .meta-table th,
+        .meta-table td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .meta-table th {
+            width: 30%;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .meta-table td a {
+            color: var(--anthropic-coral);
+            word-break: break-all;
+        }
+
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0 8px;
+        }
+
+        .data-table th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            font-weight: 700;
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.4);
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .data-table code {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            white-space: nowrap;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code,
+        .use-case code,
+        .key-point-content code,
+        .plain-list code,
+        .section-lead code,
+        .tech-note code,
+        .comparison-card code {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Plain List */
+        .plain-list {
+            display: grid;
+            gap: 10px;
+            padding-left: 4px;
+            list-style: none;
+        }
+
+        .plain-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .plain-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 4px;
+            color: var(--anthropic-coral);
+        }
+
+        /* Numbered List */
+        .numbered-list {
+            counter-reset: step;
+            display: grid;
+            gap: 12px;
+            list-style: none;
+        }
+
+        .numbered-list li {
+            counter-increment: step;
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 12px 16px 12px 52px;
+            position: relative;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+        }
+
+        .numbered-list li::before {
+            content: counter(step);
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 26px;
+            height: 26px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Tech Notes */
+        .tech-note {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-note h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tech-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Cards */
+        .migration-card {
+            background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+            border-left: 4px solid var(--warning);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .migration-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #9A3412;
+        }
+
+        .migration-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .migration-card code {
+            background: rgba(245, 158, 11, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.35rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">CLI / 開発者ツール</span>
+                <h1>ant CLI v1.30.0 リリース<br>リソースをコードとして管理する <code style="font-family: inherit;">ant apply</code> コマンドを追加</h1>
+                <p class="date">📅 2026-09-03 | ソース: Claude Developer Platform Release Notes</p>
+                <div class="version-chips">
+                    <span class="version-chip">ant CLI v1.30.0</span>
+                    <span class="version-chip">新コマンド ant apply</span>
+                    <span class="version-chip">5 種類のリソースを宣言的管理</span>
+                    <span class="version-chip">claude-lock.json</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📝</div>
+                    <div class="key-point-content">
+                        <h3>宣言的なリソース管理</h3>
+                        <p>エージェント、環境、スキル、メモリストア、デプロイメントの 5 種類の Claude API リソースをリポジトリ内のファイルとして定義し、<code>ant apply</code> で作成・更新できる。リソース定義をコードと同じレビュープロセスで変更できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📋</div>
+                    <div class="key-point-content">
+                        <h3>プランの承認フロー</h3>
+                        <p>対話的なターミナルでは、作成・更新内容のプランを表示して承認を待つ。<code>d</code> を入力すると各リソースのフィールド単位の差分を確認できる。Terraform に代表される Infrastructure-as-Code 的なワークフローを Claude API に持ち込む。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>claude-lock.json によるべき等な再実行</h3>
+                        <p>初回実行時に書き出されるロックファイルをコミットしておくことで、ローカルマシンでも CI でも、後続の実行が新規リソースを作成せず同一リソースを更新する。ファイル外での変更もハッシュで検知できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔗</div>
+                    <div class="key-point-content">
+                        <h3>相対パスによる依存関係の解決</h3>
+                        <p>リソース間の参照は ID の代わりに相対パスで記述でき、<code>ant apply</code> が依存順に作成して実際の ID を埋め込む。デプロイメントからエージェントや環境をパスで参照できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>CI 対応</h3>
+                        <p><code>--yes</code> フラグで確認なしの適用、<code>--dry-run</code> でプランのみの表示が可能。プルリクエストでのプランレビューとマージ後の自動適用という CI/CD ワークフローを構築できる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る ant apply</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">管理できるリソース種別</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">記述形式 (YAML / JSON / Markdown)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">主なコマンドフラグ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">ロックファイル (claude-lock.json)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="meta-table">
+                <tr>
+                    <th>発表日</th>
+                    <td>2026-09-03</td>
+                </tr>
+                <tr>
+                    <th>ソース</th>
+                    <td>Claude Developer Platform Release Notes</td>
+                </tr>
+                <tr>
+                    <th>カテゴリ</th>
+                    <td>CLI / 開発者ツール</td>
+                </tr>
+                <tr>
+                    <th>公式リンク</th>
+                    <td><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Background + Before/After -->
+        <section class="section">
+            <h2 class="section-title">背景 — CLI の発展形としての ant apply</h2>
+            <p class="section-lead">ant CLI は 2026 年 4 月 8 日に初回リリースされた Claude API 向けのコマンドラインクライアントで、当初から YAML ファイルによる API リソースのバージョン管理を志向していた。今回の <code>ant apply</code> はその発展形であり、リソース定義をコードと同じレビュープロセスで変更し、宣言的に API と同期させる仕組みを提供する。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before — v1.30.0 より前</h4>
+                    <p>エージェントや環境などのリソースは Console や <code>ant beta:agents create</code> で個別に作成・更新する必要があり、構成の変更履歴を Git で一元管理し、レビューや CI/CD と統合する標準的な仕組みがなかった。同じ定義を再適用すると重複リソースが作成される懸念もあった。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After — v1.30.0 以降</h4>
+                    <p>5 種類のリソースをファイルとして宣言し、<code>ant apply</code> のプラン承認フローで API 側に反映できる。<code>claude-lock.json</code> をコミットすれば、ローカルでも CI でも後続の実行が同一リソースを更新し、べき等な運用が可能。相対パス参照で依存関係も自動解決される。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📝 宣言的なリソース管理</h3>
+                    <p>エージェント、環境、スキル、メモリストア、デプロイメントをファイルとして定義し、<code>ant apply</code> で作成・更新できる。各ファイルには、そのリソース種別の作成エンドポイントに送るリクエストボディを記述する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 プランの承認フロー</h3>
+                    <p>対話的なターミナルでは、作成・更新内容のプランを表示して承認を待つ。<code>d</code> を入力すると各リソースのフィールド単位の差分を確認できるため、意図しない変更の混入を適用前に防げる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 ロックファイル</h3>
+                    <p>初回実行時に <code>claude-lock.json</code> を書き出し、ファイルとリソース ID の対応、組織 ID、ワークスペース ID、送信内容と API 応答のハッシュを記録する。コミットすることでチームや CI と状態を共有できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔗 依存関係の解決</h3>
+                    <p>リソース間の参照は ID の代わりに相対パスで記述でき、<code>ant apply</code> が依存順に作成して実際の ID を埋め込む。デプロイメントが参照するエージェントや環境を、同じリポジトリ内のファイルとして管理できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 CI 対応</h3>
+                    <p><code>--yes</code> フラグで確認なしの適用、<code>--dry-run</code> でプランのみの表示が可能。プルリクエストではプランをレビュアーに提示し、マージ後に自動適用するワークフローを構築できる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="section-subtitle">📄 リソースファイルの形式</h3>
+            <p class="section-lead">各ファイルには、そのリソース種別の作成エンドポイントに送るリクエストボディを記述する。スキルを除くリソースは YAML、JSON、Markdown のいずれでも記述できる。Markdown の場合はフロントマターがリクエストボディとなり、本文がその種別のテキストフィールド (エージェントの <code>system</code>、環境やメモリストアの <code>description</code>、デプロイメントの最初のメッセージ) に入る。</p>
+            <table class="data-table">
+                <tr>
+                    <th>リソース</th>
+                    <th>形式</th>
+                    <th>配置場所</th>
+                </tr>
+                <tr>
+                    <td>🤖 エージェント</td>
+                    <td>Markdown など</td>
+                    <td><code>agents/</code></td>
+                </tr>
+                <tr>
+                    <td>🌐 環境</td>
+                    <td>YAML など</td>
+                    <td><code>environments/</code></td>
+                </tr>
+                <tr>
+                    <td>🧠 メモリストア</td>
+                    <td>YAML など</td>
+                    <td><code>memory_stores/</code></td>
+                </tr>
+                <tr>
+                    <td>⏰ デプロイメント</td>
+                    <td>Markdown など</td>
+                    <td><code>deployments/</code></td>
+                </tr>
+                <tr>
+                    <td>🧩 スキル</td>
+                    <td><code>SKILL.md</code> を含むディレクトリ</td>
+                    <td><code>skills/</code> (慣例)</td>
+                </tr>
+            </table>
+
+            <h3 class="section-subtitle">🔎 ファイル種別の推論</h3>
+            <p class="section-lead"><code>ant apply</code> がディレクトリを走査する際、各ファイルの種別は以下の優先順で判定される。</p>
+            <ol class="numbered-list">
+                <li>ファイル内のトップレベル <code>type</code> フィールド</li>
+                <li>ファイルが直接置かれているディレクトリ名 (<code>agents/</code>、<code>environments/</code>、<code>memory_stores/</code>、<code>deployments/</code>)</li>
+                <li>種別名で始まるファイル名 (例: <code>environment_staging.md</code>)</li>
+            </ol>
+            <p class="section-lead" style="margin-top: 16px;">いずれにも一致しないファイル (README や CI 設定など) はスキップされる。コマンドラインで直接指定した場合、一致しない Markdown ファイルはエージェントとして扱われる。</p>
+
+            <h3 class="section-subtitle">🔒 claude-lock.json の仕組み</h3>
+            <div class="tech-note">
+                <h4>記録される内容</h4>
+                <p>各ファイルが作成したリソースの ID とバージョン、リソースが属する組織とワークスペース、2 種類のハッシュ (最後に送信した内容と API が返した内容のフィンガープリント) が記録される。このハッシュにより、ファイルの編集やファイル外でのリソース変更を後続の実行が検知できる。</p>
+            </div>
+            <div class="tech-note">
+                <h4>ドリフトの検知と削除の扱い</h4>
+                <p>Console などファイル外でリソースが編集・アーカイブ・削除されていた場合、プランは適用を拒否して終了する。<code>--force</code> で上書きできる。ファイルを削除してもリソースは警告付きで残り、<code>--prune</code> を指定した場合にアーカイブ (スキルは削除) される。</p>
+            </div>
+
+            <h3 class="section-subtitle">🚩 主なフラグ</h3>
+            <table class="data-table">
+                <tr>
+                    <th>フラグ</th>
+                    <th>効果</th>
+                </tr>
+                <tr>
+                    <td><code>--dry-run</code></td>
+                    <td>プランを表示して終了。適用もロックファイルの書き込みも行わない</td>
+                </tr>
+                <tr>
+                    <td><code>--yes</code></td>
+                    <td>確認なしで適用。ターミナルがない環境では必須</td>
+                </tr>
+                <tr>
+                    <td><code>--force</code></td>
+                    <td>ファイル外で変更・アーカイブ・削除されたリソースにも適用</td>
+                </tr>
+                <tr>
+                    <td><code>--prune</code></td>
+                    <td>ロックファイルにあるがファイルで宣言されなくなったリソースを削除</td>
+                </tr>
+                <tr>
+                    <td><code>--upgrade</code></td>
+                    <td>GitHub URL で参照するスキルを再解決 (通常は記録されたコミットに固定)</td>
+                </tr>
+                <tr>
+                    <td><code>--lock-file &lt;path&gt;</code></td>
+                    <td>使用するロックファイルを明示指定</td>
+                </tr>
+                <tr>
+                    <td><code>--verbose</code>, <code>-v</code></td>
+                    <td>変更のないリソースやフィールドの全値をプランに表示</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <p class="section-lead">リポジトリ内のリソース定義ファイルが <code>ant apply</code> のプラン承認フローを経て Claude API に反映され、<code>claude-lock.json</code> が次回実行時の同一性を担保する。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Repo["📁 リポジトリ"]
+        direction LR
+        Agents["🤖 agents/*.md"]
+        Envs["🌐 environments/*.yaml"]
+        Skills["🧩 skills/*/SKILL.md"]
+        Stores["🧠 memory_stores/*.yaml"]
+        Deploys["⏰ deployments/*.md"]
+        Agents ~~~ Envs ~~~ Skills ~~~ Stores ~~~ Deploys
+    end
+
+    subgraph CLI["⌨️ ant CLI v1.30.0"]
+        Plan{"📋 プラン表示<br/>承認待ち"}
+        Apply["✅ ant apply<br/>依存順に作成・更新"]
+    end
+
+    subgraph API["🔌 Claude API"]
+        Resources["🗂️ エージェント / 環境 / スキル<br/>メモリストア / デプロイメント"]
+    end
+
+    Lock[("🔒 claude-lock.json<br/>リソース ID とハッシュ")]
+
+    Repo --> Plan
+    Plan -->|承認| Apply
+    Apply --> Resources
+    Apply --> Lock
+    Lock -.->|次回実行時に<br/>同一リソースを特定| Plan
+
+    classDef repo fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef cli fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class Agents,Envs,Skills,Stores,Deploys repo
+    class Apply cli
+    class Plan decision
+    class Resources api
+    class Lock storage
+    class Repo,CLI,API container
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p class="section-lead">エージェントを Markdown ファイルとして定義する例。フロントマターがリクエストボディとなり、本文が <code>system</code> フィールドに入る。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Markdown</span>
+                    <span class="code-title">agents/summarizer.md</span>
+                </div>
+                <pre><code class="language-markdown">---
+name: Summarizer
+model: claude-opus-5
+tools:
+  - type: agent_toolset_20260401
+---
+
+You are a helpful assistant that writes concise summaries.</code></pre>
+            </div>
+            <p class="section-lead"><code>ant apply</code> の基本的な実行例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ant apply の実行</span>
+                </div>
+                <pre><code class="language-bash"># 単一ファイルを適用
+ant apply agents/summarizer.md
+
+# プロジェクト全体を適用
+ant apply .
+
+# プランのみ表示 (変更なし)
+ant apply --dry-run .
+
+# CI での適用 (確認なし)
+ant apply --yes .</code></pre>
+            </div>
+            <p class="section-lead">リソース間の参照は相対パスで記述できる。デプロイメントの例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Markdown</span>
+                    <span class="code-title">deployments/nightly-review.md — 相対パスによる依存参照</span>
+                </div>
+                <pre><code class="language-markdown">---
+name: Nightly review
+agent: ../agents/reviewer.md
+environment_id: ../environments/cloud.yaml
+resources:
+  - path: ../memory_stores/review-notes.yaml
+    access: read_write
+schedule:
+  type: cron
+  expression: "0 3 * * *"
+  timezone: America/Los_Angeles
+---
+
+Review any open pull requests. Start with the oldest.</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="section-subtitle">🎯 対象</h3>
+            <ul class="plain-list">
+                <li>Claude API のマネージドエージェント (agents、environments、skills、memory stores、deployments) を利用している開発者</li>
+                <li>エージェント構成を Git でバージョン管理し、コードレビューや CI/CD と統合したいチーム</li>
+            </ul>
+
+            <h3 class="section-subtitle">🛠️ 必要なアクション</h3>
+            <ul class="plain-list">
+                <li>ant CLI を v1.30.0 以降に更新する (インストールと認証は CLI クイックスタートを参照)</li>
+                <li>リポジトリのルートで <code>ant apply</code> を実行し、生成された <code>claude-lock.json</code> をコミットする</li>
+            </ul>
+
+            <h3 class="section-subtitle">🔁 CI に組み込む場合の注意点</h3>
+            <ul class="plain-list">
+                <li>デフォルトブランチへのマージ後に <code>ant apply --yes .</code> を実行する</li>
+                <li>プルリクエストでは <code>ant apply --dry-run .</code> でプランをレビュアーに提示する</li>
+                <li>適用が途中で失敗した場合でも、更新された <code>claude-lock.json</code> をコミットする</li>
+                <li>ロックファイルの排他制御はないため、apply は同時に 1 つだけ実行する</li>
+                <li>認証には保存済み API キーではなく Workload Identity Federation の利用が推奨される</li>
+            </ul>
+
+            <h3 class="section-subtitle">🔀 移行時の注意点</h3>
+            <div class="migration-card">
+                <h4>⚠️ 既存リソースの取り込み (adopt) はできない</h4>
+                <p><code>ant apply</code> は、Console や <code>ant beta:agents create</code> で作成した既存リソースを取り込むことはできない。管理対象はロックファイルに記録されたものだけであり、既存エージェントと同じ内容のファイルを適用すると 2 つ目のリソースが作成される。</p>
+            </div>
+            <div class="migration-card">
+                <h4>💡 Console の Export as code を活用する</h4>
+                <p>Console の <strong>Export as code</strong> でダウンロードしたエージェントには専用の <code>claude-lock.json</code> が含まれるため、それを適用すれば Console で構築したリソースを更新できる。</p>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🔁 エージェント構成のコードレビューと CI/CD 統合</h4>
+                <p>エージェント、環境、スキルなどの定義ファイルを Git リポジトリで管理し、プルリクエストでは <code>ant apply --dry-run .</code> のプランをレビュアーに提示、デフォルトブランチへのマージ後に <code>ant apply --yes .</code> で自動適用する。リソースの変更がコードと同じレビュープロセスを通るため、運用を標準化できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>⏰ スケジュール実行されるデプロイメントの宣言的管理</h4>
+                <p>cron スケジュール付きのデプロイメントを Markdown ファイルとして定義し、参照するエージェント、環境、メモリストアを相対パスで記述する。<code>ant apply</code> が依存順に作成して実際の ID を埋め込むため、「毎晩 3 時にオープンな PR をレビューする」といったエージェント構成一式をリポジトリだけで完結して管理できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🖥️ Console で構築したエージェントのコード化</h4>
+                <p>Console で試行錯誤して構築したエージェントを <strong>Export as code</strong> でダウンロードすると、専用の <code>claude-lock.json</code> が含まれる。これをリポジトリにコミットして <code>ant apply</code> を実行すれば、以後は Console で作ったリソースをファイル編集とコードレビューで更新していける。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🏗️</div>
+                    <div class="key-point-content">
+                        <h3>Infrastructure-as-Code の実践を Claude API に適用</h3>
+                        <p><code>ant apply</code> の追加により、Claude API のマネージドエージェント関連リソースを Git リポジトリ内のファイルとして宣言的に管理できるようになった。プラン承認フロー、<code>claude-lock.json</code> によるべき等な再実行、相対パスによる依存関係の解決、CI 統合のサポートなど、必要な機能が一通り揃っている。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚀</div>
+                    <div class="key-point-content">
+                        <h3>エージェント運用の標準化を前進させるアップデート</h3>
+                        <p>エージェント構成をコードレビューと CI/CD のプロセスに乗せたいチームにとって、運用の標準化を大きく前進させるアップデートである。ant CLI を v1.30.0 以降に更新し、<code>claude-lock.json</code> をコミットする運用から始められる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📖 <a href="https://platform.claude.com/docs/en/cli-sdks-libraries/cli/apply" target="_blank" rel="noopener noreferrer">Manage resources as code with ant apply</a></li>
+                <li>🚀 <a href="https://platform.claude.com/docs/en/cli-sdks-libraries/cli/quickstart" target="_blank" rel="noopener noreferrer">CLI quickstart</a></li>
+                <li>🤖 <a href="https://platform.claude.com/docs/en/cli-sdks-libraries/cli/scripting" target="_blank" rel="noopener noreferrer">CLI scripting and automation</a></li>
+                <li>⏰ <a href="https://platform.claude.com/docs/en/managed-agents/scheduled-deployments" target="_blank" rel="noopener noreferrer">Scheduled deployments</a></li>
+                <li>🔑 <a href="https://platform.claude.com/docs/en/manage-claude/workload-identity-federation" target="_blank" rel="noopener noreferrer">Workload Identity Federation</a></li>
+                <li>🐙 <a href="https://github.com/anthropics/anthropic-cli#in-ci" target="_blank" rel="noopener noreferrer">ant CLI README の CI 例</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは reports/2026/2026-09-03-ant-cli-apply.md をもとに生成されました。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
