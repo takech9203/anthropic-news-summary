@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Managed Agents に auto 権限ポリシー追加、ant CLI にセッション接続コマンド登場 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-chips {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-chip {
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 24px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Meta Table */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .meta-table th,
+        .meta-table td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .meta-table th {
+            width: 30%;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .meta-table td a {
+            color: var(--anthropic-coral);
+            word-break: break-all;
+        }
+
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0 8px;
+        }
+
+        .data-table th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            font-weight: 700;
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.4);
+        }
+
+        .data-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .data-table code {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        /* Policy Cards */
+        .policy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .policy-card {
+            border-radius: 14px;
+            padding: 20px;
+            border: 2px solid;
+        }
+
+        .policy-card.allow {
+            background: linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 100%);
+            border-color: #34D399;
+        }
+
+        .policy-card.ask {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 100%);
+            border-color: #FBBF24;
+        }
+
+        .policy-card.auto {
+            background: linear-gradient(135deg, #E0E7FF 0%, #EEF2FF 100%);
+            border-color: #818CF8;
+        }
+
+        .policy-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .policy-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .policy-card code {
+            background: rgba(26, 26, 46, 0.08);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        .policy-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .policy-card.allow .policy-badge {
+            background: #34D399;
+            color: #064E3B;
+        }
+
+        .policy-card.ask .policy-badge {
+            background: #FBBF24;
+            color: #78350F;
+        }
+
+        .policy-card.auto .policy-badge {
+            background: #818CF8;
+            color: #1E1B4B;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code,
+        .use-case code,
+        .key-point-content code,
+        .plain-list code,
+        .section-lead code,
+        .tech-note code,
+        .comparison-card code,
+        .warning-card code {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Plain List */
+        .plain-list {
+            display: grid;
+            gap: 10px;
+            padding-left: 4px;
+            list-style: none;
+        }
+
+        .plain-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .plain-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 4px;
+            color: var(--anthropic-coral);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Tech Notes */
+        .tech-note {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-note h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tech-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Warning Card */
+        .warning-card {
+            background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+            border-left: 4px solid var(--warning);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .warning-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #9A3412;
+        }
+
+        .warning-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.35rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API アップデート</span>
+                <span class="category-badge">CLI アップデート</span>
+                <h1>Claude Managed Agents に auto 権限ポリシーが追加<br>ant CLI にセッション接続コマンドが登場</h1>
+                <p class="date">📅 2026-09-10 | ソース: Claude Developer Platform Release Notes</p>
+                <div class="version-chips">
+                    <span class="version-chip">auto 権限ポリシー</span>
+                    <span class="version-chip">evaluation フィールド</span>
+                    <span class="version-chip">ant beta:sessions connect</span>
+                    <span class="version-chip">--web オプション</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>auto 権限ポリシーの追加</h3>
+                        <p>Managed Agents の権限ポリシーに <code>auto</code> が追加された。サーバーがエージェントツールおよび MCP ツールの各呼び出しを評価し、実行・拒否・承認待機のいずれかを判断する。<code>always_allow</code> の利便性と <code>always_ask</code> の安全性の中間に位置する選択肢。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>evaluation フィールドで結果を透明に報告</h3>
+                        <p>評価結果は <code>agent.tool_use</code> および <code>agent.mcp_tool_use</code> イベントの <code>evaluation</code> フィールドで、<code>evaluated_permission</code> とあわせて報告される。<code>auto</code> の場合は <code>reason_code</code> も記録され、監査や分岐処理に活用できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⌨️</div>
+                    <div class="key-point-content">
+                        <h3>ant beta:sessions connect コマンド</h3>
+                        <p>ターミナルを Managed Agents セッションに接続し、トランスクリプトのライブ追跡、メッセージ送信、承認待ちツール呼び出しの許可 / 拒否が行える。Ctrl+C でデタッチしてもセッションは動作し続ける。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-content">
+                        <h3>--web オプションでブラウザ操作</h3>
+                        <p><code>--web</code> を付けると、Claude Console のセッションビューアを <code>127.0.0.1</code> のローカルサーバーとして起動し、ブラウザからセッションを操作できる。認証情報は CLI の外に出ない。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚠️</div>
+                    <div class="key-point-content">
+                        <h3>auto は人間によるチェックポイントではない</h3>
+                        <p>サーバーが安全と判断した呼び出しは誰の目にも触れる前に実行され、その影響は取り消せない場合がある。実行前に人間のレビューが必須のツールには引き続き <code>always_ask</code> を設定する必要がある。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="meta-table">
+                <tr>
+                    <th>発表日</th>
+                    <td>2026-09-10</td>
+                </tr>
+                <tr>
+                    <th>ソース</th>
+                    <td>Claude Developer Platform Release Notes</td>
+                </tr>
+                <tr>
+                    <th>カテゴリ</th>
+                    <td>API アップデート / CLI アップデート</td>
+                </tr>
+                <tr>
+                    <th>公式リンク</th>
+                    <td><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Background + Before/After -->
+        <section class="section">
+            <h2 class="section-title">背景 — 2 択だった権限ポリシーの中間解</h2>
+            <p class="section-lead">Managed Agents では、サーバー実行型のツール (事前構築されたエージェントツールセットと MCP ツールセット) の実行を権限ポリシーで制御する。これまでのポリシーは <code>always_allow</code> と <code>always_ask</code> の 2 種類のみで、デフォルトはエージェントツールセットが <code>always_allow</code>、MCP ツールセットが <code>always_ask</code> だった。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before — 2 択の権限ポリシー</h4>
+                    <p><code>always_allow</code> は承認の手間がない一方でリスクの高い呼び出しも素通りし、<code>always_ask</code> は安全な呼び出しにも毎回承認が必要だった。承認待ちへの応答も、API で <code>user.tool_confirmation</code> イベントを送信するか Console を使用する必要があった。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After — auto とターミナル接続</h4>
+                    <p><code>auto</code> によりサーバーが呼び出しごとにコンテキストを考慮して実行可否を判断できるようになった。あわせて <code>ant beta:sessions connect</code> により、ターミナルやローカルブラウザから対話的に承認待ちへ応答できるようになった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🛡️ auto 権限ポリシー</h3>
+                    <p>サーバーがツールの種類、呼び出しの入力、そこまでのセッション内容を考慮して評価するため、同じツールへの 2 つの呼び出しでも異なる判断になり得る。<code>permission_policy</code> に <code>{"type": "auto"}</code> を設定して有効化し、<code>default_config</code> と <code>configs</code> の両方で指定できる。デフォルトで <code>auto</code> になるツールセットはない。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 evaluation フィールド</h3>
+                    <p><code>agent.tool_use</code> / <code>agent.mcp_tool_use</code> イベントに、結果を生んだポリシーを示す <code>evaluation</code> オブジェクトが含まれるようになった。<code>auto</code> の場合はサーバーの判断内容と、結果が <code>ask</code> または <code>deny</code> のときの <code>reason_code</code> も記録される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⌨️ ant beta:sessions connect</h3>
+                    <p>ターミナルを既存の Managed Agents セッションに接続。トランスクリプトのライブ追跡、メッセージ送信 (<code>user.message</code>)、エージェントの中断 (<code>user.interrupt</code>)、承認待ちへの Yes / No / 理由付きの No での応答が可能。再接続すると全履歴が読み込まれる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌐 --web オプション</h3>
+                    <p>Console のセッションビューアを <code>127.0.0.1</code> のローカルサーバーとして起動し、ブラウザからメッセージ送信、中断、許可 / 拒否が行える。ターミナルビューと異なり、マルチエージェントセッションのすべてのスレッドを追跡する。URL は表示から 2 分以内に 1 回だけ開ける。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚫 覆せない拒否</h3>
+                    <p><code>auto</code> でサーバーが高リスクと評価した呼び出しは実行されず、エージェントは <code>is_error: true</code> のエラーツール結果を受け取る。セッションは継続するが、クライアントはこの拒否を覆せない。拒否済みの呼び出しに <code>user.tool_confirmation</code> を送ると 400 エラーになる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Permission Policies -->
+        <section class="section">
+            <h2 class="section-title">3 つの権限ポリシー</h2>
+            <div class="policy-grid">
+                <div class="policy-card allow">
+                    <h4>✅ always_allow</h4>
+                    <p>確認なしでツールを自動実行する。エージェントツールセットのデフォルト。</p>
+                    <span class="policy-badge">自動実行</span>
+                </div>
+                <div class="policy-card ask">
+                    <h4>⏸️ always_ask</h4>
+                    <p>セッションを一時停止し、承認を待ってから実行する。MCP ツールセットのデフォルト。</p>
+                    <span class="policy-badge">毎回承認</span>
+                </div>
+                <div class="policy-card auto">
+                    <h4>🛡️ auto (新規)</h4>
+                    <p>サーバーが各呼び出しを評価し、実行・拒否・承認待機を判断する。</p>
+                    <span class="policy-badge">サーバー評価</span>
+                </div>
+            </div>
+            <h3 class="section-subtitle">🔀 auto の 3 つの評価結果</h3>
+            <ul class="plain-list">
+                <li><strong>実行</strong>: サーバーが安全と判断した場合、<code>always_allow</code> と同様にツールが実行される</li>
+                <li><strong>拒否</strong>: サーバーが高リスクと評価した場合、ツールは実行されない。エージェントは <code>is_error: true</code> のエラーツール結果を受け取り、セッションは継続する。クライアントはこの拒否を覆せない</li>
+                <li><strong>承認待機</strong>: サーバーが判断を下せない場合、<code>always_ask</code> と同様にセッションが一時停止し、ユーザーの承認を待つ</li>
+            </ul>
+        </section>
+
+        <!-- Architecture: auto evaluation flow -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ — auto ポリシーの評価フロー</h2>
+            <p class="section-lead"><code>auto</code> ポリシーにおけるツール呼び出しの評価フロー。評価結果はイベントストリームの <code>evaluated_permission</code> と <code>evaluation</code> フィールドで報告される。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Agent["🤖 エージェント"] --> Call["🔧 ツール呼び出し<br/>agent.tool_use / agent.mcp_tool_use"]
+    Call --> Eval{"🛡️ サーバー評価<br/>auto ポリシー"}
+
+    Eval -->|"安全と判断<br/>allow"| Run["✅ ツール実行"]
+    Eval -->|"高リスクと評価<br/>deny / high_risk"| Deny["🚫 実行拒否<br/>エラーツール結果を返す"]
+    Eval -->|"判断できない<br/>ask / indeterminate"| Pause["⏸️ セッション一時停止<br/>承認待ち"]
+
+    Pause --> User(["👤 ユーザー<br/>user.tool_confirmation"])
+    User -->|allow| Run
+    User -->|deny| Rejected["❌ 実行せず<br/>deny_message を返す"]
+
+    Call -.-> Events["📊 イベントストリーム<br/>evaluated_permission + evaluation"]
+
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+
+    class Agent,Call,Run process
+    class Eval decision
+    class Deny,Rejected error
+    class Pause warning
+    class User input
+    class Events internal
+                </pre>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="section-subtitle">📊 evaluation フィールドの組み合わせ</h3>
+            <p class="section-lead"><code>evaluation</code> オブジェクトとトップレベルの <code>evaluated_permission</code> (<code>"allow"</code>、<code>"ask"</code>、<code>"deny"</code> のいずれか) の対応関係は以下のとおり。<code>reason_code</code> はクライアントの分岐処理や監査記録に使う値であり、エンドユーザーに表示するテキストではない。</p>
+            <div class="table-scroll">
+                <table class="data-table">
+                    <tr>
+                        <th><code>evaluation</code></th>
+                        <th><code>evaluated_permission</code></th>
+                        <th>意味</th>
+                    </tr>
+                    <tr>
+                        <td><code>{"type": "always_allow"}</code></td>
+                        <td><code>"allow"</code></td>
+                        <td>ポリシーが <code>always_allow</code> のため実行された</td>
+                    </tr>
+                    <tr>
+                        <td><code>{"type": "always_ask"}</code></td>
+                        <td><code>"ask"</code></td>
+                        <td>ポリシーが <code>always_ask</code> のため承認待ちになった</td>
+                    </tr>
+                    <tr>
+                        <td><code>auto</code> + <code>{"type": "allow"}</code></td>
+                        <td><code>"allow"</code></td>
+                        <td><code>auto</code> でサーバーが安全と判断し実行された</td>
+                    </tr>
+                    <tr>
+                        <td><code>auto</code> + <code>ask / indeterminate</code></td>
+                        <td><code>"ask"</code></td>
+                        <td><code>auto</code> でサーバーが判断を下せず承認待ちになった</td>
+                    </tr>
+                    <tr>
+                        <td><code>auto</code> + <code>deny / high_risk</code></td>
+                        <td><code>"deny"</code></td>
+                        <td><code>auto</code> でサーバーが高リスクと評価し拒否した</td>
+                    </tr>
+                </table>
+            </div>
+            <p class="section-lead" style="margin-top: 12px;">セッションで有効化されていないツールが呼ばれた場合や、<code>evaluation</code> 導入前に記録されたイベントでは、<code>evaluation</code> フィールドは含まれない。</p>
+
+            <h3 class="section-subtitle">⌨️ sessions connect の主なキー操作</h3>
+            <div class="table-scroll">
+                <table class="data-table">
+                    <tr>
+                        <th>キー</th>
+                        <th>動作</th>
+                    </tr>
+                    <tr>
+                        <td><code>Enter</code></td>
+                        <td>入力を <code>user.message</code> イベントとして送信 (Alt+Enter または Ctrl+J で改行)</td>
+                    </tr>
+                    <tr>
+                        <td><code>Esc</code></td>
+                        <td>実行中のエージェントを中断</td>
+                    </tr>
+                    <tr>
+                        <td><code>Ctrl+O</code></td>
+                        <td>詳細表示の切り替え (ツールの入出力、トークン使用量、ステータスイベント)</td>
+                    </tr>
+                    <tr>
+                        <td><code>Page Up / Page Down</code></td>
+                        <td>トランスクリプトのスクロール</td>
+                    </tr>
+                    <tr>
+                        <td><code>Ctrl+C</code></td>
+                        <td>デタッチ (セッションは動作し続ける)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3 class="section-subtitle">🧭 auto における意図の扱い</h3>
+            <div class="tech-note">
+                <h4>user.message はユーザーの意図と見なされる</h4>
+                <p><code>user.message</code> イベントで投稿した内容はユーザーの意図と見なされ、本来拒否される呼び出しが許可される可能性がある。一方、ツール結果、取得した Web ページ、MCP サーバーの応答、セッションスレッド間のメッセージからは意図を読み取らない。サーバーはこれらのコンテンツを評価するが、指示としては受け取らない。</p>
+            </div>
+            <div class="warning-card">
+                <h4>⚠️ auto は人間によるチェックポイントではない</h4>
+                <p>サーバーが安全と判断した呼び出しは誰の目にも触れる前に実行され、その影響は取り消せない場合がある。信頼できないエンドユーザーの入力を <code>user.message</code> として中継すると、その入力もユーザーの意図として解釈される。実行前に人間のレビューが必須のツールには <code>always_ask</code> を設定すること。</p>
+            </div>
+            <div class="tech-note">
+                <h4>ベータヘッダーとカスタムツール</h4>
+                <p>Managed Agents API リクエストにはベータヘッダー <code>managed-agents-2026-04-01</code> が必要 (メモリストアエンドポイントは <code>agent-memory-2026-07-22</code>)。SDK は適切なベータヘッダーを自動的に設定する。カスタムツールはアプリケーション側で実行されるため、権限ポリシーの対象外。</p>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p class="section-lead">エージェントツールセットと GitHub MCP ツールセットのデフォルトを <code>auto</code> にし、<code>bash</code> のみ <code>always_ask</code> に上書きする例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">auto ポリシーの設定例</span>
+                </div>
+                <pre><code class="language-python">agent = client.beta.agents.create(
+    name="Ops Agent",
+    model="claude-opus-5",
+    mcp_servers=[
+        {"type": "url", "name": "github", "url": "https://mcp.example.com/github"},
+    ],
+    tools=[
+        {
+            "type": "agent_toolset_20260401",
+            "default_config": {
+                "permission_policy": {"type": "auto"},
+            },
+            "configs": [
+                {"name": "bash", "permission_policy": {"type": "always_ask"}},
+            ],
+        },
+        {
+            "type": "mcp_toolset",
+            "mcp_server_name": "github",
+            "default_config": {
+                "permission_policy": {"type": "auto"},
+            },
+        },
+    ],
+)</code></pre>
+            </div>
+            <p class="section-lead"><code>auto</code> の下で高リスクと評価され拒否された呼び出しは、イベントストリームに次のように現れる。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">拒否された呼び出しのイベント</span>
+                </div>
+                <pre><code class="language-json">{
+  "type": "agent.tool_use",
+  "id": "sevt_01pqr...",
+  "name": "bash",
+  "input": {
+    "command": "rm -rf /workspace/reports"
+  },
+  "evaluated_permission": "deny",
+  "evaluation": {
+    "type": "auto",
+    "evaluated_permission": {
+      "type": "deny",
+      "reason_code": "high_risk"
+    }
+  },
+  "processed_at": "2026-03-25T14:05:12Z"
+}</code></pre>
+            </div>
+            <p class="section-lead">ターミナルからセッションに接続する例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ant beta:sessions connect の実行</span>
+                </div>
+                <pre><code class="language-bash"># ターミナルで接続してライブ追跡
+ant beta:sessions connect sesn_011CZkZAtmR3yMPDzynEDxu7
+
+# Console のセッションビューアをローカルで起動してブラウザで開く
+ant beta:sessions connect sesn_011CZkZAtmR3yMPDzynEDxu7 --web</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture: sessions connect -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ — sessions connect の接続構成</h2>
+            <p class="section-lead">ターミナルビューとブラウザビューアはどちらもローカルの <code>ant</code> プロセスを経由し、そのプロセスが API リクエストを行う。認証情報は CLI の外に出ない。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    subgraph Local["💻 ローカル環境"]
+        direction LR
+        Terminal["⌨️ ターミナルビュー<br/>ライブ追跡 / 応答"]
+        Browser["🌐 ブラウザ<br/>セッションビューア"]
+        CLI["🔧 ant CLI<br/>beta:sessions connect"]
+        Terminal ~~~ CLI ~~~ Browser
+    end
+
+    subgraph Anthropic["🏢 Claude Developer Platform"]
+        Session["📡 Managed Agents<br/>セッション"]
+    end
+
+    Terminal --> CLI
+    Browser -->|"--web<br/>127.0.0.1"| CLI
+    CLI -->|"API リクエスト<br/>認証情報は CLI 内のみ"| Session
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Local,Anthropic platform
+    class Terminal,Browser input
+    class CLI process
+    class Session internal
+                </pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="section-subtitle">🎯 対象</h3>
+            <ul class="plain-list">
+                <li>Managed Agents でエージェントを構築している開発者</li>
+                <li>MCP サーバーをエージェントに接続している開発者</li>
+                <li>セッションイベントを処理するクライアントを実装している開発者</li>
+                <li><code>ant</code> CLI でエージェントの運用・デバッグを行う開発者</li>
+            </ul>
+
+            <h3 class="section-subtitle">🛠️ 必要なアクション</h3>
+            <ul class="plain-list">
+                <li><strong>auto の採用検討</strong>: <code>always_allow</code> ではリスクが高く、<code>always_ask</code> では承認負荷が大きいツールについて <code>auto</code> の採用を検討する。人間のレビューが必須のツールには引き続き <code>always_ask</code> を設定する</li>
+                <li><strong>イベント処理の更新</strong>: クライアントが未知の <code>evaluation.type</code> や <code>reason_code</code> を許容するように実装する。<code>evaluation</code> フィールドが存在しないイベントにも対応する</li>
+                <li><strong>監査ログの活用</strong>: <code>evaluation</code> フィールドと <code>reason_code</code> を監査記録に保存し、拒否時の分岐処理に利用する</li>
+                <li><strong>拒否の扱い</strong>: <code>auto</code> でサーバーが拒否した呼び出しに <code>user.tool_confirmation</code> を送ると 400 エラーになる。クライアントは拒否を覆せない点を考慮する</li>
+                <li><strong>CLI の更新</strong>: <code>ant beta:sessions connect</code> を使用するには CLI を最新版に更新する。スクリプトでは対話型のこのコマンドではなく、<code>ant beta:sessions:events stream</code> と <code>ant beta:sessions:events send</code> を使用する</li>
+            </ul>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🛡️ 承認負荷とリスクのバランスを取った権限設計</h4>
+                <p>ファイル操作やコマンド実行など、<code>always_allow</code> ではリスクが高く <code>always_ask</code> では承認負荷が大きいツールに <code>auto</code> を設定する。サーバーがツールの種類、入力、セッション内容を考慮して呼び出しごとに判断するため、安全な呼び出しは自動実行しつつ、高リスクな呼び出しは拒否または承認待機にできる。破壊的な操作が必須レビュー対象なら <code>bash</code> のみ <code>always_ask</code> に上書きする、といった細かな制御も可能。</p>
+            </div>
+            <div class="use-case">
+                <h4>⌨️ ターミナルからのエージェント運用・デバッグ</h4>
+                <p>長時間動作する Managed Agents セッションに <code>ant beta:sessions connect</code> で接続し、トランスクリプトをライブで追跡しながら、承認待ちのツール呼び出しに Yes / No / 理由付きの No で即座に応答する。Ctrl+C でデタッチしてもセッションは動作し続け、再接続すれば全履歴を確認できるため、常時監視は不要。</p>
+            </div>
+            <div class="use-case">
+                <h4>📊 evaluation フィールドを使った監査とコンプライアンス</h4>
+                <p>すべてのツール呼び出しイベントの <code>evaluation</code> オブジェクトと <code>reason_code</code> を監査ログに保存し、どのポリシーがどの判断を下したかを追跡する。<code>auto</code> による拒否 (<code>high_risk</code>) の頻度を分析してポリシー設定を見直したり、拒否時にクライアント側で代替フローへ分岐したりできる。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">⚖️</div>
+                    <div class="key-point-content">
+                        <h3>利便性と安全性の中間となる auto ポリシー</h3>
+                        <p><code>auto</code> 権限ポリシーにより、<code>always_allow</code> の利便性と <code>always_ask</code> の安全性の中間となる選択肢が提供され、サーバーが呼び出しごとにコンテキストを考慮して実行可否を判断できるようになった。評価結果は <code>evaluation</code> フィールドで透明に報告され、監査や分岐処理に活用できる。ただし <code>auto</code> は人間によるチェックポイントの代替ではなく、レビューが必須のツールには <code>always_ask</code> を設定する必要がある。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚀</div>
+                    <div class="key-point-content">
+                        <h3>エージェント運用ワークフローの大幅な改善</h3>
+                        <p>あわせて追加された <code>ant beta:sessions connect</code> により、ターミナルやローカルブラウザからセッションをライブで追跡し、承認待ちの呼び出しに即座に応答できるようになった。Managed Agents の権限制御と運用性を強化するアップデートである。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>🛡️ <a href="https://platform.claude.com/docs/en/managed-agents/permission-policies#let-the-server-evaluate-each-call-with-auto" target="_blank" rel="noopener noreferrer">Permission policies - Let the server evaluate each call with auto</a></li>
+                <li>⌨️ <a href="https://platform.claude.com/docs/en/cli-sdks-libraries/cli/sessions-connect" target="_blank" rel="noopener noreferrer">Connect to a Managed Agents session from your terminal</a></li>
+                <li>📡 <a href="https://platform.claude.com/docs/en/managed-agents/sessions" target="_blank" rel="noopener noreferrer">Managed Agents - Sessions</a></li>
+                <li>📊 <a href="https://platform.claude.com/docs/en/managed-agents/events-and-streaming" target="_blank" rel="noopener noreferrer">Session event stream</a></li>
+                <li>🚀 <a href="https://platform.claude.com/docs/en/cli-sdks-libraries/cli/quickstart" target="_blank" rel="noopener noreferrer">CLI quickstart</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは reports/2026/2026-09-10-managed-agents-auto-permission-sessions-connect.md をもとに生成されました。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
