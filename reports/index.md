@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-09-11](2026/2026-09-11-claude-code-v2-1-269.md) - Claude Code v2.1.269 リリース — `claude plugin eval` の導入とプロンプトキャッシュ・権限ルールの修正強化
 - [2026-09-11](2026/2026-09-11-claude-code-v2-1-268.md) - Claude Code v2.1.268 リリース — Claude apps gateway の pricing 対応と権限・セキュリティ修正の集中投入
 - [2026-09-10](2026/2026-09-10-threat-intelligence-report-september-2026.md) - AI の悪用の検出と対策: 2026 年 9 月版脅威インテリジェンスレポート
 - [2026-09-10](2026/2026-09-10-managed-agents-auto-permission-sessions-connect.md) - Claude Managed Agents に auto 権限ポリシーが追加、ant CLI にセッション接続コマンドが登場

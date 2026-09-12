@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.269 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-chips {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-chip {
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 24px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .tag.new {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .tag.improved {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        .tag.changed {
+            background: #EDE9FE;
+            color: #7C3AED;
+        }
+
+        .tag.fixed {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .tag.security {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Meta Table */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .meta-table th,
+        .meta-table td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .meta-table th {
+            width: 30%;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .meta-table td a {
+            color: var(--anthropic-coral);
+            word-break: break-all;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code,
+        .use-case code,
+        .key-point-content code,
+        .plain-list code,
+        .section-lead code,
+        .tech-note code,
+        .comparison-card code {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Plain List */
+        .plain-list {
+            display: grid;
+            gap: 10px;
+            padding-left: 4px;
+            list-style: none;
+        }
+
+        .plain-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .plain-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 4px;
+            color: var(--anthropic-coral);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Tech Notes */
+        .tech-note {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-note h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tech-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.35rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <span class="category-badge">アップデート</span>
+                <h1>Claude Code v2.1.269 リリース<br>claude plugin eval の導入とプロンプトキャッシュ・権限ルールの修正強化</h1>
+                <p class="date">📅 2026-09-11 | ソース: Claude Code Changelog</p>
+                <div class="version-chips">
+                    <span class="version-chip">v2.1.269</span>
+                    <span class="version-chip">98 件の変更</span>
+                    <span class="version-chip">プラグイン評価基盤 + キャッシュ安定化</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🧪</div>
+                    <div class="key-point-content">
+                        <h3>claude plugin eval コマンドの追加</h3>
+                        <p>プラグインの評価スイートを Claude Code に対して実行し、スコア付きで再現可能な結果を JSON と HTML レポートとして取得できるようになった。プラグイン開発者が品質を定量的に検証する手段が公式に提供された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎨</div>
+                    <div class="key-point-content">
+                        <h3>/output-style コマンドの追加</h3>
+                        <p>出力スタイルの一覧表示と切り替えを行う <code>/output-style [name]</code> コマンドが追加された。Remote Control 経由、クラウドセッション、その他のヘッドレスセッションでも利用できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>プロンプトキャッシュ関連の複数の修正</h3>
+                        <p>出力トークン上限での切断後の自動再開、思考中の中断とセッション再開、クラウドセッションの初回リクエストに起因するキャッシュ無効化・キャッシュミスが解消され、長時間セッションのコスト効率が安定する。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>権限ルールの 2 つの抜け穴を修正</h3>
+                        <p><code>!</code> で始まる deny / ask ルールが自身の設定ソースを超えて適用される問題と、Bash の <code>tee</code> コマンドによる書き込みに <code>Edit()</code> deny ルールが適用されない問題が修正された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🈁</div>
+                    <div class="key-point-content">
+                        <h3>CJK 言語のプロンプトサジェスト修正と VSCode の大型機能追加</h3>
+                        <p>日本語・中国語・タイ語などスペースなし言語でプロンプトサジェストが破棄される問題を修正。VSCode 拡張にはエージェントマップ、Hooks ダイアログ、Permission rules ダイアログが追加された。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="meta-table">
+                <tr>
+                    <th>発表日</th>
+                    <td>2026-09-11</td>
+                </tr>
+                <tr>
+                    <th>ソース</th>
+                    <td>Claude Code Changelog</td>
+                </tr>
+                <tr>
+                    <th>カテゴリ</th>
+                    <td>Claude Code アップデート</td>
+                </tr>
+                <tr>
+                    <th>公式リンク</th>
+                    <td><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.269</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">98</div>
+                    <div class="stat-label">変更件数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">修正されたキャッシュ無効化パス</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">ふさがれた権限ルールの抜け穴</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">256</div>
+                    <div class="stat-label">Workflow 同時エージェント数上限</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景 — リリースの位置づけ</h2>
+            <p class="section-lead">前バージョンは同日 (2026 年 9 月 11 日) 確認の v2.1.268 で、Claude apps gateway の <code>pricing:</code> 対応とシンボリックリンクや解析不能コマンドを介した権限ルールバイパスの修正を中心としたリリースだった。v2.1.269 はその直後に公開され、プラグインエコシステムの品質検証基盤、プロンプトキャッシュの安定性、ターミナル互換性の改善に重点を置いている。</p>
+            <p class="section-lead">特にプロンプトキャッシュは API コストと応答速度に直結する要素であり、v2.1.267 以降のリリースで継続的に改善が積み重ねられてきた領域である。今回はキャッシュが静かに壊れる複数のエッジケースが修正され、長時間セッションやクラウドセッションでのコスト効率がさらに安定する。</p>
+        </section>
+
+        <!-- Major Changes -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🧪 claude plugin eval <span class="tag new">New</span></h3>
+                    <p>プラグインの評価スイートを Claude Code に対して実行し、スコア付きで再現可能な結果を JSON と HTML レポートで取得できる。詳細は <code>claude plugin eval --help</code> で確認できる。CI での継続的な品質検証の基盤となる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 /output-style [name] <span class="tag new">New</span></h3>
+                    <p>出力スタイルの一覧表示と切り替えを行うコマンド。Remote Control 経由、クラウドセッション、その他のヘッドレスセッションでも利用できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ プロンプトキャッシュ修正 <span class="tag fixed">Fixed</span></h3>
+                    <p>出力トークン上限での切断後の自動再開、思考中の中断とセッション再開、クラウドセッションの初回リクエストの 3 つのパスで発生していたキャッシュ無効化・キャッシュミスを修正。コスト効率が安定する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 権限ルール修正 <span class="tag security">Security</span></h3>
+                    <p><code>!</code> で始まる deny / ask ルールが自身の設定ソース内でのみ適用されるようになり、<code>tee</code> の書き込み先に <code>Edit()</code> deny ルールと書き込みパスチェックが適用されるようになった。防御の抜け穴が 2 つふさがれた。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🈁 CJK プロンプトサジェスト修正 <span class="tag fixed">Fixed</span></h3>
+                    <p>日本語・中国語・タイ語など単語間にスペースを入れない言語のテキストで、プロンプトサジェストが破棄される問題を修正。混在スクリプトや単語 1 つのサジェストも保持されるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧩 VSCode の大型機能追加 <span class="tag new">New</span></h3>
+                    <p>「N agents」フッターピルから開くエージェントマップ、フックの閲覧・追加・編集・削除を行う Hooks ダイアログ、権限ルールの一覧・追加・削除を行う Permission rules ダイアログが追加された。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Features -->
+        <section class="section">
+            <h2 class="section-title">新機能 <span class="tag new">New</span></h2>
+            <ul class="plain-list">
+                <li><strong><code>claude plugin eval</code></strong>: プラグインの評価スイートを Claude Code に対して実行し、スコア付きで再現可能な結果を得られる。結果は JSON と HTML レポートで出力される。詳細は <code>claude plugin eval --help</code> で確認できる</li>
+                <li><strong><code>/output-style [name]</code></strong>: 出力スタイルの一覧表示と切り替えを行うコマンド。Remote Control 経由、クラウドセッション、その他のヘッドレスセッションでも利用できる</li>
+                <li><strong>Bash 編集の diff 表示</strong>: Bash コマンドがファイル編集を行った場合に、変更されたファイルの diff を Bash ツール結果に追加する (設定 <code>bashEditDiffEnabled</code>)</li>
+                <li><strong><code>OTEL_METRICS_INCLUDE_REPOSITORY</code></strong>: OpenTelemetry のメトリクスとイベントに <code>vcs.*</code> リポジトリ属性を付与する。<code>OTEL_LOG_TOOL_DETAILS</code> と併用すると、コミットイベントに <code>vcs.ref.head.*</code> が付与される</li>
+                <li><strong><code>CLAUDE_CODE_GATEWAY_MODEL_DISCOVERY_TIMEOUT_MS</code></strong>: LLM ゲートウェイの <code>/v1/models</code> ディスカバリのタイムアウト (デフォルト 3 秒) を延長できる</li>
+                <li><strong><code>/focus</code> を提案するスピナーチップ</strong>: プロンプト・1 行の作業サマリー・応答だけのビューを提供する <code>/focus</code> の利用を促すヒントが追加された</li>
+                <li><strong><code>CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS</code></strong>: Workflow ツールの実行ごとの同時エージェント数上限を 1–256 の範囲で引き上げられる。推論律速のファンアウトに有効</li>
+            </ul>
+        </section>
+
+        <!-- Fixes -->
+        <section class="section">
+            <h2 class="section-title">修正 <span class="tag fixed">Fixed</span></h2>
+
+            <h3 class="section-subtitle">⚡ プロンプトキャッシュとセッション</h3>
+            <ul class="plain-list">
+                <li><strong>出力トークン上限での切断後のキャッシュ無効化</strong>: 応答が出力トークン上限で切断され自動再開された次のターンで、プロンプトキャッシュが部分的に無効化される問題を修正</li>
+                <li><strong>中断後再開時のコンテキスト再送</strong>: Claude の思考中に中断してセッションを再開すると、以前のコンテキストの再送方法が変わり、プロンプトキャッシュの再利用が損なわれるケースを修正</li>
+                <li><strong>クラウドセッションのキャッシュミス</strong>: 最初のリクエスト前にサーバー設定を短時間待つことで、クラウドセッションでのプロンプトキャッシュミスを修正</li>
+                <li><strong>コンパクション後の git ステータス</strong>: コンパクション後に Claude へ伝えられる git ステータスが、セッション開始時のものではなく現在のものになった</li>
+                <li><strong>「Prompt is too long」での恒久的なスタック</strong>: 自動コンパクションが要約対象となる完全な過去のやり取りを持たない場合 (主に非常に大きなプロンプトを持つ Agent SDK セッション) に、セッションが恒久的に停止する問題を修正</li>
+                <li><strong><code>/goal</code> の無言の停止</strong>: API エラー、ネットワーク切断、トークン上限の後に <code>/goal</code> の実行が静かに停止する問題を修正。バックオフ付きでリトライするか、理由を明示して一時停止するようになった</li>
+                <li><strong>ヘッドレスセッション再開時の応答消失</strong>: モデルの切り替えやターン途中のリクエストリトライが発生した際に、再開されたヘッドレスセッションがターンの応答を失う問題を修正</li>
+                <li><strong><code>CLAUDE_CODE_RESUME_INTERRUPTED_TURN</code> の再実行範囲</strong>: 6 時間以上前 (または <code>CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS</code> 設定時はその期間以上前) に API エラーで失敗したターンを再実行してしまう問題を修正</li>
+                <li><strong>バックグラウンドエージェント実行中の誤報告</strong>: 実行中にリモート・ヘッドレスセッションが「waiting for your input」と報告する問題を修正 (<code>CLAUDE_CODE_BG_TASKS_REPORT_RUNNING=0</code> で従来動作に戻せる)</li>
+                <li><strong><code>/btw</code> の捏造ツール呼び出し</strong>: <code>/btw</code> の回答に実際には実行されていないツール呼び出しと出力が含まれる問題を修正。出現した場合は未実行としてフラグ付けされる</li>
+            </ul>
+
+            <h3 class="section-subtitle">🔒 権限とセキュリティ <span class="tag security">Security</span></h3>
+            <ul class="plain-list">
+                <li><strong><code>!</code> で始まる deny / ask ルールの適用範囲</strong>: それを記述した設定ソースを超えて適用される問題を修正。ルールは自身のソース内でのみ適用され、単独の <code>!</code> による否定は無視されるようになった</li>
+                <li><strong><code>tee</code> 書き込みへの deny ルール適用</strong>: Bash の <code>tee</code> コマンドが書き込むファイルに <code>Edit()</code> deny ルールと書き込みパスチェックが適用されない問題を修正。あわせて、<code>Bash(tee:*)</code> の allow ルールが作業ディレクトリ外の書き込み先をカバーしなくなった</li>
+                <li><strong><code>permission_denials</code> の欠落</strong>: <code>--output-format stream-json</code> の結果に、パススコープの deny ルールでブロックされた Read / Edit / Write 呼び出しが含まれない問題を修正</li>
+                <li><strong>プラグインアーカイブの権限</strong>: 展開されたアーカイブが他のローカルユーザーから読み取り可能になる問題、world-writable ビットを保持する問題、再展開後に古いファイルが残る問題を修正</li>
+                <li><strong><code>headersHelper</code> の同意プロンプト</strong>: 別ホストと誤読され得る URL パスを表示する問題を修正</li>
+                <li><strong>アトリビューションリマインダーの優先度</strong>: コミットやプルリクエストへの帰属表示を禁止する CLAUDE.md やメモリのルールを、アトリビューションリマインダーが上書きする問題を修正 (管理対象設定による行は引き続き適用される)</li>
+            </ul>
+
+            <h3 class="section-subtitle">🖥️ ターミナル互換性と表示</h3>
+            <ul class="plain-list">
+                <li><strong>キー入力の修正</strong>: kitty プロトコル端末での F1 / F2 / F4、st での Delete、rxvt-unicode で Alt + 矢印が Escape として動作する問題、WezTerm で Shift + 記号がシフトなしのキーを入力する問題 (v2.1.247 のリグレッション) を修正</li>
+                <li><strong>起動時の迷子テキスト</strong>: 端末の能力照会への応答が一部の端末で起動時に迷子テキストとして表示される問題と、低速な接続 (ssh、ブラウザ端末) で <code>22c</code> のような文字がプロンプトに入力される問題を修正</li>
+                <li><strong>フルスクリーンの描画</strong>: 端末リサイズ後の上端・下端の空白行、rxvt-unicode のブロックカーソル残留、外部エディタから戻った後の二重描画 (フルスクリーン外と Konsole) を修正</li>
+                <li><strong>テキストフィールドのカーソル</strong>: 端末のネイティブカーソル有効時に、権限ルール・auto モードルール・ディレクトリ追加・セッション名変更・フィードバックレビューの各テキストフィールドでカーソルが表示されない問題を修正</li>
+                <li><strong>synchronized output の誤判定</strong>: 非対応バージョンの GNOME Terminal と Konsole で、端末名から対応と誤って仮定される問題を修正</li>
+                <li><strong>プロンプトボックスの枠線</strong>: 名前や説明に改行を含む、または端末幅を超えるバックグラウンドエージェントを表示した際に、上枠線が余分な行に分裂する問題を修正</li>
+            </ul>
+
+            <h3 class="section-subtitle">🧰 その他の修正</h3>
+            <ul class="plain-list">
+                <li><strong>CJK 言語のプロンプトサジェスト</strong>: 日本語・中国語・タイ語など単語間にスペースを入れない言語のテキストで、プロンプトサジェストが破棄される問題を修正</li>
+                <li><strong>同期プラグインの MCP サーバー</strong>: リモートセッション再開時に、同期されたプラグインの MCP サーバーが接続されない問題を修正</li>
+                <li><strong>CMYK JPEG の添付</strong>: 「cannot decode」で添付に失敗する問題を修正。他の JPEG と同様に変換・リサイズされる</li>
+                <li><strong>バックグラウンドタスク記録の混入</strong>: ディスク上の記録に含まれる端末エスケープコード・改行・過大なテキストがタスクリストやタスク通知に到達する問題を修正</li>
+                <li><strong><code>/insights</code> の失敗</strong>: デフォルトの Opus モデルに到達できない Bedrock / Vertex / Foundry / ゲートウェイ環境で失敗する問題を、セッションモデルを代わりに使用することで修正</li>
+                <li><strong>組織ポリシー上限の読み込み</strong>: 別の Claude Code プロセスが同時にログインを更新した際に、組織のポリシー上限がセッションに読み込まれない問題を修正</li>
+                <li><strong>MCP サーバーの不要な再接続</strong>: 設定変更がサーバー URL のクエリパラメータの順序のみの場合に再接続される問題を修正</li>
+                <li><strong>プラグイン LSP サーバーの残留</strong>: <code>shutdown</code> パラメータを拒否する LSP サーバー (rust-analyzer など) がセッション終了時に残る問題を修正。<code>shutdown</code> が失敗しても <code>exit</code> が送信される</li>
+                <li><strong><code>/fork</code> レシートの連続クリック</strong>: 1 秒未満の間隔での連続クリックが、セッションを即座にバックグラウンド化しない問題を修正</li>
+                <li><strong>管理対象設定の承認ダイアログ</strong>: スキームなしの gRPC テレメトリエンドポイントについて、コレクタ名を表示しない問題を修正</li>
+                <li><strong>プラグインエラーのパス表示</strong>: <code>@</code> で始まるフォルダ名を含む相対 Windows パスが <code>[redacted URL]</code> と表示される問題を修正</li>
+                <li><strong>SDK / デスクトップセッションのステータス</strong>: 他のセッションのエージェントリストで不明なステータスと表示される問題を修正</li>
+                <li><strong>ターン終了通知</strong>: Bedrock / Vertex / ゲートウェイを使用する Claude Desktop セッションが、文脈に応じた「what Claude needs」のターン終了通知テキストを受け取れない問題を修正</li>
+                <li><strong>[Windows]</strong>: バックグラウンドに送られた PowerShell ツールコマンドが、Claude Code の終了時に停止する問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Improvements / Changes -->
+        <section class="section">
+            <h2 class="section-title">改善・動作変更 <span class="tag improved">Improved</span> <span class="tag changed">Changed</span></h2>
+
+            <h3 class="section-subtitle">✨ 改善</h3>
+            <ul class="plain-list">
+                <li><strong><code>/diff</code> パネル</strong>: ローディング状態を経由せず、1 ステップで完全にレンダリングされた状態で開くようになった</li>
+                <li><strong>CJK テキストのサジェストフィルタリング</strong>: 日本語・中国語・韓国語のテキストで、混在スクリプトや単語 1 つのサジェストが保持され、メタ的・評価的なテキストは英語と同様に破棄されるようになった</li>
+                <li><strong>Skill ツールのエラーメッセージ</strong>: 「Unknown skill」エラーで、素の名前がちょうど 1 つのプラグインスキルに一致する場合、そのフルネームを提示するようになった</li>
+                <li><strong>SSH / 未認識端末のキーボード対応</strong>: kitty キーボード照会に応答する端末 (foot、Alacritty 0.16 以降など) で、Shift+Enter と Ctrl+Shift ショートカットが利用可能になった</li>
+                <li><strong>長時間セッションの応答性</strong>: トランスクリプト更新時に、折りたたまれたツール使用サマリーの構築のために会話全体を再処理しなくなった</li>
+                <li><strong>テレメトリ無効時の MCP 接続</strong>: 会話の途中で接続が完了した <code>alwaysLoad</code> MCP サーバーが、ツール検索のラウンドトリップなしに次のターンから利用可能になった</li>
+            </ul>
+
+            <h3 class="section-subtitle">🔀 動作変更</h3>
+            <ul class="plain-list">
+                <li><strong><code>/ultrareview --post</code></strong>: 指摘の到着時に PR コメントを直接投稿してコメントリンクを表示するようになった。投稿のために 2 つ目のクラウドセッションを開始しなくなった</li>
+                <li><strong>アーティファクトデータベースの読み取り</strong>: セッションのスクラッチパッドに保存する読み取りが、作業フォルダの承認で停止しなくなった</li>
+                <li><strong>claude.ai 同期スキルの命名</strong>: クラウドセッションで claude.ai から同期されたスキルが、Claude Desktop と同様に <code>anthropic-skills:&lt;name&gt;</code> という名前になった。他と競合しない場合は素の名前も引き続き使える</li>
+            </ul>
+
+            <h3 class="section-subtitle">🧩 プラットフォーム別の変更</h3>
+            <ul class="plain-list">
+                <li><strong>[VSCode]</strong>: 大型の機能追加が 3 つ含まれる。(1) <strong>エージェントマップ</strong>: 「N agents」フッターピルからサブエージェントのマップを開き、エージェントごとのカード、Stop agent ボタン、読み取り専用トランスクリプトを利用できる。(2) <strong>Hooks ダイアログ</strong>: コマンドメニューからフックを閲覧し、user / project / local 設定でのフックの追加・編集・削除ができる (管理対象・プラグイン・セッションフックは読み取り専用)。(3) <strong>Permission rules ダイアログ</strong>: 権限ルールを一覧表示し、user / project / local 設定での追加・削除ができる。このほか、Focus ビューでの実行中サブエージェントのライブ進捗行、Switch account 画面の Cancel ボタン、スクリーンリーダー・キーボードアクセシビリティ改善が含まれる</li>
+                <li><strong>[Claude Code on the web]</strong>: クラウドセッションで Claude が読む前にキュー済みメッセージを取り戻せるようになった。モデル制限のある組織で <code>/model default</code> が以降の全メッセージを失敗させる問題、1 回限りのスケジュールルーチンが一時的なサーバーエラー後に 2 回実行される問題、サブフォルダ作業時のファイルリンクが GitHub 404 を開く問題などを修正。Free プランのユーザーにはアップグレードへの導線があるプランページが表示される</li>
+                <li><strong>[Claude Tag]</strong>: admin 設定の GitHub インストールでの Connect all / Disconnect 前に確認ダイアログが追加された。Slack のレート制限で失敗通知が失われる問題、有効化されていないモデルへの切り替えを受け入れて静かにフォールバックする問題、ファイル添付時にテーブルが生のパイプテキストで投稿される問題などを修正。スケジュールルーチンが既存スレッドに返信できるようになった</li>
+            </ul>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <div class="tech-note">
+                <h4>🧪 claude plugin eval によるプラグイン品質の検証</h4>
+                <p>プラグインに評価スイートを定義しておくと、<code>claude plugin eval</code> で Claude Code に対して実行し、スコア付きで再現可能な結果を JSON と HTML レポートとして取得できる。プラグインの変更が動作品質に与える影響を CI などで継続的に検証する基盤として機能する。</p>
+            </div>
+
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Dev["👤 プラグイン開発者"]
+        Cmd["⌨️ claude plugin eval"]
+    end
+
+    subgraph CC["🤖 Claude Code"]
+        Suite["🧪 評価スイート実行"]
+        Score["📊 スコアリング"]
+    end
+
+    subgraph Out["📁 出力"]
+        Json["📄 JSON レポート"]
+        Html["🌐 HTML レポート"]
+    end
+
+    Cmd --> Suite
+    Suite --> Score
+    Score --> Json
+    Score --> Html
+    Json -.->|"CI で検証"| Cmd
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+
+    class Dev,CC,Out platform
+    class Suite,Score process
+    class Cmd input
+    class Json,Html storage
+                </pre>
+            </div>
+
+            <div class="tech-note">
+                <h4>⚡ プロンプトキャッシュ修正の意味</h4>
+                <p>プロンプトキャッシュは、会話履歴のプレフィックスをサーバー側にキャッシュし、後続リクエストの入力トークンコストとレイテンシを削減する仕組みである。キャッシュヒットにはリクエスト内容がバイト単位で安定していることが求められるため、「切断された応答の自動再開」や「中断後の再開」のようにコンテキストの再送方法が変化するパスは、気付かれないままキャッシュミスを引き起こしやすい。v2.1.269 では (1) 出力トークン上限での切断と自動再開、(2) 思考中の中断とセッション再開、(3) クラウドセッションの初回リクエスト、の 3 つのパスが修正された。</p>
+            </div>
+
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>❌ v2.1.269 以前</h4>
+                    <p>出力トークン上限での切断後の自動再開ターンでキャッシュが部分的に無効化。思考中の中断と再開でコンテキストの再送方法が変わりキャッシュ再利用が損なわれる。クラウドセッションの初回リクエストでキャッシュミスが発生。<code>!</code> ルールが他の設定ソースにも影響し、<code>tee</code> 経由の書き込みが <code>Edit()</code> deny ルールの対象外だった。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>✅ v2.1.269 以降</h4>
+                    <p>3 つのパスすべてでキャッシュが正しく再利用され、長時間セッション・クラウドセッションのコスト効率が安定する。<code>!</code> で始まる deny / ask ルールは自身の設定ソース内でのみ適用され、<code>tee</code> の書き込み先にも <code>Edit()</code> deny ルールと書き込みパスチェックが適用される。</p>
+                </div>
+            </div>
+
+            <div class="tech-note">
+                <h4>🔒 ! で始まる権限ルールのスコープ修正</h4>
+                <p>権限ルールの <code>!</code> プレフィックスによる否定が、それを記述した設定ソース (user / project / local など) を超えて他のソースのルールにまで影響していた。v2.1.269 では、<code>!</code> で始まる deny / ask ルールは自身のソース内でのみ適用され、パターンを伴わない単独の <code>!</code> は無視されるようになった。複数の設定ソースを組み合わせて権限を管理している組織では、ルールの実効範囲が変わる可能性があるため確認が推奨される。</p>
+            </div>
+
+            <div class="tech-note">
+                <h4>🛡️ tee 経由の書き込み制御</h4>
+                <p><code>some-command | tee /path/to/file</code> のような Bash コマンドは実質的にファイル書き込みだが、これまで <code>Edit()</code> deny ルールと書き込みパスチェックの対象外だった。v2.1.269 では <code>tee</code> の書き込み先にもこれらのチェックが適用され、<code>Bash(tee:*)</code> の allow ルールも作業ディレクトリ外の書き込み先をカバーしなくなった。deny ルールで書き込み先を制限している環境では、防御の抜け穴が 1 つふさがれたことになる。</p>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p class="section-lead">プラグインの評価スイートを実行し、スコア付きレポートを生成する例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">claude plugin eval の実行</span>
+                </div>
+                <pre><code class="language-bash"># 評価スイートの実行 (JSON + HTML レポートを生成)
+claude plugin eval
+
+# オプションの確認
+claude plugin eval --help</code></pre>
+            </div>
+
+            <p class="section-lead">出力スタイルを一覧表示・切り替えする例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">/output-style の利用</span>
+                </div>
+                <pre><code class="language-bash"># 出力スタイルの一覧を表示
+/output-style
+
+# 指定したスタイルに切り替え (ヘッドレスセッションでも利用可能)
+/output-style explanatory</code></pre>
+            </div>
+
+            <p class="section-lead">新しい環境変数の設定例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">新しい環境変数の設定</span>
+                </div>
+                <pre><code class="language-bash"># LLM ゲートウェイの /v1/models ディスカバリのタイムアウトを 10 秒に延長
+export CLAUDE_CODE_GATEWAY_MODEL_DISCOVERY_TIMEOUT_MS=10000
+
+# Workflow ツールの同時エージェント数上限を 64 に引き上げ
+export CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS=64
+
+# OpenTelemetry メトリクスにリポジトリ属性を付与
+export OTEL_METRICS_INCLUDE_REPOSITORY=1</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact / Use Cases -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響 — ユースケース</h2>
+
+            <h3 class="section-subtitle">🎯 対象</h3>
+            <ul class="plain-list">
+                <li><strong>プラグイン開発者</strong>: <code>claude plugin eval</code> により、評価スイートの実行とスコア付きレポート (JSON + HTML) の生成が可能になる。プラグイン品質の継続的な検証に活用できる</li>
+                <li><strong>プロンプトキャッシュのコスト効率を重視する利用者</strong>: 出力トークン上限での切断、思考中の中断、クラウドセッションの初回リクエストに起因するキャッシュミスが解消され、長時間セッションのコストが安定する</li>
+                <li><strong>deny / ask 権限ルールで防御している組織・ユーザー</strong>: <code>!</code> ルールのスコープ修正と <code>tee</code> 書き込みへのチェック適用により、ルールの実効範囲が変わる。設定を確認のうえ更新が推奨される</li>
+                <li><strong>日本語・中国語・タイ語などでプロンプトを書く利用者</strong>: スペースなし言語でプロンプトサジェストが破棄される問題が修正され、サジェストの品質が向上する</li>
+                <li><strong>VSCode 拡張の利用者</strong>: エージェントマップ、Hooks ダイアログ、Permission rules ダイアログにより、サブエージェントの監視と設定管理が GUI から行えるようになる</li>
+                <li><strong>多様なターミナルの利用者</strong>: kitty プロトコル端末、WezTerm、rxvt-unicode、st、GNOME Terminal、Konsole、SSH 経由の接続などで多数のキー入力・描画問題が修正される</li>
+                <li><strong>OpenTelemetry でメトリクスを収集する組織</strong>: <code>OTEL_METRICS_INCLUDE_REPOSITORY</code> により、リポジトリ属性 (<code>vcs.*</code>) でのメトリクス分析が可能になる</li>
+                <li><strong>Workflow ツールで大規模なファンアウトを行う利用者</strong>: <code>CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS</code> で同時エージェント数の上限を最大 256 まで引き上げられる</li>
+            </ul>
+
+            <h3 class="section-subtitle">💡 具体的なユースケース</h3>
+            <div class="use-case">
+                <h4>🧪 プラグイン品質を CI で継続的に検証する</h4>
+                <p>プラグインに評価スイートを定義し、<code>claude plugin eval</code> を CI パイプラインに組み込むことで、プラグインの変更が動作品質に与える影響をスコア付きの再現可能な結果として継続的に検証できる。JSON レポートは自動判定に、HTML レポートはレビューに活用できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>💰 長時間セッションの API コストを安定させる</h4>
+                <p>出力トークン上限での切断や思考中の中断が発生しやすい長時間の開発セッションでも、プロンプトキャッシュが正しく再利用されるようになり、入力トークンコストとレイテンシの増加を防げる。クラウドセッションの初回リクエストのキャッシュミスも解消される。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔒 tee 経由の書き込みまで含めた防御を確立する</h4>
+                <p><code>Edit()</code> deny ルールで機密ファイルへの書き込みを制限している環境では、<code>tee</code> コマンド経由の書き込みにもチェックが適用されるようになり、防御の抜け穴がふさがれる。<code>!</code> ルールのスコープも設定ソース単位に限定されるため、組織の権限設計が意図どおりに機能する。</p>
+            </div>
+
+            <h3 class="section-subtitle">🛠️ 必要なアクション — 最新バージョンへの更新</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Claude Code の更新方法</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 組み込みコマンド
+claude update
+
+# npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# バージョンを指定してインストールする場合
+npm install -g @anthropic-ai/claude-code@2.1.269
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+
+            <h3 class="section-subtitle">🔀 移行ガイド — 注意すべき動作変更</h3>
+            <p class="section-lead">破壊的変更はアナウンスされていないが、以下の動作変更に注意が必要である。</p>
+            <div class="use-case">
+                <h4>❗ ! で始まる deny / ask ルールを使用している場合</h4>
+                <p>ルールが自身の設定ソース内でのみ適用されるようになった。複数ソースにまたがる否定を意図していた場合は、各ソースにルールを記述し直す。</p>
+            </div>
+            <div class="use-case">
+                <h4>📝 Bash(tee:*) allow ルールを使用している場合</h4>
+                <p>作業ディレクトリ外の書き込み先はカバーされなくなった。また、<code>tee</code> の書き込み先に <code>Edit()</code> deny ルールと書き込みパスチェックが適用されるようになったため、<code>tee</code> に依存するワークフローは動作を確認する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 バックグラウンドエージェントの状態報告に依存する自動化</h4>
+                <p>リモート・ヘッドレスセッションはバックグラウンドエージェントの実行中に「waiting for your input」と報告しなくなった。従来の動作が必要な場合は <code>CLAUDE_CODE_BG_TASKS_REPORT_RUNNING=0</code> を設定する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏷️ claude.ai から同期したスキルを素の名前で参照している場合</h4>
+                <p>クラウドセッションでは <code>anthropic-skills:&lt;name&gt;</code> が正式名となった。名前が競合しない限り素の名前も動作するが、明示的な参照への移行が望ましい。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🧪</div>
+                    <div class="key-point-content">
+                        <h3>プラグイン品質検証基盤とキャッシュ安定性を軸とした 98 件の大型リリース</h3>
+                        <p><code>claude plugin eval</code> の導入により、プラグイン開発者はスコア付きの再現可能な評価結果を JSON と HTML で取得できるようになり、品質の継続的な検証が公式にサポートされた。<code>/output-style</code> コマンドや新しい環境変数など、運用面の機能も拡充されている。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>幅広い利用者に恩恵のあるアップデート</h3>
+                        <p>出力トークン上限での切断や思考中の中断に起因するプロンプトキャッシュの無効化が解消され、長時間セッションのコスト効率が安定した。権限システムでは <code>!</code> ルールのスコープと <code>tee</code> 書き込みへの deny ルール適用という 2 つの抜け穴がふさがれ、日本語を含むスペースなし言語のプロンプトサジェスト修正、多数のターミナル互換性修正、VSCode 拡張のエージェントマップ・Hooks / Permission rules ダイアログ追加が含まれている。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📦 <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">Claude Code npm パッケージ</a></li>
+                <li>🐙 <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li>📚 <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li>📄 <a href="2026-09-11-claude-code-v2-1-268.html">Claude Code v2.1.268 リリース</a></li>
+                <li>📄 <a href="2026-09-09-claude-code-v2-1-267.html">Claude Code v2.1.267 リリース</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは reports/2026/2026-09-11-claude-code-v2-1-269.md をもとに生成されました。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
