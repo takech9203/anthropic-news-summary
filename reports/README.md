@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-09-13](2026/2026-09-13-claude-code-v2-1-270.md) - Claude Code v2.1.270 リリース — 読み取り専用 git コマンドの権限確認リグレッションを修正
 - [2026-09-11](2026/2026-09-11-claude-code-v2-1-269.md) - Claude Code v2.1.269 リリース — `claude plugin eval` の導入とプロンプトキャッシュ・権限ルールの修正強化
 - [2026-09-11](2026/2026-09-11-claude-code-v2-1-268.md) - Claude Code v2.1.268 リリース — Claude apps gateway の pricing 対応と権限・セキュリティ修正の集中投入
 - [2026-09-10](2026/2026-09-10-threat-intelligence-report-september-2026.md) - AI の悪用の検出と対策: 2026 年 9 月版脅威インテリジェンスレポート

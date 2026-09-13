@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.270 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .category-badge.hotfix {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-chips {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-chip {
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 24px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .tag.fixed {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .tag.hotfix {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Meta Table */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .meta-table th,
+        .meta-table td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .meta-table th {
+            width: 30%;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .meta-table td a {
+            color: var(--anthropic-coral);
+            word-break: break-all;
+        }
+
+        .use-case code,
+        .key-point-content code,
+        .plain-list code,
+        .section-lead code,
+        .tech-note code,
+        .comparison-card code,
+        .fix-highlight code {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Fix Highlight (単一修正の強調カード) */
+        .fix-highlight {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.35);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .fix-highlight h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .fix-highlight p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Plain List */
+        .plain-list {
+            display: grid;
+            gap: 10px;
+            padding-left: 4px;
+            list-style: none;
+        }
+
+        .plain-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .plain-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 4px;
+            color: var(--anthropic-coral);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Tech Notes */
+        .tech-note {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-note h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tech-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.35rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <span class="category-badge hotfix">ホットフィックス</span>
+                <h1>Claude Code v2.1.270 リリース<br>読み取り専用 git コマンドの権限確認リグレッションを修正</h1>
+                <p class="date">📅 2026-09-13 (npm 公開: 2026-09-12 18:52 UTC) | ソース: Claude Code Changelog</p>
+                <div class="version-chips">
+                    <span class="version-chip">v2.1.270</span>
+                    <span class="version-chip">修正 1 件のみ</span>
+                    <span class="version-chip">v2.1.269 のリグレッション修正</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🩹</div>
+                    <div class="key-point-content">
+                        <h3>修正 1 件のみの小規模ホットフィックス</h3>
+                        <p>セッションが長時間実行された後に、Bash の読み取り専用 git コマンドが予期せずパーミッション確認を求める問題を修正。前バージョン v2.1.269 で発生したリグレッションであり、大型リリース直後の迅速な追従修正という位置づけである。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔓</div>
+                    <div class="key-point-content">
+                        <h3>読み取り専用 git コマンドが従来どおり確認なしで実行可能に</h3>
+                        <p><code>git status</code> や <code>git log</code> のような読み取り専用 git コマンドは、本来リポジトリの状態を変更しないため権限確認なしで実行できる。v2.1.269 ではセッションが一定時間経過した後にこの判定が機能しなくなり、不要な確認プロンプトが表示されるケースがあった。v2.1.270 により、長時間セッションでも従来どおり確認なしで実行される動作に戻っている。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="meta-table">
+                <tr>
+                    <th>発表日</th>
+                    <td>2026-09-13 (npm 公開: 2026-09-12 18:52 UTC)</td>
+                </tr>
+                <tr>
+                    <th>ソース</th>
+                    <td>Claude Code Changelog</td>
+                </tr>
+                <tr>
+                    <th>カテゴリ</th>
+                    <td>Claude Code アップデート</td>
+                </tr>
+                <tr>
+                    <th>公式リンク</th>
+                    <td><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.270</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">修正件数 (このリリース)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">98</div>
+                    <div class="stat-label">前バージョン v2.1.269 の変更件数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">翌日</div>
+                    <div class="stat-label">大型リリースからの修正リリース</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">破壊的変更</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景 — リグレッションの経緯</h2>
+            <p class="section-lead">前バージョンの v2.1.269 (2026 年 9 月 11 日リリース) は、<code>claude plugin eval</code> の導入、プロンプトキャッシュの安定性改善、権限ルールの修正強化など約 98 件の変更を含む大型リリースだった。その中には読み取り専用 git コマンドに関連する変更 (コンパクション後の git ステータス修正など) や権限システムの複数の修正が含まれており、この過程で読み取り専用 git コマンドの権限判定にリグレッションが混入した。</p>
+            <p class="section-lead">Claude Code は、リポジトリの状態を変更しない読み取り専用の git コマンドを権限確認なしで実行できるよう扱っている。この動作はコードベースの探索や状態確認を頻繁に行うワークフローの快適さを支える基盤であり、リグレッションの影響は日常的な操作に直結するため、翌日に単独の修正としてリリースされた。</p>
+        </section>
+
+        <!-- Fix Details -->
+        <section class="section">
+            <h2 class="section-title">修正内容の詳細 <span class="tag fixed">Fixed</span></h2>
+
+            <div class="fix-highlight">
+                <h3>🔓 読み取り専用 git コマンドの権限確認 <span class="tag hotfix">Regression Fix</span></h3>
+                <p>セッションが長時間実行された後、Bash の読み取り専用 git コマンドが予期せずパーミッション確認を求める問題を修正 (v2.1.269 のリグレッション)。今回のリリースに含まれる変更はこの 1 件のみである。</p>
+            </div>
+
+            <h3 class="section-subtitle">🔬 技術的な詳細</h3>
+            <div class="tech-note">
+                <h4>⏱️ 時間経過で顕在化する問題</h4>
+                <p>この問題の特徴は、<strong>セッション開始直後には発生せず、セッションが一定時間実行された後に顕在化する</strong>点である。セッション開始直後は読み取り専用 git コマンドが期待どおり確認なしで実行されるため、短時間の利用では気付きにくい。一方、長時間の作業セッションや、自動化されたヘッドレスセッションでは、途中から <code>git status</code> や <code>git diff</code> のようなコマンドに確認プロンプトが挟まるようになり、作業の中断や自動化フローの停止を引き起こし得る。</p>
+            </div>
+            <div class="tech-note">
+                <h4>✅ v2.1.270 での解消</h4>
+                <p>v2.1.270 ではこの時間経過による判定の劣化が解消され、セッションの実行時間にかかわらず読み取り専用 git コマンドが一貫して確認なしで実行されるようになった。</p>
+            </div>
+
+            <h3 class="section-subtitle">🔀 Before / After</h3>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>❌ v2.1.269</h4>
+                    <p>セッションが一定時間経過した後、<code>git status</code> や <code>git log</code> などの読み取り専用 git コマンドに不要な確認プロンプトが表示されるケースがあった。長時間セッションでは作業の中断、ヘッドレス・自動化環境ではフローの停止を引き起こし得る。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>✅ v2.1.270</h4>
+                    <p>セッションの実行時間にかかわらず、読み取り専用 git コマンドが一貫して確認なしで実行される従来どおりの動作に戻った。長時間セッションやヘッドレス環境での git 操作がスムーズに実行される。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="section-subtitle">🎯 対象</h3>
+            <ul class="plain-list">
+                <li><strong>v2.1.269 を利用しているすべてのユーザー</strong>: 長時間セッションで読み取り専用 git コマンドに不要な確認プロンプトが表示される問題が解消される</li>
+                <li><strong>長時間セッションで作業する利用者</strong>: セッションの経過時間にかかわらず、<code>git status</code> や <code>git log</code> などが確認なしで実行される動作に戻る</li>
+                <li><strong>ヘッドレス・自動化環境の利用者</strong>: 予期しない権限確認による自動化フローの停止リスクが解消される</li>
+            </ul>
+
+            <h3 class="section-subtitle">🛠️ 必要なアクション — 最新バージョンへの更新</h3>
+            <p class="section-lead">v2.1.269 を利用している場合は、以下のいずれかの方法で v2.1.270 に更新することを推奨する。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Claude Code の更新方法</span>
+                </div>
+                <pre><code class="language-bash"># Claude Code 組み込みコマンド
+claude update
+
+# npm でのアップデート
+npm update -g @anthropic-ai/claude-code
+
+# バージョンを指定してインストールする場合
+npm install -g @anthropic-ai/claude-code@2.1.270
+
+# 現在のバージョン確認
+claude --version</code></pre>
+            </div>
+
+            <h3 class="section-subtitle">🔀 移行ガイド</h3>
+            <div class="use-case">
+                <h4>✅ 破壊的変更はなし</h4>
+                <p>破壊的変更はない。設定の変更やワークフローの調整は不要で、更新のみで修正が適用される。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🩹</div>
+                    <div class="key-point-content">
+                        <h3>リグレッションを修正する 1 件のみの小規模リリース</h3>
+                        <p>Claude Code v2.1.270 は、v2.1.269 で混入したリグレッションを修正する 1 件のみの小規模リリースである。セッションが長時間実行された後に Bash の読み取り専用 git コマンドが予期せずパーミッション確認を求める問題が解消され、長時間セッションやヘッドレス環境での git 操作が従来どおりスムーズに実行されるようになった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>大型リリース翌日の迅速な対応 — 早めの更新を推奨</h3>
+                        <p>約 98 件の変更を含む大型リリースの翌日に単独の修正として公開されており、日常的なワークフローに影響するリグレッションへの迅速な対応と言える。v2.1.269 を利用中のユーザーは早めの更新を推奨する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📦 <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">Claude Code npm パッケージ</a></li>
+                <li>🐙 <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></li>
+                <li>📚 <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li>📄 <a href="2026-09-11-claude-code-v2-1-269.html">Claude Code v2.1.269 リリース</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは reports/2026/2026-09-13-claude-code-v2-1-270.md をもとに生成されました。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
