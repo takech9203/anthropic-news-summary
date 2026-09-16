@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages API 会話コンパクション (ベータ) - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 28px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subsection-title:first-of-type {
+            margin-top: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li {
+            padding-left: 1.4em;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '▲';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-size: 11px;
+            top: 4px;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '✔';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-size: 12px;
+            top: 2px;
+        }
+
+        /* Info Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0 4px;
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 700;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.4);
+        }
+
+        .info-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        /* Inline code */
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 6px;
+            padding: 1px 6px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        /* Detail lists */
+        .detail-list {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .detail-list li {
+            padding: 10px 12px 10px 2.2em;
+            position: relative;
+            border-bottom: 1px dashed rgba(212, 165, 116, 0.3);
+        }
+
+        .detail-list li:last-child {
+            border-bottom: none;
+        }
+
+        .detail-list li::before {
+            content: '✏️';
+            position: absolute;
+            left: 4px;
+            top: 10px;
+            font-size: 14px;
+        }
+
+        .detail-list.caution li::before {
+            content: '⚠️';
+        }
+
+        .detail-list.action li::before {
+            content: '✅';
+        }
+
+        /* Callout */
+        .callout {
+            background: #FFF3E0;
+            border: 2px dashed #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: #7c4a03;
+            margin: 20px 0;
+        }
+
+        .callout strong {
+            color: #b35c00;
+        }
+
+        .callout-info {
+            background: #E8F1FF;
+            border: 2px dashed #4A90E2;
+            color: #1e4f8a;
+        }
+
+        .callout-info strong {
+            color: #17406e;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            word-break: break-all;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Model badges */
+        .model-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 12px 0 4px;
+        }
+
+        .model-badge {
+            background: var(--anthropic-cream);
+            border: 1.5px solid rgba(212, 165, 116, 0.5);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            background: #FFFFFF;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .summary-box h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            line-height: 1.9;
+            opacity: 0.92;
+        }
+
+        .summary-box code.inline {
+            background: rgba(212, 165, 116, 0.2);
+            border-color: rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer h3 {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .footer ul {
+            list-style: none;
+        }
+
+        .footer ul li {
+            margin-bottom: 6px;
+        }
+
+        .footer a {
+            color: #b3803f;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API</span>
+                <h1>Messages API 会話コンパクション (ベータ)</h1>
+                <p class="subtitle">オンデマンドで会話を要約する <strong>compaction</strong> パラメータが登場</p>
+                <p class="date">📅 2026-09-14 | ソース: Claude API Release Notes</p>
+            </div>
+        </header>
+
+        <!-- Key Points (概要) -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="section-lead">Claude API の Messages API で、オンデマンドの会話コンパクションがベータ提供開始。<code class="inline">compact-2026-09-04</code> ベータヘッダーを付けてトップレベルの <code class="inline">compaction</code> パラメータを送ると、API は送信したメッセージ群を要約した署名付き <code class="inline">compaction</code> ブロックを返す。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🎛️</div>
+                    <div class="key-point-content">
+                        <h3>タイミングをアプリ側で完全制御</h3>
+                        <p>従来のしきい値ベースのコンパクション (<code class="inline">compact-2026-01-12</code> ベータ、<code class="inline">compact_20260112</code> 戦略) と異なり、「いつ・どの範囲を」要約するかをアプリケーション側で自由に決められる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>バックグラウンド実行が可能</h3>
+                        <p>要約リクエストは会話ターンとは独立しているため、会話をフル履歴のまま続けながら裏で要約を生成し、ブロック到着後に差し替えられる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📌</div>
+                    <div class="key-point-content">
+                        <h3>keep-tail パターンに対応</h3>
+                        <p>直近のターンをコンパクションリクエストに含めないことで、要約後もそれらを一言一句そのまま保持できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>preserved thinking と整合</h3>
+                        <p>preserved thinking を持つモデルでは、保持したターン内の thinking ブロックが要約への差し替え後も有効なまま維持され得る。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">✍️</div>
+                    <div class="key-point-content">
+                        <h3>署名付きブロックで置き換え</h3>
+                        <p>以降のリクエストでは、要約対象だった元のメッセージの代わりに、返却された署名付きブロックを <code class="inline">messages</code> の先頭に置いて送信する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background (背景) -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p class="section-lead">長時間動作するエージェントや長い会話では、履歴がモデルのコンテキストウィンドウを圧迫する。Anthropic は 2026 年 2 月にしきい値ベースのコンパクション (<code class="inline">compact_20260112</code>) をベータ提供しており、これは指定した入力トークン数に達するとリクエスト処理の途中で自動的に要約を生成する仕組みだった。今回のオンデマンドコンパクションはこれを拡張する 2 つ目の方式となる。</p>
+            <div class="callout callout-info">
+                <strong>公式ドキュメントによる使い分け</strong>: しきい値コンパクションは「API にコンテキスト管理を任せたい場合」、<code class="inline">compaction</code> パラメータは「コンパクションのタイミングを制御したい場合、要約生成中に処理を止められない場合、直近ターンとその thinking を要約後も保持したい場合」に使い分けることが推奨されている。
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: しきい値方式との比較</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before: しきい値コンパクション</h4>
+                    <ul>
+                        <li>指定した入力トークン数に達すると、リクエスト処理の途中で自動的に要約を生成</li>
+                        <li>要約のタイミングは API 任せで、アプリ側では制御できない</li>
+                        <li>コンパクションブロックは要約対象メッセージの後ろに続く</li>
+                        <li>ベータヘッダー: compact-2026-01-12 / 戦略: compact_20260112</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After: オンデマンドコンパクション</h4>
+                    <ul>
+                        <li>任意のタイミングで要約を要求でき、範囲もアプリ側が決定</li>
+                        <li>会話ターンと独立しており、バックグラウンドで実行可能</li>
+                        <li>署名付きブロックが要約対象メッセージを置き換える (先頭に配置)</li>
+                        <li>keep-tail で直近ターンと thinking を保持できる</li>
+                        <li>ベータヘッダー: compact-2026-09-04 / パラメータ: compaction</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout">
+                <strong>注意</strong>: しきい値コンパクションのブロックが要約対象メッセージの後ろに続くのに対し、オンデマンドの署名付きブロックはメッセージを<strong>置き換える</strong>。要約済みメッセージをブロックの前に残すと 400 エラー (<code class="inline">compaction_block_misplaced</code>) になる。
+            </div>
+        </section>
+
+        <!-- Features (主な変更点) -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⚡ オンデマンド要約</h3>
+                    <p>任意のタイミングで <code class="inline">"compaction": {"type": "summarize"}</code> を送ると、API はリクエスト内の全メッセージを 1 回要約し、返信は生成せず、<code class="inline">stop_reason: "compaction"</code> とともに署名付きブロックのみを返す。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔏 署名付きブロックによる置き換え</h3>
+                    <p>以降のリクエストでは、要約対象だったメッセージを削除し、返却されたブロック (<code class="inline">signature</code> を含めそのまま) を <code class="inline">messages</code> の先頭に置く。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 バックグラウンド実行</h3>
+                    <p>要約リクエストは会話ターンと分離されているため、会話をフル履歴のまま続けながら裏で要約を生成し、ブロック到着後に差し替えられる (async / background compaction)。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📌 keep-tail 対応</h3>
+                    <p>直近のターンをコンパクションリクエストに含めないことで、要約後もそれらを一言一句そのまま保持できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧠 preserved thinking との整合</h3>
+                    <p>保持したターンが要約対象メッセージの直後に続き、かつ <code class="inline">system</code> と <code class="inline">defer_loading: true</code> でないツール定義がコンパクションリクエストと同じであれば、保持ターン内の thinking ブロックは差し替え後も有効なまま維持される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 カスタム要約プロンプト</h3>
+                    <p><code class="inline">instructions</code> (最大 16,384 文字) でデフォルトの要約プロンプトを完全に置換できる。オンデマンド方式では、<code class="inline">instructions</code> の有無にかかわらず要約器は過去の thinking を含む会話全体を読む。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Changes (API 変更点) -->
+        <section class="section">
+            <h2 class="section-title">API 変更点</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">compact-2026-09-04</div>
+                    <div class="stat-label">ベータヘッダー (要約リクエストとブロック送信の両方に必須)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">compaction</div>
+                    <div class="stat-label">トップレベルパラメータ ({"type": "summarize"})</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">stop_reason: "compaction"</div>
+                    <div class="stat-label">要約成功時のレスポンス</div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <tr>
+                        <th>項目</th>
+                        <th>内容</th>
+                    </tr>
+                    <tr>
+                        <td><strong>リクエスト</strong></td>
+                        <td><code class="inline">anthropic-beta: compact-2026-09-04</code> ヘッダー + <code class="inline">"compaction": {"type": "summarize"}</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>レスポンス</strong></td>
+                        <td>署名付き <code class="inline">compaction</code> ブロックのみ。<code class="inline">stop_reason</code> は <code class="inline">"compaction"</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>課金・使用量</strong></td>
+                        <td>通常のリクエストと同様に課金・レート制限の対象。<code class="inline">usage.iterations</code> に <code class="inline">compaction</code> エントリとして記録。トップレベルの <code class="inline">input_tokens</code> / <code class="inline">output_tokens</code> は 0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>カスタムプロンプト</strong></td>
+                        <td><code class="inline">instructions</code> (最大 16,384 文字) でデフォルト要約プロンプトを置換可能</td>
+                    </tr>
+                    <tr>
+                        <td><strong>併用不可</strong></td>
+                        <td><code class="inline">context_management</code>、<code class="inline">stop_sequences</code>、structured output の <code class="inline">output_config.format</code>、<code class="inline">any</code> / <code class="inline">tool</code> 型の <code class="inline">tool_choice</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>エラー</strong></td>
+                        <td>要約済みメッセージをブロックの前に残すと 400 (<code class="inline">compaction_block_misplaced</code>)。一時的なサーバー障害時はリトライ可能な 529 <code class="inline">overloaded_error</code> (<code class="inline">error.details.error_code: compaction_unavailable</code>)</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- Technical Details (技術的な詳細) -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <h3 class="subsection-title">🎯 対象と前提</h3>
+            <p class="section-lead">オンデマンドコンパクションは Claude API のみで利用可能。ベータヘッダー付きで Models API を呼び、各モデルの <code class="inline">capabilities.compaction</code> で対応を確認することもできる。<code class="inline">compaction</code> と <code class="inline">context_management</code> を同一リクエストで併用することはできない。</p>
+            <div class="model-badges">
+                <span class="model-badge">🤖 Claude Fable 5.1</span>
+                <span class="model-badge">🤖 Claude Mythos 5.1</span>
+                <span class="model-badge">🤖 Claude Fable 5</span>
+                <span class="model-badge">🤖 Claude Mythos 5</span>
+                <span class="model-badge">🤖 Claude Mythos Preview</span>
+                <span class="model-badge">⭐ Claude Opus 5</span>
+                <span class="model-badge">⭐ Claude Opus 4.8</span>
+                <span class="model-badge">⭐ Claude Opus 4.7</span>
+                <span class="model-badge">⭐ Claude Opus 4.6</span>
+                <span class="model-badge">🎵 Claude Sonnet 5</span>
+                <span class="model-badge">🎵 Claude Sonnet 4.6</span>
+            </div>
+
+            <h3 class="subsection-title">⚙️ 要約リクエストの挙動</h3>
+            <ul class="detail-list">
+                <li>要約呼び出しはリクエストの <code class="inline">model</code>、<code class="inline">system</code>、<code class="inline">tools</code>、thinking 設定、<code class="inline">max_tokens</code> を使用する。要約器はツール定義を読むがツールは実行しない</li>
+                <li><code class="inline">max_tokens</code> は要約前の thinking を含む呼び出し全体の上限となるため、数千トークンの余裕を持たせる</li>
+                <li>通常のリクエストと同様に課金・レート制限の対象で、<code class="inline">usage.iterations</code> に <code class="inline">compaction</code> エントリとして記録される。返信を生成しないため、トップレベルの <code class="inline">input_tokens</code> / <code class="inline">output_tokens</code> は 0 になる</li>
+                <li>最後の <code class="inline">assistant</code> ターンが結果未返却のツール呼び出しで終わっている場合、リクエストは拒否される。<code class="inline">stop_sequences</code>、structured output の <code class="inline">output_config.format</code>、<code class="inline">any</code> / <code class="inline">tool</code> 型の <code class="inline">tool_choice</code> も併用不可</li>
+                <li>ストリーミングでは、ブロックは <code class="inline">content_block_start</code> で完全な形で一括到着し、<code class="inline">content_block_delta</code> は発生しない</li>
+            </ul>
+
+            <h3 class="subsection-title">🚫 要約が返らないケース</h3>
+            <p class="section-lead">要約呼び出しが正常にテキストで終了しなかった場合も 200 が返り、<code class="inline">content</code> は空になる。<code class="inline">stop_reason</code> には <code class="inline">"max_tokens"</code> (要約が途切れた)、<code class="inline">"model_context_window_exceeded"</code>、<code class="inline">"refusal"</code>、<code class="inline">"tool_use"</code>、<code class="inline">"end_turn"</code> などが入り、それぞれ <code class="inline">max_tokens</code> の増加や <code class="inline">instructions</code> の調整などで再送できる。一時的なサーバー障害時はリトライ可能な 529 <code class="inline">overloaded_error</code> (<code class="inline">error.details.error_code: compaction_unavailable</code>) が返る。</p>
+
+            <h3 class="subsection-title">⚠️ その他の制約</h3>
+            <ul class="detail-list caution">
+                <li><code class="inline">compaction</code> ブロックは 1 リクエストにつき 1 つだけ送る。ブロックのないリクエストは要約なしでモデルに届く</li>
+                <li>すでにブロックで始まる会話を再度コンパクションすると、新しいブロックが旧要約とそれ以降を要約する。以降は最新のブロックのみを送る</li>
+                <li>要約対象に含まれる画像、ドキュメント、<code class="inline">container_upload</code> ブロック、取得済み URL は、ブロックへの置き換え後は失われるため、必要なら再送・再アップロードする</li>
+                <li><code class="inline">role: "system"</code> メッセージも要約対象になり、置き換え後は宣言内容が適用されなくなる。必要な指示は次の新しい <code class="inline">user</code> ターンの直後に <code class="inline">role: "system"</code> メッセージとして再宣言する</li>
+                <li>token counting エンドポイントは <code class="inline">compaction</code> パラメータを無視する。task budget の <code class="inline">remaining</code> 値は <code class="inline">compaction</code> やブロックを含むリクエストと併用できない (400 エラー)</li>
+                <li><code class="inline">cache_control</code> をブロックに付けると要約直後にキャッシュブレークポイントが置かれる</li>
+            </ul>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図: バックグラウンドコンパクションの流れ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant App as 🖥️ アプリケーション
+    participant API as 🔌 Claude API
+    participant M as 🤖 Claude モデル
+
+    App->>API: 通常の会話リクエスト<br/>フル履歴を送信
+    API->>M: 会話を処理
+    M-->>API: 返信
+    API-->>App: 返信
+
+    App->>API: compaction リクエスト<br/>type summarize + ベータヘッダー
+    Note over App,API: バックグラウンドで実行<br/>会話はフル履歴のまま継続可能
+    API->>M: 古いメッセージを要約
+    M-->>API: 要約テキスト
+    API-->>App: 署名付き compaction ブロック<br/>stop_reason は compaction
+
+    Note over App: 要約対象メッセージを<br/>ブロックに差し替え<br/>以降のターンは保持
+
+    App->>API: 次のリクエスト<br/>ブロックを先頭に配置
+    API->>M: 要約 + 保持ターンを処理
+    M-->>API: 返信
+    API-->>App: 返信
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <h3 class="subsection-title">1️⃣ 要約のリクエスト</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">compaction パラメータで要約を要求</span>
+                </div>
+                <pre><code class="language-bash">curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "anthropic-beta: compact-2026-09-04" \
+  -H "content-type: application/json" \
+  -d '{
+    "model": "claude-opus-5",
+    "max_tokens": 4096,
+    "messages": [
+      {"role": "user", "content": "I am building a recipe app. Help me name the main entities in the data model."},
+      {"role": "assistant", "content": "Start with Recipe, Ingredient, and Step. Add a RecipeIngredient entry that holds the quantity and unit for each ingredient in a recipe."},
+      {"role": "user", "content": "Good. Now suggest field names for Recipe."}
+    ],
+    "compaction": {"type": "summarize"}
+  }'</code></pre>
+            </div>
+
+            <h3 class="subsection-title">2️⃣ レスポンス</h3>
+            <p class="section-lead">署名付き <code class="inline">compaction</code> ブロックのみが返り、<code class="inline">stop_reason</code> は <code class="inline">"compaction"</code>。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">要約レスポンス</span>
+                </div>
+                <pre><code class="language-json">{
+  "id": "msg_013Zva2CMHLNnXjNJJKqJ2EF",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-opus-5",
+  "content": [
+    {
+      "type": "compaction",
+      "content": "Summary of the conversation: the user is designing the data model for a recipe app. ...",
+      "signature": "EuYBCkQY..."
+    }
+  ],
+  "stop_reason": "compaction",
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "iterations": [{ "type": "compaction", "input_tokens": 144, "output_tokens": 276 }]
+  }
+}</code></pre>
+            </div>
+
+            <h3 class="subsection-title">3️⃣ 以降のリクエスト</h3>
+            <p class="section-lead">要約対象だったメッセージの代わりにブロックを先頭に置く。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">ブロックを先頭に配置した次のリクエスト</span>
+                </div>
+                <pre><code class="language-json">{
+  "model": "claude-opus-5",
+  "max_tokens": 2048,
+  "messages": [
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "compaction",
+          "content": "Summary of the conversation: ...",
+          "signature": "EuYBCkQY..."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "For Recipe, use title, description, servings, prep_minutes, and cook_minutes. Add created_at and updated_at timestamps."
+    },
+    { "role": "user", "content": "Now do the same for Ingredient." }
+  ]
+}</code></pre>
+            </div>
+
+            <h3 class="subsection-title">4️⃣ バックグラウンド実行時の差し替え</h3>
+            <p class="section-lead">公式ドキュメントのパターン。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">background compaction の差し替えロジック</span>
+                </div>
+                <pre><code class="language-python"># sent_count = len(messages sent in the compaction request)
+# response   = that request's result, arriving while the agent kept working
+if response.stop_reason == "compaction":
+    compaction_message = {"role": "assistant", "content": response.content}
+    history = [compaction_message] + history[sent_count:]
+# Otherwise keep the full history and try again later.</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact (開発者への影響) -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">👥 対象</h3>
+            <div class="use-case">
+                <h4>🤖 長時間動作するエージェントの開発者</h4>
+                <p>エージェントの実行が長くなるほど履歴がコンテキストウィンドウを圧迫する。オンデマンドコンパクションにより、思考の流れ (thinking) を保持したまま履歴を圧縮できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>💬 長い会話を扱うアプリケーションの開発者</h4>
+                <p>コンテキストウィンドウの管理が必要なチャットアプリなどで、会話を止めずにバックグラウンドで要約を生成し、シームレスに履歴を差し替えられる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🎚️ しきい値コンパクション利用中の開発者</h4>
+                <p>要約のタイミングや保持範囲をより細かく制御したい場合に、オンデマンド方式への移行または併用 (別リクエストでの使い分け) が選択肢となる。</p>
+            </div>
+
+            <h3 class="subsection-title">✅ 必要なアクション</h3>
+            <ul class="detail-list action">
+                <li>要約を要求するリクエストと、署名付きブロックを送る以降のすべてのリクエストに <code class="inline">anthropic-beta: compact-2026-09-04</code> ヘッダーを付与する</li>
+                <li>会話の残りで使うものと同じ <code class="inline">system</code> プロンプトと <code class="inline">tools</code> を要約リクエストにも送る</li>
+                <li>ブロック受領後は、コンパクションリクエストで送ったメッセージを履歴の先頭から取り除き、返却された assistant メッセージに置き換える。バックグラウンド実行中に進んだターンはそのまま後ろに残す</li>
+                <li>要約リクエスト送信から差し替えまでの間は履歴を編集せず、ブロック到着後の最初のリクエストで差し替えを行う (保持ターンの thinking を有効に保つため)</li>
+                <li>会話がコンテキストウィンドウに収まるうちにコンパクションを実行する</li>
+            </ul>
+
+            <h3 class="subsection-title">🔀 移行ガイド</h3>
+            <p class="section-lead">しきい値コンパクション (<code class="inline">compact-2026-01-12</code> / <code class="inline">compact_20260112</code>) は引き続き利用可能で、両方式は用途で使い分ける。ただし同一リクエストでの併用はできず、しきい値コンパクションは署名付きブロックを含むリクエストでは動作しない。</p>
+            <div class="callout callout-info">
+                <strong>ヒント</strong>: <code class="inline">system</code> や <code class="inline">tools</code> を変更したい場合は、保持ターンなしで会話全体を先にコンパクションしてから次のリクエストで変更すると、thinking の無効化を避けられる。
+            </div>
+        </section>
+
+        <!-- Summary (まとめ) -->
+        <section class="summary-box">
+            <h2>📋 まとめ</h2>
+            <p>オンデマンドコンパクションは、しきい値コンパクションに続く 2 つ目のコンテキスト圧縮方式で、「いつ・どの範囲を」要約するかをアプリケーション側が完全に制御できる。バックグラウンド実行により会話を止めずに要約を生成でき、直近ターンとその thinking を保持したまま履歴を圧縮できるため、長時間動作するエージェントが思考の流れを保ちながらコンテキストウィンドウを管理する手段として有力な選択肢となる。ベータ機能のため、<code class="inline">compact-2026-09-04</code> ヘッダーの付与と、署名付きブロックの取り扱いルール (先頭配置、要約済みメッセージの削除、1 リクエスト 1 ブロック) の遵守が必要となる。</p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <h3>📚 出典・関連リンク</h3>
+            <ul>
+                <li>出典: <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a> (Claude API Release Notes)</li>
+                <li>Compaction ドキュメント: <a href="https://platform.claude.com/docs/en/build-with-claude/compaction" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/build-with-claude/compaction</a></li>
+                <li>Compact on demand with the compaction parameter: <a href="https://platform.claude.com/docs/en/build-with-claude/compaction#compact-on-demand-with-the-compaction-parameter" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/build-with-claude/compaction#compact-on-demand-with-the-compaction-parameter</a></li>
+                <li>Preserved thinking: <a href="https://platform.claude.com/docs/en/build-with-claude/preserved-thinking" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/build-with-claude/preserved-thinking</a></li>
+                <li>Context editing: <a href="https://platform.claude.com/docs/en/build-with-claude/context-editing" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/build-with-claude/context-editing</a></li>
+                <li>Session memory compaction cookbook: <a href="https://platform.claude.com/cookbook/misc-session-memory-compaction" target="_blank" rel="noopener noreferrer">https://platform.claude.com/cookbook/misc-session-memory-compaction</a></li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-09-14 | カテゴリ: API | ソース: Claude API Release Notes</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
