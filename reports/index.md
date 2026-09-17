@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-09-17](2026/2026-09-17-claude-code-v2-1-274.md) - Claude Code v2.1.274 リリース: メモリ使用量の警告表示と MCP 接続の安定性向上、v2 MCP クライアントの全面展開
 - [2026-09-15](2026/2026-09-15-claude-code-v2-1-273.md) - Claude Code v2.1.273 リリース: LLM ゲートウェイ向けヒントヘッダーと Remote Control セッションのフォークに対応
 - [2026-09-14](2026/2026-09-14-messages-api-compaction-beta.md) - Messages API 会話コンパクション (ベータ): オンデマンドで会話を要約する `compaction` パラメータ
 - [2026-09-14](2026/2026-09-14-claude-code-v2-1-271-v2-1-272.md) - Claude Code v2.1.271 / v2.1.272 リリース — Remote セッションの fast mode 対応と auto モードのドメイン単位ネットワーク制御
