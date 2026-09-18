@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フロンティアラボ内部の AI 開発ペースを理解するための測定指標 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-chips {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-chip {
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 24px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .tag.danger {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .tag.warn {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        .tag.info {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .tag.new {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Meta Table */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .meta-table th,
+        .meta-table td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .meta-table th {
+            width: 30%;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .meta-table td a {
+            color: var(--anthropic-coral);
+            word-break: break-all;
+        }
+
+        /* Compare Table */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 16px 0;
+        }
+
+        .compare-table th,
+        .compare-table td {
+            text-align: left;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+            vertical-align: top;
+        }
+
+        .compare-table thead th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .compare-table tbody th {
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+            width: 18%;
+        }
+
+        .compare-table td {
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code,
+        .use-case code,
+        .key-point-content code,
+        .plain-list code,
+        .section-lead code,
+        .tech-note code {
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+
+        /* Plain List */
+        .plain-list {
+            display: grid;
+            gap: 10px;
+            padding-left: 4px;
+            list-style: none;
+        }
+
+        .plain-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .plain-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 4px;
+            color: var(--anthropic-coral);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Tech Notes */
+        .tech-note {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-note h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tech-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Process Steps */
+        .process-steps {
+            display: grid;
+            gap: 14px;
+        }
+
+        .process-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 18px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .process-step-number {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-header);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .process-step-content h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .process-step-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Comparison (Before/After) */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.35rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">公式発表</span>
+                <span class="category-badge">透明性</span>
+                <span class="category-badge">政策・ガバナンス</span>
+                <h1>フロンティアラボ内部の<br>AI 開発ペースを理解するための測定指標</h1>
+                <p class="date">📅 2026-09-17 | ソース: Anthropic Institute</p>
+                <div class="version-chips">
+                    <span class="version-chip">3 つの測定指標を提案</span>
+                    <span class="version-chip">内部実測スナップショット公開</span>
+                    <span class="version-chip">2026 年 8 月時点のデータ</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📏</div>
+                    <div class="key-point-content">
+                        <h3>ラボ内部の開発ペースを外部から追跡可能にする 3 つの指標</h3>
+                        <p>AI システムが指数関数的に強力になり、自らの次世代版の構築を自動化し始めている状況を踏まえ、(1) AI 主導の AI 研究開発の度合い、(2) AI エージェントに対する監督体制、(3) 計算資源の配分、の 3 つの測定指標を提案。「ラボが知っていることと公衆が知っていることのギャップ」の最小化が目的である。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>Claude が Anthropic の AI R&D 業務の 26% を「主導」</h3>
+                        <p>2026 年 8 月時点で Claude が Anthropic の AI R&D 業務の 26% を「主導」(2026 年 2 月は 1% 未満)。「AI が協働」以上の業務は 90% 超に達し、AI が自らの開発を加速させる段階が現実に始まりつつあることを示す。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">👁️</div>
+                    <div class="key-point-content">
+                        <h3>常時約 30,000 のエージェントを二層で監視</h3>
+                        <p>社内で常時約 30,000 のエージェントが研究・エンジニアリング業務に従事。行動の 100% がオンライン / オフラインの二層モニターを通過し、10 億超の決定のうち 0.002% をブロックしている。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚙️</div>
+                    <div class="key-point-content">
+                        <h3>AI R&D 向け計算資源の約 6% が安全性研究</h3>
+                        <p>2026 年 7 月の 1 週間の実測で、AI R&D 向けコンピュートの約 6% (AI 駆動の AI R&D 向けでは約 12%) が安全性研究に配分されていることを定量化。意図的に保守的な推計である。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-content">
+                        <h3>企業横断の共通測定基盤と外部検証</h3>
+                        <p>執筆は Marina Favaro と Phillie Wright、研究の方向付けは Jack Clark が担当。外部専門家によるレッドチームワークショップも実施され、政策提案「Advanced AI Framework」と連動して企業横断で比較可能な共通の測定基盤の整備を目指す。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="meta-table">
+                <tr>
+                    <th>発表日</th>
+                    <td>2026-09-17</td>
+                </tr>
+                <tr>
+                    <th>ソース</th>
+                    <td>Anthropic Institute</td>
+                </tr>
+                <tr>
+                    <th>カテゴリ</th>
+                    <td>公式発表 / 透明性 / 政策・ガバナンス</td>
+                </tr>
+                <tr>
+                    <th>公式リンク</th>
+                    <td><a href="https://www.anthropic.com/institute/measuring-pace-of-ai-development" target="_blank" rel="noopener noreferrer">https://www.anthropic.com/institute/measuring-pace-of-ai-development</a></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景 — 指標の位置づけ</h2>
+            <p class="section-lead">これらの指標は「モデルが何をできるか」を測る能力評価 (責任あるスケーリング方針 = RSP のリスク報告書で別途公開) を補完し、「モデルがどう作られるか」を測るものとして位置づけられている。世界がフロンティア AI 開発のペース調整 (pacing) を検討する中、企業横断で比較可能な共通の測定基盤を整備することが狙いであり、Anthropic の政策提案「Advanced AI Framework」とも連動する。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>従来: 能力評価のみ</h4>
+                    <p>「モデルが何をできるか」を測る能力評価は RSP のリスク報告書で公開されるが、開発プロセスそのものはラボ内部でしか見えなかった。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>今回: 開発プロセスの透明化</h4>
+                    <p>「モデルがどう作られるか」を測る 3 指標により、一般公衆・第三者・政府がラボ内部の AI 開発ペースを追跡できるようになる。</p>
+                </div>
+            </div>
+            <h3 class="section-subtitle">🎯 対象読者</h3>
+            <ul class="plain-list">
+                <li>一般公衆</li>
+                <li>第三者評価機関</li>
+                <li>政府・規制当局</li>
+                <li>他のフロンティア AI 開発企業</li>
+            </ul>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るスナップショット (2026 年 8 月時点)</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">26%</div>
+                    <div class="stat-label">Claude が「主導」する AI R&D 業務 (2026 年 2 月は 1% 未満)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">90% 超</div>
+                    <div class="stat-label">「AI が協働」以上の業務の割合</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">約 30,000</div>
+                    <div class="stat-label">社内で常時稼働するエージェント数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">監視を通過するエージェント行動のカバレッジ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0.002%</div>
+                    <div class="stat-label">オンラインモニターのブロック率 (10 億超の決定中)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">約 6%</div>
+                    <div class="stat-label">AI R&D コンピュートに占める安全性研究の割合</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main: 3 Metrics -->
+        <section class="section">
+            <h2 class="section-title">主な内容 — 3 つの測定指標</h2>
+
+            <h3 class="section-subtitle">🤖 1. AI 主導の AI 研究開発の測定 <span class="tag new">Anthropic R&D Automation Index</span></h3>
+            <p class="section-lead">モデルが自らの開発を加速させると、人間による理解や制御が困難になりうる。「再帰的自己改善」(モデルが完全自律的に後継モデルを構築する状態) にどれだけ近いかを把握するため、社内の全 AI R&D タスクをカタログ化し、Epoch AI が開発した自動化レベル尺度 (AL0 = AI 関与なし〜AL5 = 完全自律。AL3 は「AI が協働」、AL4 は「AI が主導」) で各タスクの自動化度を評価して集計する。</p>
+            <ul class="plain-list">
+                <li>どの領域でも Claude は完全自律 (AL5) には達していない</li>
+                <li>Claude が Anthropic の AI R&D 業務の <strong>26% を「主導」</strong> (2026 年 2 月時点では 1% 未満)</li>
+                <li>「AI が協働」以上の業務の割合は <strong>90% 超</strong></li>
+            </ul>
+            <div class="tech-note">
+                <h4>📐 測定方法</h4>
+                <p>2026 年 7 月の各週でモデル R&D 関連部門のスタッフの 20% を無作為抽出し、Claude の研究エージェントが Slack や社内文書からタスクを列挙。約 15,000 の詳細タスクを 542 ノード (うち 378 が末端) の階層ツリーに整理して凍結し、各ノードについて別の Claude がエビデンスを調査、独立した Claude 判定者が自動化レベルを付与した。重み付けには各タスクに費やされた人・時間を代理指標として用いている。</p>
+            </div>
+            <div class="tech-note">
+                <h4>✅ 検証と課題</h4>
+                <p>判定モデルと人間の完全一致率は 59% (人間同士は 35%)、1 レベル以内の一致は 97%。タスクバスケットを凍結する限界に対処するため 2026 年 1 月基準の代替ツリーとも比較し、新規タスクの顕著な増加は見られなかった。課題としては、共通の方法論の欠如と、自社モデルで自社を評価する「判定者バイアス」が挙げられており、第三者や他社モデルによる検証、新モデルを R&D に使う前の固定的なテスト期間の設定などが提案されている。</p>
+            </div>
+
+            <h3 class="section-subtitle">👁️ 2. AI エージェントの監督の測定 <span class="tag info">3 指標で監視体制を定量化</span></h3>
+            <p class="section-lead">半自律的に長時間働き、互いに仕事を委任し合うエージェントが増える中、重大な意思決定への安全策と、多数のエージェント間でのみ現れる問題の検出体制が必要となる。個々のエージェントの不正行為は稀でも、数十億規模で稼働すれば稀な事象も日常的に起こるためである。</p>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="process-step-number">1</div>
+                    <div class="process-step-content">
+                        <h4>カバレッジ</h4>
+                        <p>エージェントの行動のうち監視を通過する割合</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="process-step-number">2</div>
+                    <div class="process-step-content">
+                        <h4>レビュー遅延</h4>
+                        <p>行動からレビューまでの時間</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="process-step-number">3</div>
+                    <div class="process-step-content">
+                        <h4>エスカレーション率</h4>
+                        <p>ブロックまたはフラグされる行動の割合</p>
+                    </div>
+                </div>
+            </div>
+            <p class="section-lead" style="margin-top: 20px;">2026 年 8 月時点で、最も使われる社内プラットフォームでは常時<strong>約 30,000 のエージェント</strong>が研究・エンジニアリング業務に従事している。監視体制の実測値は以下のとおりである。</p>
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>オンラインモニター</th>
+                        <th>オフラインモニター</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>役割</th>
+                        <td>リアルタイムで危険な行動をブロック (例: モデル重みの持ち出し)</td>
+                        <td>事後に活動を読み、緩やかに進行する危険 (ミスアラインメントの兆候など) を検出</td>
+                    </tr>
+                    <tr>
+                        <th>カバレッジ</th>
+                        <td>行動の 100% が実行前に通過</td>
+                        <td>行動の 100% を事後取り込み</td>
+                    </tr>
+                    <tr>
+                        <th>レビュー</th>
+                        <td>自動レビューは実行前、ブロック分は 1 週間以内に人間が確認</td>
+                        <td>週約 10 万件のトランスクリプトをフラグし、最優先の約 50 件/週を人間がレビュー</td>
+                    </tr>
+                    <tr>
+                        <th>ブロック / フラグ率</th>
+                        <td>10 億超の決定のうち 0.002% (約 47,000 分の 1) をブロック</td>
+                        <td>1,000 件中 1〜2 件をフラグ</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🪪 エージェントごとの個別アイデンティティ</h3>
+                    <p>モデル更新後も継続して行動の監査を可能にする設計上の工夫。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💬 オープンな通信</h3>
+                    <p>全メッセージが投稿者に紐づき、エージェント同士が誤りを訂正できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 外部検証と第三者常駐計画</h3>
+                    <p>METR がオフライン監視プラットフォームを独立にレッドチーム済み。今後は複数組織の第三者評価者を社内に常駐させ、内部リスク評価チームと同等のアクセスを与える計画である。</p>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">⚙️ 3. 計算資源配分の測定 <span class="tag warn">ペース調整の重要なレバー</span></h3>
+            <p class="section-lead">計算資源 (コンピュート) の配分は開発者の重点領域とその変化を示す。また、コンピュートは AI R&D への入力の中で最も検証可能なものの一つであり、将来のペース調整の重要なレバーになりうる。Anthropic は 2026 年 7 月 13 日から 20 日の 1 週間、全コンピュート使用をカテゴリ分けし、AI R&D 向けコンピュートのうち安全性研究の割合を算出した。</p>
+            <ul class="plain-list">
+                <li>AI R&D 向けコンピュートのうち<strong>約 6%</strong> が安全性研究</li>
+                <li>AI 駆動の AI R&D 向けでは<strong>約 12%</strong> が安全性研究</li>
+                <li>意図的に保守的な推計であり、能力と安全性に等しく寄与するトークンはカウントせず、セーフガード用分類器も含めていない</li>
+                <li>安全性研究は本質的にコンピュート集約的ではないため、絶対値よりも「同一基準で企業間・時系列比較を可能にする仕組み」としての価値が強調されている</li>
+            </ul>
+            <div class="tech-note">
+                <h4>📐 測定方法と限界</h4>
+                <p>既存の容量計画用監視ツールを統合し、Claude によるプロンプト分類器で各ワークロードを「安全性」か「その他 R&D」に分類。約 10,000 件の実行のうちコンピュート使用量で重み付けした約 14% をサンプリングし、分類器は人間レビュアーと 1〜2 パーセントポイント以内で一致した。ただし、スケーラブルオーバーサイトのように判定困難な境界事例も存在する。限界として、ラベルはベストエフォートで未検証であること、測定期間が 1 週間のみであること、効率改善で安全性割合が下がっても安全性の取り組み減少を意味しないことが明記されている。</p>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図 — 指標と情報格差の最小化</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Metrics["📏 3 つの測定指標"]
+        direction LR
+        RnD["🤖 AI 主導の R&D<br/>自動化レベル AL0〜AL5"]
+        Oversight["👁️ エージェント監督<br/>カバレッジ・遅延・エスカレーション率"]
+        Compute["⚙️ 計算資源配分<br/>安全性研究の割合"]
+        RnD ~~~ Oversight ~~~ Compute
+    end
+
+    subgraph Snapshot["📊 2026 年 8 月のスナップショット"]
+        direction LR
+        S1["R&D の 26% を Claude が主導"]
+        S2["常時約 30,000 エージェント稼働<br/>行動の 100% を監視"]
+        S3["AI R&D コンピュートの<br/>約 6% が安全性研究"]
+        S1 ~~~ S2 ~~~ S3
+    end
+
+    subgraph Audience["🌐 情報格差の最小化"]
+        direction LR
+        Public["👥 一般公衆"]
+        Third["🔍 第三者評価者<br/>METR など"]
+        Gov["🏛️ 政府・規制当局"]
+        Public ~~~ Third ~~~ Gov
+    end
+
+    Metrics --> Snapshot
+    Snapshot --> Audience
+    Third -.->|レッドチーム・常駐評価| Metrics
+    Audience -.->|将来のペース調整の根拠| Metrics
+
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef metric fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef snapshot fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#5D4037
+    classDef audience fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#33691E
+
+    class Metrics,Snapshot,Audience layer
+    class RnD,Oversight,Compute metric
+    class S1,S2,S3 snapshot
+    class Public,Third,Gov audience
+                </pre>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細 — 共通の運用枠組み</h2>
+            <p class="section-lead">3 つの指標はいずれも「測定 → 公開 → 第三者検証」という共通の枠組みで運用される。</p>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="process-step-number">1</div>
+                    <div class="process-step-content">
+                        <h4>📏 測定</h4>
+                        <p>社内タスクのカタログ化、監視プラットフォームの実測、コンピュート使用の分類により、内部の開発ペースを定量化する。</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="process-step-number">2</div>
+                    <div class="process-step-content">
+                        <h4>📢 公開</h4>
+                        <p>実測スナップショットを一般公衆・第三者・政府が追跡できる形で公開する。</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="process-step-number">3</div>
+                    <div class="process-step-content">
+                        <h4>🔍 第三者検証</h4>
+                        <p>METR によるレッドチームのような独立検証を受け、複数組織の第三者評価者の社内常駐へと拡大する。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="tech-note" style="margin-top: 20px;">
+                <h4>🔮 将来の展望</h4>
+                <p>将来的には、安全性研究への計算資源配分のコミットメント、AI 研究エージェントへの資源上限、新モデル使用前のテスト期間といった、より強い要件のトリガーとして機能しうると位置づけられている。なお、Dario Amodei CEO が呼びかけるフロンティアのペース調整に関する協調が実現すれば、これらの数値は変化すると想定されることも明記されている。</p>
+            </div>
+        </section>
+
+        <!-- Developer Impact / Use Cases -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響 — 活用シナリオ</h2>
+
+            <h3 class="section-subtitle">🎯 対象</h3>
+            <ul class="plain-list">
+                <li><strong>政策立案者・規制当局</strong>: 企業横断で比較可能な透明性指標のたたき台として活用できる。コンピュート配分は検証可能性が高く、将来のペース調整のレバーになりうると提案されている</li>
+                <li><strong>第三者評価機関・研究者</strong>: Anthropic は複数組織の第三者評価者を社内に常駐させる計画を示しており、METR による監視プラットフォームのレッドチームのような独立検証の機会が広がる</li>
+                <li><strong>他の AI 開発企業</strong>: 共通の方法論・定義の策定が呼びかけられており、R&D 自動化指数やエージェント監視指標を自社でも測定・公開する際の参考になる</li>
+                <li><strong>AI エージェントを運用する開発者・企業</strong>: エージェントごとの個別アイデンティティ、オープンな通信、オンライン / オフラインの二層監視といった設計パターンは、大規模なエージェント運用の監督体制を構築する際の実践例として参照できる</li>
+            </ul>
+
+            <h3 class="section-subtitle">💡 必要なアクション</h3>
+            <div class="use-case">
+                <h4>🧑‍💻 一般の開発者</h4>
+                <p>必須のアクションはない。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏢 大規模にエージェントを運用する組織</h4>
+                <p>カバレッジ・レビュー遅延・エスカレーション率という 3 指標に基づく監視体制の点検が参考になる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔀 移行ガイド</h4>
+                <p>該当なし。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🌟</div>
+                    <div class="key-point-content">
+                        <h3>透明性を「開発プロセスそのもの」に広げた重要な発表</h3>
+                        <p>本発表は、フロンティア AI 開発の透明性を「モデルの能力」だけでなく「開発プロセスそのもの」に広げた点で重要である。Claude が Anthropic の AI R&D 業務の 26% を主導し、その割合が半年で 1% 未満から急伸したという実測値は、AI が自らの開発を加速させる段階が現実に始まりつつあることを示す具体的な証拠となる。常時約 30,000 のエージェントに対する二層の監視体制や、安全性研究への計算資源配分の定量化も、これまでラボ内部でしか見えなかった情報を初めて外部から追跡可能にする試みである。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚖️</div>
+                    <div class="key-point-content">
+                        <h3>限界の自己開示と今後の焦点</h3>
+                        <p>一方で、自社モデルで自社を評価する判定者バイアスや測定期間の短さなど、Anthropic 自身が認める限界も多い。共通の方法論の策定と第三者評価者の常駐が実現すれば、これらの指標は企業間比較や将来のペース調整の実効的な基盤となりうる。他のフロンティアラボが同様の測定・公開に応じるかどうかが、今後の焦点となる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://www.anthropic.com/institute/measuring-pace-of-ai-development" target="_blank" rel="noopener noreferrer">https://www.anthropic.com/institute/measuring-pace-of-ai-development</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📄 <a href="https://www.anthropic.com/institute/measuring-pace-of-ai-development" target="_blank" rel="noopener noreferrer">公式発表: Measurements for understanding the pace of AI development inside frontier labs</a></li>
+                <li>📰 <a href="https://www.anthropic.com/news" target="_blank" rel="noopener noreferrer">Anthropic News</a></li>
+                <li>📜 <a href="https://www.anthropic.com/rsp" target="_blank" rel="noopener noreferrer">Anthropic の責任あるスケーリング方針 RSP</a></li>
+                <li>🔍 <a href="https://metr.org/" target="_blank" rel="noopener noreferrer">METR</a></li>
+                <li>📊 <a href="https://epoch.ai/" target="_blank" rel="noopener noreferrer">Epoch AI</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは reports/2026/2026-09-17-measuring-pace-of-ai-development.md をもとに生成されました。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+</body>
+</html>

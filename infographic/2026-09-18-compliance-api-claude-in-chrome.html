@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance API のローカルセッションエンドポイントが Claude in Chrome セッションに対応 (ベータ) - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 12px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .section p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 500px;
+        }
+
+        table.info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        table.info-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        table.info-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        table.info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        table.info-table tr:nth-child(even) td {
+            background: var(--anthropic-light);
+        }
+
+        table.info-table tr.highlight-row td {
+            background: #FFF3E0;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        table.info-table code {
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            color: var(--anthropic-dark);
+            word-break: break-all;
+        }
+
+        /* Inline code */
+        .section code.inline {
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12.5px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            color: var(--anthropic-dark);
+        }
+
+        /* Status badges */
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .badge.stable {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .badge.beta {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .badge.new {
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+        }
+
+        /* Lists */
+        .styled-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .styled-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 28px;
+            position: relative;
+        }
+
+        .styled-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 8px;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+        }
+
+        .check-list li::before {
+            content: '✅';
+            left: 0;
+            font-size: 12px;
+        }
+
+        .cross-list li::before {
+            content: '🚫';
+            left: 0;
+            font-size: 12px;
+        }
+
+        .warn-list li::before {
+            content: '⚠️';
+            left: 0;
+            font-size: 12px;
+        }
+
+        /* Numbered action list */
+        .action-list {
+            list-style: none;
+            counter-reset: action;
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-list li {
+            counter-increment: action;
+            font-size: 14px;
+            color: var(--text-secondary);
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 14px 16px 14px 52px;
+            position: relative;
+        }
+
+        .action-list li::before {
+            content: counter(action);
+            position: absolute;
+            left: 14px;
+            top: 14px;
+            width: 26px;
+            height: 26px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        /* Callout */
+        .callout {
+            background: #FFF3E0;
+            border-left: 4px solid var(--warning);
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .callout.info-callout {
+            background: #E8F1FF;
+            border-left-color: var(--info);
+        }
+
+        .callout strong {
+            color: var(--text-primary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .summary-box ul {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .summary-box li {
+            font-size: 14px;
+            padding-left: 28px;
+            position: relative;
+            opacity: 0.95;
+        }
+
+        .summary-box li::before {
+            content: '📌';
+            position: absolute;
+            left: 0;
+            font-size: 13px;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #B8834E;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            margin-top: 8px;
+            display: grid;
+            gap: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.35rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <span class="category-badge">エンタープライズ</span>
+                <span class="category-badge">コンプライアンス</span>
+                <h1>Compliance API のローカルセッションエンドポイントが Claude in Chrome セッションに対応 (ベータ)</h1>
+                <p class="date">📅 発表日: 2026-09-18 | ソース: Claude Developer Platform Release Notes</p>
+                <p class="lead">Claude in Chrome ブラウザー拡張機能の組み込みチャットのトランスクリプトが、既存のローカルセッションエンドポイントから <strong>product_surface</strong> 値 <strong>claude_in_chrome</strong> として取得可能に。Claude Enterprise 組織向けベータ。追加のキー、スコープ、設定、クライアント更新は一切不要。</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-content">
+                        <h3>Claude in Chrome セッションが監査カバレッジに追加 (ベータ)</h3>
+                        <p>Compliance API のローカルセッションエンドポイントが Claude in Chrome セッションのトランスクリプトも返すようになった。対象はブラウザー拡張機能の組み込みチャットで、レスポンス上は <code class="inline">product_surface</code> 値 <code class="inline">claude_in_chrome</code> で識別される。Claude Enterprise 組織向けのベータ提供。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>追加設定は一切不要</h3>
+                        <p>既存の Compliance Access Key と <code class="inline">read:compliance_user_data</code> スコープでそのまま利用できる。新しいキー、スコープ、設定、クライアントの更新はいずれも不要。既存のインテグレーションには Claude in Chrome セッションが自動的に現れる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📈</div>
+                    <div class="key-point-content">
+                        <h3>カバレッジが 5 プロダクトに拡大</h3>
+                        <p>ローカルセッション監査は Cowork / Claude Code (安定)、Claude Science / Claude for Microsoft 365 (ベータ) に続き、「ブラウザー内での Claude 利用」という新しい業務領域へカバレッジを広げた。2026 年 8 月 11 日のベータ開始から約 1 か月での拡大となる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔍</div>
+                    <div class="key-point-content">
+                        <h3>トランスクリプトは Claude とのやり取りの記録</h3>
+                        <p>キャプチャはリクエストが Claude API に到達した時点でサーバーサイドに行われる。トランスクリプトは「ブラウザーの完全な操作ログ」ではなく「Claude とのやり取りの記録」であり、ブラウザー操作はツール呼び出しとツール結果を通じて見える範囲に限られる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p>Compliance API のセッションエンドポイントは、Claude Enterprise 組織のユーザーが Claude アプリやエージェントで実行したセッションのトランスクリプトを、eDiscovery エクスポートや DLP 連携のために提供する仕組みである。カバレッジは以下のように段階的に拡大されてきた。</p>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>日付</th>
+                            <th>変更内容</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026-08-11</td>
+                            <td>ローカルセッションエンドポイント (<code>/v1/compliance/apps/sessions/local</code> 系) がベータ追加。Cowork (Claude Desktop) と Claude Code に対応</td>
+                        </tr>
+                        <tr>
+                            <td>2026-08-26</td>
+                            <td>Cowork / Claude Code セッションが GA。Claude Science (<code>claude_science</code>) と Claude for Microsoft 365 (<code>office_agents</code> 系) がベータ追加</td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td>2026-09-18</td>
+                            <td>Claude in Chrome (<code>claude_in_chrome</code>) がベータ追加 <span class="badge new">今回</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>Claude in Chrome は、Chrome ブラウザー上で Claude がページの閲覧やフォーム入力などを行えるブラウザー拡張機能である。エンタープライズ環境では、ユーザーが業務システムや社内 Web アプリを扱う場面で利用されるため、監査証跡の取得は Cowork や Claude Code と同様に重要な要件となる。今回の対応により、この領域が Compliance API のカバレッジに含まれた。</p>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🌐 Claude in Chrome トランスクリプト取得 (ベータ)</h3>
+                    <p>公式ドキュメントのプロダクト対応表に Claude in Chrome の行が追加された。対象は「the browser extension's built-in chat」(ブラウザー拡張機能の組み込みチャット)。既存の 3 つのローカルセッションエンドポイントがそのまま Claude in Chrome セッションを返す。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏷️ 新しい <code class="inline">product_surface</code> 値</h3>
+                    <p>レスポンス上は <code class="inline">product_surface</code> 値 <code class="inline">claude_in_chrome</code> で識別される。サーバーサイドフィルターはないため、Claude in Chrome セッションのみを対象としたい場合はクライアント側で振り分ける。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔑 追加設定は不要</h3>
+                    <p>「no new key, scope, setting, or client update is required」と公式ドキュメントに明記。既存の Compliance Access Key (<code class="inline">read:compliance_user_data</code> スコープ) を使ったインテグレーションであれば、Claude in Chrome セッションは一覧とトランスクリプトに自動的に現れる。</p>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">📋 対応エンドポイント (既存の 3 つがそのまま対応)</h3>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>エンドポイント</th>
+                            <th>役割</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>GET /v1/compliance/apps/sessions/local</code></td>
+                            <td>セッションメタデータの一覧</td>
+                        </tr>
+                        <tr>
+                            <td><code>GET /v1/compliance/apps/sessions/local/{session_id}</code></td>
+                            <td>単一セッションのメタデータ取得</td>
+                        </tr>
+                        <tr>
+                            <td><code>GET /v1/compliance/apps/sessions/local/{session_id}/messages</code></td>
+                            <td>セッションのトランスクリプト取得</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="subsection-title">🗂️ プロダクト対応表 (今回の追加後)</h3>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>プロダクトと実行場所</th>
+                            <th>ファミリー</th>
+                            <th><code style="background:none;color:#D4A574;">product_surface</code></th>
+                            <th>提供状態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🤝 Cowork (Claude Desktop、ユーザーのマシン上)</td>
+                            <td>ローカル</td>
+                            <td><code>cowork</code></td>
+                            <td><span class="badge stable">安定</span></td>
+                        </tr>
+                        <tr>
+                            <td>⌨️ Claude Code (ターミナル / Claude Desktop / IDE 拡張、ユーザーのマシン上)</td>
+                            <td>ローカル</td>
+                            <td><code>claude_code</code></td>
+                            <td><span class="badge stable">安定</span></td>
+                        </tr>
+                        <tr>
+                            <td>🔬 Claude Science デスクトップアプリ (ユーザーのマシン上)</td>
+                            <td>ローカル</td>
+                            <td><code>claude_science</code></td>
+                            <td><span class="badge beta">ベータ</span></td>
+                        </tr>
+                        <tr>
+                            <td>📊 Claude for Microsoft 365 (Excel、PowerPoint、Word、Outlook のアドイン)</td>
+                            <td>ローカル</td>
+                            <td><code>office_agents/excel</code> など</td>
+                            <td><span class="badge beta">ベータ</span></td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td>🌐 Claude in Chrome (ブラウザー拡張機能の組み込みチャット、ユーザーのマシン上)</td>
+                            <td>ローカル</td>
+                            <td><code>claude_in_chrome</code></td>
+                            <td><span class="badge beta">ベータ</span> <span class="badge new">New</span></td>
+                        </tr>
+                        <tr>
+                            <td>🌐 Cowork (claude.ai Web / モバイル開始、Anthropic 管理のクラウド環境)</td>
+                            <td>リモート</td>
+                            <td><code>cowork_remote</code></td>
+                            <td><span class="badge stable">安定</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="subsection-title">📸 キャプチャの仕組みと範囲</h3>
+            <p>ローカルセッションの共通仕様どおり、Anthropic は各会話をリクエストが Claude API に到達した時点でサーバーサイドに記録する。デバイスへのインストールは不要で、クライアントが Claude API に送信するリクエスト以外は収集されない。</p>
+            <p>この仕組みは Claude in Chrome において特に重要な意味を持つ。公式ドキュメントは「Local session transcripts show what Claude was asked to do and what it returned, not what happened on the device」と明記しており、以下のように整理できる。</p>
+            <ul class="styled-list warn-list">
+                <li>トランスクリプトに現れるのは「Claude への依頼内容」と「Claude が返した内容」である</li>
+                <li>ブラウザー上の操作 (ページ閲覧、クリック、フォーム入力など) は、トランスクリプト内のツール呼び出しとツール結果を通じて見える範囲に限られる</li>
+                <li>API に到達しなかった活動 (たとえばセッションが送信しなかったページ内容) はキャプチャされない</li>
+                <li>画像やスクリーンショットなどのバイナリブロックは返らず、<code class="inline">[image content not shown]</code> のようなプレースホルダーに置き換えられる</li>
+            </ul>
+            <div class="callout">
+                <strong>注意</strong>: Claude in Chrome のトランスクリプトは「ブラウザーの完全な操作ログ」ではなく「Claude とのやり取りの記録」である。ブラウザー操作そのものの網羅的な監視が必要な場合は、別のエンドポイント監視手段との併用を検討する必要がある。
+            </div>
+
+            <h3 class="subsection-title">📦 セッションオブジェクトの形式</h3>
+            <p>Claude in Chrome セッションは他のローカルセッションと同じ <code class="inline">compliance_local_session</code> オブジェクトとして返る。</p>
+            <ul class="styled-list">
+                <li><code class="inline">id</code> は <code class="inline">clls_</code> 接頭辞。不透明な文字列として扱う</li>
+                <li><code class="inline">product_surface</code> が <code class="inline">claude_in_chrome</code> になる</li>
+                <li><code class="inline">created_at</code> はセッション内で保持されている最古の推論呼び出し、<code class="inline">updated_at</code> は最後の呼び出しのタイムスタンプ (いずれも UTC)</li>
+                <li><code class="inline">status</code> はなく、可視性は保持期間で決まる</li>
+                <li><code class="inline">user.id</code> は常に設定され、アカウント削除後も残る</li>
+            </ul>
+
+            <h3 class="subsection-title">🔀 一覧のフィルターとポーリング (変更なし)</h3>
+            <p>一覧エンドポイントの仕様に変更はない。組織 / ユーザーフィルターはなく、<code class="inline">created_at.gte</code> / <code class="inline">created_at.lt</code> / <code class="inline">updated_at.gte</code> (RFC 3339、UTC オフセット必須) で時間範囲を絞り込む。<code class="inline">product_surface</code> によるサーバーサイドフィルターはないため、Claude in Chrome セッションのみを対象としたい場合はクライアント側で振り分ける。</p>
+            <p>増分エクスポートは既存のベストプラクティスがそのまま適用される。各実行の <code class="inline">updated_at.gte</code> を前回実行の開始時刻より数分前に設定してオーバーラップさせ、セッションとメッセージを <code class="inline">id</code> で重複排除する。</p>
+
+            <h3 class="subsection-title">🚫 キャプチャされないケース (変更なし)</h3>
+            <ul class="styled-list cross-list">
+                <li>HIPAA readiness を有効化した組織のローカルセッション (データが一切収集されない)</li>
+                <li>ゼロデータ保持 (ZDR) が適用されるセッション (一覧から除外され、取得 / メッセージエンドポイントは 404 を返す)</li>
+                <li>キャプチャは Claude Enterprise アカウントでサインインしている間の利用に適用される</li>
+            </ul>
+
+            <h3 class="subsection-title">🗄️ 保持期間 (変更なし)</h3>
+            <p>キャプチャされたローカルセッションコンテンツは既定でキャプチャから 6 年間保存される。組織が有限のカスタム会話保持期間を設定している場合はその期間 (複数ある場合は最短) が適用される。セッションエンドポイントは読み取り専用であり、API 経由での削除はできない。</p>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph UserMachine["💻 ユーザーのマシン - ローカルセッション"]
+        direction LR
+        Cowork["🤝 Cowork&lt;br/&gt;Claude Desktop&lt;br/&gt;安定"]
+        Code["⌨️ Claude Code&lt;br/&gt;ターミナル / IDE&lt;br/&gt;安定"]
+        Science["🔬 Claude Science&lt;br/&gt;デスクトップアプリ&lt;br/&gt;ベータ"]
+        Office["📊 Claude for Microsoft 365&lt;br/&gt;Office アドイン&lt;br/&gt;ベータ"]
+        Chrome["🌐 Claude in Chrome&lt;br/&gt;ブラウザー拡張機能&lt;br/&gt;ベータ - New"]
+        Cowork ~~~ Code ~~~ Science ~~~ Office ~~~ Chrome
+    end
+
+    subgraph AnthropicSide["🏢 Anthropic"]
+        ClaudeAPI["📨 Claude API&lt;br/&gt;推論リクエストを受信"]
+        Store[("🔐 トランスクリプトストア&lt;br/&gt;既定 6 年保持")]
+    end
+
+    subgraph ComplianceAPI["🔒 Compliance API"]
+        LocalEP["📋 /sessions/local 系&lt;br/&gt;一覧 / 取得 / メッセージ"]
+    end
+
+    subgraph Audit["🛡️ 企業の監査システム"]
+        direction LR
+        SIEM["📈 SIEM"]
+        DLP["🔐 DLP"]
+        Discovery["⚖️ eDiscovery"]
+        SIEM ~~~ DLP ~~~ Discovery
+    end
+
+    AccessKey(["🔑 Compliance Access Key&lt;br/&gt;read:compliance_user_data"])
+
+    Cowork --> ClaudeAPI
+    Code --> ClaudeAPI
+    Science --> ClaudeAPI
+    Office --> ClaudeAPI
+    Chrome --> ClaudeAPI
+    ClaudeAPI --> Store
+    Store --> LocalEP
+    AccessKey -.-> LocalEP
+    LocalEP --> SIEM
+    LocalEP --> DLP
+    LocalEP --> Discovery
+
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef beta fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class UserMachine,AnthropicSide,ComplianceAPI,Audit container
+    class Cowork,Code input
+    class Science,Office,Chrome beta
+    class ClaudeAPI internal
+    class Store storage
+    class LocalEP process
+    class SIEM,DLP,Discovery decision
+    class AccessKey warning
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+
+            <h3 class="subsection-title">Claude in Chrome セッションの一覧取得</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ローカルセッション一覧の取得</span>
+                </div>
+                <pre><code class="language-bash"># ローカルセッション一覧。product_surface のサーバーサイドフィルターはないため
+# クライアント側で claude_in_chrome を振り分ける
+curl --fail-with-body -sS -G \
+  "https://api.anthropic.com/v1/compliance/apps/sessions/local" \
+  --header "x-api-key: $ANTHROPIC_COMPLIANCE_ACCESS_KEY" \
+  --header "anthropic-version: 2023-06-01" \
+  --data-urlencode "created_at.gte=2026-09-18T00:00:00Z" \
+  --data-urlencode "limit=500"</code></pre>
+            </div>
+
+            <h3 class="subsection-title"><code class="inline">product_surface</code> 別の振り分け (claude_in_chrome を追加)</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">前方互換なプロダクト分類</span>
+                </div>
+                <pre><code class="language-python"># claude_in_chrome を含めて振り分ける。未知の値はそのまま通過させる (前方互換)
+def classify_session(session: dict) -> str:
+    surface = session.get("product_surface")
+    if surface is None:
+        return "unknown"
+    if surface == "cowork":
+        return "cowork_desktop"
+    if surface == "claude_code":
+        return "claude_code"
+    if surface == "claude_science":
+        return "claude_science"  # ベータ
+    if surface == "claude_in_chrome":
+        return "claude_in_chrome"  # ベータ。ブラウザー拡張機能の組み込みチャット
+    if surface == "office_agents" or surface.startswith("office_agents/"):
+        return "microsoft_365"  # ベータ
+    return f"unrecognized:{surface}"  # 落とさずに通過させる</code></pre>
+            </div>
+
+            <h3 class="subsection-title">Claude in Chrome セッションのトランスクリプト取得</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">メッセージエンドポイントの呼び出し</span>
+                </div>
+                <pre><code class="language-bash"># メッセージエンドポイント。limit は既定 100、最大 1,000
+# 画像などのバイナリブロックはプレースホルダーに置き換えられる
+session_id="clls_01HxKpLmNoPqRsTuVwXyZaBc"
+
+curl --fail-with-body -sS -G \
+  "https://api.anthropic.com/v1/compliance/apps/sessions/local/$session_id/messages" \
+  --header "x-api-key: $ANTHROPIC_COMPLIANCE_ACCESS_KEY" \
+  --header "anthropic-version: 2023-06-01" \
+  --data-urlencode "limit=1000" \
+  --data-urlencode "tool_use_input_max_bytes=-1" \
+  --data-urlencode "tool_result_max_bytes=-1"</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">👥 対象</h3>
+            <ul class="styled-list">
+                <li><strong>コンプライアンス / eDiscovery 担当者</strong>: ブラウザー上での Claude 利用を証跡として取得する必要がある担当者</li>
+                <li><strong>セキュリティチーム</strong>: SIEM や DLP にセッショントランスクリプトを取り込み、Web アプリ上の機微情報 (顧客データ、社内システムの内容など) を扱うセッションを監視する担当者</li>
+                <li><strong>Compliance API のインテグレーション実装者</strong>: <code class="inline">product_surface</code> の振り分けロジックを保守する開発者</li>
+                <li><strong>Claude Enterprise 管理者</strong>: Claude in Chrome の組織展開に際して、監査カバレッジを整理する管理者</li>
+            </ul>
+
+            <h3 class="subsection-title">✅ 必要なアクション</h3>
+            <ol class="action-list">
+                <li><strong>新しい <code class="inline">product_surface</code> 値への対応</strong>: <code class="inline">claude_in_chrome</code> をハンドラーに追加する。前方互換の原則どおり、未知の値もそのまま通過させる実装を維持する</li>
+                <li><strong>既存インテグレーションの確認</strong>: 追加設定は不要だが、既存のエクスポートパイプラインに Claude in Chrome セッションが流入し始めるため、ダッシュボードや集計の分類を確認する</li>
+                <li><strong>カバレッジの限界の周知</strong>: トランスクリプトは Claude API に到達したリクエストの記録であり、ブラウザー操作の完全なログではないことを、監査要件の関係者に共有する</li>
+                <li><strong>機微情報の取り扱い</strong>: Web ページの内容がツール結果としてトランスクリプトに含まれる場合があり、URL、認証情報、個人データはマスクされない。トランスクリプト自体を機微情報として扱う</li>
+                <li><strong>ベータであることの考慮</strong>: Claude in Chrome のカバレッジはベータであり、仕様が変わる可能性がある。本番の監査要件に組み込む場合はその前提を明示する</li>
+            </ol>
+
+            <h3 class="subsection-title">🔀 移行ガイド</h3>
+            <ul class="styled-list check-list">
+                <li>既存のローカルセッションインテグレーションへの<strong>破壊的変更はない</strong></li>
+                <li>エンドポイント URL、認証、フィルター、ページング、レスポンス形式はすべて従来どおりで、<code class="inline">product_surface</code> に新しい値 <code class="inline">claude_in_chrome</code> が現れるのみ</li>
+                <li>2026 年 8 月 26 日時点のドキュメントが推奨する前方互換なハンドラー (未知の <code class="inline">product_surface</code> 値の通過) を実装済みであれば、<strong>コード変更なしで動作する</strong></li>
+            </ul>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>⚖️ ブラウザー内の Claude 利用の eDiscovery 対応</h4>
+                <p>業務システムや社内 Web アプリを扱う場面での Claude in Chrome の利用が監査証跡として取得できるようになったため、Cowork や Claude Code と同じエクスポートパイプラインで「ブラウザー内での Claude 利用」も eDiscovery や法的証跡の保全に含められる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🛡️ Web アプリ上の機微情報の DLP 監視</h4>
+                <p>Web ページの内容がツール結果としてトランスクリプトに含まれる場合があるため、顧客データや社内システムの内容など機微情報を扱うブラウザーセッションを SIEM / DLP に取り込み、監視対象にできる。URL、認証情報、個人データはマスクされないため、トランスクリプト自体を機微情報として扱う。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏢 Claude in Chrome の組織展開時の監査整理</h4>
+                <p>Claude Enterprise 管理者は、Claude in Chrome の組織展開に際して、Compliance API による監査カバレッジ (Claude とのやり取りの記録) と、ブラウザー操作そのものの監視 (別のエンドポイント監視手段) の役割分担を整理した上で展開計画を立てられる。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p>2026 年 9 月 18 日の発表は、Compliance API のローカルセッション監査を「ブラウザー内での Claude 利用」に広げるものである。</p>
+            <div class="summary-box">
+                <ul>
+                    <li><strong>Claude in Chrome セッションが監査カバレッジに加わった</strong>: ブラウザー拡張機能の組み込みチャットのトランスクリプトが、既存の 3 つのローカルセッションエンドポイントから product_surface 値 claude_in_chrome として取得できる。Claude Enterprise 組織向けのベータ提供である</li>
+                    <li><strong>追加設定は一切不要である</strong>: 既存の Compliance Access Key と read:compliance_user_data スコープでそのまま利用できる。前方互換なハンドラーを実装済みであれば、コード変更なしで新しいセッションが流入する</li>
+                    <li><strong>トランスクリプトは Claude とのやり取りの記録である</strong>: キャプチャはリクエストが Claude API に到達した時点でサーバーサイドに行われ、ブラウザー操作そのものは対象外である。API に到達しなかったページ内容は含まれず、画像はプレースホルダーに置き換えられる。ブラウザー操作の完全な監視が必要な場合は別手段との併用を検討する</li>
+                    <li><strong>カバレッジ拡大のパターンが確立した</strong>: 2026 年 8 月 11 日のベータ開始以降、Cowork / Claude Code の GA (8 月 26 日)、Claude Science / Microsoft 365 の追加 (同日)、Claude in Chrome の追加 (今回) と、約 1 か月で対象プロダクトが 5 つに拡大した。ドキュメントは「カバレッジ拡大に伴い新しい product_surface 値が追加される」と明記しており、未知の値を通過させる前方互換な実装の維持が引き続き要点となる</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📄 <a href="https://platform.claude.com/docs/en/manage-claude/compliance-sessions" target="_blank" rel="noopener noreferrer">Retrieve session transcripts</a></li>
+                <li>📄 <a href="https://platform.claude.com/docs/en/manage-claude/compliance-sessions#retrieve-local-sessions" target="_blank" rel="noopener noreferrer">Retrieve local sessions</a></li>
+                <li>📄 <a href="https://platform.claude.com/docs/en/manage-claude/compliance-sessions#retrieve-a-local-session-transcript" target="_blank" rel="noopener noreferrer">Retrieve a local session transcript</a></li>
+                <li>🔧 <a href="https://platform.claude.com/docs/en/manage-claude/compliance-api-access" target="_blank" rel="noopener noreferrer">Set up the Compliance API</a></li>
+                <li>⚠️ <a href="https://platform.claude.com/docs/en/manage-claude/compliance-errors" target="_blank" rel="noopener noreferrer">Compliance API errors</a></li>
+                <li>❓ <a href="https://platform.claude.com/docs/en/manage-claude/compliance-faq#data-coverage-and-retention" target="_blank" rel="noopener noreferrer">Compliance API FAQ</a></li>
+                <li>📚 <a href="https://platform.claude.com/docs/en/api/compliance/apps" target="_blank" rel="noopener noreferrer">Compliance API reference</a></li>
+                <li>🗄️ <a href="https://platform.claude.com/docs/en/manage-claude/api-and-data-retention" target="_blank" rel="noopener noreferrer">API and data retention</a></li>
+            </ul>
+            <p style="margin-top: 12px;"><strong>関連レポート:</strong></p>
+            <ul>
+                <li>📝 Compliance API ローカルセッション対応 (2026-08-11)</li>
+                <li>📝 Compliance API セッションエンドポイント GA (2026-08-26)</li>
+            </ul>
+            <p style="margin-top: 12px;">本インフォグラフィックは 2026-09-18 付レポート「Compliance API のローカルセッションエンドポイントが Claude in Chrome セッションに対応 (ベータ)」に基づいて作成されています。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
