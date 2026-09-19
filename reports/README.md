@@ -5,8 +5,11 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-09-19](2026/2026-09-19-claude-code-v2-1-278.md) - Claude Code v2.1.278: auto mode 分類器がサーバーサイド実行をデフォルト化し分類器オーバーヘッドが課金対象外に
 - [2026-09-18](2026/2026-09-18-compliance-api-claude-in-chrome.md) - Compliance API のローカルセッションエンドポイントが Claude in Chrome セッションに対応 (ベータ)
+- [2026-09-18](2026/2026-09-18-claude-code-v2-1-277.md) - Claude Code v2.1.277 リリース — AGENTS.md サポートの追加、ゲートウェイのプロキシ経由 egress 対応、TaskOutput ツールの削除
 - [2026-09-18](2026/2026-09-18-claude-code-v2-1-275-v2-1-276.md) - Claude Code v2.1.275 / v2.1.276 リリース — 送信キーの追加と claude.ai アカウントのスキル / プラグイン同期、プロキシ環境のリグレッション修正
+- [2026-09-18](2026/2026-09-18-accenture-embedded-evaluation.md) - Accenture との組み込み評価 (Embedded Evaluation) に関する提携を発表
 - [2026-09-17](2026/2026-09-17-measuring-pace-of-ai-development.md) - フロンティアラボ内部の AI 開発ペースを理解するための測定指標
 - [2026-09-17](2026/2026-09-17-life-sciences-verification-program.md) - ライフサイエンス検証プログラム (LSVP) の発表: 検証済み研究者向けにセーフガードを緩和したモデルアクセスを提供
 - [2026-09-17](2026/2026-09-17-claude-code-v2-1-274.md) - Claude Code v2.1.274 リリース: メモリ使用量の警告表示と MCP 接続の安定性向上、v2 MCP クライアントの全面展開
