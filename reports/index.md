@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-09-22](2026/2026-09-22-inline-tools-beta.md) - Claude API inline tools (ベータ): 会話途中の system メッセージ内でツールを定義できる `tool_addition` ブロック
+- [2026-09-22](2026/2026-09-22-claude-opus-5-5.md) - Claude Opus 5.5 発表: Fable 5.1 同等の性能を 40% 低いコストで実現
+- [2026-09-22](2026/2026-09-22-claude-code-v2-1-280.md) - Claude Code v2.1.280: Claude Opus 5.5 がデフォルトの Opus モデルに、auto mode の安全チェックやダイアログ操作など多数の修正
 - [2026-09-19](2026/2026-09-19-claude-code-v2-1-278.md) - Claude Code v2.1.278: auto mode 分類器がサーバーサイド実行をデフォルト化し分類器オーバーヘッドが課金対象外に
 - [2026-09-18](2026/2026-09-18-compliance-api-claude-in-chrome.md) - Compliance API のローカルセッションエンドポイントが Claude in Chrome セッションに対応 (ベータ)
 - [2026-09-18](2026/2026-09-18-claude-code-v2-1-277.md) - Claude Code v2.1.277 リリース — AGENTS.md サポートの追加、ゲートウェイのプロキシ経由 egress 対応、TaskOutput ツールの削除

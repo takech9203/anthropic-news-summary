@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude API inline tools (ベータ) - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 28px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subsection-title:first-of-type {
+            margin-top: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li {
+            padding-left: 1.4em;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '▲';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-size: 11px;
+            top: 4px;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '✔';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-size: 12px;
+            top: 2px;
+        }
+
+        /* Info Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 12px 0 4px;
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 700;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.4);
+        }
+
+        .info-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        /* Inline code */
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 6px;
+            padding: 1px 6px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        /* Detail lists */
+        .detail-list {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .detail-list li {
+            padding: 10px 12px 10px 2.2em;
+            position: relative;
+            border-bottom: 1px dashed rgba(212, 165, 116, 0.3);
+        }
+
+        .detail-list li:last-child {
+            border-bottom: none;
+        }
+
+        .detail-list li::before {
+            content: '✏️';
+            position: absolute;
+            left: 4px;
+            top: 10px;
+            font-size: 14px;
+        }
+
+        .detail-list.caution li::before {
+            content: '⚠️';
+        }
+
+        .detail-list.action li::before {
+            content: '✅';
+        }
+
+        /* Callout */
+        .callout {
+            background: #FFF3E0;
+            border: 2px dashed #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: #7c4a03;
+            margin: 20px 0;
+        }
+
+        .callout strong {
+            color: #b35c00;
+        }
+
+        .callout-info {
+            background: #E8F1FF;
+            border: 2px dashed #4A90E2;
+            color: #1e4f8a;
+        }
+
+        .callout-info strong {
+            color: #17406e;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            word-break: break-all;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            background: #FFFFFF;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .summary-box h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            line-height: 1.9;
+            opacity: 0.92;
+        }
+
+        .summary-box code.inline {
+            background: rgba(212, 165, 116, 0.2);
+            border-color: rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer h3 {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .footer ul {
+            list-style: none;
+        }
+
+        .footer ul li {
+            margin-bottom: 6px;
+        }
+
+        .footer a {
+            color: #b3803f;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API</span>
+                <h1>Claude API inline tools (ベータ)</h1>
+                <p class="subtitle">会話途中の system メッセージ内でツールを定義できる <strong>tool_addition</strong> ブロックが登場</p>
+                <p class="date">📅 2026-09-22 | ソース: Claude API Release Notes</p>
+            </div>
+        </header>
+
+        <!-- Key Points (概要) -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="section-lead">Claude API の Messages API で、会話途中の system メッセージ内でツールを定義できる inline tools がベータ提供開始。<code class="inline">anthropic-beta: inline-tools-2026-09-15</code> ヘッダーを付与すると、メッセージ履歴中の system メッセージに <code class="inline">tool_addition</code> ブロックを含めることで、ツールの追加、既存ツールのスキーマ変更、サーバーツールのバージョン更新を実行できる。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>system メッセージ内でツールを定義</h3>
+                        <p>会話途中の system メッセージに <code class="inline">tool_addition</code> ブロックを含めることで、メッセージ履歴の一部としてツールを定義できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💾</div>
+                    <div class="key-point-content">
+                        <h3>プロンプトキャッシュを無効化しない</h3>
+                        <p>最大の特徴。トップレベルの <code class="inline">tools</code> パラメータを編集する必要がなく、ツールの追加・変更がプロンプトキャッシュを無効化しない。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>3 種類の操作に対応</h3>
+                        <p>新規ツールの追加、既存ツールのスキーマ変更、サーバーツールのバージョン更新の 3 種類の操作を <code class="inline">tool_addition</code> ブロックで実行できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>MCP 連携に対応</h3>
+                        <p><code class="inline">mcp-client-2026-09-15</code> ヘッダーを併用すると、MCP ツールセットの定義と、<code class="inline">mcp_tool_listing</code> ブロックによるツールリストの固定にも対応する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background (背景) -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p class="section-lead">従来、ツールはリクエストのトップレベルの <code class="inline">tools</code> パラメータで宣言する必要があった。公式ドキュメントによると、API は <code class="inline">tools</code> パラメータのツール定義からツール使用のための特別なシステムプロンプトを構築するため、ツール定義はプロンプトの先頭部分に組み込まれる。</p>
+            <p class="section-lead">一方、プロンプトキャッシュはリクエスト先頭からの前方一致で機能し、キャッシュ階層の最上位に <code class="inline">tools</code> が位置する。このため、会話の途中でツールを追加したり定義を変更したりすると、<code class="inline">tools</code> 以降のキャッシュ全体が無効化され、長い会話履歴を持つエージェントでは大きなコストとレイテンシの増加につながっていた。</p>
+            <div class="callout callout-info">
+                <strong>課題となっていたユースケース</strong>: 会話の進行に応じてツールセットが変化するケース、たとえば MCP サーバーから動的に取得したツールを組み込むエージェントや、タスクの段階に応じてツールを解放するワークフローでは、この制約が課題となっていた。inline tools はこの課題に対応する仕組みとして導入された。
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: ツール変更時のプロンプトキャッシュ</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before: tools パラメータの編集</h4>
+                    <ul>
+                        <li>ツールはトップレベルの tools パラメータで宣言する必要があった</li>
+                        <li>ツール定義はプロンプトの先頭部分に組み込まれる</li>
+                        <li>会話途中のツール追加・変更で tools 以降のキャッシュ全体が無効化</li>
+                        <li>長い会話履歴を持つエージェントでは大きなコストとレイテンシの増加</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After: inline tools (tool_addition)</h4>
+                    <ul>
+                        <li>ツールの変更をメッセージ履歴への追記として表現できる</li>
+                        <li>トップレベルの tools パラメータを書き換える必要がない</li>
+                        <li>ツールの追加・変更がプロンプトキャッシュを無効化しない</li>
+                        <li>キャッシュヒットを維持したままツールセットを拡張できる</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features (主な変更点) -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🧩 system メッセージ内でのツール定義</h3>
+                    <p>会話途中の system メッセージに <code class="inline">tool_addition</code> ブロックを含めることで、ツールを定義できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏷️ ベータヘッダー</h3>
+                    <p>利用には <code class="inline">anthropic-beta: inline-tools-2026-09-15</code> ヘッダーの付与が必要。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔧 3 種類の操作に対応</h3>
+                    <p><code class="inline">tool_addition</code> ブロックで、新規ツールの追加、既存ツールのスキーマ変更、サーバーツールのバージョン更新を実行できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>✂️ tools パラメータの編集が不要</h3>
+                    <p>ツールの変更をメッセージ履歴への追記として表現できるため、トップレベルの <code class="inline">tools</code> パラメータを書き換える必要がない。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💾 プロンプトキャッシュを維持</h3>
+                    <p>ツールの追加・変更がプロンプトキャッシュを無効化しない。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔌 MCP 連携</h3>
+                    <p><code class="inline">mcp-client-2026-09-15</code> ヘッダーを併用すると、MCP ツールセットの定義と、<code class="inline">mcp_tool_listing</code> ブロックによるツールリストの固定に対応する。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Changes (API 変更点) -->
+        <section class="section">
+            <h2 class="section-title">API 変更点</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">inline-tools-2026-09-15</div>
+                    <div class="stat-label">ベータヘッダー (inline tools の利用に必須)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">tool_addition</div>
+                    <div class="stat-label">system メッセージ内のコンテンツブロック</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">mcp-client-2026-09-15</div>
+                    <div class="stat-label">MCP 連携時に併用するベータヘッダー</div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <tr>
+                        <th>項目</th>
+                        <th>内容</th>
+                    </tr>
+                    <tr>
+                        <td><strong>ベータヘッダー</strong></td>
+                        <td><code class="inline">anthropic-beta: inline-tools-2026-09-15</code> を付与</td>
+                    </tr>
+                    <tr>
+                        <td><strong>tool_addition ブロック</strong></td>
+                        <td>会話途中の system メッセージの <code class="inline">content</code> に含める。新規追加・スキーマ変更・サーバーツールのバージョン更新に対応</td>
+                    </tr>
+                    <tr>
+                        <td><strong>サーバーツール</strong></td>
+                        <td><code class="inline">web_search</code> などの日付バージョン付きの型で宣言するサーバーツールのバージョン更新に対応</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MCP 連携</strong></td>
+                        <td><code class="inline">anthropic-beta: mcp-client-2026-09-15</code> の併用で、MCP ツールセットの inline 定義と <code class="inline">mcp_tool_listing</code> ブロックによるツールリストの固定 (pin) に対応</td>
+                    </tr>
+                    <tr>
+                        <td><strong>既存の tools パラメータ</strong></td>
+                        <td>引き続き利用可能。会話開始時点で確定しているツールは従来どおり <code class="inline">tools</code> で宣言する</td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- Technical Details (技術的な詳細) -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <h3 class="subsection-title">💾 キャッシュが維持される仕組み</h3>
+            <p class="section-lead">プロンプトキャッシュは前方一致ベースであるため、既存のプレフィックスの後ろに新しいコンテンツを追記する限りキャッシュは有効に保たれる。<code class="inline">tool_addition</code> ブロックは会話履歴の途中 (system メッセージ内) に追記されるコンテンツブロックであり、プロンプト先頭の <code class="inline">tools</code> パラメータ由来の定義部分を書き換えない。このため、それまでの会話履歴に対するキャッシュヒットを維持したままツールセットを拡張できる。</p>
+
+            <h3 class="subsection-title">🔄 スキーマ変更とバージョン更新</h3>
+            <p class="section-lead"><code class="inline">tool_addition</code> ブロックは新規追加だけでなく、既存ツールのスキーマ変更にも使用できる。また、<code class="inline">web_search</code> などの日付バージョン付きの型で宣言するサーバーツールについて、バージョン更新にも対応する。</p>
+
+            <h3 class="subsection-title">📌 MCP ツールリストの固定</h3>
+            <p class="section-lead"><code class="inline">mcp-client-2026-09-15</code> ヘッダーとの併用時は、MCP ツールセットを inline で定義できるほか、<code class="inline">mcp_tool_listing</code> ブロックによってツールリストを固定 (pin) できる。MCP サーバー側のツールリストが変動しても、会話内で参照するツールセットを安定させられる。</p>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図: ツール追加とキャッシュ維持の流れ</h2>
+            <p class="section-lead">会話途中でのツール追加とプロンプトキャッシュ維持の流れ。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant App as 🖥️ アプリケーション
+    participant API as 🔌 Claude API
+    participant M as 🤖 Claude モデル
+
+    App->>API: リクエスト 1<br/>tools パラメータで初期ツールを定義
+    API->>M: プロンプトを処理しキャッシュを作成
+    M-->>API: 返信
+    API-->>App: 返信
+
+    Note over App: 会話の途中で<br/>新しいツールが必要になる
+
+    App->>API: リクエスト 2<br/>system メッセージの tool_addition ブロックで<br/>ツールを追加 + inline-tools ベータヘッダー
+    Note over API: tools パラメータは未変更のため<br/>既存プレフィックスのキャッシュはヒット
+    API->>M: キャッシュ済みプレフィックス + 追記分のみ処理
+    M-->>API: 新しいツールを含めて応答<br/>必要なら tool_use ブロックを返す
+    API-->>App: 返信
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p class="section-lead">会話途中の system メッセージで新しいツールを追加するリクエストの例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">tool_addition ブロックによるツール追加</span>
+                </div>
+                <pre><code class="language-bash">curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "anthropic-beta: inline-tools-2026-09-15" \
+  -H "content-type: application/json" \
+  -d '{
+    "model": "claude-opus-5",
+    "max_tokens": 1024,
+    "tools": [
+      {
+        "name": "get_weather",
+        "description": "Get the current weather in a given location.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "location": {"type": "string", "description": "City and state, e.g. San Francisco, CA"}
+          },
+          "required": ["location"]
+        }
+      }
+    ],
+    "messages": [
+      {"role": "user", "content": "サンフランシスコの天気を教えてください。"},
+      {"role": "assistant", "content": "サンフランシスコは現在 15 度で、所々曇りです。"},
+      {
+        "role": "system",
+        "content": [
+          {
+            "type": "tool_addition",
+            "tool": {
+              "name": "get_forecast",
+              "description": "Get the multi-day weather forecast for a given location.",
+              "input_schema": {
+                "type": "object",
+                "properties": {
+                  "location": {"type": "string", "description": "City and state, e.g. San Francisco, CA"},
+                  "days": {"type": "integer", "description": "Number of days to forecast"}
+                },
+                "required": ["location"]
+              }
+            }
+          }
+        ]
+      },
+      {"role": "user", "content": "今後 3 日間の予報もお願いします。"}
+    ]
+  }'</code></pre>
+            </div>
+            <div class="callout callout-info">
+                <strong>ポイント</strong>: <code class="inline">tools</code> パラメータは会話開始時のまま変更されないため、それまでの履歴に対するプロンプトキャッシュは有効に保たれる。
+            </div>
+        </section>
+
+        <!-- Developer Impact (開発者への影響) -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">👥 対象</h3>
+            <div class="use-case">
+                <h4>🤖 長時間動作するエージェントの開発者</h4>
+                <p>会話の進行に応じてツールを動的に追加・変更したい場合に、キャッシュを維持したままツールセットを進化させられる。</p>
+            </div>
+            <div class="use-case">
+                <h4>💾 プロンプトキャッシュを活用している開発者</h4>
+                <p>ツールセット変更によるキャッシュ無効化のコストを避けたい場合の有力な選択肢となる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔌 MCP サーバーのツールを利用する開発者</h4>
+                <p>MCP サーバーのツールを Messages API で利用しており、ツールリストの変動を制御したい場合に <code class="inline">mcp_tool_listing</code> による固定が役立つ。</p>
+            </div>
+
+            <h3 class="subsection-title">✅ 必要なアクション</h3>
+            <ul class="detail-list action">
+                <li>inline tools を利用するリクエストに <code class="inline">anthropic-beta: inline-tools-2026-09-15</code> ヘッダーを付与する</li>
+                <li>会話途中でツールを追加・変更する場合は、<code class="inline">tools</code> パラメータの編集ではなく、system メッセージ内の <code class="inline">tool_addition</code> ブロックとして履歴に追記する</li>
+                <li>MCP ツールセットの inline 定義や <code class="inline">mcp_tool_listing</code> によるリスト固定を使う場合は、<code class="inline">anthropic-beta: mcp-client-2026-09-15</code> ヘッダーも併せて付与する</li>
+            </ul>
+
+            <h3 class="subsection-title">🔀 移行ガイド</h3>
+            <p class="section-lead">既存のトップレベル <code class="inline">tools</code> パラメータによるツール定義は引き続き利用できる。会話開始時点で確定しているツールは従来どおり <code class="inline">tools</code> パラメータで宣言し、会話途中で発生するツールの追加・スキーマ変更・サーバーツールのバージョン更新のみを <code class="inline">tool_addition</code> ブロックで表現する使い分けが基本となる。</p>
+            <div class="callout">
+                <strong>注意</strong>: ベータ機能のため、仕様は今後変更される可能性がある。
+            </div>
+        </section>
+
+        <!-- Summary (まとめ) -->
+        <section class="summary-box">
+            <h2>📋 まとめ</h2>
+            <p>inline tools ベータは、これまでリクエスト先頭の <code class="inline">tools</code> パラメータに固定されていたツール定義を、会話履歴の一部として動的に扱えるようにする機能拡張である。ツールの追加・スキーマ変更・サーバーツールのバージョン更新を <code class="inline">tool_addition</code> ブロックの追記として表現できるため、プロンプトキャッシュを無効化せずにツールセットを進化させられる。長時間動作するエージェントや MCP 連携アプリケーションにとって、コストとレイテンシを抑えながら柔軟なツール管理を実現する重要な選択肢となる。利用には <code class="inline">anthropic-beta: inline-tools-2026-09-15</code> ヘッダーが必要で、MCP ツールセット定義と <code class="inline">mcp_tool_listing</code> によるリスト固定には <code class="inline">mcp-client-2026-09-15</code> ヘッダーの併用が必要となる。</p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <h3>📚 出典・関連リンク</h3>
+            <ul>
+                <li>出典: <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a> (Claude API Release Notes)</li>
+                <li>Tool use with Claude: <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview</a></li>
+                <li>Define tools: <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools</a></li>
+                <li>Prompt caching: <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-caching" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/build-with-claude/prompt-caching</a></li>
+                <li>MCP connector: <a href="https://platform.claude.com/docs/en/agents-and-tools/mcp-connector" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/agents-and-tools/mcp-connector</a></li>
+            </ul>
+            <p style="margin-top: 12px;">発表日: 2026-09-22 | カテゴリ: API | ソース: Claude API Release Notes</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
