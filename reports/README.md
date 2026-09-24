@@ -5,7 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-09-23](2026/2026-09-23-claude-discovers-novel-enzyme-system.md) - Claude が CRISPR 様リピートを持つ新規酵素システム「ART」を自律的に発見
+- [2026-09-23](2026/2026-09-23-claude-code-v2-1-281.md) - Claude Code v2.1.281: Claude apps gateway の Bedrock 連携強化、attribution 無効化設定、セッション再開・ストリーム処理の大規模な信頼性改善
 - [2026-09-22](2026/2026-09-22-inline-tools-beta.md) - Claude API inline tools (ベータ): 会話途中の system メッセージ内でツールを定義できる `tool_addition` ブロック
+- [2026-09-22](2026/2026-09-22-ebola-response-situation-report.md) - The Situation Report: エボラ出血熱対応の最前線で活用される Claude
 - [2026-09-22](2026/2026-09-22-claude-opus-5-5.md) - Claude Opus 5.5 発表: Fable 5.1 同等の性能を 40% 低いコストで実現
 - [2026-09-22](2026/2026-09-22-claude-code-v2-1-280.md) - Claude Code v2.1.280: Claude Opus 5.5 がデフォルトの Opus モデルに、auto mode の安全チェックやダイアログ操作など多数の修正
 - [2026-09-19](2026/2026-09-19-claude-code-v2-1-278.md) - Claude Code v2.1.278: auto mode 分類器がサーバーサイド実行をデフォルト化し分類器オーバーヘッドが課金対象外に

@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Situation Report: エボラ出血熱対応の最前線で活用される Claude - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .version-chips {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .version-chip {
+            background: rgba(212, 165, 116, 0.2);
+            border: 1px solid rgba(212, 165, 116, 0.5);
+            color: #E8C9A8;
+            padding: 4px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 24px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .tag.danger {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .tag.warn {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        .tag.info {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .tag.new {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Meta Table */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .meta-table th,
+        .meta-table td {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .meta-table th {
+            width: 30%;
+            color: var(--text-muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .meta-table td a {
+            color: var(--anthropic-coral);
+            word-break: break-all;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Plain List */
+        .plain-list {
+            display: grid;
+            gap: 10px;
+            padding-left: 4px;
+            list-style: none;
+        }
+
+        .plain-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 26px;
+            position: relative;
+        }
+
+        .plain-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 4px;
+            color: var(--anthropic-coral);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Tech Notes */
+        .tech-note {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-note h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tech-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Quote */
+        .quote-box {
+            background: var(--anthropic-cream);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+
+        .quote-box p {
+            font-size: 15px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .quote-box .quote-author {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.35rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">活用事例</span>
+                <span class="category-badge">グローバルヘルス</span>
+                <span class="category-badge">Claude for Science</span>
+                <h1>The Situation Report<br>エボラ出血熱対応の最前線で活用される Claude</h1>
+                <p class="date">📅 2026-09-22 | ソース: Anthropic Features</p>
+                <div class="version-chips">
+                    <span class="version-chip">CEPI</span>
+                    <span class="version-chip">WHO AFRO</span>
+                    <span class="version-chip">INRB</span>
+                    <span class="version-chip">ブンディブギョ・エボラウイルス BDBV</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🌍</div>
+                    <div class="key-point-content">
+                        <h3>希少株 BDBV によるアウトブレイクへの対応</h3>
+                        <p>コンゴ民主共和国 (DRC) 東部で、承認済みワクチンが存在しないブンディブギョ・エボラウイルス (BDBV) によるアウトブレイクが拡大している。2026 年 5 月に確認され、5 月 17 日には「国際的に懸念される緊急事態」が宣言された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤝</div>
+                    <div class="key-point-content">
+                        <h3>3 つの保健機関が Claude を活用</h3>
+                        <p>CEPI (感染症流行対策イノベーション連合)、WHO AFRO (WHO アフリカ地域事務局)、INRB (コンゴ民主共和国国立生物医学研究所) が、サイトレップ作成、疾病モデリング、ワクチン開発の調整、バイオインフォマティクス解析に Claude を活用。Anthropic の Beneficial Deployments チームと Applied AI チームが協力している。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⏱️</div>
+                    <div class="key-point-content">
+                        <h3>サイトレップ作成が丸一日から 1 時間未満に短縮</h3>
+                        <p>WHO AFRO が構築した Claude スキルにより、各保健ゾーンの PowerPoint からのデータ抽出、前日データとの照合、トレンド変化の検出・説明、要約が自動化され、対応チームは「今日ウイルスがどこにあるか」をほぼリアルタイムで把握できるようになった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">👩‍⚕️</div>
+                    <div class="key-point-content">
+                        <h3>科学的判断はあくまで専門家が担う</h3>
+                        <p>CEPI の Polina Brangel 氏は、どの血清サンプルを分析すべきかといった決定は Claude ではなく専門家の科学的判断によるものだと強調。AI は判断材料を迅速に整える「時間の創出」の役割を果たしている。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadata -->
+        <section class="section">
+            <h2 class="section-title">メタデータ</h2>
+            <table class="meta-table">
+                <tr>
+                    <th>発表日</th>
+                    <td>2026-09-22</td>
+                </tr>
+                <tr>
+                    <th>ソース</th>
+                    <td>Anthropic Features</td>
+                </tr>
+                <tr>
+                    <th>カテゴリ</th>
+                    <td>活用事例 / グローバルヘルス / Claude for Science</td>
+                </tr>
+                <tr>
+                    <th>公式リンク</th>
+                    <td><a href="https://www.anthropic.com/features/ebola-response" target="_blank" rel="noopener noreferrer">https://www.anthropic.com/features/ebola-response</a></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Background / Stats -->
+        <section class="section">
+            <h2 class="section-title">背景 — 数字で見るアウトブレイクの状況</h2>
+            <p class="section-lead">記事が引用する 2026 年 9 月 19 日付のサイトレップによると、被害状況は以下のとおりである。BDBV には承認済みワクチンが存在しないため、感染経路の追跡、リソース配分の最適化、ワクチン開発の加速が対応の鍵となっている。</p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">7,672 例</div>
+                    <div class="stat-label">累計確定症例数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3,699 例</div>
+                    <div class="stat-label">累計死亡数 (致死率 48.2%)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">63/167</div>
+                    <div class="stat-label">7 州にまたがる感染保健ゾーン数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">77.1%</div>
+                    <div class="stat-label">震源地イトゥリ州が占める症例割合</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">94.7%</div>
+                    <div class="stat-label">北キヴ州の治療病床占有率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">58 例</div>
+                    <div class="stat-label">直近 24 時間の新規確定症例</div>
+                </div>
+            </div>
+            <ul class="plain-list" style="margin-top: 20px;">
+                <li><strong>累計の内訳</strong>: 隔離中 886 人、回復 1,879 人</li>
+                <li><strong>直近 24 時間</strong>: 新規確定 58 例 (イトゥリ 38、北キヴ 14、オー・ウエレ 5、チョポ 1)、死亡 23 例、回復 15 例</li>
+                <li><strong>医療体制の逼迫</strong>: ブテンボとカトワには空床がない</li>
+            </ul>
+            <div class="quote-box">
+                <p>「エボラに勝つには、先週どこにあったかではなく、今日どこにあるかを知ることだ」(趣旨)</p>
+                <p class="quote-author">— ジャン=ジャック・ムイエンベ博士 (INRB 所長、1976 年にエボラウイルスを共同発見。50 年にわたりこの闘いを続けてきた)</p>
+            </div>
+        </section>
+
+        <!-- Main Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主な活用事例 — 5 つのポイント</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📝 1. サイトレップ作成の高速化 <span class="tag new">WHO AFRO</span></h3>
+                    <p>セネガル・ダカールに緊急対応拠点を置き年間約 100 件の公衆衛生イベントに対応する WHO AFRO の Tendai Muza 氏らが、サイトレップ作成を自動化する Claude スキルを構築。各保健ゾーンの PowerPoint から症例・検査データを抽出し、前日データと照合してトレンド変化を検出・説明し、報告内容を要約する。従来丸一日かかっていた作成が 1 時間未満に短縮された。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📈 2. 疾病モデリングと予測 <span class="tag new">WHO AFRO</span></h3>
+                    <p>WHO AFRO の Paul Ouma 氏によると、従来は時間の制約から疾病モデルを 1 つしか運用できなかったが、Claude の活用により複数のモデルを同時に実行できるようになった。結果は治療センターの設置場所の判断などリソース配分の意思決定に活用されている。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 3. ワクチン開発の調整 <span class="tag info">CEPI</span></h3>
+                    <p>パートナーシップを主導する CEPI は、複数チームにまたがるワクチン開発作業を追跡するダッシュボードを Claude で構築。多要素にわたるデータを整理し、提案の比較を短時間で行えるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧬 4. バイオインフォマティクス解析 <span class="tag info">INRB / Claude Science</span></h3>
+                    <p>INRB のラボでは、Claude Science を通じて、シーケンサーが生成する数百万の遺伝子断片からゲノムを組み立て、ウイルスの系統樹を構築する作業を自然言語で指示できるようになった。感染経路の追跡、流行規模の推定、新変異株の特定に活用されている。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🦟 5. 他の疾患への応用 <span class="tag warn">チクングニア熱</span></h3>
+                    <p>エボラ対応で培われた手法は、蚊が媒介するチクングニア熱のアウトブレイク対応にも応用されている。人・場所・時間別の記録である「ラインリスト」のクリーニングと検証に Claude が使用されている。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After — サイトレップ作成</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p>各保健ゾーンから送られる PowerPoint のデータを手作業で抽出・照合し、サイトレップ作成に丸一日かかっていた。時間の制約から疾病モデルは 1 つしか運用できなかった。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p>Claude スキルによる自動化でサイトレップ作成が 1 時間未満に短縮。複数の疾病モデルを同時に実行できるようになり、治療センターの配置などリソース配分の意思決定を証拠に基づいて行える体制が強化された。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">活用の全体像</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Field["🌍 現場からのデータ"]
+        direction LR
+        Zones["📊 保健ゾーンの報告<br/>PowerPoint"]
+        Lab["🧬 シーケンサー出力<br/>遺伝子断片"]
+        Zones ~~~ Lab
+    end
+
+    subgraph Claude["🤖 Claude の活用"]
+        Sitrep["📝 サイトレップ作成<br/>1 日 → 1 時間未満"]
+        Model["📈 疾病モデリング<br/>複数モデルの同時実行"]
+        Dash["📋 ワクチン開発ダッシュボード<br/>CEPI"]
+        Genome["🧬 ゲノム組み立て・系統樹<br/>Claude Science"]
+    end
+
+    subgraph Decision["👩‍⚕️ 専門家の意思決定"]
+        direction LR
+        Resource["🏥 治療センター配置"]
+        Trace["🔍 感染経路の追跡"]
+        Vaccine["💉 ワクチン開発の加速"]
+        Resource ~~~ Trace ~~~ Vaccine
+    end
+
+    Zones --> Sitrep
+    Zones --> Model
+    Lab --> Genome
+    Sitrep --> Resource
+    Model --> Resource
+    Genome --> Trace
+    Dash --> Vaccine
+
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#33691E
+    classDef process fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class Field,Claude,Decision layer
+    class Zones,Lab input
+    class Sitrep,Model,Dash,Genome process
+    class Resource,Trace,Vaccine decision
+                </pre>
+            </div>
+        </section>
+
+        <!-- Impact / Use Cases -->
+        <section class="section">
+            <h2 class="section-title">影響 — 対象と活用シナリオ</h2>
+
+            <h3 class="section-subtitle">🎯 対象</h3>
+            <ul class="plain-list">
+                <li><strong>グローバルヘルス分野の組織</strong>: 公衆衛生の緊急対応において、報告書作成やデータ統合といった時間のかかる作業を AI で短縮できることが実証された</li>
+                <li><strong>科学研究者</strong>: Claude Science によるバイオインフォマティクス解析の自然言語操作は、専門のエンジニアリソースが限られる現場のラボでも高度な解析を可能にする</li>
+                <li><strong>非営利団体</strong>: グローバルヘルスの最前線で活動する非営利団体は Claude for Nonprofits を利用できる</li>
+            </ul>
+
+            <h3 class="section-subtitle">💡 活用シナリオ</h3>
+            <div class="use-case">
+                <h4>📊 緊急対応レポートの自動化</h4>
+                <p>WHO AFRO の事例のように、現場から送られる多様な形式のファイル (PowerPoint など) からのデータ抽出、前日データとの照合、トレンド変化の検出・説明、要約を Claude スキルで自動化し、報告サイクルをほぼリアルタイム化する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧬 現場ラボでの高度なゲノム解析</h4>
+                <p>INRB の事例のように、Claude Science を通じてゲノム組み立てや系統樹構築を自然言語で指示し、感染経路の追跡、流行規模の推定、新変異株の特定に活かす。専門エンジニアが限られる環境でも解析を実行できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>📋 複数チームにまたがるプロジェクトの可視化</h4>
+                <p>CEPI の事例のように、ワクチン開発など多要素のデータを整理するダッシュボードを Claude で構築し、提案の比較を短時間で行う。最終判断は専門家の科学的判断に委ねる。</p>
+            </div>
+
+            <h3 class="section-subtitle">⚖️ 意義と留意点</h3>
+            <div class="tech-note">
+                <h4>🕐 AI の価値は「時間の創出」にある</h4>
+                <p>本事例は、AI が専門家の判断を代替するのではなく、専門家がより多くの時間を判断そのものに使えるようにする「時間の創出」に価値があることを示している。CEPI の Brangel 氏が強調するとおり、科学的判断は引き続き専門家が担い、Claude はデータの抽出・照合・整理・要約といった作業を高速化する役割を果たしている。同氏は「プレッシャー下で働くチームに AI がどこで実用的な違いを生めるかをリアルタイムで学ぶ機会だった」という趣旨を述べている。</p>
+            </div>
+
+            <h3 class="section-subtitle">🔭 今後の展望</h3>
+            <ul class="plain-list">
+                <li>WHO AFRO は過去の疾病データベースを統合し、次のアウトブレイク対応に過去の知見を活かすことを計画している。従来は危機の最中にこうした統合作業を行う時間がなかった</li>
+                <li>イトゥリ州ではアウトブレイクの鈍化という有望な兆候があるが、封じ込めにはまだ時間がかかる見込みである</li>
+                <li>Anthropic は Claude Science クレジットによる科学者支援を継続的に拡大している</li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>公衆衛生危機の現場で実用的な成果を数値で示した事例</h3>
+                        <p>サイトレップ作成が丸一日から 1 時間未満に短縮されたことで、対応チームは「今日ウイルスがどこにあるか」をほぼリアルタイムで把握できるようになった。疾病モデリングの多重化やゲノム解析の民主化と合わせて、限られたリソースの配分を証拠に基づいて行う体制が強化された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌟</div>
+                    <div class="key-point-content">
+                        <h3>将来の公衆衛生危機への備えを強化するモデルケース</h3>
+                        <p>意思決定はあくまで専門家の科学的判断に委ねられており、AI は判断材料を迅速に整えるための道具として位置づけられている。チクングニア熱対応への応用や過去の疾病データベースの統合計画が示すとおり、この取り組みは単一のアウトブレイク対応にとどまらないモデルケースとなりうる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://www.anthropic.com/features/ebola-response" target="_blank" rel="noopener noreferrer">https://www.anthropic.com/features/ebola-response</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📄 <a href="https://www.anthropic.com/features/ebola-response" target="_blank" rel="noopener noreferrer">公式記事: The Situation Report</a></li>
+                <li>📰 <a href="https://www.anthropic.com/news" target="_blank" rel="noopener noreferrer">Anthropic News</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは reports/2026/2026-09-22-ebola-response-situation-report.md をもとに生成されました。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+</body>
+</html>
