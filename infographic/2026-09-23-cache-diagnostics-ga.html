@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cache Diagnostics が正式版に - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+            background: rgba(212, 165, 116, 0.2);
+            padding: 2px 8px;
+            border-radius: 6px;
+            color: #E8C9A8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section p.lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .section code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.88em;
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 6px;
+            color: #8a5a2a;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li {
+            padding: 4px 0 4px 24px;
+            position: relative;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        .comparison-card code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        /* Tech Detail List */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Steps */
+        .steps {
+            display: grid;
+            gap: 12px;
+            counter-reset: step;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .step p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            opacity: 0.92;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <h1>Cache Diagnostics が正式版に</h1>
+                <p class="subtitle">ベータヘッダー <code>cache-diagnosis-2026-04-07</code> が不要になり、<code>diagnostics</code> オブジェクトによるオプトインだけで利用可能に</p>
+                <p class="date">📅 2026-09-23 | Claude Developer Platform Release Notes</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="lead">Claude API の Cache Diagnostics (キャッシュ診断) 機能がベータを卒業し、正式版 (GA) として提供開始された。プロンプトキャッシュはリクエスト先頭からの前方一致で機能するため、意図しないキャッシュ無効化はコストとレイテンシに影響する。キャッシュの挙動を可視化する診断情報は、こうした問題の切り分けに役立つと考えられる。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🎉</div>
+                    <div class="key-point-content">
+                        <h3>ベータを卒業して正式版 (GA) に</h3>
+                        <p>ヘッダー名の日付から 2026 年 4 月 7 日にベータ提供が開始されたと考えられる Cache Diagnostics が、ベータ期間を経て正式版へ移行した。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏷️</div>
+                    <div class="key-point-content">
+                        <h3>ベータヘッダーが不要に</h3>
+                        <p><code class="inline">cache-diagnosis-2026-04-07</code> ベータヘッダーを付与しなくても Cache Diagnostics を利用できるようになった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔘</div>
+                    <div class="key-point-content">
+                        <h3>diagnostics オブジェクトによるオプトイン</h3>
+                        <p>Messages API リクエストに <code class="inline">diagnostics</code> オブジェクトを含めるだけで機能を有効化できる。正式版でも自動有効ではなく、オプトイン方式を採用している。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📩</div>
+                    <div class="key-point-content">
+                        <h3>レスポンスに diagnostics フィールドが常時含まれる</h3>
+                        <p><code class="inline">POST /v1/messages</code> のレスポンスには常に <code class="inline">diagnostics</code> フィールドが含まれる。リクエストで指定しなかった場合は <code class="inline">null</code> となる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>後方互換性を維持</h3>
+                        <p>既存のベータヘッダーを送信し続けているリクエストは、従来どおり動作する。移行は任意のタイミングで実施できる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (ベータ)</h4>
+                    <ul>
+                        <li>ベータヘッダー <code>cache-diagnosis-2026-04-07</code> の付与が必須</li>
+                        <li>ヘッダーを付与した場合のみ利用できるベータ機能</li>
+                        <li>診断情報はベータ扱いで提供</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (正式版・GA)</h4>
+                    <ul>
+                        <li>ベータヘッダーは不要</li>
+                        <li>リクエストに <code>diagnostics</code> オブジェクトを含めるだけでオプトイン</li>
+                        <li>レスポンスに <code>diagnostics</code> フィールドが常に含まれる (未指定時は <code>null</code>)</li>
+                        <li>ヘッダー付きの既存リクエストも従来どおり動作</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🏷️ ベータヘッダーが不要に</h3>
+                    <p><code class="inline">cache-diagnosis-2026-04-07</code> ベータヘッダーを付与しなくても Cache Diagnostics を利用できるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔘 diagnostics によるオプトイン</h3>
+                    <p>Messages API リクエストに <code class="inline">diagnostics</code> オブジェクトを含めることで機能を有効化する。診断情報を取得したいリクエストにのみ含めればよい。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 後方互換性の維持</h3>
+                    <p>ベータヘッダーを送信し続けている既存のリクエストは従来どおり動作する。段階的にヘッダーを削除して正式版の指定方法へ移行できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📩 レスポンス仕様の更新</h3>
+                    <p><code class="inline">POST /v1/messages</code> のレスポンスに <code class="inline">diagnostics</code> フィールドが常に含まれる。オプトインしなかった場合の値は <code class="inline">null</code>。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+            <div class="tech-detail">
+                <h4>🔘 オプトイン方式</h4>
+                <p>正式版でも機能は自動有効ではなく、オプトイン方式を採用している。診断情報を取得したいリクエストにのみ <code class="inline">diagnostics</code> オブジェクトを含めればよい。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>⚠️ レスポンススキーマの変更</h4>
+                <p>レスポンスに <code class="inline">diagnostics</code> フィールドが常に含まれるようになった点は、レスポンスの構造変化として注意が必要である。オプトインしていないリクエストでは値が <code class="inline">null</code> となるため、レスポンスを厳密なスキーマで検証している場合は、このフィールドの存在を考慮する必要があると考えられる。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>🛤️ 移行パス</h4>
+                <p>ベータヘッダーを送信するリクエストは引き続き動作するため、即時の対応は不要である。段階的にヘッダーを削除して正式版の指定方法へ移行できる。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>📖 診断情報の内容</h4>
+                <p>診断情報として具体的にどのような内容が返されるか、および <code class="inline">diagnostics</code> オブジェクトに指定できる詳細なフィールドについては、公式ドキュメントでの確認が必要である。</p>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 28px;">アーキテクチャ図</h2>
+            <p class="lead">ベータヘッダー方式と正式版のオプトイン方式の関係。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Req(["📨 Messages API リクエスト"]) --> Check{"diagnostics<br/>オブジェクトあり?"}
+    Check -->|あり| Opt["✅ 診断が有効<br/>ベータヘッダー不要"]
+    Check -->|なし・ヘッダーのみ| Legacy["🔄 ベータヘッダー付き<br/>従来どおり動作"]
+    Check -->|どちらもなし| Off["⬜ 診断は無効"]
+    Opt --> RespOn["📩 レスポンス<br/>diagnostics フィールドに診断情報"]
+    Legacy --> RespOn
+    Off --> RespNull["📩 レスポンス<br/>diagnostics フィールドは null"]
+
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+
+    class Req input
+    class Check decision
+    class Opt,Legacy,Off process
+    class RespOn,RespNull internal
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <p class="lead">Messages API リクエストで <code class="inline">diagnostics</code> オブジェクトを含めてオプトインする例。ベータヘッダーは不要となった。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">diagnostics オブジェクトによるオプトイン (ベータヘッダー不要)</span>
+                </div>
+                <pre><code class="language-bash">curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4-5",
+    "max_tokens": 1024,
+    "diagnostics": {},
+    "messages": [
+      {"role": "user", "content": "こんにちは"}
+    ]
+  }'</code></pre>
+            </div>
+            <p class="lead" style="margin-bottom: 0;">オプトインしたリクエストのレスポンスには診断情報を持つ <code class="inline">diagnostics</code> フィールドが含まれ、オプトインしなかった場合は <code class="inline">diagnostics: null</code> が返される。</p>
+        </section>
+
+        <!-- Use Cases / Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+            <div class="use-case">
+                <h4>🆕 新規利用者: ヘッダーなしですぐに診断を開始</h4>
+                <p>プロンプトキャッシュのヒット状況を可視化・デバッグしたい開発者は、ベータヘッダーなしで Messages API リクエストに <code class="inline">diagnostics</code> オブジェクトを含めるだけで診断情報を取得できる。キャッシュ活用によるコスト最適化の切り分けに役立つと考えられる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔄 既存のベータ利用者: 任意のタイミングで移行</h4>
+                <p>ベータヘッダー <code class="inline">cache-diagnosis-2026-04-07</code> を使用中でも即時の対応は不要 (ヘッダー付きリクエストは従来どおり動作)。任意のタイミングでヘッダーを削除し、正式版の指定方法へ移行できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧪 レスポンスを厳密に検証しているアプリケーション</h4>
+                <p>レスポンスに常に含まれるようになった <code class="inline">diagnostics</code> フィールド (未指定時は <code class="inline">null</code>) にスキーマ検証が対応しているか確認する必要がある。</p>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 28px;">移行ガイド (該当する場合)</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <p>リクエストから <code class="inline">anthropic-beta: cache-diagnosis-2026-04-07</code> ヘッダーを削除する。</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <p>診断情報が必要なリクエストに <code class="inline">diagnostics</code> オブジェクトが含まれていることを確認する。</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <p>レスポンスの <code class="inline">diagnostics</code> フィールドを参照する処理が、オプトインしていないリクエストで <code class="inline">null</code> を受け取っても問題ないことを確認する。</p>
+                </div>
+            </div>
+
+            <div class="summary-box" style="margin-top: 28px;">
+                <h3>📝 まとめ</h3>
+                <p>Cache Diagnostics の正式版移行により、ベータヘッダーなしで <code style="background: rgba(212, 165, 116, 0.2); padding: 1px 6px; border-radius: 4px; color: #E8C9A8;">diagnostics</code> オブジェクトによるオプトインだけで診断機能を利用できるようになった。既存のベータヘッダー付きリクエストは従来どおり動作するため、移行は任意のタイミングで実施できる。レスポンスに <code style="background: rgba(212, 165, 116, 0.2); padding: 1px 6px; border-radius: 4px; color: #E8C9A8;">diagnostics</code> フィールドが常に含まれるようになった点 (未指定時は <code style="background: rgba(212, 165, 116, 0.2); padding: 1px 6px; border-radius: 4px; color: #E8C9A8;">null</code>) は、レスポンスを厳密に検証しているアプリケーションでは確認しておきたい変更である。プロンプトキャッシュの挙動を安定的に可視化する手段が正式版として提供されたことは、コスト最適化に取り組む開発者にとって有用なアップデートといえる。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;"><strong>ソース:</strong> Claude Developer Platform Release Notes | <strong>カテゴリ:</strong> API アップデート | <strong>発表日:</strong> 2026-09-23</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

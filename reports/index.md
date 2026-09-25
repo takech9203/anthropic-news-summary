@@ -5,8 +5,11 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-09-24](2026/2026-09-24-refusal-billing-expansion.md) - Claude API アップデート: Refusal 課金対象の拡大 (特定カテゴリの出力前拒否も課金対象に)
+- [2026-09-24](2026/2026-09-24-claude-code-v2-1-282.md) - Claude Code v2.1.282: maxProseWidth 設定、テレメトリ設定の可視化、セッション再開時の reasoning 消失修正を中心とした品質改善リリース
 - [2026-09-23](2026/2026-09-23-claude-discovers-novel-enzyme-system.md) - Claude が CRISPR 様リピートを持つ新規酵素システム「ART」を自律的に発見
 - [2026-09-23](2026/2026-09-23-claude-code-v2-1-281.md) - Claude Code v2.1.281: Claude apps gateway の Bedrock 連携強化、attribution 無効化設定、セッション再開・ストリーム処理の大規模な信頼性改善
+- [2026-09-23](2026/2026-09-23-cache-diagnostics-ga.md) - Cache Diagnostics が正式版に: ベータヘッダー `cache-diagnosis-2026-04-07` が不要に
 - [2026-09-22](2026/2026-09-22-inline-tools-beta.md) - Claude API inline tools (ベータ): 会話途中の system メッセージ内でツールを定義できる `tool_addition` ブロック
 - [2026-09-22](2026/2026-09-22-ebola-response-situation-report.md) - The Situation Report: エボラ出血熱対応の最前線で活用される Claude
 - [2026-09-22](2026/2026-09-22-claude-opus-5-5.md) - Claude Opus 5.5 発表: Fable 5.1 同等の性能を 40% 低いコストで実現

@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.282 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;        /* メインアクセント */
+            --anthropic-dark: #1a1a2e;         /* ダーク背景 */
+            --anthropic-light: #FFF8F0;        /* ライト背景 */
+            --anthropic-cream: #F5EDE4;        /* セカンダリ背景 */
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Fix Category (追加スタイル) */
+        .fix-category {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .fix-category h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fix-list {
+            list-style: none;
+        }
+
+        .fix-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding: 8px 0 8px 26px;
+            position: relative;
+            border-bottom: 1px dashed rgba(212, 165, 116, 0.3);
+        }
+
+        .fix-list li:last-child {
+            border-bottom: none;
+        }
+
+        .fix-list li::before {
+            content: '✔';
+            position: absolute;
+            left: 4px;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+        }
+
+        .fix-list li strong,
+        .use-case p strong {
+            color: var(--text-primary);
+        }
+
+        .fix-list code,
+        .key-point-content code,
+        .feature-card code,
+        .use-case code,
+        .summary-text code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 6px;
+            color: var(--anthropic-dark);
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.282<br>maxProseWidth 設定、テレメトリ設定の可視化、セッション再開時の reasoning 消失修正を中心とした品質改善リリース</h1>
+                <p class="date">2026-09-24 (npm レジストリの公開日時で確認) | ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="summary-text" style="margin-bottom: 20px;">Claude Code v2.1.282 は 86 項目の変更を含むリリース。新機能の追加は少数にとどまり、大部分は信頼性・パーミッション管理・UI/UX に関する修正と改善で構成されている。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📐</div>
+                    <div class="key-point-content">
+                        <h3><code>maxProseWidth</code> 設定の追加</h3>
+                        <p>ワイドターミナルで Claude の文章の折り返し幅を制限できるようになった。テーブルとコードブロックは全幅を維持するため、可読性と情報量を両立できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📢</div>
+                    <div class="key-point-content">
+                        <h3>テレメトリ設定の可視化</h3>
+                        <p>プロジェクト設定内で無視された、またはテレメトリを無効化したテレメトリ変数を、起動時の通知と <code>/status</code>、<code>claude doctor</code> のエントリで一覧表示するようになった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>セッション再開時の reasoning 消失を修正</h3>
+                        <p><code>--continue</code> / <code>--resume</code> セッションでの extended thinking (reasoning) 消失に関する複数の問題を解決。長時間セッションの信頼性が向上した。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛠️</div>
+                    <div class="key-point-content">
+                        <h3>Web 検索結果による 400 エラーを修正</h3>
+                        <p>API が復号できない Web 検索結果を履歴に含む会話で、すべてのリクエストが 400 エラーで失敗する問題 (リクエスト全滅) を修正した。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>auto mode のサーバーサイド分類器がデフォルトに</h3>
+                        <p>直接の Anthropic API 接続では、テレメトリがオフでもサーバーサイド分類器をデフォルトで使用する動作変更が含まれる (<code>CLAUDE_CODE_AUTO_MODE_SERVER=0</code> でオプトアウト可能)。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るリリース</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">86</div>
+                    <div class="stat-label">変更項目数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">新機能 (Added)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">動作変更 (Changed)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">破壊的変更</div>
+                </div>
+            </div>
+            <p class="summary-text" style="margin-top: 16px;">本バージョンは、Claude apps gateway の Bedrock 連携強化などを含む大型リリースだった 2026-09-23 の v2.1.281 に続くリリース。セッション再開の信頼性、管理設定の適用の厳密化、テレメトリ設定の透明性向上といった、運用品質に直結する改善を積み重ねている。</p>
+        </section>
+
+        <!-- Added -->
+        <section class="section">
+            <h2 class="section-title">✨ 新機能 (Added)</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📐 <code>maxProseWidth</code> 設定</h3>
+                    <p>ワイドターミナルで Claude の文章 (prose) の表示幅を制限できるようになった。テーブルとコードブロックは全幅を維持するため、可読性と情報量を両立できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📢 テレメトリ設定の可視化</h3>
+                    <p>プロジェクトの設定ファイル内で無視されたテレメトリ変数、またはテレメトリをオフにした変数を、起動時の通知と <code>/status</code>、<code>claude doctor</code> のエントリで一覧表示するようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌐 <code>allowClaudeInChromeWithManagedMcp</code></h3>
+                    <p>排他的な <code>managed-mcp.json</code> が構成されている環境でも <code>claude --chrome</code> を実行できるようにする管理設定が追加された。Chrome がブロックされた際のエラーメッセージにもこの設定名が表示される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🗄️ gateway の <code>store.readiness_grace_seconds</code></h3>
+                    <p>Claude apps gateway で、データベースフェイルオーバーなどの短時間の Postgres 停止中も <code>/readyz</code> が ready を維持できるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📜 <code>/feedback</code> ドラフトリストのスクロールバー</h3>
+                    <p>フルスクリーンモードで、マウスオーバー時に表示されるスクロールバーが追加された。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fixed -->
+        <section class="section">
+            <h2 class="section-title">🔧 修正 (Fixed)</h2>
+
+            <div class="fix-category">
+                <h3>🧠 セッション再開・extended thinking の信頼性改善</h3>
+                <ul class="fix-list">
+                    <li>継続・再開したセッション (<code>--continue</code>、<code>--resume</code>) が過去のメッセージを変更された形で再送し、API が Claude の以前の reasoning を破棄する可能性があった問題をさらに修正</li>
+                    <li>Claude の作業中に <code>/model</code>、<code>/rename</code>、<code>/artifacts</code> などの即時実行スラッシュコマンドを使用すると、それ以前の extended thinking が失われる問題を修正</li>
+                    <li>会話の途中で提供されていた組み込みツールを除外した <code>--tools</code> リストで再起動すると、継続・再開した会話が以前の extended thinking を失う問題を修正</li>
+                    <li>「Invalid <code>data</code> in <code>redacted_thinking</code> block」という API エラーで毎ターン失敗するセッションについて、会話の thinking ブロックを破棄して 1 回再試行するように改善</li>
+                    <li>コンパクションの要約リクエストが拒否された場合に、フォールバックモデルで再試行するように改善</li>
+                    <li>非常に大きなセッション (コンパクトされていないものを含む) の再開時間が改善</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <h3>🔑 API リクエスト・認証まわりの修正</h3>
+                <ul class="fix-list">
+                    <li><strong>Web 検索結果による 400 エラーの修正</strong>: API が復号できない Web 検索結果 (例: サードパーティゲートウェイ経由で応答されたターンのもの) を履歴に含む会話で、すべてのリクエストが 400 エラーで失敗する問題を修正</li>
+                    <li>thinking がオフかつ effort が high を超えるセッションで、安全性関連のモデル切り替え後にターンが「Effort 'xhigh' isn't available with thinking turned off」で失敗する問題を修正</li>
+                    <li>サインインのリフレッシュ中に別の Claude Code プロセスが終了・強制終了された後、最大 1 分間「another Claude Code process is refreshing it」というログインエラーでリクエストが失敗する問題を修正</li>
+                    <li>別のウィンドウがサインインをリフレッシュしている間に開始されたセッション (複数の VS Code ウィンドウでよく発生) が、組織ポリシーの取得を再試行しない問題を修正</li>
+                    <li>Amazon Bedrock および Bedrock Mantle のセーフガードブロックメッセージにリクエスト ID とメッセージ ID を表示するように改善</li>
+                    <li>Vertex AI で、Claude Code がまだ認識していないモデル (新しくリリースされたモデルなど) に対して Web 検索が提供されない問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <h3>🛡️ パーミッションルール・管理設定の修正</h3>
+                <ul class="fix-list">
+                    <li><strong><code>:*</code> を含む Bash パーミッションルールの修正</strong>: パターン中間に <code>:*</code> を含むルールが <code>--allowedTools</code> では有効なのに設定ファイルではスキップされていた問題を修正。すべてのソースから機能するようになり、マッチ方法に関する起動時警告も表示される</li>
+                    <li>管理設定の <code>disableClaudeAiConnectors</code> や <code>allowManagedPermissionRulesOnly</code> などの真偽値ロックキーで、値の型が誤っている場合にロックが無視されていた問題を修正。ロックが適用され、起動時にキー名が表示される</li>
+                    <li>管理設定の <code>permissions</code>、<code>autoMode</code>、<code>worktree</code>、<code>attribution</code> について、ネストされた値が 1 つでも無効だとブロック全体が無視されていた問題を修正。残りの設定は適用されるようになった</li>
+                    <li>管理設定 <code>allowManagedPermissionRulesOnly</code> の下で、リポジトリ・ユーザー・<code>--add-dir</code> のスキル、コマンド、および skills ディレクトリのプラグインマニフェストが <code>allowed-tools</code> を通じて自身のツールを事前承認できていた問題を修正</li>
+                    <li>リポジトリのシンボリックリンク経由で macOS の <code>/Network</code> や <code>/.vol</code> 形式のカーネルパスに到達する CLAUDE.md やルールが起動時に読み込まれる問題を修正</li>
+                    <li>リモートセッションのワーカー再起動時に、復元されたパーミッションプロンプトで承認したコマンドが 2 回実行される問題を修正</li>
+                    <li>Windows / WSL の管理設定について、存在するが無効・読み取り不能な管理者ポリシー (HKLM、<code>managed-settings.json</code>) がある場合、ユーザーが書き込み可能な HKCU や WSL の <code>/etc/claude-code</code> の適用を防ぐように修正</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <h3>🖥️ UI/UX・ターミナルの修正</h3>
+                <ul class="fix-list">
+                    <li><strong>ペースト処理の修正</strong>: ターミナルのブラケットペーストモードがセッション中にリセットされた後、複数行テキストのペーストが行ごとに送信されてしまう問題を修正</li>
+                    <li><strong>vim モードの多数の修正</strong>: <code>&gt;&gt;</code> が空行をインデントする問題、行の長さを超えるカウント付き <code>r</code> によるテキスト変更、<code>2J</code> が 1 行余分に結合する問題、最終行でのカウント付き操作 (<code>2dd</code>、<code>2&gt;&gt;</code>) の誤動作、<code>dd</code> / <code>dj</code> / <code>dG</code> や行単位 <code>p</code> / <code>P</code> 後のカーソル位置、<code>.</code> の繰り返し時にカウントが無視される問題などを修正</li>
+                    <li><strong>レンダリングの修正</strong>: フルスクリーン開始時に最初のフレームの前に空白画面が点滅する問題、非フルスクリーンレンダラーでの行の乱れ、diff で CJK 文字や絵文字が折り返した際に最終列に残る古い文字などを修正</li>
+                    <li><strong>ツール入力バリデーションの改善</strong>: 不明・欠落・型違いのパラメータが 1 つだけ報告されていたエラーメッセージが、同じ呼び出し内の他の無効なパラメータもすべて列挙するように改善</li>
+                    <li><strong><code>/artifacts</code> の改善</strong>: タイトルの列揃え、詳細の単語途中での切り詰め回避、PgUp/PgDn・Home/End・マウスホイール・クリックのサポートを追加</li>
+                    <li><strong><code>/skills</code> の操作性修正</strong>: <code>/</code> 直後のキー入力が検索ボックスではなくスキルリストを動かす問題、入力中にターミナルカーソルがリストへ移動して IME 入力が乱れる問題を修正</li>
+                    <li>Bash と PowerShell がディスククォータの枯渇を「Exit code 1」の裏に隠し、一時領域に大きな出力ファイルを残す問題を修正</li>
+                    <li><code>/install-github-app</code> がキャンセル後もブランチのプッシュと API キーシークレットの保存を続行する問題を修正。中断すると残りのステップは停止し、実行済みの内容が報告される</li>
+                    <li>プラグインのアンインストールが、設定ファイルの読み取り不能時などに成功を報告して保存済みオプションやシークレットを削除してしまう問題を修正</li>
+                </ul>
+            </div>
+
+            <div class="fix-category">
+                <h3>🧩 VS Code / Cloud sessions / Claude Tag の修正 (抜粋)</h3>
+                <ul class="fix-list">
+                    <li><strong>VS Code</strong>: 長い応答でパネルがストリームに追いつかなくなる問題 (更新のたびに応答全体を再パースしていた) を修正。ディクテーションのマイクボタンがスクロールバーを覆う問題、拡張ホスト再起動後にサインイン画面が沈黙する問題なども修正</li>
+                    <li><strong>Cloud sessions</strong>: Settings › Connectors › GitHub に Claude GitHub App の状態表示を追加。GitHub 以外の Git サーバーでホストされたリポジトリ向けの「Open repository」「Open compare page」リンク、実行中のクラウドセッションへの別 GitHub オーナーのリポジトリ添付などが追加。30 分オフセットのタイムゾーンで毎時ルーチンの次回実行時刻が 30 分ずれる問題も修正</li>
+                    <li><strong>Claude Tag (Slack)</strong>: Enterprise Grid の組織全体インストールで自動参加チャンネルパターンが無視される問題、共有チャンネルで Claude が応答しない問題、リタイアしたモデルのスレッドが返信のたびにフォールバックする問題、クラウドワーカー再起動後にコスト・トークン合計が過大表示される問題などを修正</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Changed -->
+        <section class="section">
+            <h2 class="section-title">🔄 動作変更 (Changed)</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🤖 auto mode のサーバーサイド分類器がデフォルトに</h3>
+                    <p>直接の Anthropic API 接続では、テレメトリがオフでもサーバーサイド分類器をデフォルトで使用するようになった。<code>CLAUDE_CODE_AUTO_MODE_SERVER=0</code> でオプトアウト可能。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📡 テレメトリ関連変数の制限</h3>
+                    <p>プロジェクト設定・ローカル設定に含まれる、エクスポートの有効化・エンドポイント設定・コンテンツキャプチャを行う OpenTelemetry 変数 (<code>CLAUDE_CODE_ENABLE_TELEMETRY</code> や <code>OTEL_LOG_*</code> など) を無視するようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 <code>sandbox.excludedCommands</code> の制限</h3>
+                    <p>管理設定または <code>--settings</code> で <code>allowUnsandboxedCommands: false</code> が設定されている場合、または管理設定で <code>allowManagedDomainsOnly: true</code> の場合、プロジェクト設定・ローカル設定のエントリを無視するようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 <code>anthropic-skills</code> / <code>claude-ai</code> 名前空間の保護</h3>
+                    <p><code>Skill(anthropic-skills:*)</code> および <code>Skill(claude-ai:*)</code> の allow ルールは claude.ai から同期されたスキルのみを対象とし、同名を名乗るだけのプラグインやスキルには適用されなくなった。これらの名前空間のスキルフォルダ、コマンドファイル、ワークフローコマンドは読み込まれず、同名の MCP サーバーはスキル・プロンプトを一覧に表示しなくなった (ツールは引き続き動作)。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 <code>ultracode</code> の視覚効果の変更</h3>
+                    <p><code>ultracode</code> の視覚効果 (<code>/effort</code> とプロンプト入力) がプレーンなスタイルに変更され、dynamic-workflows のスピナーチップが削除された。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="subsection-title">📊 テレメトリ設定の適用フロー</h3>
+            <p class="summary-text">プロジェクト設定・ローカル設定によるテレメトリの有効化が制限され、無視された変数は起動時に可視化されるようになった。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Sources["📄 設定ソース"]
+        direction LR
+        Managed["🏢 管理設定"]
+        User["👤 ユーザー設定"]
+        Project["📁 プロジェクト設定<br/>ローカル設定"]
+        Managed ~~~ User ~~~ Project
+    end
+
+    Check{"🔍 テレメトリ変数の検査"}
+    Apply["✅ 設定を適用"]
+    Ignore["🚫 エクスポート有効化<br/>変数を無視"]
+    Notice["📢 起動時通知<br/>/status と claude doctor に表示"]
+
+    Managed --> Check
+    User --> Check
+    Project --> Check
+    Check -->|管理設定・ユーザー設定| Apply
+    Check -->|プロジェクト設定の<br/>OTEL_LOG_* など| Ignore
+    Ignore --> Notice
+
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef warn fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Sources layer
+    class Managed,User,Project process
+    class Check decision
+    class Apply input
+    class Ignore,Notice warn
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <h3 class="subsection-title">📐 maxProseWidth の設定</h3>
+            <p class="summary-text"><code>settings.json</code> で Claude の文章の表示幅を制限できる。テーブルとコードブロックには影響しない。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings.json</span>
+                </div>
+                <pre><code class="language-json">{
+  "maxProseWidth": 100
+}</code></pre>
+            </div>
+
+            <h3 class="subsection-title">🤖 auto mode 分類器の制御</h3>
+            <p class="summary-text">Changelog によると、直接の Anthropic API 接続では、テレメトリがオフの場合でもサーバーサイド分類器がデフォルトで使用されるようになった。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">サーバーサイドの auto mode 分類器をオプトアウト</span>
+                </div>
+                <pre><code class="language-bash"># サーバーサイドの auto mode 分類器をオプトアウト
+export CLAUDE_CODE_AUTO_MODE_SERVER=0</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">🎯 対象</h3>
+            <ul class="fix-list">
+                <li>Claude Code CLI を使用しているすべてのユーザー</li>
+                <li><code>--continue</code> / <code>--resume</code> でセッションを再開するユーザー (extended thinking 消失の修正)</li>
+                <li>サードパーティゲートウェイ経由で Web 検索を使用したことのあるユーザー (400 エラーの修正)</li>
+                <li>管理設定 (managed settings) やパーミッションルールを運用しているエンタープライズ管理者</li>
+                <li>プロジェクト設定でテレメトリ変数を設定しているチーム (無視される変数の発生と起動時通知)</li>
+                <li>auto mode を直接の Anthropic API 接続で使用しているユーザー (サーバーサイド分類器がデフォルト化)</li>
+                <li><code>anthropic-skills</code> / <code>claude-ai</code> という名前のプラグインや MCP サーバーを使用しているユーザー</li>
+                <li>vim モード、ワイドターミナル、VS Code 拡張、Cloud sessions、Claude Tag (Slack) の利用者</li>
+            </ul>
+
+            <h3 class="subsection-title">✅ 必要なアクション</h3>
+            <div class="use-case">
+                <h4>ワイドターミナルの利用者</h4>
+                <p>文章の折り返し幅を制限したい場合は <code>settings.json</code> に <code>maxProseWidth</code> を設定する。</p>
+            </div>
+            <div class="use-case">
+                <h4>テレメトリをプロジェクト設定で構成しているチーム</h4>
+                <p><code>CLAUDE_CODE_ENABLE_TELEMETRY</code> や <code>OTEL_LOG_*</code> などの変数はプロジェクト設定・ローカル設定では無視されるようになった。起動時通知や <code>/status</code>、<code>claude doctor</code> で対象を確認し、必要に応じてユーザー設定または管理設定へ移動する。</p>
+            </div>
+            <div class="use-case">
+                <h4>auto mode の分類器を変更したくない場合</h4>
+                <p>サーバーサイド分類器を使用しない場合は <code>CLAUDE_CODE_AUTO_MODE_SERVER=0</code> を設定する。</p>
+            </div>
+            <div class="use-case">
+                <h4><code>:*</code> を含む Bash パーミッションルールの利用者</h4>
+                <p>設定ファイル内のルールが有効になったため、意図した動作か確認する。マッチ方法に関する起動時警告も参照する。</p>
+            </div>
+            <div class="use-case">
+                <h4><code>anthropic-skills</code> / <code>claude-ai</code> 名を使用している場合</h4>
+                <p>同名の MCP サーバーはスキル・プロンプトを一覧表示しなくなったため、一覧表示が必要な場合は MCP 設定でサーバー名を変更する。</p>
+            </div>
+            <div class="use-case">
+                <h4>管理設定の運用者</h4>
+                <p>一部の値が無効な場合でも <code>permissions</code> などのブロックの残りが適用されるようになったため、これまで無効値によって全体が無視されていた環境では動作が変わる可能性がある。設定内容を再確認する。</p>
+            </div>
+
+            <h3 class="subsection-title">🔀 移行ガイド</h3>
+            <p class="summary-text" style="margin-bottom: 12px;">破壊的変更はないが、以下の動作変更に注意が必要である。</p>
+            <ul class="fix-list">
+                <li>プロジェクト設定・ローカル設定のテレメトリ有効化変数が無視されるようになった</li>
+                <li>直接の Anthropic API 接続で auto mode がサーバーサイド分類器をデフォルトで使用するようになった</li>
+                <li><code>anthropic-skills</code> / <code>claude-ai</code> 名前空間のスキル・コマンドが読み込まれなくなった</li>
+                <li><code>allowUnsandboxedCommands: false</code> などの管理設定下で、プロジェクト設定・ローカル設定の <code>sandbox.excludedCommands</code> が無視されるようになった</li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p class="summary-text">Claude Code v2.1.282 は、86 項目の変更を含む品質重視のメンテナンスリリースである。<code>maxProseWidth</code> によるワイドターミナルでの可読性向上、テレメトリ設定の可視化と制限による透明性・統制の強化が新機能の中心となっている。修正面では、Web 検索結果を含む履歴での 400 エラーや、<code>--continue</code> / <code>--resume</code> セッションでの extended thinking 消失といった、日常利用に直結する問題が多数解決された。また、パーミッションルールと管理設定の適用の厳密化、<code>anthropic-skills</code> / <code>claude-ai</code> 名前空間の保護など、エンタープライズ環境でのガバナンスを固める変更も目立つ。大きな新機能はないものの、長時間セッションや組織運用の信頼性を着実に高めるアップデートといえる。</p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong></p>
+            <p>Claude Code Changelog (v2.1.282): <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p>Claude Code 公式ドキュメント: <a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">https://code.claude.com/docs</a></p>
+            <p>Claude Code settings (設定と環境変数): <a href="https://code.claude.com/docs/en/settings" target="_blank" rel="noopener noreferrer">https://code.claude.com/docs/en/settings</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
