@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-09-28](2026/2026-09-28-claude-sonnet-5-5.md) - Claude Sonnet 5.5 発表: 速度と知性の最適バランスを 30% 高速・最大 30% 低コストで実現
+- [2026-09-28](2026/2026-09-28-claude-code-v2-1-284.md) - Claude Code v2.1.284: Claude Sonnet 5.5 の追加とデフォルト化、auto mode の「次回も確認」応答、支出額のドル表示
 - [2026-09-25](2026/2026-09-25-claude-code-v2-1-283.md) - Claude Code v2.1.283: モデル統制の managed 設定強化、/doctor prompt-audit の追加、MCP・プラグイン管理の広範な信頼性改善
 - [2026-09-24](2026/2026-09-24-refusal-billing-expansion.md) - Claude API アップデート: Refusal 課金対象の拡大 (特定カテゴリの出力前拒否も課金対象に)
 - [2026-09-24](2026/2026-09-24-compliance-api-m365-activity-feed.md) - Compliance API: Microsoft 365 ローカルセッションが GA、Activity Feed がファイル名・タイトルを非返却に
