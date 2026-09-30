@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.285: claude --desktop、allowedProviders 管理設定、バックグラウンドコマンドの時間制限 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .subsection-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Category Cards */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            border-radius: 16px;
+            padding: 24px;
+            border: 2px solid;
+        }
+
+        .category-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-card ul {
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .category-card li {
+            margin-bottom: 6px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .category-card li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+
+        .category-card.cat-new {
+            background: linear-gradient(135deg, #E9F7EC 0%, #FFFFFF 100%);
+            border-color: #66BB6A;
+        }
+
+        .category-card.cat-fix {
+            background: linear-gradient(135deg, #E8F1FF 0%, #FFFFFF 100%);
+            border-color: #4A90E2;
+        }
+
+        .category-card.cat-improve {
+            background: linear-gradient(135deg, #F3E5F5 0%, #FFFFFF 100%);
+            border-color: #7B61FF;
+        }
+
+        .category-card.cat-security {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFFFFF 100%);
+            border-color: #FF9800;
+        }
+
+        /* Detail List */
+        .detail-list {
+            list-style: none;
+            display: grid;
+            gap: 14px;
+        }
+
+        .detail-list > li {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .detail-list > li strong {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        /* Notice Box */
+        .notice-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: #5D4037;
+        }
+
+        .notice-box .notice-label {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #E65100;
+        }
+
+        /* Info Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .info-table th,
+        .info-table td {
+            padding: 10px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.3);
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .info-table td {
+            color: var(--text-secondary);
+        }
+
+        /* Inline code */
+        code.inline {
+            background: rgba(212, 165, 116, 0.15);
+            border: 1px solid rgba(212, 165, 116, 0.35);
+            border-radius: 6px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            color: #8a5a2a;
+            word-break: break-all;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+            display: block;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        .summary-box p + p {
+            margin-top: 12px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Links list */
+        .links-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .links-list li {
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .links-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+        }
+
+        .links-list a {
+            color: #8a5a2a;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .links-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #8a5a2a;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid,
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code / CLI アップデート</span>
+                <h1>Claude Code v2.1.285</h1>
+                <p class="subtitle">claude --desktop、allowedProviders 管理設定、バックグラウンドコマンドの時間制限</p>
+                <p class="date">📅 2026-09-29 ｜ ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="section-lead">Claude Code v2.1.285 がリリースされました。136 項目の変更を含む大型リリースで、Claude Sonnet 5.5 の追加と auto mode の全面既定化を含んだ 2026-09-28 の v2.1.284 に続くリリースです。v2.1.283 以降続いている managed 設定によるガバナンス強化の流れは本バージョンでも継続しており、<code class="inline">allowedProviders</code> によるプロバイダー制限、管理者が要求するサンドボックスをプロジェクト設定が弱められない変更、<code class="inline">disableWorkflows</code> の適用元による Code Review の実行可否の整理などが追加されました。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🖥️</div>
+                    <div class="key-point-content">
+                        <h3>claude --desktop の追加</h3>
+                        <p>Claude デスクトップアプリをカレントディレクトリで開けるようになりました。<code class="inline">--continue</code> / <code class="inline">--resume &lt;id&gt;</code> と組み合わせて、既存セッションをデスクトップアプリで再開することもできます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>allowedProviders 管理設定と WebFetch の無効化</h3>
+                        <p>マシンが使用できる API プロバイダーを制限する <code class="inline">allowedProviders</code> 管理設定と、WebFetch ツールを無効化する <code class="inline">CLAUDE_CODE_DISABLE_WEB_FETCH</code> 環境変数が追加されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>プラグイン設定の CLI 完結化</h3>
+                        <p><code class="inline">claude plugin configure &lt;plugin&gt;</code> コマンドと、<code class="inline">claude plugin install --config</code> での <code class="inline">&lt;server&gt;.&lt;key&gt;=&lt;value&gt;</code> 指定により、プラグインとバンドルされた MCP サーバーの設定をコマンドラインだけで完結できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⏱️</div>
+                    <div class="key-point-content">
+                        <h3>バックグラウンドコマンドの時間制限</h3>
+                        <p>バックグラウンドで実行される Bash / PowerShell コマンドに時間制限が導入され、<code class="inline">run_in_background</code> 使用時の <code class="inline">timeout</code> がその上限として機能します (デフォルト 30 分、最大 2 時間)。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🪟</div>
+                    <div class="key-point-content">
+                        <h3>カスタム ANTHROPIC_BASE_URL での 1M コンテキスト</h3>
+                        <p>カスタム <code class="inline">ANTHROPIC_BASE_URL</code> 経由のセッションでも、1M コンテキストウィンドウを持つモデル (Opus 4.7 以降、Sonnet 5 以降、Fable) で 1M コンテキストが使用されるようになりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>ストリーミング失敗時の最大 21 回リトライの解消</h3>
+                        <p>非ストリーミングフォールバックがリクエストのリトライ予算を共有する形で解消されました。このほか、Artifact ツール、<code class="inline">/ultrareview</code>、Remote Control、MCP、プラグインに関する広範な修正と、VSCode 拡張の 25 項目におよぶ変更が含まれます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats / Category breakdown -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.285</h2>
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-value">136</div>
+                    <div class="stat-label">変更項目数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">30 分 / 2 時間</div>
+                    <div class="stat-label">バックグラウンドコマンドの<br>デフォルト / 最大時間制限</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1M</div>
+                    <div class="stat-label">カスタム BASE_URL でも<br>使用されるコンテキスト</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">25 項目</div>
+                    <div class="stat-label">VSCode 拡張の変更</div>
+                </div>
+            </div>
+            <div class="category-grid">
+                <div class="category-card cat-new">
+                    <h3>✨ 新機能</h3>
+                    <ul>
+                        <li><code class="inline">claude --desktop</code> (デスクトップアプリ連携)</li>
+                        <li><code class="inline">allowedProviders</code> 管理設定</li>
+                        <li><code class="inline">claude plugin configure</code> / <code class="inline">--config</code></li>
+                        <li><code class="inline">CLAUDE_CODE_DISABLE_WEB_FETCH</code></li>
+                        <li><code class="inline">CLAUDE_CODE_FORK_SUBAGENT=1</code></li>
+                    </ul>
+                </div>
+                <div class="category-card cat-security">
+                    <h3>🛡️ ガバナンス・統制</h3>
+                    <ul>
+                        <li>API プロバイダーの許可リスト化</li>
+                        <li>サンドボックス設定の保護 (プロジェクト設定で弱められない)</li>
+                        <li>WebFetch の組織ポリシー待機</li>
+                        <li>managed 設定ファイルの読み取りエラー時の動作整理</li>
+                    </ul>
+                </div>
+                <div class="category-card cat-fix">
+                    <h3>🔧 信頼性の修正</h3>
+                    <ul>
+                        <li>ストリーミング失敗時の最大 21 回リトライの解消</li>
+                        <li>出力コンテンツフィルターの即時エラー表示</li>
+                        <li>Artifact / MCP / Remote Control の広範な修正</li>
+                        <li>VSCode 拡張の 20 件の修正</li>
+                    </ul>
+                </div>
+                <div class="category-card cat-improve">
+                    <h3>🎨 動作変更・改善</h3>
+                    <ul>
+                        <li>バックグラウンドコマンドの時間制限</li>
+                        <li>カスタム <code class="inline">ANTHROPIC_BASE_URL</code> での 1M コンテキスト</li>
+                        <li>auto mode の <code class="inline">claude -p</code> / Agent SDK への適用拡大</li>
+                        <li>Bedrock / Vertex AI のモデルフォールバック</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. claude --desktop -->
+        <section class="section">
+            <h2 class="section-title">1. claude --desktop の追加</h2>
+            <p class="section-lead"><code class="inline">claude --desktop</code> により、Claude デスクトップアプリをカレントディレクトリで開けるようになりました。<code class="inline">--continue</code> または <code class="inline">--resume &lt;id&gt;</code> と組み合わせると、既存のセッションをデスクトップアプリで開くことができます。ターミナルで進めていた作業をデスクトップアプリの UI に引き継ぐ、といった行き来がコマンド 1 つで可能になります。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">claude --desktop の使用例</span>
+                </div>
+                <pre><code class="language-bash"># カレントディレクトリでデスクトップアプリを開く
+claude --desktop
+
+# 直前のセッションをデスクトップアプリで再開
+claude --desktop --continue
+
+# 特定のセッションをデスクトップアプリで再開
+claude --desktop --resume &lt;session-id&gt;</code></pre>
+            </div>
+        </section>
+
+        <!-- 2. allowedProviders -->
+        <section class="section">
+            <h2 class="section-title">2. allowedProviders 管理設定の追加</h2>
+            <p class="section-lead">マシンが使用できる API プロバイダーを制限する <code class="inline">allowedProviders</code> 管理設定が追加されました。managed 設定で許可するプロバイダーを列挙することで、組織のマシンが承認されていないエンドポイントへ接続することを防止できます。データの経路を特定のクラウドプロバイダーやゲートウェイに限定したい組織にとって重要な統制ポイントとなります。</p>
+            <h3 class="subsection-title">☁️ 制限対象として指定できるプロバイダー</h3>
+            <div class="feature-grid" style="margin-bottom: 20px;">
+                <div class="feature-card">
+                    <h3>🏢 Anthropic 系</h3>
+                    <p>Anthropic API ／ カスタムエンドポイント ／ Cloud gateway</p>
+                </div>
+                <div class="feature-card">
+                    <h3>☁️ AWS 系</h3>
+                    <p>Amazon Bedrock ／ Claude Platform on AWS ／ Mantle</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌐 その他クラウド</h3>
+                    <p>Vertex AI ／ Microsoft Foundry</p>
+                </div>
+            </div>
+            <h3 class="subsection-title">🗺️ プロバイダー検証のフロー</h3>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    CLI(["👤 Claude Code CLI 起動"]) --> Check{"🛡️ allowedProviders<br/>管理設定の検証"}
+
+    subgraph Providers["☁️ API プロバイダー"]
+        direction LR
+        Anthropic["✅ Anthropic API"]
+        Bedrock["✅ Amazon Bedrock"]
+        Custom["❌ カスタム<br/>エンドポイント"]
+        Anthropic ~~~ Bedrock ~~~ Custom
+    end
+
+    Check -->|許可リストに含まれる| Anthropic
+    Check -->|許可リストに含まれる| Bedrock
+    Check -->|許可リストに含まれない| Custom
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+
+    class Providers platform
+    class CLI input
+    class Check decision
+    class Anthropic,Bedrock process
+    class Custom error
+                </pre>
+            </div>
+        </section>
+
+        <!-- 3. Plugin configuration -->
+        <section class="section">
+            <h2 class="section-title">3. プラグイン設定の強化</h2>
+            <p class="section-lead">プラグインの設定をコマンドラインだけで完結できるようになりました。CI やプロビジョニングスクリプトからプラグインを設定込みで導入する場合に、対話的な操作が不要になります。</p>
+            <ul class="detail-list">
+                <li>
+                    <strong>⚙️ claude plugin configure &lt;plugin&gt;</strong>
+                    プラグインのオプションと未設定の項目を表示します。<code class="inline">--values-stdin</code> を付けると、標準入力から読み取った新しい値を保存できます。
+                </li>
+                <li>
+                    <strong>🔌 claude plugin install --config の &lt;server&gt;.&lt;key&gt;=&lt;value&gt;</strong>
+                    プラグインにバンドルされた <code class="inline">.mcpb</code> MCP サーバー自身の設定をインストール時に指定できるようになり、<code class="inline">/plugin</code> → Configure を開かずにサーバーを起動できます。
+                </li>
+                <li>
+                    <strong>📢 設定が必要な MCP サーバーの案内</strong>
+                    設定が必要な <code class="inline">.mcpb</code> MCP サーバーをプラグインが黙ってスキップしていた問題も修正され、<code class="inline">/plugin</code>、インストールメッセージ、<code class="inline">claude plugin install</code> がその旨を伝えて Configure を案内するようになりました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 4. WebFetch -->
+        <section class="section">
+            <h2 class="section-title">4. CLAUDE_CODE_DISABLE_WEB_FETCH 環境変数</h2>
+            <p class="section-lead">WebFetch ツールを無効化する <code class="inline">CLAUDE_CODE_DISABLE_WEB_FETCH</code> 環境変数が追加されました。外部 URL の取得を許可したくない環境で、ツール自体をオフにできます。</p>
+            <ul class="detail-list">
+                <li>
+                    <strong>⏸️ 組織ポリシーロードまでの WebFetch 保留</strong>
+                    Team および Enterprise のセッション、またはサインインプランを判別できないセッションでは、起動時に組織ポリシーをロードできなかった場合、ポリシーがロードされるまで WebFetch を保留するようになりました。
+                </li>
+                <li>
+                    <strong>🔧 ドメイン安全性チェックの誤報告の修正</strong>
+                    レート制限されたドメイン安全性チェックが、ネットワークエラーやエンタープライズポリシーによるブロックとして誤報告されていた問題も修正されました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 5. Background command time limit -->
+        <section class="section">
+            <h2 class="section-title">5. バックグラウンド Bash / PowerShell コマンドの時間制限</h2>
+            <p class="section-lead">バックグラウンドで実行される Bash および PowerShell コマンドが、時間制限の経過後に停止されるようになりました。<code class="inline">run_in_background</code> を使用した場合の <code class="inline">timeout</code> パラメータがこの上限として機能し、デフォルトは 30 分、最大 2 時間です。コマンドが停止されると Claude に通知されます。</p>
+            <p class="section-lead">従来はバックグラウンドコマンドが際限なく実行され続ける可能性がありましたが、この変更により、放置されたデーモンや終了しないウォッチャーがセッション終了後もリソースを消費し続けることを防げます。長時間かかるビルドやテストをバックグラウンドで実行する場合は、<code class="inline">timeout</code> を明示的に指定して最大 2 時間まで延長できます。</p>
+            <table class="info-table">
+                <tr><th>項目</th><th>値</th></tr>
+                <tr><td>デフォルト</td><td>30 分</td></tr>
+                <tr><td>最大</td><td>2 時間</td></tr>
+                <tr><td>停止時の動作</td><td>Claude に通知される</td></tr>
+            </table>
+            <div class="notice-box">
+                <div class="notice-label">🪝 関連する修正</div>
+                <p>同期フックが起動したバックグラウンドプロセス (例: <code class="inline">some-daemon &amp;</code>) が出力を開いたままにしていると Claude Code がハングする問題も修正され、フック自身のプロセスが終了すればフックは完了するようになりました。</p>
+            </div>
+        </section>
+
+        <!-- 6. 1M context -->
+        <section class="section">
+            <h2 class="section-title">6. カスタム ANTHROPIC_BASE_URL での 1M コンテキストウィンドウ</h2>
+            <p class="section-lead">カスタム <code class="inline">ANTHROPIC_BASE_URL</code> を設定したセッションでも、1M コンテキストウィンドウを持つモデルで 1M コンテキストが使用されるようになりました。従来は独自のゲートウェイやプロキシを経由すると 1M コンテキストの恩恵を受けられませんでしたが、この制限が解消されました。</p>
+            <h3 class="subsection-title">🤖 対象モデル</h3>
+            <div class="feature-grid" style="margin-bottom: 20px;">
+                <div class="feature-card">
+                    <h3>⭐ Opus 4.7 以降</h3>
+                    <p>1M コンテキストウィンドウを使用</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎵 Sonnet 5 以降</h3>
+                    <p>1M コンテキストウィンドウを使用</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📖 Fable</h3>
+                    <p>1M コンテキストウィンドウを使用</p>
+                </div>
+            </div>
+            <div class="notice-box">
+                <div class="notice-label">💡 ゲートウェイが 200K で停止する場合</div>
+                <p><code class="inline">/autocompact 200k</code> を実行してコンパクションのしきい値を戻すことで対処できます。</p>
+            </div>
+        </section>
+
+        <!-- 7. Retry budget -->
+        <section class="section">
+            <h2 class="section-title">7. ストリーミング失敗時のリトライ回数の共有化</h2>
+            <p class="section-lead">ストリーミングが失敗し続けた場合に、失敗した API リクエストが最大 21 回リトライされる問題が修正されました。非ストリーミングフォールバックが新しいリトライセットを取得するのではなく、元のリクエストのリトライ予算を共有するようになったため、失敗し続けるリクエストは早く諦めるようになりました。v2.1.284 で導入された「切断後のリトライ予算の共有」に続き、同じ予算共有の考え方が適用された形です。</p>
+            <ul class="detail-list">
+                <li>
+                    <strong>🚫 出力コンテンツフィルターの即時エラー表示</strong>
+                    API の出力コンテンツフィルターによってブロックされたレスポンスが、フィルターのエラーを即座に表示する代わりに再送・リトライされ、数分かかることがあった問題も修正されています。
+                </li>
+                <li>
+                    <strong>🔧 CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES</strong>
+                    タイムアウトした非ストリーミングフォールバックリクエストの再送回数を制限する環境変数も追加されました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 8. Other features/fixes -->
+        <section class="section">
+            <h2 class="section-title">8. その他の新機能・修正 (抜粋)</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🤖 claude -p とサブエージェント</strong>
+                    <code class="inline">CLAUDE_CODE_FORK_SUBAGENT=1</code> でサブエージェント自身の Agent 呼び出しがフォアグラウンドで実行され、子の結果を受け取れるようになりました。fork したサブエージェントは親のパーミッションモード (plan mode や <code class="inline">dontAsk</code> mode) を引き継ぎ、plan mode を抜けられなくなりました。<code class="inline">--permission-prompt-tool</code> 使用時に、バックグラウンドサブエージェントの権限リクエストが自動拒否されずにプロンプトツールへ送られるようになりました。
+                </li>
+                <li>
+                    <strong>📄 managed 設定ファイルの読み取りエラー</strong>
+                    OS が managed 設定ファイルの読み取りを拒否した場合に Claude Code が起動を拒否していた問題を修正しました。警告を表示してそのファイルのポリシーなしで起動します。それ以外の読み取りエラーやパース不能なファイルは、引き続きすべてのセッションを停止させます。
+                </li>
+                <li>
+                    <strong>🔐 認証・セキュリティ</strong>
+                    <code class="inline">ANTHROPIC_AUTH_TOKEN</code> で Anthropic API に認証するセッションが組織のポリシーをロードしない問題、<code class="inline">@</code> を含む URL パスワードの一部 (または <code class="inline">%40</code> と書かれた場合は全部) が redact 済みログに表示される問題、クラッシュしたプロセスが残したログインリフレッシュロックを 2 つのセッションが同時に回復する際の稀な認証失敗を修正しました。ブラウザが成功を表示した後もサインインが永久に待機し得た問題も修正されました。
+                </li>
+                <li>
+                    <strong>📦 サンドボックスと権限</strong>
+                    <code class="inline">python3 -c</code> や <code class="inline">node -e</code> などのインラインスクリプトが <code class="inline">=</code> を含むだけで毎回承認を求められていた問題を修正しました。PowerShell ツールのコマンドパーサーが起動に失敗した場合 (メモリ不足時など) に deny / ask ルールがスキップされ、その失敗が以降のチェックにキャッシュされていた問題も修正されました。
+                </li>
+                <li>
+                    <strong>🗃️ Artifact ツール</strong>
+                    会話の巻き戻し (Esc Esc) 後の publish が、巻き戻されたターンでしか読んでいないファイルの新しい内容を上書きする問題、<code class="inline">Artifact</code> の allow ルールが作業ディレクトリ外のファイルを確認なしで publish させていた問題、一時的なサーバーエラーのリトライ後に成功済みの publish を競合として誤報告する問題などを修正しました。
+                </li>
+                <li>
+                    <strong>🔍 /ultrareview</strong>
+                    git worktree の per-worktree 設定、コロンを含む資格情報ファイル名、WSL 上のファイル名、シンボリック参照のブランチなど、アップロード周りの多数の修正が入りました。macOS と Linux では git 2.31 以降が必要になりました。
+                </li>
+                <li>
+                    <strong>🔌 MCP</strong>
+                    <code class="inline">claude mcp list</code> が WebSocket サーバーを表示しない問題、<code class="inline">type</code> フィールドを省略した stdio サーバーの詳細が <code class="inline">claude mcp get</code> で表示されない問題、SDK と <code class="inline">-p</code> セッションでセッション中に追加した MCP サーバーをオフにしてもツールが残る問題を修正しました。<code class="inline">claude mcp get</code> はプラグイン提供の stdio サーバーのコマンド・引数・環境変数の値を隠すようになりました。
+                </li>
+                <li>
+                    <strong>📱 Remote Control</strong>
+                    メッセージ添付ファイルのダウンロード失敗が最大 2 回リトライされるようになり、メッセージの既読タイミングが Claude の着手時に変更され、ターミナル終了時にキュー内のメッセージが失われず次回の再開時に届くようになりました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 9. Improvements -->
+        <section class="section">
+            <h2 class="section-title">9. 改善 (抜粋)</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🌐 Claude in Chrome</strong>
+                    ネイティブホストがコンピューター名を報告するようになり、接続されたブラウザを「Browser 1」「Browser 2」ではなくコンピューター名でラベル付けできるようになりました。
+                </li>
+                <li>
+                    <strong>☁️ Bedrock / Vertex AI のモデルフォールバック</strong>
+                    管理者がデフォルトモデルへのアクセスを削除した場合に、失敗する代わりに同じティアの古い利用可能モデルへ切り替わるようになりました。利用できないモデルは最大 1 日記憶され、起動のたびに再チェックされなくなりました。
+                </li>
+                <li>
+                    <strong>▶️ /resume の実行中セッション対応</strong>
+                    バックグラウンドで実行中のセッションに対する <code class="inline">/resume</code> と <code class="inline">claude --resume</code> が、拒否する代わりにそのセッションを開くようになりました。<code class="inline">claude --resume &lt;id&gt; "prompt"</code> で与えたプロンプトは次のターンとして送信されます。
+                </li>
+                <li>
+                    <strong>🤖 サブエージェントの効率化</strong>
+                    auto mode のサブエージェントは、レポートを呼び出し元へ返した時点で実行を終了するようになり、誰にも届かない余分なターンを消費しなくなりました。
+                </li>
+                <li>
+                    <strong>📡 SDK の liveness</strong>
+                    非ストリーミングフォールバックリクエスト中も、partial messages が有効なら 30 秒ごとに <code class="inline">ping</code> ストリームイベントが送信されるようになりました (Anthropic API、Claude Platform on AWS、ゲートウェイ)。
+                </li>
+                <li>
+                    <strong>⚡ パフォーマンス</strong>
+                    多数の permission deny ルールと MCP ツールが設定されている場合のターンごとの性能、長いセッションで ctrl+o transcript ビューを離れる際の応答性が改善されました。フルスクリーンモード外の長いセッションで発生していた最大 1 秒の一時フリーズも修正されました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 10. Behavior changes -->
+        <section class="section">
+            <h2 class="section-title">10. 動作変更 (抜粋)</h2>
+            <div class="notice-box">
+                <div class="notice-label">⚠️ サンドボックス設定の保護</div>
+                <p>プロジェクト設定は、管理者が要求するサンドボックスを弱めたり無効化したり、managed の deny リストの背後にあるプロキシを置き換えたり、厳格な allowlist を拡張したり、managed の読み取り拒否を再度開いたりできなくなりました。</p>
+            </div>
+            <ul class="detail-list">
+                <li>
+                    <strong>🔄 auto mode の適用拡大</strong>
+                    <code class="inline">claude -p</code> と Python Agent SDK のセッションも、サードパーティプロバイダー上またはテレメトリ無効環境でパーミッションモード未設定の場合、対話型セッションと同様に auto mode で開始されるようになりました。<code class="inline">--permission-mode</code> は引き続き優先されます。
+                </li>
+                <li>
+                    <strong>🔍 disableWorkflows と Code Review</strong>
+                    Code Review の pull request レビューと <code class="inline">/ultrareview</code> は、<code class="inline">disableWorkflows</code> が有効でも実行されるようになりました。ただし、レビューを実行するマシン自身の管理者 (MDM または managed-settings ファイル) が設定している場合を除きます。
+                </li>
+                <li>
+                    <strong>🐢 MCP ツールの遅延ロード</strong>
+                    <code class="inline">_meta['anthropic/alwaysLoad']</code> を false に設定したツールは、サーバー側が <code class="inline">alwaysLoad</code> に設定されていても遅延されたままになります。
+                </li>
+                <li>
+                    <strong>🚧 予約サーバー名</strong>
+                    クラウドセッションと self-hosted ランナーでは MCP サーバー名 <code class="inline">widgets</code> (および <code class="inline">widgets_</code> のような近い綴り) が予約され、自前のサーバーはロードされなくなりました。
+                </li>
+                <li>
+                    <strong>🧠 auto-memory の制限</strong>
+                    バックグラウンドセッションや Claude Code 自身のツールが開始したセッションからは、auto-memory をオンにできなくなりました (オフにすることは可能)。
+                </li>
+                <li>
+                    <strong>🪟 Windows の環境変数</strong>
+                    プロジェクト設定とローカル設定の <code class="inline">env</code> では <code class="inline">ALLUSERSPROFILE</code>、<code class="inline">SystemDrive</code>、<code class="inline">CommonProgramFiles</code> 系の変数を設定できなくなりました。必要な場合はユーザー設定または managed 設定で行います。
+                </li>
+                <li>
+                    <strong>📋 /tasks の整理</strong>
+                    Claude Code が自身のために実行するバックグラウンド作業は「System tasks」という 1 行に折りたたまれ、Enter で展開できるようになりました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 11. VSCode -->
+        <section class="section">
+            <h2 class="section-title">11. VSCode 拡張の変更 (25 項目)</h2>
+            <p class="section-lead">VSCode 拡張には 3 件の追加、20 件の修正、1 件の改善、1 件の変更が含まれます。</p>
+            <h3 class="subsection-title">✨ 追加</h3>
+            <ul class="detail-list">
+                <li>ウィンドウのリロードで中断され返信が来ないメッセージの下に注記を表示</li>
+                <li>Manage plugins にプラグインオプションのフォームを追加。オプションを持つプラグインのインストール時に未設定項目を尋ね、行のギアアイコンから後で変更できます</li>
+                <li>オンデマンド診断ツールにより、パネル内の Claude がファイル編集直後に限らず、いつでも Problems パネルの現在のエラーと警告を読めるようになりました</li>
+            </ul>
+            <h3 class="subsection-title">🔧 主な修正</h3>
+            <ul class="detail-list">
+                <li>スラッシュコマンド入力後の Enter が、ファジーマッチで選ばれた無関係なメニュー項目を実行する、または何もしない問題</li>
+                <li>長いセッション中に開いているエージェントの transcript が新しいメッセージを失う問題、多数のエージェント実行時に会話が消える問題、長いセッションが古い行をトリムする際にチャットパネルが停止する問題</li>
+                <li>Claude の作業中に送信したメッセージがセッション再オープン後に消える問題、Past conversations を開くとライブの会話が保存済みコピーに置き換わる問題</li>
+                <li>別のウィンドウやアプリで開いている会話を警告なしに二重に開いていた問題 (確認するようになりました)</li>
+                <li>エディタが自動保存に応答しない場合に、すべての Read / Write / Edit が 10 分間停止した後スキップされる問題</li>
+                <li>Manage plugins からのアンインストールが誤ったインストールを削除する、またはプロジェクト用にインストールされたプラグインで失敗する問題</li>
+                <li><code class="inline">/rename</code>、SessionStart フック、claude.ai でセッション名を変更した後もエディタタブが古い名前のままになる問題</li>
+            </ul>
+            <h3 class="subsection-title">🔀 変更</h3>
+            <ul class="detail-list">
+                <li>Manage plugins ダイアログは、プロジェクト共有の <code class="inline">.claude/settings.json</code> が有効化しているプラグインをオフにしたり、マーケットプレイスを削除したりする前に確認するようになりました</li>
+            </ul>
+        </section>
+
+        <!-- 12. Cloud / Slack / Code Review -->
+        <section class="section">
+            <h2 class="section-title">12. Cloud sessions / Claude Tag / Code Review</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>☁️ Cloud sessions</strong>
+                    ルーチンの Run now が開始前に拒否された場合に内部エラーテキストを表示する問題を修正しました。クラウド環境の変数として設定された <code class="inline">MCP_DISCOVERY_CACHE=1</code> は、コネクタのツールリストのみをセッション再起動後に再利用し、その他の MCP サーバーはキャッシュされず起動時に接続するようになりました。
+                </li>
+                <li>
+                    <strong>💬 Claude Tag (Slack)</strong>
+                    Enterprise プランの Standard または Usage-Based Chat シートで Cowork を持つメンバーが、Claude Code を含むシートなしで Claude と DM できるようになりました。管理設定とチャンネルの Configure ページが組織で使用できないモデルを提示していた問題も修正されました。
+                </li>
+                <li>
+                    <strong>🔍 Code Review</strong>
+                    「Add a repository」ダイアログの組織メニューが一部の GitHub 組織しか表示しなかった問題を修正しました (スクロールで追加読み込み)。リポジトリの REVIEW.md が適用されなかった場合 (非常に大きな pull request や REVIEW.md がシンボリックリンクの場合など) に、check run がその旨を伝えるようになりました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <h3 class="subsection-title">⏱️ バックグラウンドコマンドの時間制限</h3>
+            <p class="section-lead"><code class="inline">run_in_background</code> 付きの Bash / PowerShell コマンドの <code class="inline">timeout</code> は、バックグラウンド実行の上限時間として機能します。</p>
+            <table class="info-table">
+                <tr><th>項目</th><th>値</th></tr>
+                <tr><td>デフォルト</td><td>30 分</td></tr>
+                <tr><td>最大</td><td>2 時間</td></tr>
+                <tr><td>停止時の動作</td><td>Claude に通知される</td></tr>
+            </table>
+
+            <h3 class="subsection-title">🔧 環境変数の追加</h3>
+            <table class="info-table">
+                <tr><th>環境変数</th><th>説明</th></tr>
+                <tr><td><code class="inline">CLAUDE_CODE_DISABLE_WEB_FETCH</code></td><td>WebFetch ツールを無効化する</td></tr>
+                <tr><td><code class="inline">CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES</code></td><td>タイムアウトした非ストリーミングフォールバックリクエストの再送回数を制限する</td></tr>
+            </table>
+
+            <h3 class="subsection-title">🪟 1M コンテキストウィンドウの対象モデル</h3>
+            <p class="section-lead">カスタム <code class="inline">ANTHROPIC_BASE_URL</code> 経由でも 1M コンテキストが使用されるモデルは、Opus 4.7 以降、Sonnet 5 以降、Fable です。ゲートウェイが 200K で停止する場合は <code class="inline">/autocompact 200k</code> を実行します。</p>
+
+            <h3 class="subsection-title">💻 コード例: プラグイン設定の CLI 完結化</h3>
+            <p class="section-lead">バンドルされた <code class="inline">.mcpb</code> MCP サーバーの設定をインストール時に渡し、後からオプションを確認・変更できます。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">claude plugin configure の使用例</span>
+                </div>
+                <pre><code class="language-bash"># インストール時に MCP サーバーの設定を指定する
+claude plugin install my-plugin@marketplace --config myserver.apiUrl=https://api.example.com
+
+# プラグインのオプションと未設定の項目を表示する
+claude plugin configure my-plugin
+
+# 標準入力から新しい値を保存する
+echo '{"apiUrl": "https://api.example.com"}' | claude plugin configure my-plugin --values-stdin</code></pre>
+            </div>
+
+            <h3 class="subsection-title">💻 コード例: WebFetch ツールの無効化</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">CLAUDE_CODE_DISABLE_WEB_FETCH の設定</span>
+                </div>
+                <pre><code class="language-bash">export CLAUDE_CODE_DISABLE_WEB_FETCH=1
+claude</code></pre>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <p class="section-lead">バックグラウンドコマンドの時間制限の動作を示します。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Start(["👤 run_in_background で<br/>Bash / PowerShell を実行"]) --> Timeout{"⏱️ timeout の指定"}
+    Timeout -->|未指定| Default["🕐 デフォルト 30 分"]
+    Timeout -->|指定あり| Custom["🕑 指定値<br/>最大 2 時間"]
+    Default --> Run["⚙️ バックグラウンド実行"]
+    Custom --> Run
+    Run --> Done{"❓ 制限時間内に完了?"}
+    Done -->|完了| Result["✅ 結果を返す"]
+    Done -->|超過| Stop["🛑 コマンドを停止<br/>Claude に通知"]
+
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class Start input
+    class Timeout,Done decision
+    class Default,Custom internal
+    class Run,Result process
+    class Stop warning
+                </pre>
+            </div>
+        </section>
+
+        <!-- Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">🎯 対象</h3>
+            <ul class="detail-list">
+                <li>Claude デスクトップアプリと Claude Code を併用しているユーザー (<code class="inline">claude --desktop</code>)</li>
+                <li>managed 設定で組織のマシンを統制している管理者 (<code class="inline">allowedProviders</code>、サンドボックス設定の保護、managed 設定ファイルの読み取りエラー時の動作)</li>
+                <li>プラグインを CI やスクリプトから導入・設定する開発者 (<code class="inline">claude plugin configure</code>、<code class="inline">--config</code> の <code class="inline">&lt;server&gt;.&lt;key&gt;=&lt;value&gt;</code>)</li>
+                <li>外部 URL の取得を制限したい環境の管理者 (<code class="inline">CLAUDE_CODE_DISABLE_WEB_FETCH</code>)</li>
+                <li>長時間のバックグラウンドコマンドを利用しているユーザー (時間制限の導入)</li>
+                <li>カスタム <code class="inline">ANTHROPIC_BASE_URL</code> やゲートウェイを経由して Claude Code を利用しているユーザー (1M コンテキスト)</li>
+                <li>Agent SDK / <code class="inline">claude -p</code> を利用している開発者 (auto mode の適用拡大、fork サブエージェント、<code class="inline">setModel</code>、<code class="inline">ping</code> イベント)</li>
+                <li>Bedrock / Vertex AI / Mantle を利用しているユーザー (モデルフォールバック、SigV4 の Host ヘッダー、起動時モデルチェック)</li>
+                <li>VSCode 拡張、Cloud sessions、Claude Tag (Slack)、Code Review の利用者</li>
+            </ul>
+
+            <h3 class="subsection-title">✅ 必要なアクション</h3>
+            <ul class="detail-list">
+                <li>
+                    <strong>⏱️ バックグラウンドコマンドの timeout 確認</strong>
+                    30 分を超えるバックグラウンド処理 (ビルド、テスト、監視など) を実行している場合、時間制限で停止されるようになりました。必要に応じて <code class="inline">timeout</code> を明示的に指定します (最大 2 時間)。
+                </li>
+                <li>
+                    <strong>🛡️ allowedProviders の設定検討</strong>
+                    API プロバイダーを統制したい組織は、managed 設定に <code class="inline">allowedProviders</code> を追加して許可するプロバイダーを列挙します。
+                </li>
+                <li>
+                    <strong>🪟 ゲートウェイのコンテキスト上限確認</strong>
+                    カスタム <code class="inline">ANTHROPIC_BASE_URL</code> を使用している場合、対象モデルで 1M コンテキストが使われるようになります。ゲートウェイが 200K で停止する場合は <code class="inline">/autocompact 200k</code> を実行します。
+                </li>
+                <li>
+                    <strong>🔄 claude -p / Agent SDK のパーミッションモード確認</strong>
+                    サードパーティプロバイダー上またはテレメトリ無効環境では、パーミッションモード未設定の非対話セッションが auto mode で開始されます。従来の動作が必要な場合は <code class="inline">--permission-mode</code> を指定します。
+                </li>
+                <li>
+                    <strong>🔌 MCP サーバー名の確認</strong>
+                    クラウドセッションや self-hosted ランナーで <code class="inline">widgets</code> またはそれに近い名前の自前 MCP サーバーを使用している場合は、ロードされなくなるためリネームします。
+                </li>
+                <li>
+                    <strong>🪟 Windows の設定の見直し</strong>
+                    プロジェクト設定・ローカル設定の <code class="inline">env</code> で <code class="inline">ALLUSERSPROFILE</code> などを設定している場合は、ユーザー設定または managed 設定へ移動します。
+                </li>
+            </ul>
+
+            <h3 class="subsection-title">🚧 移行ガイド (該当する場合)</h3>
+            <div class="notice-box">
+                <div class="notice-label">⚠️ 注意が必要な動作変更</div>
+                <p>破壊的変更は限定的ですが、以下の動作変更に注意が必要です。</p>
+                <ul style="margin-top: 8px; padding-left: 20px;">
+                    <li>バックグラウンド Bash / PowerShell コマンドは時間制限 (デフォルト 30 分、最大 2 時間) の経過後に停止されます</li>
+                    <li>カスタム <code class="inline">ANTHROPIC_BASE_URL</code> のセッションは、対象モデルで 1M コンテキストウィンドウを使用します</li>
+                    <li><code class="inline">claude -p</code> と Python Agent SDK のセッションは、サードパーティプロバイダー上またはテレメトリ無効環境でパーミッションモード未設定の場合、auto mode で開始されます</li>
+                    <li>クラウドセッションと self-hosted ランナーでは MCP サーバー名 <code class="inline">widgets</code> が予約されます</li>
+                    <li>プロジェクト設定は管理者が要求するサンドボックス設定を弱められません</li>
+                    <li><code class="inline">/ultrareview</code> の macOS / Linux でのローカルリポジトリアップロードには git 2.31 以降が必要です</li>
+                    <li><code class="inline">/config chrome=true</code> は Claude in Chrome を直接有効化せず、/config パネルへ誘導します</li>
+                    <li>Windows のプロジェクト設定・ローカル設定の <code class="inline">env</code> は <code class="inline">ALLUSERSPROFILE</code>、<code class="inline">SystemDrive</code>、<code class="inline">CommonProgramFiles</code> 系の変数を設定できません</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🖥️ ターミナルとデスクトップアプリの行き来をシームレスに</h4>
+                <p><code class="inline">claude --desktop --continue</code> により、ターミナルで進めていた作業をデスクトップアプリの UI へコマンド 1 つで引き継げます。特定のセッションを開きたい場合は <code class="inline">claude --desktop --resume &lt;session-id&gt;</code> を使用します。CLI の速度とデスクトップアプリの視認性を、作業のフェーズに応じて使い分ける運用が可能になります。</p>
+            </div>
+            <div class="use-case">
+                <h4>🛡️ 組織のデータ経路を許可済みプロバイダーに限定する</h4>
+                <p>managed 設定に <code class="inline">allowedProviders</code> を追加して許可するプロバイダーを列挙することで、組織のマシンが承認されていないエンドポイントへ接続することを防止できます。<code class="inline">CLAUDE_CODE_DISABLE_WEB_FETCH</code> と組み合わせれば、外部 URL の取得も含めてデータの経路を統制できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧩 CI からプラグインを設定込みで導入する</h4>
+                <p><code class="inline">claude plugin install --config myserver.apiUrl=https://api.example.com</code> のように、バンドルされた MCP サーバーの設定をインストール時に渡せるため、CI やプロビジョニングスクリプトから対話的な操作なしでプラグインを導入できます。設定の確認・変更は <code class="inline">claude plugin configure</code> と <code class="inline">--values-stdin</code> で行えます。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Code v2.1.285 は、<strong>136 項目の変更を含む大型リリース</strong>です。<strong><code>claude --desktop</code> によるデスクトップアプリとの連携</strong>、<strong><code>allowedProviders</code> 管理設定によるプロバイダー統制</strong>、<strong><code>claude plugin configure</code> を中心としたプラグイン設定の CLI 完結化</strong>という 3 つの新機能が柱で、いずれも Claude Code をより広い環境 (デスクトップアプリ併用、組織管理、CI / 自動化) で運用するための機能強化と位置づけられます。</p>
+                <p>動作変更では、<strong>バックグラウンドコマンドの時間制限 (デフォルト 30 分、最大 2 時間)</strong> と<strong>カスタム <code>ANTHROPIC_BASE_URL</code> での 1M コンテキスト対応</strong>が実務への影響が大きい変更です。前者は長時間のバックグラウンド処理を利用している場合に <code>timeout</code> の明示が必要になり、後者はゲートウェイ経由のユーザーがモデル本来のコンテキスト長を活用できるようになります。修正面では、<strong>ストリーミング失敗時に最大 21 回のリトライが発生していた問題の解消</strong>が代表的で、出力コンテンツフィルターの即時エラー表示とあわせて、失敗時の待ち時間を大幅に短縮します。VSCode 拡張も 25 項目の変更でメッセージ消失や停止といった問題が広く修正されており、全体として安定性と管理性を底上げするリリースです。</p>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="links-list">
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog (v2.1.285)</a></li>
+                <li><a href="../reports/2026/2026-09-28-claude-code-v2-1-284.md" target="_blank" rel="noopener noreferrer">Claude Code v2.1.284 のレポート</a></li>
+                <li><a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code 公式ドキュメント</a></li>
+                <li><a href="https://code.claude.com/docs/en/settings" target="_blank" rel="noopener noreferrer">Claude Code settings (設定と環境変数)</a></li>
+                <li><a href="https://code.claude.com/docs/en/plugins" target="_blank" rel="noopener noreferrer">Claude Code のプラグイン</a></li>
+                <li><a href="https://code.claude.com/docs/en/mcp" target="_blank" rel="noopener noreferrer">Claude Code の MCP</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-09-29 ｜ カテゴリ: Claude Code / CLI アップデート ｜ 本インフォグラフィックは Anthropic News Summary プロジェクトのレポートに基づいて作成されています。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
