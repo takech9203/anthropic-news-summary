@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-09-30](2026/2026-09-30-claude-sonnet-4-5-deprecation.md) - Claude Sonnet 4.5 の非推奨化を発表 -- 2026 年 11 月 30 日に廃止、Claude Sonnet 5.5 への移行を推奨
+- [2026-09-30](2026/2026-09-30-claude-code-v2-1-286.md) - Claude Code v2.1.286: モデル拒否時の自動フォールバック、シークレットマスキングの強化、API リトライ上限の一本化
 - [2026-09-29](2026/2026-09-29-claude-code-v2-1-285.md) - Claude Code v2.1.285: claude --desktop、allowedProviders 管理設定、バックグラウンドコマンドの時間制限
 - [2026-09-28](2026/2026-09-28-claude-sonnet-5-5.md) - Claude Sonnet 5.5 発表: 速度と知性の最適バランスを 30% 高速・最大 30% 低コストで実現
 - [2026-09-28](2026/2026-09-28-claude-code-v2-1-284.md) - Claude Code v2.1.284: Claude Sonnet 5.5 の追加とデフォルト化、auto mode の「次回も確認」応答、支出額のドル表示
