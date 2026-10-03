@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-02](2026/2026-10-02-claude-frontier-academy.md) - Anthropic、1 億ドルを投じて 1 万人のエンジニアを育成する Claude Frontier Academy を発表
+- [2026-10-02](2026/2026-10-02-claude-code-v2-1-288.md) - Claude Code v2.1.288: モッド向け `$.ui.selection()`、Ctrl+C で消したプロンプトの復元、/code-review の `--max-findings`、タイムアウト・レジュームの信頼性修正多数
 - [2026-10-01](2026/2026-10-01-claude-code-v2-1-287.md) - Claude Code v2.1.287: Claude Mods の導入、ビルトインモッド「You should know」、Bedrock / Vertex などで 1M コンテキストがデフォルトに
 - [2026-10-01](2026/2026-10-01-barclays-scales-claude.md) - Barclays が Claude を全社規模に拡大 - 業務変革と顧客体験向上を推進
 - [2026-09-30](2026/2026-09-30-claude-sonnet-4-5-deprecation.md) - Claude Sonnet 4.5 の非推奨化を発表 -- 2026 年 11 月 30 日に廃止、Claude Sonnet 5.5 への移行を推奨
