@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.289: sandbox auto-allow 下の Bash deny/ask ルールバイパス修正などセキュリティ強化、agent.spawn の追加、プラグイン・モッド描画の安定性修正多数 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .subsection-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Category Cards */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            border-radius: 16px;
+            padding: 24px;
+            border: 2px solid;
+        }
+
+        .category-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-card ul {
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .category-card li {
+            margin-bottom: 6px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .category-card li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+
+        .category-card.cat-new {
+            background: linear-gradient(135deg, #E9F7EC 0%, #FFFFFF 100%);
+            border-color: #66BB6A;
+        }
+
+        .category-card.cat-fix {
+            background: linear-gradient(135deg, #E8F1FF 0%, #FFFFFF 100%);
+            border-color: #4A90E2;
+        }
+
+        .category-card.cat-improve {
+            background: linear-gradient(135deg, #F3E5F5 0%, #FFFFFF 100%);
+            border-color: #7B61FF;
+        }
+
+        .category-card.cat-security {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFFFFF 100%);
+            border-color: #FF9800;
+        }
+
+        /* Breakdown bar */
+        .breakdown-bar {
+            display: flex;
+            width: 100%;
+            height: 36px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 8px 0 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .breakdown-bar span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            min-width: 0;
+        }
+
+        .breakdown-added { background: #66BB6A; }
+        .breakdown-fixed { background: #4A90E2; }
+        .breakdown-improved { background: #7B61FF; }
+        .breakdown-reverted { background: #F59E0B; }
+
+        .breakdown-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .breakdown-legend .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* Detail List */
+        .detail-list {
+            list-style: none;
+            display: grid;
+            gap: 14px;
+        }
+
+        .detail-list > li {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .detail-list > li strong {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        /* Notice Box */
+        .notice-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: #5D4037;
+        }
+
+        .notice-box .notice-label {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #E65100;
+        }
+
+        /* Info Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .info-table th,
+        .info-table td {
+            padding: 10px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.3);
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .info-table td {
+            color: var(--text-secondary);
+        }
+
+        /* Inline code */
+        code.inline {
+            background: rgba(212, 165, 116, 0.15);
+            border: 1px solid rgba(212, 165, 116, 0.35);
+            border-radius: 6px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            color: #8a5a2a;
+            word-break: break-all;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+            display: block;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        .summary-box p + p {
+            margin-top: 12px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Links list */
+        .links-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .links-list li {
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .links-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+        }
+
+        .links-list a {
+            color: #8a5a2a;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .links-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #8a5a2a;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid,
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .breakdown-bar {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code / CLI アップデート</span>
+                <h1>Claude Code v2.1.289</h1>
+                <p class="subtitle">sandbox auto-allow 下の Bash deny/ask ルールバイパス修正などセキュリティ強化、<code style="font-family: 'JetBrains Mono', monospace;">agent.spawn</code> の追加、プラグイン・モッド描画の安定性修正多数</p>
+                <p class="date">📅 2026-10-03 ｜ ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="section-lead">Claude Code v2.1.289 がリリースされました。28 項目の変更を含むリリースで、内訳は追加 (Added) 1 件、修正 (Fixed) 24 件、改善 (Improved) 2 件、取り消し (Reverted) 1 件です。前日の v2.1.288 に続く品質改善中心のリリースですが、特に権限ルールのバイパスに関わるセキュリティ修正が目立ちます。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>sandbox auto-allow 下の Bash deny / ask ルールバイパス修正</h3>
+                        <p>環境変数プレフィックス付きコマンド (例: <code class="inline">TZ="$HOME" rm -rf build</code>) や、コマンドの前に裸の変数代入が置かれた場合に、Bash の deny / ask ルールがスキップされていた問題が修正されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔗</div>
+                    <div class="key-point-content">
+                        <h3>シンボリックリンク経由の Read deny ルール適用</h3>
+                        <p>IDE で @ メンション、変更、または選択されたファイルがシンボリックリンク経由で参照されている場合に、<code class="inline">Read</code> の deny ルールが適用されない問題が修正されました。管理対象マシンでの複合シェルコマンドとモッド承認の優先順位も修正されています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>新機能: チームメイト用 agent.spawn の追加</h3>
+                        <p>プラグイン API にチームメイトを起動する <code class="inline">agent.spawn</code> が追加されました。プラグインフックイベント間でエージェント ID が統一され、<code class="inline">$.agent.list()</code> に idle と waiting の状態が加わりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🖥️</div>
+                    <div class="key-point-content">
+                        <h3>ターミナル・描画エンジンの安定性修正</h3>
+                        <p>未閉鎖の <code class="inline">&lt;script&gt;</code> タグや深くネストした <code class="inline">${</code> 置換を含むコードブロックによる、ターミナルや公開アーティファクトページのフリーズが修正されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>プラグイン・モッドのフォールトアイソレーション強化</h3>
+                        <p>モッドの描画失敗がセッション全体を終了させる問題など、描画の失敗を単独の失敗に局所化し <code class="inline">ui.fault</code> で通知する修正が多数含まれています。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats / Category breakdown -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.289</h2>
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-value">28</div>
+                    <div class="stat-label">変更項目数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">追加 (Added)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">修正 (Fixed)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">改善 (Improved)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">取り消し (Reverted)</div>
+                </div>
+            </div>
+            <h3 class="subsection-title">📊 変更 28 項目の内訳</h3>
+            <div class="breakdown-bar" role="img" aria-label="変更 28 項目の内訳: 追加 1 件、修正 24 件、改善 2 件、取り消し 1 件">
+                <span class="breakdown-added" style="flex: 1;">1</span>
+                <span class="breakdown-fixed" style="flex: 24;">Fixed 24</span>
+                <span class="breakdown-improved" style="flex: 2;">2</span>
+                <span class="breakdown-reverted" style="flex: 1;">1</span>
+            </div>
+            <div class="breakdown-legend">
+                <span><span class="dot" style="background: #66BB6A;"></span>追加 1 件 (3.6%)</span>
+                <span><span class="dot" style="background: #4A90E2;"></span>修正 24 件 (85.7%)</span>
+                <span><span class="dot" style="background: #7B61FF;"></span>改善 2 件 (7.1%)</span>
+                <span><span class="dot" style="background: #F59E0B;"></span>取り消し 1 件 (3.6%)</span>
+            </div>
+            <div class="category-grid" style="margin-top: 16px;">
+                <div class="category-card cat-new">
+                    <h3>✨ 追加 (1 件)</h3>
+                    <ul>
+                        <li>チームメイト用 <code class="inline">agent.spawn</code></li>
+                        <li>エージェント ID のフックイベント間統一</li>
+                        <li><code class="inline">$.agent.list()</code> の idle / waiting 状態</li>
+                    </ul>
+                </div>
+                <div class="category-card cat-fix">
+                    <h3>🔧 修正 (24 件)</h3>
+                    <ul>
+                        <li>セキュリティ・権限ルールのバイパス</li>
+                        <li>ターミナル・描画エンジンの安定性</li>
+                        <li>プラグイン・モッドのフォールトアイソレーション</li>
+                        <li>プラグイン UI・リンク・CLI</li>
+                    </ul>
+                </div>
+                <div class="category-card cat-improve">
+                    <h3>📈 改善 (2 件)</h3>
+                    <ul>
+                        <li>モッド作者向けエラーメッセージ</li>
+                        <li>プラグインのコードペインでの大きなファイルの表示高速化</li>
+                    </ul>
+                </div>
+                <div class="category-card cat-security">
+                    <h3>🔁 取り消し (1 件)</h3>
+                    <ul>
+                        <li>v2.1.288 の <code class="inline">claude auth status</code> への変更 (サインアウト頻発の可能性のため)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p class="section-lead">Claude Code v2.1.289 は、89 項目の大規模な品質改善リリースだった 2026-10-02 の v2.1.288 の翌日にリリースされました。v2.1.287 で導入された Claude Mods とプラグイン実行基盤がユーザー環境で広く使われ始めたことを受け、本バージョンではモッド・プラグインの描画失敗がセッション全体を道連れにしないようにするフォールトアイソレーション (障害の分離) の修正が集中的に行われています。また、サンドボックスの自動許可 (auto-allow) と権限ルールの相互作用に起因する deny / ask ルールのバイパスという、セキュリティ上重要な問題への修正も複数含まれます。</p>
+            <table class="info-table">
+                <tr><th>項目</th><th>内容</th></tr>
+                <tr><td>発表日</td><td>2026-10-03 (npm 公開日時: 2026-10-03T20:12:02Z)</td></tr>
+                <tr><td>ソース</td><td>Claude Code Changelog</td></tr>
+                <tr><td>カテゴリ</td><td>Claude Code / CLI アップデート</td></tr>
+                <tr><td>公式リンク</td><td><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" style="color: #8a5a2a;">github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></td></tr>
+            </table>
+        </section>
+
+        <!-- Main feature cards -->
+        <section class="section">
+            <h2 class="section-title">主要な変更ハイライト</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🛡️ セキュリティ・権限まわりの修正</h3>
+                    <p>sandbox auto-allow 下での環境変数プレフィックスや裸の変数代入による Bash deny / ask ルールのスキップ、シンボリックリンク経由の <code class="inline">Read</code> deny ルールの不適用など、権限ルールのバイパス経路が複数修正されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 agent.spawn の追加</h3>
+                    <p>プラグインからチームメイトを起動する <code class="inline">agent.spawn</code> が追加されました。エージェント ID がフックイベント間で統一され、<code class="inline">$.agent.list()</code> に idle / waiting の状態が加わり、プラグインからエージェントチームを編成・監視する基盤が強化されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🖥️ 描画エンジンの安定性</h3>
+                    <p>未閉鎖の <code class="inline">&lt;script&gt;</code> タグや深くネストした <code class="inline">${</code> 置換によるターミナル・公開アーティファクトページのフリーズ、制御文字を含むテキストの描画崩れが修正されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧩 プラグインフォールトアイソレーション</h3>
+                    <p>モッドの <code class="inline">Client</code> が描画中に失敗しても周囲を道連れにせず、単独で失敗して <code class="inline">ui.fault</code> を発生させるようになりました。非同期例外や高さゼロの領域の増殖によるセッション終了も解消されています。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏢 組織ポリシーの保護強化</h3>
+                    <p>管理対象マシンで複合シェルコマンドのネスト部分に対する deny / ask ルールがモッド承認に優先するようになり、ユーザーインストールのプラグインが組織管理 MCP サーバーのサインインツールの説明を書き換えられる問題も修正されました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. Security -->
+        <section class="section">
+            <h2 class="section-title">1. セキュリティ・権限まわりの修正</h2>
+            <p class="section-lead">本バージョンで最も注目すべき領域です。権限ルール (deny / ask) が特定の条件下で効かなくなるバイパス経路が複数修正されました。</p>
+            <ul class="detail-list">
+                <li>
+                    <strong>🧪 環境変数プレフィックス付きコマンドのルールスキップ</strong>
+                    サンドボックスがコマンドを自動許可 (auto-allow) する際、展開された値を持つ環境変数プレフィックスの後ろにあるコマンド (例: <code class="inline">TZ="$HOME" rm -rf build</code>) に対して、Bash の deny / ask ルールが見逃されていた問題を修正しました。
+                </li>
+                <li>
+                    <strong>📝 裸の変数代入によるルールスキップ</strong>
+                    sandbox auto-allow 下で、コマンドの前に裸の変数代入が置かれていると、Bash の deny / ask ルールがスキップされていた問題を修正しました。
+                </li>
+                <li>
+                    <strong>🔗 シンボリックリンク経由の Read deny ルール</strong>
+                    IDE で @ メンション、変更、または選択されたファイルがシンボリックリンク経由で参照されている場合に、<code class="inline">Read</code> の deny ルールが適用されない問題を修正しました。
+                </li>
+                <li>
+                    <strong>🏢 複合シェルコマンドとモッド承認の優先順位</strong>
+                    管理対象 (managed) マシンで、複合シェルコマンドのネストした部分に対する deny / ask ルールが、ユーザーインストールのモッドによる承認に優先して適用されない問題を修正しました。
+                </li>
+                <li>
+                    <strong>🔐 組織管理 MCP サーバーのツール説明の保護</strong>
+                    ユーザーインストールのプラグインが、組織管理の MCP サーバーのサインインツールの説明 (description) を書き換えられてしまう問題を修正しました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 2. Added -->
+        <section class="section">
+            <h2 class="section-title">2. 新機能: プラグインエージェント API の拡張 (Added: 1 件)</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🤖 チームメイト用 agent.spawn</strong>
+                    プラグインからチームメイト (teammates) を起動する <code class="inline">agent.spawn</code> が追加されました。あわせて、プラグインフックイベント間で 1 つのエージェント ID が共有されるようになり、<code class="inline">$.agent.list()</code> に idle (アイドル) と waiting (待機中) の状態が加わりました。プラグインからエージェントチームを編成・監視するための基盤が強化された形です。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 3. Terminal / rendering -->
+        <section class="section">
+            <h2 class="section-title">3. ターミナル・描画エンジンの安定性修正</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🧊 未閉鎖 script タグ等によるフリーズ</strong>
+                    未閉鎖の <code class="inline">&lt;script&gt;</code> タグが多数含まれる短いコードブロックや、深くネストした <code class="inline">${</code> 置換によって、ターミナルがフリーズする問題を修正しました。
+                </li>
+                <li>
+                    <strong>🌐 公開アーティファクトページのフリーズ</strong>
+                    同様に、未閉鎖の <code class="inline">&lt;script&gt;</code> タグが多数含まれる短いコードブロックで、公開されたアーティファクトページが閲覧者のブラウザタブをフリーズ・クラッシュさせる問題を修正しました。
+                </li>
+                <li>
+                    <strong>🔤 制御文字を含むテキストの描画崩れ</strong>
+                    タブ・迷子のエスケープ・C1 制御文字を含むテキストや、タブと CRLF 改行を含む短いテキストが、下の行の上に重なって描画される問題を修正しました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 4. Fault isolation -->
+        <section class="section">
+            <h2 class="section-title">4. プラグイン・モッドのフォールトアイソレーション</h2>
+            <p class="section-lead">モッドやプラグインの描画失敗が、セッション全体や周囲の UI を道連れにしないようにする修正が多数含まれます。</p>
+            <ul class="detail-list">
+                <li>
+                    <strong>🚀 起動時のフリーズ・強制終了</strong>
+                    プラグインがターミナルの知らない境界スタイルの Box を描画した際に、起動時にフリーズまたは強制終了する問題を修正しました。
+                </li>
+                <li>
+                    <strong>⚡ 非同期例外によるセッション終了</strong>
+                    プラグインのオンスクリーンハンドラーが非同期に例外を投げた場合に、監視下 (supervised) セッションとバックグラウンドセッションが終了する問題を修正しました。
+                </li>
+                <li>
+                    <strong>📏 高さゼロの領域の増殖</strong>
+                    高さのないプラグイン領域が増え続けた場合に、セッションがインターフェイスエラーで終了する問題を修正しました。
+                </li>
+                <li>
+                    <strong>🪝 ui.render フックの値による行の例外</strong>
+                    モッドの <code class="inline">ui.render</code> フックが書き込んだ値によって描画中の行が例外を投げた場合に、「unrecoverable interface error」でセッションが終了する問題を修正しました。エンジンが代わりに自身の行を描画するようになりました。
+                </li>
+                <li>
+                    <strong>🧩 Client の単独失敗化</strong>
+                    描画中に失敗したモッドの <code class="inline">Client</code> が、モッドが周囲に描画したすべてを道連れにしていた問題を修正しました。単独で失敗し、<code class="inline">ui.fault</code> を発生させるようになりました。
+                </li>
+                <li>
+                    <strong>♻️ 失敗した Client 領域の復帰</strong>
+                    ターミナルが描画中に例外を投げた後、モッドの <code class="inline">Client</code> 領域がセッション全体にわたって失敗状態のままになる問題を修正しました。
+                </li>
+                <li>
+                    <strong>📐 バンドの描画失敗時のレイアウト</strong>
+                    描画に失敗したモッドのバンドが、その下のカードに一時的に場所を空けるよう指示してしまう問題を修正しました。
+                </li>
+                <li>
+                    <strong>💬 失敗理由の表示</strong>
+                    失敗したプラグインコンポーネントが、失敗にメッセージがない場合に理由として <code class="inline">Error</code> と表示するか何も表示しない問題を修正しました。
+                </li>
+                <li>
+                    <strong>🧑‍💻 作者向けエラーメッセージの改善</strong>
+                    モッドのバンドやペインが描画に失敗した際に作者に表示される行が改善され、モッド名が示され、何も描画されなかったことが明示されるようになりました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 5. Plugin UI / links / loading -->
+        <section class="section">
+            <h2 class="section-title">5. プラグイン UI・リンク・読み込みの修正</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🔗 リンクによる描画不能</strong>
+                    リンクが localhost アドレス、パスに <code class="inline">@</code> を含む URL、大文字のホスト名、または <code class="inline">file:</code> パスを使っている場合に、プラグインのペインに何も描画されない問題を修正しました。
+                </li>
+                <li>
+                    <strong>📍 右寄せコンテンツと閉じるマークの重なり</strong>
+                    モッドのペインやバンドの右寄せコンテンツが、閉じるマークや <code class="inline">[-]</code> の下に描画される問題を修正しました。これらのマークはターミナルの端から 1 列内側に保たれるようになりました。
+                </li>
+                <li>
+                    <strong>🖥️ フルスクリーン時の古い行の表示</strong>
+                    フルスクリーンで Background tasks ダイアログを開いている間、プロンプト上部のプラグインの行が古い状態のまま表示される問題を修正しました。
+                </li>
+                <li>
+                    <strong>⬆️ アップグレード後のモッド未読み込み</strong>
+                    アップグレード後の最初のセッションで、インストール済みのモッドが読み込まれない問題を修正しました。
+                </li>
+                <li>
+                    <strong>🚀 大きなファイルの表示高速化</strong>
+                    プラグインのコードペインで大きなファイルを開く速度が改善されました。ハイライト済みビューを最終的な幅で一度だけレイアウトするようになりました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 6. Plugin CLI -->
+        <section class="section">
+            <h2 class="section-title">6. プラグイン CLI の修正</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>📦 ローカルフォルダーマーケットプレイスの古いコピー</strong>
+                    <code class="inline">plugin list</code>、<code class="inline">plugin eval</code>、<code class="inline">plugin update</code> が、ローカルフォルダーマーケットプレイスからインストールしたプラグインの古いコピーを表示する問題と、シンボリックリンクされた <code class="inline">--plugin-dir</code> のホットリロードを修正しました。
+                </li>
+                <li>
+                    <strong>📋 マーケットプレイスマニフェスト併置時のスキップ</strong>
+                    フォルダーにマーケットプレイスマニフェストも含まれている場合に、<code class="inline">claude plugin validate</code> がプラグインの検証をスキップする問題を修正しました。
+                </li>
+                <li>
+                    <strong>✅ Anthropic マーケットプレイス自身のプラグインの検証失敗</strong>
+                    <code class="inline">claude plugin validate</code> が Anthropic マーケットプレイス自身のプラグインを失敗と判定し、<code class="inline">--json</code> で問題のない <code class="inline">plugin.json</code> を列挙する問題を修正しました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 7. VSCode -->
+        <section class="section">
+            <h2 class="section-title">7. VSCode 拡張の変更 (Reverted: 1 件)</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🔁 claude auth status の変更の取り消し</strong>
+                    v2.1.288 で行われた <code class="inline">claude auth status</code> への変更が、サインアウトを頻発させる可能性があったため取り消されました (Reverted)。v2.1.288 でサインアウトが頻発していた場合は、本バージョンで解消される見込みです。
+                </li>
+            </ul>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <h3 class="subsection-title">🛡️ sandbox auto-allow 下での Bash deny / ask ルール評価の修正</h3>
+            <p class="section-lead">v2.1.289 では、サンドボックスがコマンドを自動許可する経路で、deny / ask ルールの評価対象からコマンド本体が漏れる 2 つのパターンが塞がれました。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Cmd["⌨️ Bash コマンド<br/>TZ=&quot;$HOME&quot; rm -rf build"] --> Parse["🔍 コマンドの解析"]
+    Parse --> Prefix{"🔀 変数代入や<br/>環境変数プレフィックスの有無"}
+    Prefix -->|v2.1.288 以前| Skip["⚠️ プレフィックスの後ろのコマンドが<br/>deny / ask ルールの評価から漏れる"]
+    Prefix -->|v2.1.289| Check["✅ プレフィックスを剥がして<br/>コマンド本体をルールで評価"]
+    Skip --> Auto["🚨 sandbox auto-allow で<br/>確認なしに実行"]
+    Check --> Rule{"🛡️ deny / ask ルールに一致?"}
+    Rule -->|deny| Block(["⛔ ブロック"])
+    Rule -->|ask| Prompt(["❓ ユーザーに確認"])
+    Rule -->|一致なし| Allow(["▶️ 自動許可"])
+
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Cmd,Parse,Check process
+    class Prefix,Rule decision
+    class Skip warning
+    class Auto error
+    class Block,Prompt,Allow input
+                </pre>
+            </div>
+
+            <h3 class="subsection-title">🧩 モッド・プラグインのフォールトアイソレーションの考え方</h3>
+            <p class="section-lead">本バージョンの修正群により、モッドやプラグインの描画コンポーネントの失敗は、以下のように局所化されます。</p>
+            <table class="info-table">
+                <tr><th>失敗の種類</th><th>v2.1.288 以前の挙動</th><th>v2.1.289 の挙動</th></tr>
+                <tr><td><code class="inline">ui.render</code> フックの値で行が例外</td><td>「unrecoverable interface error」でセッション終了</td><td>エンジンが自身の行を描画して継続</td></tr>
+                <tr><td>描画中の <code class="inline">Client</code> の失敗</td><td>モッドが描画したすべてが道連れ</td><td><code class="inline">Client</code> が単独で失敗し <code class="inline">ui.fault</code> を発生</td></tr>
+                <tr><td>未知の境界スタイルの Box</td><td>起動時にフリーズ・強制終了</td><td>修正済み</td></tr>
+                <tr><td>オンスクリーンハンドラーの非同期例外</td><td>監視下・バックグラウンドセッションが終了</td><td>修正済み</td></tr>
+                <tr><td>高さゼロの領域の増殖</td><td>インターフェイスエラーでセッション終了</td><td>修正済み</td></tr>
+                <tr><td>ターミナル例外後の <code class="inline">Client</code> 領域</td><td>セッション全体で失敗状態のまま</td><td>復帰可能</td></tr>
+            </table>
+        </section>
+
+        <!-- Code example -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p class="section-lead">プラグインからのエージェント操作には、新しい <code class="inline">agent.spawn</code> と拡張された <code class="inline">$.agent.list()</code> を使用します。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JavaScript</span>
+                    <span class="code-title">プラグインからのエージェント操作</span>
+                </div>
+                <pre><code class="language-javascript">// チームメイトを起動する
+agent.spawn({ /* teammate の設定 */ });
+
+// エージェントの一覧と状態を取得する
+// v2.1.289 から idle と waiting の状態が含まれる
+const agents = $.agent.list();
+for (const a of agents) {
+  // a.id はプラグインフックイベント間で共通のエージェント ID
+  console.log(a.id, a.state); // 例: "idle", "waiting"
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">🎯 対象</h3>
+            <ul class="detail-list">
+                <li>権限ルール (deny / ask) やサンドボックスの auto-allow を使って Claude Code を運用している組織・個人 (ルールバイパスの修正)</li>
+                <li>管理対象マシンで組織ポリシーを適用している管理者 (複合コマンドのルール優先、組織管理 MCP サーバーのツール説明保護)</li>
+                <li>モッド・プラグイン開発者 (<code class="inline">agent.spawn</code> の追加、エージェント ID の統一、<code class="inline">$.agent.list()</code> の状態追加、<code class="inline">ui.fault</code>、作者向けエラーメッセージの改善)</li>
+                <li>ローカルフォルダーマーケットプレイスや <code class="inline">--plugin-dir</code> でプラグインを開発している開発者 (古いコピー・ホットリロード・validate の修正)</li>
+                <li>監視下セッションやバックグラウンドセッションを運用している利用者 (プラグイン起因のセッション終了の修正)</li>
+                <li>公開アーティファクトページを共有している利用者 (ブラウザタブのフリーズ修正)</li>
+                <li>VSCode 拡張の利用者 (<code class="inline">claude auth status</code> 変更の取り消し)</li>
+            </ul>
+
+            <h3 class="subsection-title">✅ 必要なアクション</h3>
+            <ul class="detail-list">
+                <li>
+                    <strong>🛡️ 権限ルールを運用している組織</strong>
+                    環境変数プレフィックスや変数代入を使ったコマンドが deny / ask ルールを迂回できていた問題が修正されました。ルールで保護しているつもりだったコマンドパターンがある場合は、本バージョンへの更新を優先することを推奨します。
+                </li>
+                <li>
+                    <strong>🔗 シンボリックリンクを含むリポジトリの利用者</strong>
+                    IDE から @ メンション・選択したファイルにも <code class="inline">Read</code> の deny ルールが正しく適用されるようになったため、意図した保護が効いているかを確認します。
+                </li>
+                <li>
+                    <strong>🧩 プラグイン・モッド開発者</strong>
+                    <code class="inline">agent.spawn</code> と <code class="inline">$.agent.list()</code> の idle / waiting 状態を使うと、プラグインからエージェントチームの起動と状態監視ができます。また、<code class="inline">Client</code> の失敗は <code class="inline">ui.fault</code> で検知できるようになったため、エラーハンドリングの実装を見直すとよいでしょう。
+                </li>
+                <li>
+                    <strong>📦 ローカルマーケットプレイスでの開発者</strong>
+                    <code class="inline">plugin list</code> / <code class="inline">plugin eval</code> / <code class="inline">plugin update</code> が最新のコピーを参照するようになったため、更新が反映されない問題へのワークアラウンド (再インストールなど) は不要になります。
+                </li>
+                <li>
+                    <strong>💻 VSCode 拡張の利用者</strong>
+                    v2.1.288 でサインアウトが頻発していた場合は、本バージョンで解消される見込みです。
+                </li>
+            </ul>
+
+            <h3 class="subsection-title">🚧 移行ガイド (該当する場合)</h3>
+            <div class="notice-box">
+                <div class="notice-label">⚠️ 注意が必要な挙動変更</div>
+                <p>破壊的変更はありませんが、以下の挙動変更に注意が必要です。</p>
+                <ul style="margin-top: 8px; padding-left: 20px;">
+                    <li>これまで sandbox auto-allow 下で実行されていた環境変数プレフィックス付きコマンドや、変数代入を伴うコマンドが、deny / ask ルールに一致する場合はブロックまたは確認の対象になります。CI スクリプトなどで想定外のブロックが発生した場合は、権限ルールの設定を確認します</li>
+                    <li>失敗したモッドの <code class="inline">Client</code> は周囲を道連れにせず、<code class="inline">ui.fault</code> を発生させます。モッド側で <code class="inline">Client</code> の失敗時の挙動に依存していた場合は、<code class="inline">ui.fault</code> のハンドリングに移行します</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🛡️ 組織の権限ポリシーの実効性確保</h4>
+                <p>deny / ask ルールで危険なコマンドを統制している組織では、<code class="inline">TZ="$HOME" rm -rf build</code> のような環境変数プレフィックス付きコマンドや変数代入を伴うコマンドがルールを迂回できていた経路が塞がれました。シンボリックリンク経由の <code class="inline">Read</code> deny ルールの適用や、管理対象マシンでのルール優先順位の修正と合わせて、意図した権限ポリシーがそのまま効くようになります。</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 プラグインからのエージェントチーム編成</h4>
+                <p>新しい <code class="inline">agent.spawn</code> でプラグインからチームメイトを起動し、<code class="inline">$.agent.list()</code> の idle / waiting 状態で各エージェントの稼働状況を監視できます。エージェント ID がフックイベント間で統一されたため、イベントをまたいだエージェントの追跡も容易になり、エージェントチームのオーケストレーション用プラグインが作りやすくなります。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧩 モッドエコシステムの本番利用</h4>
+                <p>モッドの描画失敗が <code class="inline">ui.fault</code> として局所化され、セッション全体を道連れにしなくなったため、v2.1.287 以降のモッドを監視下セッションやバックグラウンドセッションでも安心して利用できます。モッド作者は改善されたエラーメッセージ (モッド名と未描画の明示) で問題を素早く特定できます。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Code v2.1.289 は、<strong>28 項目 (追加 1 件、修正 24 件、改善 2 件、取り消し 1 件) からなる、セキュリティと安定性に焦点を当てたリリース</strong>です。最大の注目点は権限ルールのバイパス修正群であり、sandbox auto-allow 下での環境変数プレフィックスや変数代入による Bash deny / ask ルールのスキップ、シンボリックリンク経由の <code>Read</code> deny ルールの不適用、管理対象マシンでのモッド承認とルールの優先順位といった、組織の権限ポリシーの実効性に直結する問題が塞がれました。</p>
+                <p>機能面では、チームメイト用 <strong><code>agent.spawn</code></strong> の追加とエージェント ID の統一、<code>$.agent.list()</code> の idle / waiting 状態により、プラグインからエージェントチームを扱う API が一歩前進しました。また、モッド・プラグインの描画失敗を単独の失敗に局所化し <code>ui.fault</code> で通知する<strong>フォールトアイソレーションの強化</strong>は、v2.1.287 以降のモッドエコシステムを本番環境で安心して使うための重要な土台です。権限ルールで Claude Code を統制している組織を中心に、早期の更新を推奨できるリリースといえます。</p>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="links-list">
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog (v2.1.289)</a></li>
+                <li><a href="../reports/2026/2026-10-02-claude-code-v2-1-288.md" target="_blank" rel="noopener noreferrer">Claude Code v2.1.288 のレポート</a></li>
+                <li><a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code 公式ドキュメント</a></li>
+                <li><a href="https://code.claude.com/docs/en/plugins" target="_blank" rel="noopener noreferrer">Claude Code のプラグイン</a></li>
+                <li><a href="https://code.claude.com/docs/en/iam" target="_blank" rel="noopener noreferrer">Claude Code の権限設定</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-10-03 ｜ カテゴリ: Claude Code / CLI アップデート ｜ 本インフォグラフィックは Anthropic News Summary プロジェクトのレポートに基づいて作成されています。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
