@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Models API に capabilities.thinking.types.disabled を追加 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+            background: rgba(212, 165, 116, 0.2);
+            padding: 2px 8px;
+            border-radius: 6px;
+            color: #E8C9A8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section p.lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .section code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.88em;
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 6px;
+            color: #8a5a2a;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li {
+            padding: 4px 0 4px 24px;
+            position: relative;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        .comparison-card code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        /* Tech Detail List */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Timeline (model history) */
+        .timeline {
+            display: grid;
+            gap: 12px;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .timeline-date {
+            flex-shrink: 0;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+
+        .timeline-content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .timeline-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Steps */
+        .steps {
+            display: grid;
+            gap: 12px;
+            counter-reset: step;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .step p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            opacity: 0.92;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <h1>Models API に <code>capabilities.thinking.types.disabled</code> を追加</h1>
+                <p class="subtitle">思考無効化 <code>thinking: {type: "disabled"}</code> の可否を、モデル ID をハードコードせずにプログラムから判別可能に</p>
+                <p class="date">📅 2026-10-05 | Claude Developer Platform Release Notes</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="lead">Claude API の Models API に <code class="inline">capabilities.thinking.types.disabled</code> フィールドが追加された。<code class="inline">GET /v1/models</code> および <code class="inline">GET /v1/models/{model_id}</code> のレスポンスで、各モデルが思考 (thinking) をオフにする設定 <code class="inline">thinking: {type: "disabled"}</code> を受け付けるかどうかを確認できるようになった。思考を無効化できないモデルが増えるなか、開発者にとって実用的なアップデートである。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🆕</div>
+                    <div class="key-point-content">
+                        <h3>disabled フィールドの追加</h3>
+                        <p>各モデルの <code class="inline">capabilities</code> オブジェクトに、<code class="inline">thinking: {type: "disabled"}</code> を受け付けるかどうかを示す <code class="inline">capabilities.thinking.types.disabled</code> フィールドが追加された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔍</div>
+                    <div class="key-point-content">
+                        <h3>GET /v1/models で確認可能</h3>
+                        <p><code class="inline">GET /v1/models</code> (一覧) と <code class="inline">GET /v1/models/{model_id}</code> (個別取得) の両方のレスポンスで返される。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚖️</div>
+                    <div class="key-point-content">
+                        <h3>判定の意味</h3>
+                        <p><code class="inline">supported</code> が <code class="inline">false</code> の場合、そのモデルは <code class="inline">"disabled"</code> を 400 エラーで拒否する。思考をサポートしないモデルでは <code class="inline">true</code> となる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧹</div>
+                    <div class="key-point-content">
+                        <h3>ハードコード不要に</h3>
+                        <p>モデルによって <code class="inline">"disabled"</code> の受け付け可否が異なるため、従来はモデル ID ごとの挙動をハードコードする必要があった。今回の変更により、Models API への問い合わせだけで可否を判定できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📈</div>
+                    <div class="key-point-content">
+                        <h3>Models API 活用の流れが継続</h3>
+                        <p>2026-10-01 には Models API に <code class="inline">line</code> フィールド (モデル系列を示すフィールド) も追加されており、Models API のメタデータをプログラムから活用する流れが続いている。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>モデルによって <code>"disabled"</code> の受け付け可否が異なる</li>
+                        <li>アプリケーション側でモデル ID ごとの挙動をハードコードする必要があった</li>
+                        <li>新モデル追加のたびに分岐コードの保守が必要</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li><code>capabilities.thinking.types.disabled</code> で可否を判別可能</li>
+                        <li>Models API への問い合わせだけで判定できる</li>
+                        <li>モデル ID のハードコードが不要になり、保守コストを削減</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background: model-by-model behavior -->
+        <section class="section">
+            <h2 class="section-title">背景: モデルごとに異なる思考無効化の扱い</h2>
+            <p class="lead">リリースノートの過去エントリによると、近年のモデルでは思考無効化の扱いがモデルごとに異なっている。</p>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="timeline-date">2026-06-09</span>
+                    <div class="timeline-content">
+                        <h4>🤖 Claude Fable 5 / Mythos 5</h4>
+                        <p>adaptive thinking が唯一の思考モードであり、<code class="inline">thinking: {"type": "disabled"}</code> はサポートされない。</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-date">2026-09-22</span>
+                    <div class="timeline-content">
+                        <h4>⭐ Claude Opus 5.5</h4>
+                        <p>思考を無効化できず、<code class="inline">thinking: {"type": "disabled"}</code> も <code class="inline">thinking: {"type": "enabled", ...}</code> も 400 エラーを返す。</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-date">2026-09-28</span>
+                    <div class="timeline-content">
+                        <h4>🎵 Claude Sonnet 5.5</h4>
+                        <p>冒頭の思考をオフにするには <code class="inline">"disabled"</code> ではなく <code class="inline">thinking: {"type": "between_tools"}</code> を <code class="inline">high</code> 以下の effort で送信する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🆕 disabled フィールド</h3>
+                    <p>各モデルの <code class="inline">capabilities</code> オブジェクトに、<code class="inline">thinking: {type: "disabled"}</code> を受け付けるかどうかを示すフィールドが追加された。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔌 対象エンドポイント</h3>
+                    <p><code class="inline">GET /v1/models</code> (一覧) と <code class="inline">GET /v1/models/{model_id}</code> (個別取得) の両方で返される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚫 false は 400 エラーを意味する</h3>
+                    <p><code class="inline">supported</code> が <code class="inline">false</code> の場合、そのモデルは <code class="inline">"disabled"</code> を 400 エラーで拒否する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>✅ 思考非サポートモデルは true</h3>
+                    <p>思考機能自体をサポートしないモデルでは <code class="inline">disabled</code> の <code class="inline">supported</code> が <code class="inline">true</code> となる。「思考が無効の状態を受け付けるか」という観点で一貫した判定ができる設計といえる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚠️ true でも拒否される場合あり</h3>
+                    <p><code class="inline">supported</code> が <code class="inline">true</code> であっても、思考オフとの組み合わせをモデルが許可していない effort レベルの指定など、別の理由で拒否される可能性がある。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+            <div class="tech-detail">
+                <h4>🧩 capabilities.thinking の構造</h4>
+                <p>Models API のレスポンスでは、<code class="inline">capabilities.thinking</code> に <code class="inline">supported</code> (思考機能自体のサポート有無) と <code class="inline">types</code> (サポートされる思考タイプ構成) が含まれる。API リファレンスによると、<code class="inline">types</code> には <code class="inline">adaptive</code> (自動) や <code class="inline">enabled</code> の各 <code class="inline">CapabilitySupport</code> オブジェクト (<code class="inline">supported</code> ブール値を持つ) が含まれており、今回ここに <code class="inline">disabled</code> が加わった。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>⚠️ supported: true でも拒否されるケースがある</h4>
+                <p>公式ドキュメントは、<code class="inline">supported</code> が <code class="inline">true</code> であっても、別の理由で <code class="inline">"disabled"</code> リクエストが拒否される可能性があると明記している。その一例として、思考オフとの組み合わせをモデルが許可していない effort レベルの指定が挙げられている。このフィールドは必要条件の確認には使えるが、リクエスト成功の十分条件ではない点に注意が必要である。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>🧠 思考をサポートしないモデルの扱い</h4>
+                <p>思考機能自体をサポートしないモデルでは <code class="inline">disabled</code> の <code class="inline">supported</code> が <code class="inline">true</code> となる。「思考が無効の状態を受け付けるか」という観点で一貫した判定ができる設計といえる。</p>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 28px;">API レスポンス例</h2>
+            <p class="lead"><code class="inline">GET /v1/models/{model_id}</code> でモデルの capabilities を確認する例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">モデルの capabilities を取得</span>
+                </div>
+                <pre><code class="language-bash">curl "https://api.anthropic.com/v1/models/claude-opus-5-5" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01"</code></pre>
+            </div>
+            <p class="lead">レスポンスの <code class="inline">capabilities.thinking</code> には、<code class="inline">types</code> 配下に各思考タイプのサポート状況が含まれる (以下はフィールド構造を示す抜粋イメージ)。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">レスポンス抜粋イメージ</span>
+                </div>
+                <pre><code class="language-json">{
+  "capabilities": {
+    "thinking": {
+      "supported": true,
+      "types": {
+        "adaptive": { "supported": true },
+        "enabled": { "supported": false },
+        "disabled": { "supported": false }
+      }
+    }
+  }
+}</code></pre>
+            </div>
+            <p class="lead" style="margin-bottom: 0;"><code class="inline">disabled.supported</code> が <code class="inline">false</code> のモデルに <code class="inline">thinking: {"type": "disabled"}</code> を送信すると 400 エラーが返る。</p>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <p class="lead">Models API を利用した思考無効化可否の判定フロー。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    App(["👤 アプリケーション"]) --> Query["📨 GET /v1/models/{model_id}<br/>capabilities を取得"]
+    Query --> Check{"thinking.types.disabled<br/>.supported は true?"}
+    Check -->|true| Send["✅ thinking: {type: 'disabled'}<br/>を送信可能"]
+    Check -->|false| Skip["🚫 disabled を送信しない<br/>400 エラーを回避"]
+    Send --> Note["⚠️ effort レベルとの組み合わせ<br/>により拒否される場合あり"]
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class App user
+    class Query input
+    class Check decision
+    class Send,Skip process
+    class Note warning
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases / Impact -->
+        <section class="section">
+            <h2 class="section-title">ユースケース / 開発者への影響</h2>
+            <div class="use-case">
+                <h4>🔀 複数モデルを切り替えるアプリケーション</h4>
+                <p>複数の Claude モデルを切り替えて利用するアプリケーションでは、モデル ID ごとに思考無効化の可否を分岐しているコードを <code class="inline">capabilities.thinking.types.disabled.supported</code> の参照に置き換えることで、新モデル追加時の保守コストを削減できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>⚡ レイテンシ・コスト調整での利用</h4>
+                <p><code class="inline">thinking: {type: "disabled"}</code> を指定してレイテンシやコストを調整している開発者は、送信前に Models API で可否を確認することで 400 エラーを回避できる。ただし <code class="inline">supported: true</code> でも effort レベルとの組み合わせなどで 400 エラーが返る可能性があるため、エラーハンドリングは引き続き必要である。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏗️ モデルセレクタ・ルーティング層の実装</h4>
+                <p>モデルセレクタやルーティング層など、モデルの機能差を抽象化する基盤を実装している開発者は、Models API のメタデータを機能ディスカバリに活用できる。既存のリクエストの挙動を変更するものではないため、即時の対応は不要である。</p>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 28px;">移行ガイド (該当する場合)</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <p>モデル選択時に <code class="inline">GET /v1/models/{model_id}</code> で対象モデルの <code class="inline">capabilities</code> を取得する。</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <p><code class="inline">capabilities.thinking.types.disabled.supported</code> を確認し、<code class="inline">false</code> の場合は <code class="inline">thinking: {type: "disabled"}</code> を送信しない。</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <p><code class="inline">true</code> の場合でも、effort レベルとの組み合わせによっては拒否される可能性があるため、400 エラーへのフォールバック処理を維持する。</p>
+                </div>
+            </div>
+
+            <div class="summary-box" style="margin-top: 28px;">
+                <h3>📝 まとめ</h3>
+                <p>Models API への <code style="background: rgba(212, 165, 116, 0.2); padding: 1px 6px; border-radius: 4px; color: #E8C9A8;">capabilities.thinking.types.disabled</code> の追加により、各モデルが <code style="background: rgba(212, 165, 116, 0.2); padding: 1px 6px; border-radius: 4px; color: #E8C9A8;">thinking: {type: "disabled"}</code> を受け付けるかどうかを <code style="background: rgba(212, 165, 116, 0.2); padding: 1px 6px; border-radius: 4px; color: #E8C9A8;">GET /v1/models</code> および <code style="background: rgba(212, 165, 116, 0.2); padding: 1px 6px; border-radius: 4px; color: #E8C9A8;">GET /v1/models/{model_id}</code> から判別できるようになった。Claude Opus 5.5 や Claude Fable 5 など思考を無効化できないモデルが増えるなか、モデル ID ごとの挙動をハードコードせずに済む点は、複数モデルを扱うアプリケーションの保守性向上に直結する。一方、<code style="background: rgba(212, 165, 116, 0.2); padding: 1px 6px; border-radius: 4px; color: #E8C9A8;">supported: true</code> であっても effort レベルとの組み合わせなどでリクエストが拒否される可能性はあるため、エラーハンドリングは引き続き維持する必要がある。2026-10-01 の <code style="background: rgba(212, 165, 116, 0.2); padding: 1px 6px; border-radius: 4px; color: #E8C9A8;">line</code> フィールド追加と合わせ、Models API をモデル機能のディスカバリに活用できる範囲が着実に広がっている。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;"><strong>ソース:</strong> Claude Developer Platform Release Notes | <strong>カテゴリ:</strong> API アップデート | <strong>発表日:</strong> 2026-10-05</p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong>
+                <a href="https://platform.claude.com/docs/en/api/models/list" target="_blank" rel="noopener noreferrer">Models API - List Models</a> |
+                <a href="https://platform.claude.com/docs/en/models/overview#using-the-models-api" target="_blank" rel="noopener noreferrer">Models overview - Using the Models API</a> |
+                <a href="https://platform.claude.com/docs/en/build-with-claude/thinking#turning-thinking-off" target="_blank" rel="noopener noreferrer">Thinking - Turning thinking off</a> |
+                <a href="https://platform.claude.com/docs/en/build-with-claude/effort" target="_blank" rel="noopener noreferrer">Effort</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

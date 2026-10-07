@@ -5,7 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-06](2026/2026-10-06-cyber-verification-program.md) - サイバー検証プログラム (CVP) の拡大: 3 つのアクセス階層で防御側に信頼されたモデルアクセスを提供
+- [2026-10-06](2026/2026-10-06-claude-code-v2-1-292.md) - Claude Code v2.1.292: Agent ツールの `effort` パラメータ、`plugin install --marketplace`、モッド向けプロンプトキャッシュ、サンドボックス・権限のセキュリティ修正多数
 - [2026-10-06](2026/2026-10-06-claude-code-v2-1-291.md) - Claude Code v2.1.291: クラウドセッションの権限プロンプト回答と終了時のメッセージ喪失、2 件のリグレッションを修正するホットフィックス
+- [2026-10-05](2026/2026-10-05-models-api-thinking-disabled-capability.md) - Models API に `capabilities.thinking.types.disabled` を追加: 思考無効化の可否をプログラムから判別可能に
 - [2026-10-05](2026/2026-10-05-claude-code-v2-1-290.md) - Claude Code v2.1.290: 190 項目の大型リリース — モッドフックの拡張、Managed Agents オンボーディングコマンド、権限・サンドボックスの修正多数、Slack の `!fast` モード
 - [2026-10-03](2026/2026-10-03-claude-code-v2-1-289.md) - Claude Code v2.1.289: sandbox auto-allow 下の Bash deny/ask ルールバイパス修正などセキュリティ強化、`agent.spawn` の追加、プラグイン・モッド描画の安定性修正多数
 - [2026-10-02](2026/2026-10-02-claude-frontier-academy.md) - Anthropic、1 億ドルを投じて 1 万人のエンジニアを育成する Claude Frontier Academy を発表
