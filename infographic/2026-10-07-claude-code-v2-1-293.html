@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.293: Claude Haiku 5.5 がデフォルト Haiku モデルに、コンパクション後の作業取り消し問題の修正、MCP メモリリーク修正など 56 件の変更 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .subsection-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Breakdown bar */
+        .breakdown-bar {
+            display: flex;
+            width: 100%;
+            height: 36px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 8px 0 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .breakdown-bar span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            min-width: 0;
+        }
+
+        .breakdown-added { background: #66BB6A; }
+        .breakdown-fixed { background: #4A90E2; }
+        .breakdown-improved { background: #7B61FF; }
+
+        .breakdown-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .breakdown-legend .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* Detail List */
+        .detail-list {
+            list-style: none;
+            display: grid;
+            gap: 14px;
+        }
+
+        .detail-list > li {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .detail-list > li strong {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        /* Notice Box */
+        .notice-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: #5D4037;
+        }
+
+        .notice-box .notice-label {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #E65100;
+        }
+
+        /* Info Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .info-table th,
+        .info-table td {
+            padding: 10px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.3);
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .info-table td {
+            color: var(--text-secondary);
+        }
+
+        /* Inline code */
+        code.inline {
+            background: rgba(212, 165, 116, 0.15);
+            border: 1px solid rgba(212, 165, 116, 0.35);
+            border-radius: 6px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            color: #8a5a2a;
+            word-break: break-all;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+            display: block;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        .summary-box code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+
+        .summary-box p + p {
+            margin-top: 12px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Links list */
+        .links-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .links-list li {
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .links-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+        }
+
+        .links-list a {
+            color: #8a5a2a;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .links-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #8a5a2a;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .breakdown-bar {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.293</h1>
+                <p class="subtitle">Claude Haiku 5.5 がデフォルト Haiku モデルに、コンパクション後の作業取り消し問題の修正、MCP メモリリーク修正など 56 件の変更</p>
+                <p class="date">📅 2026-10-07 ｜ ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="section-lead">Claude Code v2.1.293 がリリースされました。56 件の変更を含むリリースで、内訳は追加 (Added) 7 件、修正 (Fixed) 36 件、変更・改善 (Changed / Improved) 13 件 (うち取り消し 2 件) です。新モデル Claude Haiku 5.5 の提供開始にあわせたリリースであると同時に、長時間セッション・マルチセッション運用での信頼性を高める修正が中心となっています。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🐦</div>
+                    <div class="key-point-content">
+                        <h3>新モデル Claude Haiku 5.5 がデフォルト Haiku モデルに</h3>
+                        <p><code class="inline">claude-haiku-5-5</code> が追加され、Anthropic API のデフォルト Haiku モデルになりました。1M トークンのコンテキストをサポートし、価格は入力 $0.10 / 出力 $0.50 (100 万トークンあたり、100K トークン超のプロンプトは $0.50 / $2.50) です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗜️</div>
+                    <div class="key-point-content">
+                        <h3>コンパクション後の作業取り消し問題の修正</h3>
+                        <p>コンテキストのコンパクション後に Claude が自身の直前の作業の完了状態を誤認し、完了した作業を取り消したりやり直したりする問題が修正されました。長時間セッションの信頼性に直結する重要な修正です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>HTTP MCP 接続のメモリリーク修正</h3>
+                        <p>HTTP MCP 接続が、クローズされるまで送信したすべてのリクエストを保持し続けるメモリリークが修正されました。長時間接続で MCP サーバーを利用する開発者に効く修正です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📜</div>
+                    <div class="key-point-content">
+                        <h3>Bash 経由のファイル閲覧でもルールを読み込み</h3>
+                        <p>Bash ツールの <code class="inline">cat</code>、<code class="inline">head</code>、<code class="inline">tail</code> などの単一ファイル閲覧コマンドで、パススコープのルールとネストした CLAUDE.md が読み込まれない問題が修正されました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>モッド API の拡張</h3>
+                        <p><code class="inline">subagentStatusLine</code> への <code class="inline">agentType</code> の追加、<code class="inline">$.tool.register</code> の <code class="inline">isDeferred</code> オプションの追加など、モッド・プラグイン開発者向けの API が拡張されました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.293</h2>
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-value">56</div>
+                    <div class="stat-label">変更項目数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">追加 (Added)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">36</div>
+                    <div class="stat-label">修正 (Fixed)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">13</div>
+                    <div class="stat-label">変更・改善<br>(うち取り消し 2 件)</div>
+                </div>
+            </div>
+            <h3 class="subsection-title">📊 変更 56 件の内訳</h3>
+            <div class="breakdown-bar" role="img" aria-label="変更 56 件の内訳: 追加 7 件、修正 36 件、変更・改善 13 件 (うち取り消し 2 件)">
+                <span class="breakdown-added" style="flex: 7;">7</span>
+                <span class="breakdown-fixed" style="flex: 36;">Fixed 36</span>
+                <span class="breakdown-improved" style="flex: 13;">13</span>
+            </div>
+            <div class="breakdown-legend">
+                <span><span class="dot" style="background: #66BB6A;"></span>追加 7 件 (12.5%)</span>
+                <span><span class="dot" style="background: #4A90E2;"></span>修正 36 件 (64.3%)</span>
+                <span><span class="dot" style="background: #7B61FF;"></span>変更・改善 13 件 (23.2%、うち取り消し 2 件)</span>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p class="section-lead">Claude Code v2.1.293 は、92 件の大規模リリースだった 2026-10-06 の v2.1.292 の翌日にリリースされました。新モデル Claude Haiku 5.5 の提供開始にあわせたリリースであると同時に、コンパクション後の作業認識やセッションのバックグラウンド移動 (<code class="inline">←</code> キー) まわりなど、長時間セッション・マルチセッション運用での信頼性を高める修正が中心です。また、Claude in Slack (Claude Tag) と Code Review に関する修正・改善も 9 件含まれます。</p>
+            <table class="info-table">
+                <tr><th>項目</th><th>内容</th></tr>
+                <tr><td>発表日</td><td>2026-10-07 (npm 公開日)</td></tr>
+                <tr><td>ソース</td><td>Claude Code Changelog</td></tr>
+                <tr><td>カテゴリ</td><td>Claude Code / CLI アップデート</td></tr>
+                <tr><td>公式リンク</td><td><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" style="color: #8a5a2a;">github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></td></tr>
+            </table>
+        </section>
+
+        <!-- Main feature cards -->
+        <section class="section">
+            <h2 class="section-title">主要な変更ハイライト</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🐦 Claude Haiku 5.5 の追加</h3>
+                    <p>デフォルト Haiku モデルが <code class="inline">claude-haiku-5-5</code> になりました。1M トークンのコンテキストをサポートし、軽量・低価格でサブエージェントでの大量のファイル読み込みや探索タスク、バックグラウンドの定型処理に適した選択肢です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🗜️ コンパクション後の作業取り消し問題の修正</h3>
+                    <p>コンパクション直前の Claude 自身のアクションを、コンパクション後に「完了済み」と誤って扱い、完了済みの作業を取り消したりやり直したりする問題が修正されました。長時間セッションでの作業の一貫性に直結する修正です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔌 HTTP MCP メモリリーク修正</h3>
+                    <p>HTTP MCP 接続が、クローズされるまで送信したすべてのリクエストを保持し続けるメモリリークが修正されました。パススコープのルールとネストした CLAUDE.md が Bash 閲覧時に読み込まれない問題も修正されています。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧩 モッド API の追加</h3>
+                    <p><code class="inline">subagentStatusLine</code> に <code class="inline">agentType</code> が追加され、ステータスラインスクリプトがカスタムサブエージェントの種類を判別できます。<code class="inline">$.tool.register</code> には <code class="inline">isDeferred</code> オプションが追加されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🖥️ セッション操作・UI の修正</h3>
+                    <p><code class="inline">←</code> によるバックグラウンド移動でのメッセージ消失、<code class="inline">/model</code> の effort 設定の循環、<code class="inline">claude agents</code> の bypass permissions、ペースト処理、vim モード、<code class="inline">claude purge</code> などが修正されました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. Haiku 5.5 -->
+        <section class="section">
+            <h2 class="section-title">1. 新モデル: Claude Haiku 5.5 の追加</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🐦 デフォルト Haiku モデルに</strong>
+                    <code class="inline">claude-haiku-5-5</code> が追加され、Anthropic API のデフォルト Haiku モデルとなりました。
+                </li>
+                <li>
+                    <strong>🪟 1M トークンのコンテキストウィンドウ</strong>
+                    1M トークンのコンテキストウィンドウをサポートします。軽量・低価格でありながら 1M コンテキストを持つため、サブエージェントでの大量のファイル読み込みや探索タスク、バックグラウンドの定型処理などに適した選択肢となります。
+                </li>
+            </ul>
+            <h3 class="subsection-title">💰 価格 (100 万トークンあたり)</h3>
+            <table class="info-table">
+                <tr><th>プロンプトサイズ</th><th>入力</th><th>出力</th></tr>
+                <tr><td>100K トークン以下</td><td>$0.10</td><td>$0.50</td></tr>
+                <tr><td>100K トークン超</td><td>$0.50</td><td>$2.50</td></tr>
+            </table>
+        </section>
+
+        <!-- 2. Agent reliability -->
+        <section class="section">
+            <h2 class="section-title">2. エージェント動作の信頼性修正</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🗜️ コンパクション後の作業取り消し問題</strong>
+                    コンテキストのコンパクション直前に Claude 自身が行った最後のアクションを、コンパクション後に「完了済み」と誤って扱い、完了済みの作業を取り消したりやり直したりすることがある問題を修正しました。長時間セッションでの作業の一貫性に直結する重要な修正です。
+                </li>
+                <li>
+                    <strong>🔌 HTTP MCP 接続のメモリリーク</strong>
+                    HTTP MCP 接続が、クローズされるまで送信したすべてのリクエストを保持し続けるメモリリークを修正しました。
+                </li>
+                <li>
+                    <strong>📜 Bash 経由のファイル閲覧時のルール読み込み</strong>
+                    Claude が Read ツールではなく Bash ツールの単一ファイル向け <code class="inline">cat</code>、<code class="inline">head</code>、<code class="inline">tail</code>、<code class="inline">sed -n</code>、<code class="inline">grep</code> コマンドでファイルを閲覧した場合に、パススコープのルールとネストした CLAUDE.md ファイルが読み込まれない問題を修正しました。
+                </li>
+                <li>
+                    <strong>📨 SendMessage ツールの誤案内</strong>
+                    ホスト、権限ルール、<code class="inline">--tools</code> リストで <code class="inline">SendMessage</code> ツールが削除されたセッション (再開セッションを含む) で、Claude がサブエージェントへの継続指示やメッセージ送信を促されていた問題を修正しました。
+                </li>
+                <li>
+                    <strong>🧰 サブエージェントのツール可用性の誤案内</strong>
+                    サブエージェントと <code class="inline">--agent</code> セッションが、自身のツールリストから外れているだけの組み込みツールを「セッション全体で無効」と案内されていた問題を修正しました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 3. Mod / plugin -->
+        <section class="section">
+            <h2 class="section-title">3. モッド・プラグイン開発者向けの追加と修正</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🏷️ subagentStatusLine に agentType を追加</strong>
+                    ステータスラインスクリプトがカスタムサブエージェントの種類を判別できるようになりました。
+                </li>
+                <li>
+                    <strong>⚙️ $.tool.register に isDeferred を追加</strong>
+                    <code class="inline">false</code> を指定すると、ツールのスキーマがツール検索の背後ではなく最初からプロンプトに記載されます。
+                </li>
+                <li>
+                    <strong>🧪 claude plugin test と $.session.append</strong>
+                    <code class="inline">$.session.append</code> を呼ぶモッドで <code class="inline">claude plugin test</code> が失敗する問題を修正しました。テストは新しい <code class="inline">mock.session</code> で追記された行を読み戻せます。
+                </li>
+                <li>
+                    <strong>🪝 classic.* イベントのフックのスキップ</strong>
+                    プラグインフックワーカーの再起動中に、モッドの <code class="inline">classic.*</code> イベントのフックがスキップされ、settings のフックだけで応答されていた問題を修正しました。
+                </li>
+                <li>
+                    <strong>🐳 claude plugin eval の Docker Desktop 問題</strong>
+                    Docker Desktop 導入済みの Mac (<code class="inline">~/.docker/bin</code> 配下のリンク) で、Bash を許可するすべての実行が拒否される問題を修正しました。拒否時には資格情報ストアのどの部分がリンクを保持しているかを示すようになりました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 4. Session / UI -->
+        <section class="section">
+            <h2 class="section-title">4. セッション操作・UI の修正</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>⬅️ ← によるバックグラウンド移動の改善</strong>
+                    Claude の作業中に送信したメッセージが、<code class="inline">←</code> でセッションをバックグラウンドへ移動した際に失われる問題を修正しました。キュー済みメッセージを移動できない場合は、移動せずその旨を表示します。また、プロンプトに未送信テキストがある場合や質問への回答待ちの場合に 10 秒後にバックグラウンド化してしまう問題、<code class="inline">←</code> 直後の権限プロンプトで Esc や No がターンを停止しない問題も修正されました。
+                </li>
+                <li>
+                    <strong>🎚️ /model の effort 設定</strong>
+                    ←/→ キーが最高・最低レベルを超えて循環し、誤って Low がモデルのデフォルト effort として保存されることがある問題を修正しました。
+                </li>
+                <li>
+                    <strong>🔓 claude agents の bypass permissions</strong>
+                    同意が <code class="inline">.claude/settings.local.json</code> や <code class="inline">--settings</code> ファイルにのみ保存されている場合に、バックグラウンドセッションが bypass permissions を無視する問題を修正しました。先に同意を求め、bypass を無視するセッションには常設の通知を表示します。
+                </li>
+                <li>
+                    <strong>📋 ペースト処理の修正</strong>
+                    同じ語で始まり同じ語で終わるペーストテキストが入力扱いで送信される問題、ペースト直後のアクセント入力でスキル名が入力扱いになる問題を修正しました。
+                </li>
+                <li>
+                    <strong>⌨️ vim モードの修正</strong>
+                    スペースのみの行での <code class="inline">&gt;&gt;</code>・<code class="inline">&lt;&lt;</code> のカーソル位置、Visual mode での行削除後のカーソル位置と <code class="inline">.</code> の動作を修正しました。
+                </li>
+                <li>
+                    <strong>🧹 claude purge の改善</strong>
+                    ファイルやフォルダーを削除できない場合に黙って停止 (exit 0 またはハング) する問題を修正しました。残りを削除し、削除できなかったものを列挙して exit 1 で終了します。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 5. Reverted -->
+        <section class="section">
+            <h2 class="section-title">5. 取り消し (Reverted)</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🔁 auto モード拒否メッセージの取り消し</strong>
+                    v2.1.281 で導入された、「拒否は正確なコマンドだけでなく結果 (outcome) に及ぶ」と Claude に伝える変更が取り消されました。
+                </li>
+                <li>
+                    <strong>🔁 クラウドセッションのウェイクアップ修正の取り消し</strong>
+                    v2.1.290 で導入された、コンテナ再起動で <code class="inline">/loop</code> のウェイクアップやスケジュールタスクが失われた際に Claude に通知する修正が取り消されました。Claude には通知されず、セッションはスリープしたままとなります。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 6. Other fixes -->
+        <section class="section">
+            <h2 class="section-title">6. その他の修正・改善 (抜粋)</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🖥️ /tui と Chrome 接続</strong>
+                    <code class="inline">/tui</code> が <code class="inline">--chrome</code> で開始したセッションの Chrome 接続を切断し、<code class="inline">--no-chrome</code> を無視する問題を修正しました。
+                </li>
+                <li>
+                    <strong>🔑 ログイン期限切れ時のサインアウト</strong>
+                    <code class="inline">claude logs</code> / <code class="inline">stop</code> / <code class="inline">kill</code> / <code class="inline">rm</code> と <code class="inline">claude daemon</code> 系コマンドが、ログインの期限切れ時にサインアウトさせることがある問題を修正しました。
+                </li>
+                <li>
+                    <strong>☁️ Remote Control・クラウドセッションの改善</strong>
+                    非常に長いセッションで返信がストリーミングされずブロック単位で表示される問題、資格情報回復のたびに開始履歴が再アップロードされる問題を修正しました。
+                </li>
+                <li>
+                    <strong>🔍 /ultrareview の修正</strong>
+                    アップロードが Linux で一部リポジトリを誤って拒否する問題と、split-index に関する危険なアドバイスを修正しました。
+                </li>
+                <li>
+                    <strong>🪟 Windows でのプロセス停止</strong>
+                    ステータスライン・フック・シェルコマンドの停止が、同じプロセス ID を持つ無関係なプロセスを終了させることがある問題を修正しました。
+                </li>
+                <li>
+                    <strong>🏢 Team / Enterprise 組織の起動改善</strong>
+                    ポリシーと管理対象設定の取得が早まり、停滞したリクエストは 3 秒後に再試行されます。
+                </li>
+                <li>
+                    <strong>🌐 Claude in Chrome の改善</strong>
+                    ブラウザのタブ報告が遅い場合のページ操作の拒否が減少しました。クラウドセッションで到達できない場合のメッセージも改善されています。
+                </li>
+                <li>
+                    <strong>🎨 アーティファクト・スキル同期・OpenTelemetry</strong>
+                    アーティファクトはライブラリを公開から 2 週間以上経過した正確なバージョンに固定します。claude.ai スキル同期はセッション未使用時のチェック間隔が 10 分から約 40 分に変更されました。OpenTelemetry の <code class="inline">claude_code.at_mention</code> ログはプロンプト読み込みごとにエージェント・MCP リソースイベントを各 100 件までに制限します。
+                </li>
+                <li>
+                    <strong>💬 Claude Tag (Claude in Slack)</strong>
+                    Enterprise Grid の共有チャンネルでの誤った未設定表示、管理者によるチャンネル設定変更時の中断、ルーティンの手動実行が別スレッドで実行される問題などを修正しました。チャンネルルールの上限が 20 から 50 に拡大され、アナウンスチャンネルへの参加時にイントロを投稿しないよう変更されました。
+                </li>
+                <li>
+                    <strong>🔎 Code Review</strong>
+                    Add a repository ダイアログが、追加できなかったリポジトリとその理由 (GitHub の書き込み権限不足など) を列挙するよう改善されました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <h3 class="subsection-title">🗜️ コンパクション後の作業認識の修正</h3>
+            <p class="section-lead">長時間セッションではコンテキストが上限に近づくと会話が自動的にコンパクション (要約・圧縮) されます。v2.1.292 以前は、コンパクション直前の Claude 自身のアクションの完了状態が要約に正しく反映されず、完了済みの作業を未完了と見なして取り消す、あるいはやり直すことがありました。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Work["🤖 Claude が作業を完了"] --> Compact["🗜️ コンテキストのコンパクション"]
+    Compact --> Branch{"🔀 直前のアクションの扱い"}
+    Branch -->|v2.1.292 以前| Wrong["⚠️ 完了状態を誤認"]
+    Branch -->|v2.1.293| Right["✅ 完了済みとして正しく引き継ぎ"]
+    Wrong --> Redo["🚨 完了した作業を取り消し・やり直し"]
+    Right --> Continue(["▶️ 次の作業へ進む"])
+
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Work,Compact process
+    class Branch decision
+    class Wrong warning
+    class Redo error
+    class Right,Continue input
+                </pre>
+            </div>
+
+            <h3 class="subsection-title">📜 Bash 経由のファイル閲覧とルール読み込み</h3>
+            <p class="section-lead">Claude Code は、Read ツールでファイルを閲覧した際にパススコープのルール (path-scoped rules) やネストした CLAUDE.md を文脈として読み込みます。v2.1.292 以前は、Claude が Read ツールの代わりに Bash ツールの <code class="inline">cat</code>、<code class="inline">head</code>、<code class="inline">tail</code>、<code class="inline">sed -n</code>、<code class="inline">grep</code> といった単一ファイル向けコマンドでファイルを閲覧すると、この読み込みが行われませんでした。v2.1.293 からは、どちらの経路でも同じようにルールが適用されるため、ディレクトリごとの規約やガイドラインの実効性が向上します。</p>
+        </section>
+
+        <!-- Code example -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p class="section-lead">モッドからツールを登録する際、<code class="inline">isDeferred: false</code> を指定するとツール検索の背後に置かれず、最初からプロンプトにスキーマが記載されます。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JavaScript</span>
+                    <span class="code-title">モッドのフックモジュールでのツール登録</span>
+                </div>
+                <pre><code class="language-javascript">// モッドのフックモジュールでのツール登録
+$.tool.register({
+  name: "my_tool",
+  description: "常に利用可能にしたいツール",
+  // false: ツール検索の背後ではなく、最初からスキーマをプロンプトに記載する
+  isDeferred: false,
+  /* input schema, handler など */
+});</code></pre>
+            </div>
+            <p class="section-lead" style="margin-bottom: 0;"><code class="inline">claude plugin test</code> では、<code class="inline">$.session.append</code> で追記した行を新しい <code class="inline">mock.session</code> で読み戻してテストできます。</p>
+        </section>
+
+        <!-- Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">🎯 対象</h3>
+            <ul class="detail-list">
+                <li>Anthropic API・Claude Code で Haiku モデルを利用しているすべての開発者 (デフォルト Haiku モデルが Claude Haiku 5.5 に変更)</li>
+                <li>長時間セッションでコンパクションが発生する規模の作業を行っている利用者 (作業取り消し問題の修正)</li>
+                <li>HTTP MCP サーバーを長時間接続で利用している開発者 (メモリリークの修正)</li>
+                <li>パススコープのルールやネストした CLAUDE.md で規約を管理しているチーム (Bash 閲覧時のルール読み込み修正)</li>
+                <li>ステータスラインスクリプトやモッドを開発している開発者 (<code class="inline">agentType</code>、<code class="inline">isDeferred</code>、<code class="inline">mock.session</code> の追加)</li>
+                <li><code class="inline">claude agents</code> やバックグラウンドセッション、<code class="inline">←</code> でのセッション切り替えを多用する利用者</li>
+                <li>Claude in Slack (Claude Tag) と Code Review を利用している組織</li>
+            </ul>
+
+            <h3 class="subsection-title">✅ 必要なアクション</h3>
+            <ul class="detail-list">
+                <li>
+                    <strong>🐦 Haiku モデルの利用者</strong>
+                    デフォルト Haiku モデルが Claude Haiku 5.5 になりました。100K トークン超のプロンプトでは価格が $0.50 / $2.50 に上がる 2 段階価格のため、1M コンテキストを活用する場合はコストへの影響を確認します。
+                </li>
+                <li>
+                    <strong>🗜️ 長時間セッションの利用者</strong>
+                    コンパクション後に完了済みの作業が取り消される事象に遭遇していた場合、本バージョンへの更新で解消される見込みです。
+                </li>
+                <li>
+                    <strong>🧩 ステータスライン・モッド開発者</strong>
+                    <code class="inline">subagentStatusLine</code> の <code class="inline">agentType</code> でカスタムサブエージェントの種類を判別できます。常に利用させたいツールには <code class="inline">$.tool.register</code> で <code class="inline">isDeferred: false</code> を指定し、ツール検索を介さず最初からスキーマを提示できます。
+                </li>
+                <li>
+                    <strong>☁️ クラウドセッションで /loop やスケジュールタスクを使う利用者</strong>
+                    v2.1.290 の修正が取り消され、コンテナ再起動でウェイクアップが失われるとセッションはスリープしたままになります。重要な定期処理には別の監視手段を検討します。
+                </li>
+            </ul>
+
+            <h3 class="subsection-title">🚧 移行ガイド (該当する場合)</h3>
+            <div class="notice-box">
+                <div class="notice-label">⚠️ 注意が必要な挙動変更</div>
+                <p>破壊的変更はありませんが、以下の挙動変更に注意が必要です。</p>
+                <ul style="margin-top: 8px; padding-left: 20px;">
+                    <li>デフォルトの Haiku モデルが Claude Haiku 5.5 に変わるため、Haiku を明示的なバージョン指定なしで使っている場合は応答特性とコストが変わります</li>
+                    <li>claude.ai スキル同期のチェック間隔が、セッション未使用時は 10 分から約 40 分に延びました。スキルの編集を素早く反映したい場合はセッションを開きます</li>
+                    <li>エージェントリストと MCP サーバーのモデルへの通知順が変わり、非 ASCII 文字を含む名前は ASCII 名の後にソートされます</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🐦 サブエージェント・バックグラウンド処理での Haiku 5.5 活用</h4>
+                <p>Claude Haiku 5.5 は入力 $0.10 / 出力 $0.50 (100 万トークンあたり) の低価格で 1M トークンのコンテキストを持つため、サブエージェントでの大量のファイル読み込みや探索タスク、バックグラウンドの定型処理などに適しています。100K トークン超のプロンプトでは $0.50 / $2.50 の 2 段階価格になる点を踏まえて、コストと性能のバランスを設計できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🗜️ 長時間セッションでの大規模リファクタリング</h4>
+                <p>コンパクションが複数回発生するような長時間の作業でも、直前に完了した作業が「未完了」と誤認されて取り消される問題が解消されました。コンパクション後も作業の一貫性が保たれるため、大規模なリファクタリングや複数ファイルにまたがる変更を安心して任せられます。</p>
+            </div>
+            <div class="use-case">
+                <h4>📜 ディレクトリごとの規約運用の実効性向上</h4>
+                <p>パススコープのルールやネストした CLAUDE.md でディレクトリごとの規約を管理しているチームでは、Claude が Bash の <code class="inline">cat</code> や <code class="inline">head</code> でファイルを閲覧した場合でも規約が読み込まれるようになり、Read ツール経由と同じガイドラインの実効性が得られます。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Code v2.1.293 は、<strong>56 件 (追加 7 件、修正 36 件、変更・改善 13 件、うち取り消し 2 件) からなるリリース</strong>です。最大のトピックは <strong>Claude Haiku 5.5 の追加</strong>で、1M コンテキストと入力 $0.10 / 出力 $0.50 (100 万トークンあたり) という低価格により、サブエージェントやバックグラウンド処理での軽量モデル活用の幅が広がります。</p>
+                <p>品質面では、<strong>コンパクション後に完了済みの作業を取り消す問題の修正</strong>が長時間セッションの信頼性を大きく改善するほか、HTTP MCP のメモリリーク修正、Bash 経由のファイル閲覧でもパススコープのルールと CLAUDE.md が読み込まれる修正など、エージェントの実運用に効く修正が揃いました。モッド開発者には <code>agentType</code>・<code>isDeferred</code>・<code>mock.session</code> の追加が、Slack 連携を使う組織には Claude Tag の修正群が、それぞれ着実な改善となります。Haiku 5.5 の 2 段階価格とクラウドセッションのウェイクアップ修正の取り消しには注意しつつ、幅広い利用者に更新を推奨できるリリースといえます。</p>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="links-list">
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog (v2.1.293)</a></li>
+                <li><a href="../reports/2026/2026-10-06-claude-code-v2-1-292.md" target="_blank" rel="noopener noreferrer">Claude Code v2.1.292 のレポート</a></li>
+                <li><a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code 公式ドキュメント</a></li>
+                <li><a href="https://platform.claude.com/docs/en/docs/about-claude/models/overview" target="_blank" rel="noopener noreferrer">Claude API モデル概要</a></li>
+                <li><a href="https://code.claude.com/docs/en/plugins" target="_blank" rel="noopener noreferrer">Claude Code のプラグイン</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-10-07 ｜ カテゴリ: Claude Code / CLI アップデート ｜ 本インフォグラフィックは Anthropic News Summary プロジェクトのレポートに基づいて作成されています。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

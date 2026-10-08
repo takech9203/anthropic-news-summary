@@ -5,6 +5,11 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-08](2026/2026-10-08-compliance-api-chat-endpoint.md) - Compliance API のチャットエンドポイントが統合 Claude 体験のチャットに対応 (ベータ)
+- [2026-10-07](2026/2026-10-07-claude-haiku-5-5.md) - Claude Haiku 5.5 発表: 最速・最安の小型モデルが平均約 75% のコスト削減と大幅な性能向上を実現
+- [2026-10-07](2026/2026-10-07-claude-code-v2-1-293.md) - Claude Code v2.1.293: Claude Haiku 5.5 がデフォルト Haiku モデルに、コンパクション後の作業取り消し問題の修正、MCP メモリリーク修正など 56 件の変更
+- [2026-10-07](2026/2026-10-07-api-platform-updates.md) - Claude API プラットフォーム更新: Sonnet 5.5 キャッシュ読み取り半額、SDK にブラウザ・コンピュータ使用クラス、Managed Agents の Web ツール制限強化
+- [2026-10-06](2026/2026-10-06-models-api-server-tools-capability.md) - Models API に `capabilities.server_tools` を追加: web 検索・コード実行ツールの対応可否をプログラムから判別可能に
 - [2026-10-06](2026/2026-10-06-cyber-verification-program.md) - サイバー検証プログラム (CVP) の拡大: 3 つのアクセス階層で防御側に信頼されたモデルアクセスを提供
 - [2026-10-06](2026/2026-10-06-claude-code-v2-1-292.md) - Claude Code v2.1.292: Agent ツールの `effort` パラメータ、`plugin install --marketplace`、モッド向けプロンプトキャッシュ、サンドボックス・権限のセキュリティ修正多数
 - [2026-10-06](2026/2026-10-06-claude-code-v2-1-291.md) - Claude Code v2.1.291: クラウドセッションの権限プロンプト回答と終了時のメッセージ喪失、2 件のリグレッションを修正するホットフィックス

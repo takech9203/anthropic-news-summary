@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance API のチャットエンドポイントが統合 Claude 体験のチャットに対応 (ベータ) - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .category-badge.beta {
+            background: var(--warning);
+            color: #FFFFFF;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.4);
+        }
+
+        .info-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            color: var(--text-secondary);
+        }
+
+        .info-table code {
+            background: var(--anthropic-light);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+            word-break: break-all;
+        }
+
+        .inline-code {
+            background: var(--anthropic-light);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Scope Pills */
+        .scope-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .scope-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--anthropic-light);
+            border: 2px dashed var(--anthropic-coral);
+            border-radius: 24px;
+            padding: 10px 20px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Warning / Attention */
+        .warning-box {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border: 2px solid var(--warning);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .warning-box h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #B45309;
+            margin-bottom: 10px;
+        }
+
+        .warning-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box ul {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .warning-box ul li {
+            margin-bottom: 6px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action List */
+        .action-list {
+            counter-reset: action;
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--anthropic-light);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .action-item::before {
+            counter-increment: action;
+            content: counter(action);
+            width: 28px;
+            height: 28px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-item div h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .action-item div p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Sub heading */
+        .sub-heading {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .note-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .footer ul li {
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Compliance API</span>
+                <span class="category-badge beta">ベータ</span>
+                <h1>Compliance API のチャットエンドポイントが<br>統合 Claude 体験のチャットに対応</h1>
+                <p class="date">📅 2026-10-08 | Claude Developer Platform Release Notes</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">💬</div>
+                    <div class="key-point-content">
+                        <h3>統合 Claude 体験のチャットが監査カバレッジに追加</h3>
+                        <p>Compliance API のチャットエンドポイントが、統合 Claude 体験 (unified Claude experience) のチャットも返すようになった。クラウド上のセッションに続くチャットも、分割されずに 1 つのチャットとして取得できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏢</div>
+                    <div class="key-point-content">
+                        <h3>Claude Enterprise 組織向けベータ</h3>
+                        <p>このカバレッジは Claude Enterprise 組織向けのベータとして提供される。本番の監査要件に組み込む場合は、仕様が変わる可能性を考慮する必要がある。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>既存の Compliance Access Key でそのまま利用可能</h3>
+                        <p>新しいキー、スコープ、設定は一切不要。既存の Compliance Access Key と read:compliance_user_data スコープのインテグレーションに、統合 Claude 体験のチャットが自動的に現れる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>クラウドセッションの作業はツールブロックで表現</h3>
+                        <p>クラウドセッションで Claude が実行した作業は、各メッセージの content 内の tool_use ブロック (name と input) と tool_result ブロック (tool_use_id で対応付けられた出力) として現れる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📈</div>
+                    <div class="key-point-content">
+                        <h3>チャットとセッションの両系統でカバレッジ拡大が継続</h3>
+                        <p>セッションエンドポイント側は 2026 年 8 月以降 Cowork、Claude Code、Claude Science、Claude for Microsoft 365、Claude in Chrome へと拡大。今回はチャットエンドポイント側の拡張である。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📋 チャット一覧 / メッセージ取得 / 削除</h3>
+                    <p>既存の 3 つのチャットエンドポイント (一覧、メッセージ取得、ハード削除) がそのまま統合 Claude 体験のチャットに対応。エンドポイント URL、認証、フィルター、ページング、レスポンス形式に破壊的変更はない。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧰 tool_use / tool_result ブロック</h3>
+                    <p>クラウドセッションでの作業内容は、メッセージの content 内のツールブロックとして記録される。tool_use はツールの name と input を、tool_result は tool_use_id で紐づく出力を保持する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 既存パイプラインへの自動流入</h3>
+                    <p>order_by=updated_at の組織全体ページネーションループなど、従来のエクスポートベストプラクティスは変更なし。統合 Claude 体験のチャットは既存のエクスポートループに自動的に流入する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🗑️ 削除時のクラウドセッション連動</h3>
+                    <p>Delete chat で統合 Claude 体験のチャットを削除すると、そのチャットのために開始されたクラウド上のセッションも削除される。削除は即時かつ永久で、復元はできない。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📎 ファイル / アーティファクトの取得</h3>
+                    <p>各メッセージには files (添付ファイル)、generated_files (Claude が生成したファイル)、artifacts (バージョン管理付きドキュメント) が含まれ得る。実体は id をコンテンツエンドポイントに渡してダウンロードする。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="sub-heading">🔌 対象エンドポイント</h3>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>エンドポイント</th>
+                        <th>役割</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>GET /v1/compliance/apps/chats</code></td>
+                        <td>チャットメタデータの一覧</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET /v1/compliance/apps/chats/{chat_id}/messages</code></td>
+                        <td>単一チャットの全メッセージ取得</td>
+                    </tr>
+                    <tr>
+                        <td><code>DELETE /v1/compliance/apps/chats/{chat_id}</code></td>
+                        <td>チャットのハード削除</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-heading">🔐 認証とスコープ</h3>
+            <div class="scope-pills">
+                <span class="scope-pill">🔑 read:compliance_user_data — 取得に必要</span>
+                <span class="scope-pill">🗝️ delete:compliance_user_data — 削除に追加で必要</span>
+            </div>
+            <p class="note-text">チャット、ファイル、プロジェクト系のエンドポイントは Compliance Access Key (<span class="inline-code">sk-ant-api01-...</span>) 専用。Admin API キー (<span class="inline-code">sk-ant-admin01-...</span>) では 403 Forbidden が返る。</p>
+
+            <h3 class="sub-heading">🗂️ チャットオブジェクトの形式</h3>
+            <p style="font-size: 14px; color: var(--text-secondary);">統合 Claude 体験のチャットは、他のチャットと同じ <span class="inline-code">claude_chat_</span> 接頭辞のオブジェクトとして返る。メッセージ取得エンドポイントは、チャットのメタデータと <span class="inline-code">created_at</span> でソートされた <span class="inline-code">chat_messages</span> 配列を返す。ユーザーが claude.ai で削除したチャットは <span class="inline-code">deleted_at</span> が設定された状態で一覧に返り、メッセージは内容なしで返る (従来どおり)。</p>
+
+            <h3 class="sub-heading">🏗️ アーキテクチャ</h3>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Unified["💬 統合 Claude 体験"]
+        Chat["🗨️ claude.ai チャット"]
+        CloudSession["☁️ クラウドセッション<br/>チャットから開始された作業"]
+        Chat --> CloudSession
+    end
+
+    subgraph AnthropicSide["🏢 Anthropic"]
+        Store[("🔐 チャットストア<br/>組織の保持ポリシーに従う")]
+    end
+
+    subgraph ComplianceAPI["🔒 Compliance API チャットエンドポイント"]
+        ListEP["📋 GET /chats<br/>一覧"]
+        MsgEP["📨 GET /chats/id/messages<br/>メッセージ取得"]
+        DelEP["🗑️ DELETE /chats/id<br/>ハード削除"]
+    end
+
+    subgraph Audit["🛡️ 企業の監査システム"]
+        direction LR
+        SIEM["📈 SIEM"]
+        DLP["🔐 DLP"]
+        Discovery["⚖️ eDiscovery"]
+        SIEM ~~~ DLP ~~~ Discovery
+    end
+
+    ReadKey(["🔑 read:compliance_user_data"])
+    DeleteKey(["🗝️ delete:compliance_user_data"])
+
+    Chat --> Store
+    CloudSession -->|"tool_use / tool_result<br/>ブロックとして記録"| Store
+    Store --> ListEP
+    Store --> MsgEP
+    ReadKey -.-> ListEP
+    ReadKey -.-> MsgEP
+    DeleteKey -.-> DelEP
+    DelEP -->|"チャットと<br/>開始されたクラウドセッションを削除"| Store
+    ListEP --> SIEM
+    MsgEP --> DLP
+    MsgEP --> Discovery
+
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef beta fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+
+    class Unified,AnthropicSide,ComplianceAPI,Audit container
+    class Chat input
+    class CloudSession beta
+    class Store storage
+    class ListEP,MsgEP process
+    class DelEP error
+    class SIEM,DLP,Discovery decision
+    class ReadKey,DeleteKey beta
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">チャット一覧の増分エクスポート (組織全体、更新日時順)</span>
+                </div>
+                <pre><code class="language-bash"># 組織全体のチャットを updated_at 順で取得する。統合 Claude 体験の
+# チャットも同じ一覧に自動的に含まれる
+curl --fail-with-body -sS -G \
+  "https://api.anthropic.com/v1/compliance/apps/chats" \
+  --header "x-api-key: $ANTHROPIC_COMPLIANCE_ACCESS_KEY" \
+  --header "anthropic-version: 2023-06-01" \
+  --data-urlencode "order_by=updated_at" \
+  --data-urlencode "updated_at.gte=2026-10-08T00:00:00Z" \
+  --data-urlencode "limit=100"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">チャットメッセージの取得 (ツールブロックを含む)</span>
+                </div>
+                <pre><code class="language-bash"># 統合 Claude 体験のチャットでは、クラウドセッションでの作業が
+# content 内の tool_use / tool_result ブロックとして返る
+chat_id="claude_chat_01H5CWunD7RpVJ5bHa8RCkja"
+
+curl --fail-with-body -sS \
+  "https://api.anthropic.com/v1/compliance/apps/chats/$chat_id/messages" \
+  --header "x-api-key: $ANTHROPIC_COMPLIANCE_ACCESS_KEY" \
+  --header "anthropic-version: 2023-06-01"</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">ツールブロックの処理例 (前方互換)</span>
+                </div>
+                <pre><code class="language-python"># メッセージの content からテキストとツールの作業内容を振り分ける。
+# 未知のブロックタイプは落とさずに通過させる (前方互換)
+def extract_blocks(message: dict) -> dict:
+    texts, tool_uses, tool_results, unknown = [], [], [], []
+    for block in message.get("content", []):
+        block_type = block.get("type")
+        if block_type == "text":
+            texts.append(block["text"])
+        elif block_type == "tool_use":
+            # クラウドセッションで実行されたツール呼び出し (name と input)
+            tool_uses.append({"name": block.get("name"), "input": block.get("input")})
+        elif block_type == "tool_result":
+            # tool_use_id で対応するツール呼び出しに紐づく出力
+            tool_results.append({"tool_use_id": block.get("tool_use_id")})
+        else:
+            unknown.append(block_type)
+    return {
+        "texts": texts,
+        "tool_uses": tool_uses,
+        "tool_results": tool_results,
+        "unknown": unknown,
+    }</code></pre>
+            </div>
+        </section>
+
+        <!-- Warnings -->
+        <section class="section">
+            <h2 class="section-title">注意点</h2>
+            <div class="warning-box">
+                <h4>⚠️ Delete chat はクラウドセッションも削除する</h4>
+                <p>統合 Claude 体験のチャットを Delete chat で削除すると、そのチャットのために開始されたクラウド上のセッションも削除される。削除運用では以下の境界を把握しておく必要がある。</p>
+                <ul>
+                    <li>削除されるのは「そのチャットのために開始されたセッション」まで。それらのセッションがさらに開始したセッションは削除されない</li>
+                    <li>削除は即時かつ永久であり、復元はできない</li>
+                    <li>削除には <strong>delete:compliance_user_data</strong> スコープが別途必要</li>
+                </ul>
+            </div>
+            <div class="warning-box">
+                <h4>🧪 ベータ提供であることの考慮</h4>
+                <p>統合 Claude 体験のチャットカバレッジはベータであり、仕様が変わる可能性がある。本番の監査要件に組み込む場合は、この前提を関係者に明示する。また、クラウドセッションでの作業はツールブロックを通じて見える範囲に限られるため、何がトランスクリプトに現れ、何が現れないかを監査要件の関係者と確認する。</p>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🛡️ 監査 / セキュリティ監視</h4>
+                <p>セキュリティチームは SIEM や DLP にチャット内容を取り込み、機微情報を扱うやり取りを監視できる。統合 Claude 体験のチャットが加わることで、チャットから始まりクラウドセッションに続く作業も、ツールブロックを通じて監視対象に含められる。</p>
+            </div>
+            <div class="use-case">
+                <h4>⚖️ eDiscovery (電子証拠開示)</h4>
+                <p>コンプライアンス / eDiscovery 担当者は、統合 Claude 体験でのやり取り (チャットとクラウドセッションでの作業) を 1 つのチャットとして証跡取得できる。クラウドセッションでの作業内容も tool_use / tool_result ブロックとしてエクスポートに含まれる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🗄️ データガバナンス / アカウント削除対応</h4>
+                <p>データガバナンス担当者は、Delete chat によるハード削除で統合 Claude 体験のチャットと、そのチャットのために開始されたクラウドセッションをまとめて削除できる。アカウント削除要求や保持ポリシーの運用に組み込める。</p>
+            </div>
+        </section>
+
+        <!-- Required Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <div class="action-list">
+                <div class="action-item">
+                    <div>
+                        <h4>既存インテグレーションの確認</h4>
+                        <p>追加設定は不要だが、既存のチャットエクスポートに統合 Claude 体験のチャットが流入し始める。tool_use / tool_result ブロックを含むメッセージを正しく処理できるか、パーサーや表示系を確認する。</p>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div>
+                        <h4>ツールブロックの監査上の位置づけの整理</h4>
+                        <p>クラウドセッションでの作業はツールブロックを通じて見える範囲に限られる。何がトランスクリプトに現れ、何が現れないかを監査要件の関係者と確認する。</p>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div>
+                        <h4>削除運用の見直し</h4>
+                        <p>Delete chat がクラウドセッションも削除する一方、それらのセッションが開始したセッションは残る。削除手順書にこの挙動を反映する。</p>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div>
+                        <h4>ベータであることの考慮</h4>
+                        <p>本番の監査要件に組み込む場合は、ベータ提供であり仕様が変わる可能性があるという前提を明示する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📖 <a href="https://platform.claude.com/docs/en/manage-claude/compliance-api" target="_blank" rel="noopener noreferrer">Compliance API</a></li>
+                <li>📖 <a href="https://platform.claude.com/docs/en/manage-claude/compliance-content-data" target="_blank" rel="noopener noreferrer">Retrieve and delete chats, files, and projects</a></li>
+                <li>📖 <a href="https://platform.claude.com/docs/en/api/compliance/apps/chats/list" target="_blank" rel="noopener noreferrer">List chats (API リファレンス)</a></li>
+                <li>📖 <a href="https://platform.claude.com/docs/en/api/compliance/apps/chats/messages/list" target="_blank" rel="noopener noreferrer">Get chat messages (API リファレンス)</a></li>
+                <li>📖 <a href="https://platform.claude.com/docs/en/api/compliance/apps/chats/delete" target="_blank" rel="noopener noreferrer">Delete chat (API リファレンス)</a></li>
+                <li>📖 <a href="https://platform.claude.com/docs/en/manage-claude/compliance-api-access" target="_blank" rel="noopener noreferrer">Set up the Compliance API</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは 2026-10-08 の Claude Developer Platform リリースノートを基に作成されています。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Models API に capabilities.server_tools を追加 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+            background: rgba(212, 165, 116, 0.2);
+            padding: 2px 8px;
+            border-radius: 6px;
+            color: #E8C9A8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section p.lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .section code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.88em;
+            background: var(--anthropic-cream);
+            padding: 2px 6px;
+            border-radius: 6px;
+            color: #8a5a2a;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li {
+            padding: 4px 0 4px 24px;
+            position: relative;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        .comparison-card code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        /* Tech Detail List */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Field Table */
+        .field-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .field-table th {
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            text-align: left;
+            padding: 10px 16px;
+            font-weight: 700;
+        }
+
+        .field-table th:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+
+        .field-table th:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .field-table td {
+            padding: 10px 16px;
+            border-bottom: 1px dashed rgba(212, 165, 116, 0.4);
+            color: var(--text-secondary);
+        }
+
+        /* Timeline (model history) */
+        .timeline {
+            display: grid;
+            gap: 12px;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .timeline-item.current {
+            border: 2px solid var(--anthropic-coral);
+        }
+
+        .timeline-date {
+            flex-shrink: 0;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+
+        .timeline-content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .timeline-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Migration Steps */
+        .steps {
+            display: grid;
+            gap: 12px;
+            counter-reset: step;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .step p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            opacity: 0.92;
+        }
+
+        .summary-box code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.88em;
+            background: rgba(212, 165, 116, 0.2);
+            padding: 1px 6px;
+            border-radius: 4px;
+            color: #E8C9A8;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API 更新</span>
+                <h1>Models API に <code>capabilities.server_tools</code> を追加</h1>
+                <p class="subtitle">web 検索・コード実行ツールの対応可否を、モデル ID をハードコードせずにプログラムから判別可能に</p>
+                <p class="date">📅 2026-10-06 | Claude Developer Platform Release Notes</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="lead">Claude API の Models API に <code class="inline">capabilities.server_tools</code> フィールドが追加された。<code class="inline">GET /v1/models</code> および <code class="inline">GET /v1/models/{model_id}</code> のレスポンスで、各モデルが web 検索 (web search) ツールとコード実行 (code execution) ツールを受け付けるかどうかを確認できるようになった。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🆕</div>
+                    <div class="key-point-content">
+                        <h3>server_tools フィールドの追加</h3>
+                        <p>各モデルの <code class="inline">capabilities</code> オブジェクトに、web 検索ツールとコード実行ツールの対応可否を示す <code class="inline">capabilities.server_tools</code> フィールドが追加された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔍</div>
+                    <div class="key-point-content">
+                        <h3>GET /v1/models で確認可能</h3>
+                        <p><code class="inline">GET /v1/models</code> (一覧) と <code class="inline">GET /v1/models/{model_id}</code> (個別取得) の両方のレスポンスで返される。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧹</div>
+                    <div class="key-point-content">
+                        <h3>ハードコード不要に</h3>
+                        <p>これまではどのモデルがサーバーツールを受け付けるかをモデル ID ごとにハードコードして管理する必要があった。今回の変更により、Models API への問い合わせだけで対応可否を判定できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚠️</div>
+                    <div class="key-point-content">
+                        <h3>トップレベル code_execution との混同に注意</h3>
+                        <p>コード実行ツール自体の対応可否は <code class="inline">server_tools.code_execution</code> で確認する。トップレベルの <code class="inline">capabilities.code_execution</code> は「コード実行ツール内のコードが他のツールを呼び出せるか」を示す別のフィールドである。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📈</div>
+                    <div class="key-point-content">
+                        <h3>Models API メタデータ拡充の流れが継続</h3>
+                        <p>2026-10-01 の <code class="inline">line</code> フィールド、2026-10-05 の <code class="inline">capabilities.thinking.types.disabled</code> に続くアップデートであり、Models API をモデル機能のディスカバリに活用できる範囲が広がっている。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <ul>
+                        <li>サーバーツールの対応状況はモデルによって異なる</li>
+                        <li>どのモデルが web 検索・コード実行を受け付けるかをモデル ID ごとにハードコードして管理</li>
+                        <li>新モデル追加のたびに分岐コードの保守が必要</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <ul>
+                        <li><code>capabilities.server_tools</code> で対応可否を判別可能</li>
+                        <li>Models API への問い合わせだけで判定できる</li>
+                        <li>モデル ID のハードコードが不要になり、保守コストを削減</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background Timeline -->
+        <section class="section">
+            <h2 class="section-title">背景: Models API メタデータ拡充の流れ</h2>
+            <p class="lead">web 検索ツールやコード実行ツールは、Anthropic のサーバー側で実行されるサーバーツールであり、対応状況はモデルによって異なる。今回のアップデートは、Models API のメタデータ拡充の流れの一部である。</p>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="timeline-date">2026-10-01</span>
+                    <div class="timeline-content">
+                        <h4>🏷️ line フィールドを追加</h4>
+                        <p>モデル系列を示す <code class="inline">line</code> フィールドが Models API に追加された。</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-date">2026-10-05</span>
+                    <div class="timeline-content">
+                        <h4>🧠 thinking.types.disabled を追加</h4>
+                        <p>思考無効化の可否を示す <code class="inline">capabilities.thinking.types.disabled</code> が追加された。</p>
+                    </div>
+                </div>
+                <div class="timeline-item current">
+                    <span class="timeline-date">2026-10-06</span>
+                    <div class="timeline-content">
+                        <h4>🔧 capabilities.server_tools を追加 (今回)</h4>
+                        <p>サーバーツール (web 検索・コード実行) の対応可否を示すフィールドが追加された。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🆕 capabilities.server_tools</h3>
+                    <p>各モデルの <code class="inline">capabilities</code> オブジェクトに追加された <code class="inline">ServerToolsCapability</code> オブジェクト。<code class="inline">supported</code> は web 検索・コード実行の少なくとも 1 つをサポートする場合に <code class="inline">true</code> となる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔎 web 検索の可否判定</h3>
+                    <p><code class="inline">server_tools.web_search.supported</code> で、モデルが web 検索ツールを受け付けるかどうかを判定できる。ツールの「少なくとも 1 つのバージョン」をサポートする場合に <code class="inline">true</code> となる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💻 コード実行の可否判定</h3>
+                    <p><code class="inline">server_tools.code_execution.supported</code> で、コード実行ツール自体の対応可否を判定できる。トップレベルの <code class="inline">capabilities.code_execution</code> とは意味が異なる点に注意する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧹 ハードコードの置き換え</h3>
+                    <p>モデル ID ごとにサーバーツールの対応可否を分岐しているコードを <code class="inline">capabilities.server_tools</code> の参照に置き換えることで、新モデル追加時の保守コストを削減できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚠️ true でも拒否される場合あり</h3>
+                    <p><code class="inline">supported</code> が <code class="inline">true</code> でも、管理者が web 検索をオフにしているなど組織の設定によってリクエストが拒否される場合がある。モデル側の対応可否を示すものであり、リクエスト成功の十分条件ではない。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+            <div class="tech-detail">
+                <h4>🧩 capabilities.server_tools の構造</h4>
+                <p>API リファレンスによると、<code class="inline">server_tools</code> は <code class="inline">ServerToolsCapability</code> オブジェクトであり、以下のフィールドを持つ。</p>
+                <table class="field-table">
+                    <thead>
+                        <tr>
+                            <th>フィールド</th>
+                            <th>意味</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="inline">supported</code></td>
+                            <td>モデルが web 検索・コード実行の少なくとも 1 つをサポートするか</td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">web_search.supported</code></td>
+                            <td>web 検索ツールをサポートするか</td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline">code_execution.supported</code></td>
+                            <td>コード実行ツールをサポートするか</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tech-detail">
+                <h4>🔢 「少なくとも 1 バージョン」の意味</h4>
+                <p>公式ドキュメントは、<code class="inline">web_search</code> および <code class="inline">code_execution</code> の <code class="inline">supported</code> について「モデルがツールの少なくとも 1 つのバージョンをサポートする場合に <code class="inline">true</code> となり、必ずしもすべてのバージョンをサポートするとは限らない」と明記している。特定のツールバージョンを指定する場合は、引き続きエラーハンドリングが必要である。</p>
+            </div>
+            <div class="tech-detail">
+                <h4>🏢 組織設定による拒否</h4>
+                <p><code class="inline">supported</code> が <code class="inline">true</code> であっても、組織の設定によってリクエストが拒否される場合がある。公式ドキュメントは、管理者が web 検索をオフにしている場合を例として挙げている。つまり、このフィールドはモデル側の対応可否を示すものであり、リクエスト成功の十分条件ではない。</p>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 28px;">API レスポンス例</h2>
+            <p class="lead"><code class="inline">GET /v1/models/{model_id}</code> でモデルの capabilities を確認する例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">モデルの capabilities を取得</span>
+                </div>
+                <pre><code class="language-bash">curl "https://api.anthropic.com/v1/models/claude-haiku-5-5" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01"</code></pre>
+            </div>
+            <p class="lead">レスポンスの <code class="inline">capabilities</code> には、<code class="inline">server_tools</code> 配下に各サーバーツールのサポート状況が含まれる (以下は API リファレンスのレスポンス例に基づくフィールド構造の抜粋)。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">レスポンス抜粋</span>
+                </div>
+                <pre><code class="language-json">{
+  "capabilities": {
+    "code_execution": {
+      "supported": true
+    },
+    "server_tools": {
+      "supported": true,
+      "web_search": {
+        "supported": true
+      },
+      "code_execution": {
+        "supported": true
+      }
+    }
+  }
+}</code></pre>
+            </div>
+            <p class="lead" style="margin-bottom: 0;"><code class="inline">server_tools.code_execution.supported</code> がコード実行ツール自体の対応可否、トップレベルの <code class="inline">code_execution.supported</code> がコード実行ツール内から他のツールを呼び出せるか (プログラマティックツールコーリング) を示す。</p>
+        </section>
+
+        <!-- API Changes: top-level vs server_tools -->
+        <section class="section">
+            <h2 class="section-title">API 変更点: 2 つの code_execution の違い</h2>
+            <p class="lead"><code class="inline">GET /v1/models</code> と <code class="inline">GET /v1/models/{model_id}</code> のレスポンスに <code class="inline">capabilities.server_tools</code> が追加された。<code class="inline">capabilities</code> 直下にも <code class="inline">code_execution</code> フィールドが存在するため、参照先を混同しないことが重要である。</p>
+            <table class="field-table">
+                <thead>
+                    <tr>
+                        <th>フィールド</th>
+                        <th>意味</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">capabilities.server_tools.code_execution</code></td>
+                        <td>コード実行ツール自体をモデルが受け付けるか (今回追加。可否判定はこちらを参照)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">capabilities.code_execution</code> (トップレベル)</td>
+                        <td>コード実行ツール内で実行されるコードが、リクエストの他のツールを呼び出せるか (プログラマティックツールコーリングや、web 検索・web フェッチの動的フィルタリング)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="tech-detail">
+                <h4>✅ 正しい参照先</h4>
+                <p>コード実行ツールの対応可否の判定にトップレベルの <code class="inline">capabilities.code_execution</code> を使用しないよう注意する。正しい参照先は <code class="inline">capabilities.server_tools.code_execution</code> である。</p>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <p class="lead">Models API を利用したサーバーツール対応可否の判定フロー。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    App(["👤 アプリケーション"]) --> Query["📨 GET /v1/models/{model_id}<br/>capabilities を取得"]
+    Query --> Check{"server_tools.web_search<br/>.supported は true?"}
+    Check -->|true| Send["✅ web 検索ツールを<br/>リクエストに含める"]
+    Check -->|false| Skip["🚫 web 検索ツールを<br/>含めずエラーを回避"]
+    Send --> Note["⚠️ 組織設定により<br/>拒否される場合あり"]
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class App user
+    class Query input
+    class Check decision
+    class Send,Skip process
+    class Note warning
+                </pre>
+            </div>
+        </section>
+
+        <!-- Use Cases / Impact -->
+        <section class="section">
+            <h2 class="section-title">ユースケース / 開発者への影響</h2>
+            <div class="use-case">
+                <h4>🔀 複数モデルを切り替えるアプリケーション</h4>
+                <p>複数の Claude モデルを切り替えて利用するアプリケーションでは、モデル ID ごとにサーバーツールの対応可否を分岐しているコードを <code class="inline">capabilities.server_tools</code> の参照に置き換えることで、新モデル追加時の保守コストを削減できる。既存のリクエストの挙動を変更するものではないため、即時の対応は不要である。</p>
+            </div>
+            <div class="use-case">
+                <h4>🛠️ web 検索・コード実行ツールを利用するアプリケーション</h4>
+                <p>ツールを含むリクエストの送信前に Models API で可否を確認することで、非対応モデルへのリクエストによるエラーを回避できる。ただし <code class="inline">supported: true</code> でも、組織設定やツールバージョンによってはリクエストが拒否される可能性があるため、エラーハンドリングは引き続き必要である。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏗️ モデルセレクタ・ルーティング層の実装</h4>
+                <p>モデルセレクタやルーティング層など、モデルの機能差を抽象化する基盤を実装している開発者は、Models API のメタデータをサーバーツール対応状況のディスカバリに活用できる。</p>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 28px;">移行ガイド (該当する場合)</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <p>モデル選択時に <code class="inline">GET /v1/models/{model_id}</code> で対象モデルの <code class="inline">capabilities</code> を取得する。</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <p>web 検索ツールを使う場合は <code class="inline">capabilities.server_tools.web_search.supported</code>、コード実行ツールを使う場合は <code class="inline">capabilities.server_tools.code_execution.supported</code> を確認する。</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <p><code class="inline">false</code> の場合は該当ツールをリクエストに含めない。<code class="inline">true</code> の場合でも、組織設定などで拒否される可能性があるため、エラーへのフォールバック処理を維持する。</p>
+                </div>
+            </div>
+
+            <div class="summary-box" style="margin-top: 28px;">
+                <h3>📝 まとめ</h3>
+                <p>Models API への <code>capabilities.server_tools</code> の追加により、各モデルが web 検索ツールとコード実行ツールを受け付けるかどうかを <code>GET /v1/models</code> および <code>GET /v1/models/{model_id}</code> から判別できるようになった。モデル ID ごとの対応状況をハードコードせずに済むため、複数モデルを扱うアプリケーションの保守性向上に直結する。コード実行ツール自体の対応可否は <code>server_tools.code_execution</code> を参照し、トップレベルの <code>capabilities.code_execution</code> (コードから他のツールを呼び出せるか) と混同しないことが重要である。2026-10-01 の <code>line</code> フィールド、2026-10-05 の <code>thinking.types.disabled</code> に続くアップデートであり、Models API をモデル機能のディスカバリに活用できる範囲が着実に広がっている。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;"><strong>ソース:</strong> Claude Developer Platform Release Notes | <strong>カテゴリ:</strong> API アップデート | <strong>発表日:</strong> 2026-10-06</p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong>
+                <a href="https://platform.claude.com/docs/en/api/models/list" target="_blank" rel="noopener noreferrer">Models API - List Models</a> |
+                <a href="https://platform.claude.com/docs/en/models/overview#using-the-models-api" target="_blank" rel="noopener noreferrer">Models overview - Using the Models API</a> |
+                <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool" target="_blank" rel="noopener noreferrer">Web search tool</a> |
+                <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool" target="_blank" rel="noopener noreferrer">Code execution tool</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
