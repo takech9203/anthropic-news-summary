@@ -5,7 +5,11 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-09](2026/2026-10-09-claude-code-v2-1-294-v2-1-295.md) - Claude Code v2.1.294 / v2.1.295: hook の `onFailure: "block"` 追加、Program Status Protocol (OSC 7501) 対応、Claude apps gateway の大幅強化など 2 バージョンで 145 件の変更
+- [2026-10-08](2026/2026-10-08-genesis-mission-commitment.md) - 米国の科学的発見への貢献を拡大: Genesis Mission に 3 年間で 1 億 5,000 万ドルをコミット
 - [2026-10-08](2026/2026-10-08-compliance-api-chat-endpoint.md) - Compliance API のチャットエンドポイントが統合 Claude 体験のチャットに対応 (ベータ)
+- [2026-10-08](2026/2026-10-08-anthropic-cyber-mission.md) - Anthropic Cyber Mission の発表: 重要インフラとオープンソースソフトウェアを守る長期的取り組み
+- [2026-10-08](2026/2026-10-08-2026-usage-policy-update.md) - 2026 年版 Usage Policy (利用ポリシー) の更新
 - [2026-10-07](2026/2026-10-07-claude-haiku-5-5.md) - Claude Haiku 5.5 発表: 最速・最安の小型モデルが平均約 75% のコスト削減と大幅な性能向上を実現
 - [2026-10-07](2026/2026-10-07-claude-code-v2-1-293.md) - Claude Code v2.1.293: Claude Haiku 5.5 がデフォルト Haiku モデルに、コンパクション後の作業取り消し問題の修正、MCP メモリリーク修正など 56 件の変更
 - [2026-10-07](2026/2026-10-07-api-platform-updates.md) - Claude API プラットフォーム更新: Sonnet 5.5 キャッシュ読み取り半額、SDK にブラウザ・コンピュータ使用クラス、Managed Agents の Web ツール制限強化

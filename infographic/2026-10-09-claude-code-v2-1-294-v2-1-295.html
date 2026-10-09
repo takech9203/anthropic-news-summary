@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.294 / v2.1.295: hook の onFailure: "block" 追加、Program Status Protocol (OSC 7501) 対応、Claude apps gateway の大幅強化など 2 バージョンで 145 件の変更 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .subsection-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Breakdown bar */
+        .breakdown-bar {
+            display: flex;
+            width: 100%;
+            height: 36px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 8px 0 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .breakdown-bar span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            min-width: 0;
+        }
+
+        .breakdown-added { background: #66BB6A; }
+        .breakdown-fixed { background: #4A90E2; }
+        .breakdown-improved { background: #7B61FF; }
+        .breakdown-changed { background: #FF9800; }
+
+        .breakdown-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .breakdown-legend .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        /* Detail List */
+        .detail-list {
+            list-style: none;
+            display: grid;
+            gap: 14px;
+        }
+
+        .detail-list > li {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .detail-list > li strong {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        /* Notice Box */
+        .notice-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: #5D4037;
+        }
+
+        .notice-box .notice-label {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #E65100;
+        }
+
+        /* Info Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .info-table th,
+        .info-table td {
+            padding: 10px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.3);
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .info-table td {
+            color: var(--text-secondary);
+        }
+
+        /* Inline code */
+        code.inline {
+            background: rgba(212, 165, 116, 0.15);
+            border: 1px solid rgba(212, 165, 116, 0.35);
+            border-radius: 6px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            color: #8a5a2a;
+            word-break: break-all;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+            display: block;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        .summary-box code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+
+        .summary-box p + p {
+            margin-top: 12px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Links list */
+        .links-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .links-list li {
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .links-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+        }
+
+        .links-list a {
+            color: #8a5a2a;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .links-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #8a5a2a;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .breakdown-bar {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.294 / v2.1.295</h1>
+                <p class="subtitle">hook の <code class="inline" style="color: #E8C9A8; background: rgba(212, 165, 116, 0.2); border-color: rgba(212, 165, 116, 0.4);">onFailure: "block"</code> 追加、Program Status Protocol (OSC 7501) 対応、Claude apps gateway の大幅強化など 2 バージョンで 145 件の変更</p>
+                <p class="date">📅 2026-10-09 (本日検出。changelog に日付記載なし) ｜ ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p class="section-lead">Claude Code v2.1.294 と v2.1.295 がリリースされました。v2.1.294 は instructions 形式 (自然言語で書く) の <code class="inline">prompt</code>/<code class="inline">agent</code> hook の判定を改善する 2 件のみの小規模リリース、v2.1.295 は 143 件 (追加 17 件、修正 97 件、改善 13 件、変更 16 件) を含む大規模リリースです。2 バージョン合計の変更件数は 145 件に上ります。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🚫</div>
+                    <div class="key-point-content">
+                        <h3>hook に onFailure: "block" が追加 (v2.1.295)</h3>
+                        <p>command hook と HTTP hook に <code class="inline">onFailure: "block"</code> が追加され、hook が起動できない・タイムアウトする・予期しない終了コードで終わる場合に、アクションを素通りさせるのではなくブロックできるようになりました。ガードレールとして hook を使う場合の信頼性が大きく向上します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🖥️</div>
+                    <div class="key-point-content">
+                        <h3>Program Status Protocol (OSC 7501) 対応 (v2.1.295)</h3>
+                        <p>対応するターミナルは、Claude Code が「作業中」「ユーザー待ち」「完了」のいずれの状態かを表示できるようになりました。複数セッションの並行運用で各セッションの状態をターミナル側の UI だけで把握できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏢</div>
+                    <div class="key-point-content">
+                        <h3>Claude apps gateway の大幅強化 (v2.1.295)</h3>
+                        <p><code class="inline">timeouts.upstream_ttfb_ms</code> によるストリーム開始時間の制限、upstream ごとの <code class="inline">models</code> リストによるモデルの振り分け、監査イベントへの <code class="inline">upstream_request_id</code> の追加など、エンタープライズ向けの多数の強化が行われました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🪝</div>
+                    <div class="key-point-content">
+                        <h3>instructions 形式 hook の判定改善 (v2.1.294)</h3>
+                        <p>「〜するコマンドをブロックする」のような instructions 形式で書かれた <code class="inline">prompt</code>/<code class="inline">agent</code> hook が本来ブロックすべきものを許可してしまう問題の修正と、Stop / SubagentStop の判定改善の 2 件に絞ったリリースです。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>実運用に直結する多数の修正 (v2.1.295)</h3>
+                        <p>context-1m ベータ拒否時に <code class="inline">[1m]</code> モデルの全リクエストが失敗する問題、<code class="inline">claude -p</code> のテキスト出力が以前のレスポンスを失う問題、リモート MCP サーバーの再接続まわりの複数の問題などが修正されました。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.294 / v2.1.295</h2>
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-value">145</div>
+                    <div class="stat-label">2 バージョン合計の変更件数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">v2.1.294 (hook 判定改善)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">143</div>
+                    <div class="stat-label">v2.1.295 (大規模リリース)</div>
+                </div>
+            </div>
+            <h3 class="subsection-title">📊 v2.1.295 の変更 143 件の内訳</h3>
+            <div class="breakdown-bar" role="img" aria-label="v2.1.295 の変更 143 件の内訳: 追加 17 件、修正 97 件、改善 13 件、変更 16 件">
+                <span class="breakdown-added" style="flex: 17;">17</span>
+                <span class="breakdown-fixed" style="flex: 97;">Fixed 97</span>
+                <span class="breakdown-improved" style="flex: 13;">13</span>
+                <span class="breakdown-changed" style="flex: 16;">16</span>
+            </div>
+            <div class="breakdown-legend">
+                <span><span class="dot" style="background: #66BB6A;"></span>追加 17 件 (11.9%)</span>
+                <span><span class="dot" style="background: #4A90E2;"></span>修正 97 件 (67.8%)</span>
+                <span><span class="dot" style="background: #7B61FF;"></span>改善 13 件 (9.1%)</span>
+                <span><span class="dot" style="background: #FF9800;"></span>変更 16 件 (11.2%)</span>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p class="section-lead">v2.1.294 と v2.1.295 は、Claude Haiku 5.5 を追加した 2026-10-07 の v2.1.293 に続くリリースです。v2.1.294 は instructions 形式 hook の判定精度に絞った修正リリースであり、v2.1.295 はエンタープライズ向けの Claude apps gateway、モッド開発、MCP、ターミナル描画など広い範囲に及ぶ大規模リリースとなっています。changelog 自体に日付の記載はなく、2026-10-09 に検出されました。</p>
+            <table class="info-table">
+                <tr><th>項目</th><th>内容</th></tr>
+                <tr><td>発表日</td><td>2026-10-09 (本日検出。changelog に日付記載なし)</td></tr>
+                <tr><td>ソース</td><td>Claude Code Changelog</td></tr>
+                <tr><td>カテゴリ</td><td>Claude Code / CLI アップデート</td></tr>
+                <tr><td>公式リンク</td><td><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" style="color: #8a5a2a;">github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></td></tr>
+            </table>
+        </section>
+
+        <!-- Main feature cards -->
+        <section class="section">
+            <h2 class="section-title">主要な変更ハイライト</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🚫 hook の onFailure: "block"</h3>
+                    <p>command / HTTP hook に <code class="inline">onFailure: "block"</code> が追加されました。hook が起動できない、タイムアウトする、予期しない終了コードで終わる場合に、アクションを通過させず<strong>ブロック</strong>する fail-close な運用が可能になります。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🖥️ Program Status Protocol (OSC 7501)</h3>
+                    <p>このプロトコルを実装するターミナルは、Claude Code が「作業中 (working)」「ユーザーの入力待ち (waiting on you)」「完了 (done)」のいずれの状態にあるかを表示できます。複数セッションの並行運用で便利です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏢 Claude apps gateway の強化</h3>
+                    <p><code class="inline">timeouts.upstream_ttfb_ms</code> によるストリーム開始時間の SLA、upstream ごとの <code class="inline">models</code> リスト、監査イベントへの <code class="inline">upstream_request_id</code>、レスポンスの <code class="inline">request-id</code> ヘッダーなどが追加されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧩 モッド・プラグイン開発者向け機能</h3>
+                    <p><code class="inline">$.ui.notify</code> によるネイティブ通知、<code class="inline">Button</code> の文字列・<code class="inline">Text</code> 子要素対応が追加され、guard hook のバイパスや <code class="inline">config.set</code> hook の尊重、ホットリロードの信頼性が修正されました。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🪝 v2.1.294: instructions 形式 hook の判定改善</h3>
+                    <p>instructions 形式で書かれた <code class="inline">prompt</code>/<code class="inline">agent</code> hook が本来ブロックすべきものを許可してしまう問題を修正。Stop / SubagentStop の判定も改善され、Claude が早期に停止しにくくなりました。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. v2.1.294 -->
+        <section class="section">
+            <h2 class="section-title">1. v2.1.294: instructions 形式 hook の判定改善 (2 件)</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🚦 prompt/agent hook のブロック判定の修正</strong>
+                    「〜するコマンドをブロックする」のような instructions 形式で書かれた <code class="inline">prompt</code>/<code class="inline">agent</code> hook が、本来ブロックすべきものを許可してしまう問題を修正しました。
+                </li>
+                <li>
+                    <strong>🛑 Stop / SubagentStop での判定改善</strong>
+                    「ビルドが壊れていたら続行する」のような instructions 形式で書かれた Stop / SubagentStop の <code class="inline">prompt</code> hook の判定が改善され、Claude が早期に停止しにくくなりました。
+                </li>
+            </ul>
+            <p class="section-lead" style="margin-top: 16px; margin-bottom: 0;">自然言語で hook を記述するスタイルを使っているチームにとって、ガードレールと停止判定の両面で実効性が高まる修正です。</p>
+        </section>
+
+        <!-- 2. onFailure block -->
+        <section class="section">
+            <h2 class="section-title">2. v2.1.295: hook の onFailure: "block" の追加</h2>
+            <p class="section-lead">command hook と HTTP hook に <code class="inline">onFailure: "block"</code> オプションが追加されました。これを指定した hook は、以下の場合にアクションを通過させず<strong>ブロック</strong>します。</p>
+            <ul class="detail-list">
+                <li><strong>❌ hook が起動できない場合</strong></li>
+                <li><strong>⏱️ hook がタイムアウトした場合</strong></li>
+                <li><strong>⚠️ hook が予期しない終了コードで終わった場合</strong></li>
+            </ul>
+            <div class="notice-box">
+                <div class="notice-label">💡 fail-open から fail-close へ</div>
+                <p>従来は hook 自体の失敗時にアクションが素通りしていたため、セキュリティやポリシーの強制を hook に依存する構成では「hook が壊れたら無防備になる」という弱点がありました。fail-close な運用が可能になったことで、ガードレール用途での hook の信頼性が大きく向上します。</p>
+            </div>
+        </section>
+
+        <!-- 3. OSC 7501 -->
+        <section class="section">
+            <h2 class="section-title">3. v2.1.295: Program Status Protocol (OSC 7501) 対応</h2>
+            <p class="section-lead">Program Status Protocol (OSC 7501) のサポートが追加されました。このプロトコルを実装するターミナルは、Claude Code が以下のいずれの状態にあるかを表示できます。</p>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⚙️ 作業中</h3>
+                    <p>working</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏳ ユーザーの入力待ち</h3>
+                    <p>waiting on you</p>
+                </div>
+                <div class="feature-card">
+                    <h3>✅ 完了</h3>
+                    <p>done</p>
+                </div>
+            </div>
+            <p class="section-lead" style="margin-top: 16px; margin-bottom: 0;">複数のセッションやウィンドウを並行運用する場合に、ターミナル側の UI だけで各セッションの状態を把握できるようになります。</p>
+        </section>
+
+        <!-- 4. Gateway -->
+        <section class="section">
+            <h2 class="section-title">4. v2.1.295: Claude apps gateway の強化</h2>
+            <p class="section-lead">エンタープライズ向けの Claude apps gateway に多数の追加・修正・改善が行われました。</p>
+            <h3 class="subsection-title">➕ 追加</h3>
+            <ul class="detail-list">
+                <li>
+                    <strong>⏱️ timeouts.upstream_ttfb_ms</strong>
+                    Bedrock、Vertex、Foundry などのクラウド upstream で、ストリームの開始 (最初のバイト到達) までの時間を制限できます。超過した場合はフェイルオーバーするか 502 を返します。
+                </li>
+                <li>
+                    <strong>📋 upstream ごとの models リスト</strong>
+                    各 upstream にオプションの <code class="inline">models</code> リストを設定でき、リストにあるモデルのみがその upstream に送られます (フェイルオーバー時も適用)。エントリ内の <code class="inline">*</code> 1 つはワイルドカードとして機能します。
+                </li>
+                <li>
+                    <strong>🆔 upstream_request_id</strong>
+                    <code class="inline">inference</code> 監査イベントに、Amazon Bedrock や Anthropic API など upstream 側のリクエスト ID が追加され、サポートケースでの突き合わせが容易になりました。
+                </li>
+                <li>
+                    <strong>🏷️ request-id ヘッダー</strong>
+                    成功した推論レスポンスに <code class="inline">request-id</code> ヘッダーが付与され、Claude Code テレメトリの <code class="inline">request_id</code> とゲートウェイの監査ログを一致させられます。
+                </li>
+                <li>
+                    <strong>🔐 ユーザー設定での forceLoginMethod: "gateway" と forceLoginGatewayUrl</strong>
+                    管理対象設定がないマシンでも、自身のユーザー設定で <code class="inline">/login</code> を特定のゲートウェイに向けられます。
+                </li>
+            </ul>
+            <h3 class="subsection-title">🔧 修正・改善 (抜粋)</h3>
+            <ul class="detail-list">
+                <li>
+                    <strong>🔢 Bedrock のトークンカウント改善</strong>
+                    Bedrock 上のトークンカウントが 1 トークンのモデルリクエストではなく AWS の CountTokens API から取得されるようになりました (<code class="inline">/context</code> や大きなファイル読み込みで使用。利用には <code class="inline">bedrock:CountTokens</code> の権限付与が必要)。
+                </li>
+                <li>
+                    <strong>🐦 バックグラウンドリクエストが Haiku 4.5 を使用</strong>
+                    バックグラウンドリクエストがセッションのモデルではなく Haiku 4.5 を使うようになりました (ゲートウェイが Haiku 4.5 を提供しない場合はセッションのモデルにフォールバック)。
+                </li>
+                <li>
+                    <strong>🌏 米国地域外の Bedrock リージョンの改善</strong>
+                    AWS の米国地域外の Bedrock リージョンで <code class="inline">models:</code> に未記載のモデルを自身のリージョンで試行し、拒否時には追加すべきモデル名を表示するようになりました。
+                </li>
+                <li>
+                    <strong>🩹 各種修正</strong>
+                    <code class="inline">availableModels</code> に記載された Fable モデルが <code class="inline">/model</code> ピッカーに表示されない問題、管理者の支出ビューが古いグループ情報を表示する問題、<code class="inline">CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC</code> が支出上限表示を隠す問題などを修正しました。
+                </li>
+                <li>
+                    <strong>🗄️ PostgreSQL の読み取り専用時の警告</strong>
+                    PostgreSQL データベースが読み取り専用の間、30 秒ごとに警告ログを出し、何が失敗しどう復旧するかを示すようになりました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 5. Mods -->
+        <section class="section">
+            <h2 class="section-title">5. v2.1.295: モッド・プラグイン開発者向けの追加と修正</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🔔 $.ui.notify の追加</strong>
+                    モッドからユーザー自身の通知設定を通じてネイティブ通知を発行できます。どのチャンネルが送信したかも表示されます。
+                </li>
+                <li>
+                    <strong>🔘 Button の子要素</strong>
+                    モッドの <code class="inline">Button</code> に文字列と <code class="inline">Text</code> の子要素を持たせられるようになり、リストの 1 行をチップや薄い詳細テキストを内包した 1 つの押下可能要素にできます。
+                </li>
+                <li>
+                    <strong>🛡️ guard hook のバイパス修正</strong>
+                    モッドの hook に深くネストしたツール入力がエラーなしで切り詰められて渡され、guard が見ていない内容を通過させうる問題を修正しました。また、プラグインフックワーカーの再起動中にリロード中のモッドが行う呼び出しが、<code class="inline">.catch</code> を持つ別モッドの guard hook をすり抜ける問題も修正されました。
+                </li>
+                <li>
+                    <strong>⚙️ config.set hook の尊重</strong>
+                    <code class="inline">/model</code>、<code class="inline">/fast</code>、<code class="inline">/output-style</code> や <code class="inline">/config</code> での自動更新チャンネル変更が、プラグインの <code class="inline">config.set</code> hook に確認せず設定を保存していた問題を修正しました。
+                </li>
+                <li>
+                    <strong>♻️ ホットリロードの信頼性</strong>
+                    リロード中やリロード直後数ミリ秒以内の保存が反映されない問題、<code class="inline">constructor</code> や <code class="inline">prototype</code> という名前のプラグインオプションが常にデフォルト値になる問題などを修正しました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 6. Other fixes -->
+        <section class="section">
+            <h2 class="section-title">6. v2.1.295: その他の主要な修正 (抜粋)</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🧯 [1m] モデルの全リクエスト失敗の修正</strong>
+                    ゲートウェイ、Bedrock、Vertex、Foundry が context-1m ベータを拒否した際に <code class="inline">[1m]</code> モデルの全リクエストが失敗していた問題を修正しました。拒否された場合はベータなしで再送します。
+                </li>
+                <li>
+                    <strong>📤 claude -p の出力欠落の修正</strong>
+                    バックグラウンド作業が別のターンを開始した際に、以前のレスポンスがテキスト出力から失われる問題を修正しました。各ターンのレスポンスはターン終了時に出力されます。あわせて、最後のターン後も <code class="inline">claude -p</code> が開いたままの場合に、何を待っているかを stderr (ターミナルの場合) に表示する行が追加されました。
+                </li>
+                <li>
+                    <strong>🔌 リモート MCP の再接続改善</strong>
+                    headless / SDK セッションで 15 秒超の障害後に切断されたままになる問題や、接続直後に切断するサーバーへタイトループで再接続する問題を修正しました (繰り返しの切断は最大 30 秒までバックオフ)。エラー応答にネットワークエラー名が含まれていると切断される問題、ページネーションカーソルを繰り返すサーバーに同じページを最大 20 回要求する問題も修正されています。
+                </li>
+                <li>
+                    <strong>📄 MCP ツールの返すファイルの拡張子</strong>
+                    CSS、JavaScript、XML ファイルが Read ツールの拒否する .bin として保存される問題を修正しました。フォントやアイコンファイルも固有の拡張子を持つようになりました。
+                </li>
+                <li>
+                    <strong>🧊 ターミナルのフリーズ修正</strong>
+                    数万行に及ぶレスポンスで ctrl+c が効かずフリーズする問題、引用のネストが深い返信で数秒のフリーズとギガバイト単位のメモリ消費が起きる問題、非常に長い行や未閉鎖の文字列を含むコードのシンタックスハイライトで数秒〜数分フリーズする問題を修正しました。
+                </li>
+                <li>
+                    <strong>⏲️ CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS の追加</strong>
+                    無人リトライモード (<code class="inline">CLAUDE_CODE_RETRY_WATCHDOG</code>) が 429 / 529 エラーを待つ時間の上限を設定できるようになりました。
+                </li>
+                <li>
+                    <strong>📋 /copy ピッカーに引用テキストを追加</strong>
+                    下書きメッセージを <code class="inline">&gt;</code> マーカーなしでコピーできるようになりました。
+                </li>
+                <li>
+                    <strong>🧩 plugin コマンドの改善</strong>
+                    <code class="inline">claude plugin install</code> / <code class="inline">enable</code> / <code class="inline">disable</code> / <code class="inline">marketplace add</code> が、書き込み先の設定ファイルが読み込まれない場合に警告するようになりました。<code class="inline">claude plugin validate</code> は README にインストール行がないプラグインに貼り付けるべき行を提示します (終了コードは変更しません)。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 7. Changed -->
+        <section class="section">
+            <h2 class="section-title">7. v2.1.295: 動作変更 (Changed) の主なもの</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>📏 MCP ツール説明の上限拡大</strong>
+                    ツール検索経由で読み込む MCP ツールの説明の上限が 2,048 文字から 16,384 文字に拡大されました。
+                </li>
+                <li>
+                    <strong>🎯 サブエージェントのスキルプリロード</strong>
+                    サブエージェントが <code class="inline">skills</code> フィールドからプリロードするスキルは最大 32 個 (各 1 回) に変更されました。Skill ツールを持つサブエージェントは残りも呼び出せます。
+                </li>
+                <li>
+                    <strong>🔄 claude.ai コネクタの MCP プロトコル</strong>
+                    claude.ai コネクタが MCP プロトコルバージョン 2026-07-28 をデフォルトで交渉するようになりました (<code class="inline">MCP_PROTOCOL_NEGOTIATION=legacy</code> でオプトアウト)。
+                </li>
+                <li>
+                    <strong>📦 WebSocket MCP のメッセージ上限</strong>
+                    WebSocket (<code class="inline">ws</code>) MCP サーバーで 16 MiB を超えるメッセージはパースされず接続を閉じるようになりました (他のトランスポートと同じ上限)。
+                </li>
+                <li>
+                    <strong>🧾 モッドのツール拒否表示</strong>
+                    モッドがツール実行後にツール呼び出しを拒否した場合、「ツールは実行されたがプラグインが結果を保留した」と表示されるようになりました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- 8. VSCode etc -->
+        <section class="section">
+            <h2 class="section-title">8. v2.1.295: VSCode・クラウドセッション・Claude Tag・Code Review</h2>
+            <ul class="detail-list">
+                <li>
+                    <strong>🧑‍💻 VSCode</strong>
+                    Claude が送るファイルのチャット行が追加され、ファイル名のクリックでエディターに開けます。会話のフォークや Rewind の失敗、ショートカットキーが権限モードまで切り替える問題、2 つの Claude ビュー間でフォーカスが行き来する問題を修正しました。
+                </li>
+                <li>
+                    <strong>☁️ Cloud sessions</strong>
+                    アーカイブ解除直後のメッセージに返信がないことがある問題、古いルーティンが保存されたプロンプトを渡さず実行される問題を修正しました。接続断からの復帰時にアクティビティが一括表示されるようになり、セットアップスクリプト欄もリサイズ可能になりました。
+                </li>
+                <li>
+                    <strong>💬 Claude Tag (Claude in Slack)</strong>
+                    Slack の設定確認カードの表示時間が 10 分から 30 分に延長されました。フォークされたスレッドのカードでのリンク表示、<code class="inline">!restart</code> 後も回り続ける Working ステータスなどを修正しました。
+                </li>
+                <li>
+                    <strong>🔎 Code Review</strong>
+                    再レビューが未解決の指摘が残っているのに「問題なし」と報告する問題を修正し、未解決件数を表示するようになりました。プルリクエストが大きな CLAUDE.md 自体を編集している場合にそのルールがスキップされる問題も修正されました。
+                </li>
+            </ul>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <h3 class="subsection-title">🚫 onFailure: "block" による fail-close な hook 運用</h3>
+            <p class="section-lead">従来の command / HTTP hook は、hook 自体が失敗した場合 (起動不能、タイムアウト、予期しない終了コード) にアクションを通過させる fail-open の挙動でした。<code class="inline">onFailure: "block"</code> を指定すると、hook の失敗時にアクションがブロックされる fail-close の挙動になります。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Action(["👤 ツール呼び出しなどのアクション"]) --> Hook["🔧 command / HTTP hook を実行"]
+    Hook --> Result{"🔀 hook の結果"}
+    Result -->|正常終了| Judge["✅ hook の判定に従う"]
+    Result -->|起動不能・タイムアウト・異常終了| Failure{"⚙️ onFailure の設定"}
+    Failure -->|未設定| Pass["⚠️ アクションは通過"]
+    Failure -->|block| Block["🚫 アクションをブロック"]
+
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+
+    class Action input
+    class Hook,Judge process
+    class Result,Failure decision
+    class Pass warning
+    class Block error
+                </pre>
+            </div>
+
+            <h3 class="subsection-title">🏢 Claude apps gateway のモデルルーティング</h3>
+            <p class="section-lead">upstream ごとの <code class="inline">models</code> リストと <code class="inline">timeouts.upstream_ttfb_ms</code> により、ゲートウェイ管理者はモデル単位のルーティングと応答開始時間の SLA をポリシーとして記述できるようになりました。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    CC["🖥️ Claude Code セッション"] --> GW["🏢 Claude apps gateway"]
+    GW --> Match{"🔀 upstream の models リストに一致?"}
+    Match -->|一致| Up1["☁️ 一致した upstream へ送信<br/>Bedrock / Vertex / Foundry など"]
+    Match -->|不一致| Up2["☁️ 他の upstream へ<br/>フェイルオーバー時も同様"]
+    Up1 --> TTFB{"⏱️ upstream_ttfb_ms 以内に<br/>ストリーム開始?"}
+    TTFB -->|はい| OK["✅ レスポンスを中継<br/>request-id ヘッダー付与"]
+    TTFB -->|いいえ| Fail["⚠️ フェイルオーバーまたは 502"]
+
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class CC process
+    class GW,Up1,Up2 internal
+    class Match,TTFB decision
+    class OK input
+    class Fail warning
+                </pre>
+            </div>
+            <p class="section-lead" style="margin-bottom: 0;">また、<code class="inline">inference</code> 監査イベントの <code class="inline">upstream_request_id</code> とレスポンスの <code class="inline">request-id</code> ヘッダーにより、「Claude Code テレメトリ → ゲートウェイ監査ログ → upstream (Bedrock / Anthropic API) のリクエスト ID」という 3 層のトレーサビリティが揃いました。</p>
+        </section>
+
+        <!-- Code example -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p class="section-lead">command hook に <code class="inline">onFailure: "block"</code> を指定する settings.json の例です。hook が起動できない、タイムアウトする、または予期しない終了コードで終わった場合に、アクションは通過せずブロックされます。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings.json での onFailure: "block" の指定例</span>
+                </div>
+                <pre><code class="language-json">{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/path/to/guard-script.sh",
+            "onFailure": "block"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">🎯 対象</h3>
+            <ul class="detail-list">
+                <li>hook をガードレールやポリシー強制に使っているチーム (<code class="inline">onFailure: "block"</code> の追加、instructions 形式 hook の判定改善)</li>
+                <li>Claude apps gateway を運用するエンタープライズ管理者 (<code class="inline">timeouts.upstream_ttfb_ms</code>、<code class="inline">models</code> リスト、<code class="inline">upstream_request_id</code>、CountTokens API など)</li>
+                <li>Bedrock、Vertex、Foundry やゲートウェイ経由で <code class="inline">[1m]</code> モデルを使う開発者 (context-1m ベータ拒否時の再送修正)</li>
+                <li><code class="inline">claude -p</code> や SDK で headless 運用をしている開発者 (出力欠落の修正、リモート MCP 再接続の改善、待機理由の表示)</li>
+                <li>モッド・プラグイン開発者 (<code class="inline">$.ui.notify</code>、<code class="inline">Button</code> の子要素、guard hook のバイパス修正、ホットリロードの信頼性向上)</li>
+                <li>OSC 7501 対応ターミナルの利用者 (セッション状態のターミナル表示)</li>
+                <li>VSCode 拡張、クラウドセッション、Claude in Slack (Claude Tag)、Code Review の利用者</li>
+            </ul>
+
+            <h3 class="subsection-title">✅ 必要なアクション</h3>
+            <ul class="detail-list">
+                <li>
+                    <strong>🛡️ hook でポリシーを強制しているチーム</strong>
+                    セキュリティ上重要な command / HTTP hook には <code class="inline">onFailure: "block"</code> の指定を検討します。従来は hook の失敗時にアクションが素通りしていました。
+                </li>
+                <li>
+                    <strong>🏢 ゲートウェイ管理者</strong>
+                    upstream に <code class="inline">models</code> リストと <code class="inline">timeouts.upstream_ttfb_ms</code> を設定し、モデルルーティングと応答開始時間を明示的に管理できます。Bedrock でのトークンカウント改善を使うには <code class="inline">bedrock:CountTokens</code> を付与します。
+                </li>
+                <li>
+                    <strong>⏲️ 無人運用の利用者</strong>
+                    <code class="inline">CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS</code> で 429 / 529 エラーの待機時間に上限を設けられます。
+                </li>
+                <li>
+                    <strong>🧩 モッド開発者</strong>
+                    guard hook が切り詰められた入力を見ていた問題が修正されたため、深くネストした入力を扱う guard の挙動を再確認します。通知には <code class="inline">$.ui.notify</code> を利用できます。
+                </li>
+            </ul>
+
+            <h3 class="subsection-title">🚧 移行ガイド (該当する場合)</h3>
+            <div class="notice-box">
+                <div class="notice-label">⚠️ 注意が必要な挙動変更</div>
+                <p>破壊的変更はありませんが、以下の挙動変更に注意が必要です。</p>
+                <ul style="margin-top: 8px; padding-left: 20px;">
+                    <li>claude.ai コネクタの MCP プロトコル交渉がデフォルトで 2026-07-28 になりました。問題がある場合は <code class="inline">MCP_PROTOCOL_NEGOTIATION=legacy</code> で以前の挙動に戻せます</li>
+                    <li>サブエージェントのスキルのプリロードが最大 32 個に制限されました。多数のスキルを指定している場合は、Skill ツール経由の呼び出しに切り替わります</li>
+                    <li>WebSocket MCP サーバーで 16 MiB 超のメッセージは接続が閉じられるようになりました</li>
+                    <li>ゲートウェイ経由のバックグラウンドリクエストが Haiku 4.5 を使うようになったため、ゲートウェイで Haiku 4.5 を提供しているか確認します (未提供の場合はセッションのモデルにフォールバック)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="links-list">
+                <li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog (v2.1.294 / v2.1.295)</a></li>
+                <li><a href="../reports/2026/2026-10-07-claude-code-v2-1-293.md" target="_blank" rel="noopener noreferrer">Claude Code v2.1.293 のレポート</a></li>
+                <li><a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code 公式ドキュメント</a></li>
+                <li><a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener noreferrer">Claude Code の hooks</a></li>
+                <li><a href="https://code.claude.com/docs/en/plugins" target="_blank" rel="noopener noreferrer">Claude Code のプラグイン</a></li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Code v2.1.294 と v2.1.295 は、<strong>合計 145 件の変更からなるリリース群</strong>です。v2.1.294 は instructions 形式の <code>prompt</code>/<code>agent</code> hook の判定を改善する 2 件に絞ったリリースで、自然言語で書いたガードレールの実効性と Stop 判定の精度を高めました。</p>
+                <p>v2.1.295 は 143 件の大規模リリースで、<strong>hook の <code>onFailure: "block"</code> による fail-close なガードレール運用</strong>、<strong>Program Status Protocol (OSC 7501) によるターミナルでのセッション状態表示</strong>、そして <code>timeouts.upstream_ttfb_ms</code>・upstream ごとの <code>models</code> リスト・<code>upstream_request_id</code> を中心とする <strong>Claude apps gateway の大幅強化</strong>が柱となります。修正面でも、context-1m ベータ拒否時の <code>[1m]</code> モデル全リクエスト失敗、<code>claude -p</code> の出力欠落、リモート MCP の再接続、ターミナルのフリーズといった実運用に効く問題が多数解消されました。hook によるポリシー強制やゲートウェイ運用を行うエンタープライズ環境を中心に、幅広い利用者に更新を推奨できるリリースです。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-10-09 (本日検出。changelog に日付記載なし) ｜ カテゴリ: Claude Code / CLI アップデート ｜ 本インフォグラフィックは Anthropic News Summary プロジェクトのレポートに基づいて作成されています。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
