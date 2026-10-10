@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Managed Agents のダイナミックワークフローがベータ提供開始 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .category-badge.beta {
+            background: #E8C9A8;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li {
+            padding: 4px 0;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Structure Steps */
+        .structure-steps {
+            display: grid;
+            gap: 12px;
+        }
+
+        .structure-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .structure-step .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .structure-step h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .structure-step p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Inline code */
+        .inline-code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 6px;
+            padding: 1px 6px;
+            word-break: break-all;
+        }
+
+        /* Event Table */
+        .event-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .event-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            text-align: left;
+            padding: 10px 14px;
+            font-weight: 700;
+        }
+
+        .event-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        .event-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        .event-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .event-table tr:nth-child(even) td {
+            background: var(--anthropic-light);
+        }
+
+        /* Action List */
+        .action-list {
+            counter-reset: action;
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .action-list li {
+            counter-increment: action;
+            position: relative;
+            padding: 12px 16px 12px 52px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-list li::before {
+            content: counter(action);
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 26px;
+            height: 26px;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: #FFF3E0;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-top: 20px;
+        }
+
+        .warning-box h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 8px;
+        }
+
+        .warning-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+        }
+
+        .summary-box h3 {
+            color: var(--anthropic-coral);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .footer ul li {
+            padding: 2px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <span class="category-badge beta">ベータ</span>
+                <h1>Managed Agents のダイナミックワークフローがベータ提供開始</h1>
+                <p class="subtitle">エージェント自身が多数のエージェントをフェーズ単位で実行し、結果を統合する「ワークフロー」を記述。サーバーがバックグラウンドで workflow run として実行</p>
+                <p class="date">📅 2026-10-09 | ソース: Claude API リリースノート</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📝</div>
+                    <div class="key-point-content">
+                        <h3>エージェントがワークフローを記述</h3>
+                        <p>エージェント自身が、多数のエージェントをフェーズ単位で実行して結果を統合するプログラム (ワークフロー) を作成。Claude の直接関与なしにエージェント群をオーケストレーションする</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚙️</div>
+                    <div class="key-point-content">
+                        <h3>サーバーがバックグラウンドで実行</h3>
+                        <p>ワークフローはサーバー側で「workflow run」として実行される。実行中もメインエージェントは作業を継続したりターンを終了したりでき、メインスレッドが解放される</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📈</div>
+                    <div class="key-point-content">
+                        <h3>大規模タスクを 1 セッションで処理</h3>
+                        <p>数百件のドキュメントレビューや多数のソースのクロスチェックなど、作業単位が多い大規模タスクを 1 つのエージェントセッションで処理できる</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📡</div>
+                    <div class="key-point-content">
+                        <h3>イベントストリームで進捗を追跡</h3>
+                        <p>各 run の進捗は、セッションのイベントストリーム上の <span class="inline-code">workflow_run.*</span> イベントで追跡できる。run の開始に追加の API 呼び出しは不要</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💰</div>
+                    <div class="key-point-content">
+                        <h3>セッションバジェットでコスト制御</h3>
+                        <p>run 内のエージェントのトークンは各モデルの料金で課金され、セッションバジェットにカウントされる。バジェット到達時はオープン中のすべての run が一時停止する</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before: サブエージェント委任のみ</h4>
+                    <ul>
+                        <li>🔸 委任は 1 階層まで</li>
+                        <li>🔸 セッションあたりの子スレッド数は最大 25</li>
+                        <li>🔸 作業単位が非常に多いタスクには不向き</li>
+                        <li>🔸 メインスレッドが委任の調整に拘束される</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After: ダイナミックワークフロー</h4>
+                    <ul>
+                        <li>✅ エージェント群をプログラムとしてオーケストレーション</li>
+                        <li>✅ 1 つの run で最大 1,000 エージェントを起動</li>
+                        <li>✅ バックグラウンド実行でメインスレッドを解放</li>
+                        <li>✅ コンテキストと結果をプログラム的に受け渡し</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📝 ダイナミックワークフロー</h3>
+                    <p>エージェントが多数のエージェントをフェーズ単位で実行し、結果を統合するワークフローを作成。サーバーがバックグラウンドで workflow run として実行する</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📂 フェーズ実行</h3>
+                    <p>「契約書を読む」のような名前付きステージごとに実行。複数エージェントの同時実行 (ファンアウト) や、フェーズ内での繰り返し・条件分岐 (例: レビューが通るまでドラフトを修正) も表現できる</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 結果統合</h3>
+                    <p>エージェント間で結果をプログラム的に受け渡し、最終的に統合。run 終了時には <span class="inline-code">result</span> を含む <span class="inline-code">workflow_run.status_ended</span> イベントが届く</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 柔軟なエージェント構成</h3>
+                    <p>ワークフロー自身が定義するインラインエージェント、<span class="inline-code">workflows.predefined_agents</span> の事前定義エージェント (最大 20 件)、またはその両方を使用できる。インラインエージェントはセッションと同じモデルを使用する</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚦 エージェント主導の実行開始</h3>
+                    <p>run の開始に追加の API 呼び出しは不要。エージェント自身がいつ run を開始するかを判断するため、システムプロンプトでその条件を指示する</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats: Limits -->
+        <section class="section">
+            <h2 class="section-title">主な制限 (数字で見る)</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">64</div>
+                    <div class="stat-label">1 run の同時スレッド数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1,000</div>
+                    <div class="stat-label">1 run が起動できるエージェント総数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">24 時間</div>
+                    <div class="stat-label">run の有効期間 (デフォルト、短縮可能)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">同時オープン run 数 (デフォルト)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="section-subtitle">run の 3 層構造</h3>
+            <div class="structure-steps">
+                <div class="structure-step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h4>Run</h4>
+                        <p>1 つのワークフローの実行全体</p>
+                    </div>
+                </div>
+                <div class="structure-step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h4>フェーズ</h4>
+                        <p>「契約書を読む」のような名前付きステージ。フェーズイベントで進捗を追跡する</p>
+                    </div>
+                </div>
+                <div class="structure-step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h4>エージェントスレッド</h4>
+                        <p>フェーズ内で実行される各エージェントは、それぞれ独立したセッションスレッドで動作する</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">アーキテクチャ図</h3>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    User(["👤 ユーザー"]) -->|"user.message"| Primary
+
+    subgraph Session["🏢 Managed Agents セッション"]
+        Primary["🤖 メインエージェント&lt;br/&gt;プライマリスレッド"]
+        Workflow["📝 ワークフロー&lt;br/&gt;エージェントが記述するプログラム"]
+
+        subgraph Run["⚙️ Workflow Run - バックグラウンド実行"]
+            subgraph Phase1["📂 フェーズ 1 - 並列読み取り"]
+                direction LR
+                A1["🤖 エージェント A"]
+                A2["🤖 エージェント B"]
+                A3["🤖 エージェント C"]
+                A1 ~~~ A2 ~~~ A3
+            end
+            subgraph Phase2["📊 フェーズ 2 - 結果の統合"]
+                Merge["🤖 統合エージェント"]
+            end
+            Phase1 --> Phase2
+        end
+
+        Primary --> Workflow
+        Workflow --> Run
+    end
+
+    Run -.->|"workflow_run イベント"| Stream["📡 セッション&lt;br/&gt;イベントストリーム"]
+    Stream -.-> Client(["🖥️ クライアント"])
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class Session platform
+    class Run,Phase1,Phase2 layer
+    class Primary,Merge process
+    class Workflow,A1,A2,A3,Stream internal
+    class User,Client user
+                </pre>
+            </div>
+
+            <h3 class="section-subtitle">有効化方法 (multiagent 設定)</h3>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">
+                ベータヘッダー <span class="inline-code">anthropic-beta: managed-agents-2026-04-01</span> を付与し、エージェント定義の <span class="inline-code">multiagent</span> フィールドを設定する。<span class="inline-code">multiagent_20261001</span> タイプでは <span class="inline-code">subagents</span> と <span class="inline-code">workflows</span> はデフォルトで両方有効となる。
+            </p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">契約書レビューエージェントの作成例 (公式ドキュメントより)</span>
+                </div>
+                <pre><code class="language-bash">curl -fsS https://api.anthropic.com/v1/agents \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "anthropic-beta: managed-agents-2026-04-01" \
+  -H "content-type: application/json" \
+  -d @- &lt;&lt;'EOF'
+{
+  "name": "Contract Reviewer",
+  "model": "claude-opus-5-5",
+  "system": "You review contracts. When you're asked to review more than a few contracts, start a workflow run that reads them in parallel and combines the findings. Review one or two contracts yourself, without a run.",
+  "tools": [{"type": "agent_toolset_20260401"}],
+  "multiagent": {"type": "multiagent_20261001", "workflows": {"type": "enabled"}}
+}
+EOF</code></pre>
+            </div>
+
+            <h3 class="section-subtitle">主なイベント (workflow_run.*)</h3>
+            <table class="event-table">
+                <thead>
+                    <tr>
+                        <th>イベント</th>
+                        <th>説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="inline-code">workflow_run.created</span></td>
+                        <td>run の開始 (<span class="inline-code">phases</span> を含む)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">workflow_run.status_running</span> / <span class="inline-code">status_idle</span></td>
+                        <td>run の実行状態の変化</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">workflow_run.phase_started</span> / <span class="inline-code">phase_ended</span></td>
+                        <td>フェーズの開始と終了</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">workflow_run.status_ended</span></td>
+                        <td><span class="inline-code">result</span> を含む最後のイベント</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">workflow_run.error</span></td>
+                        <td>エラーの通知</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Developer Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <ol class="action-list">
+                <li>API リクエストに <span class="inline-code">anthropic-beta: managed-agents-2026-04-01</span> ヘッダーを付与する</li>
+                <li>エージェント定義の <span class="inline-code">multiagent</span> フィールドに <span class="inline-code">{"type": "multiagent_20261001", "workflows": {"type": "enabled"}}</span> を設定する。ダイナミックワークフローのみを使う場合は <span class="inline-code">"subagents": {"type": "disabled"}</span> を追加する</li>
+                <li>システムプロンプトに、いつワークフロー run を開始すべきかの指示を記述する</li>
+                <li>セッション作成時にセッションバジェットを設定し、run を含むセッション全体の支出に上限を設ける (既存セッションには後から追加できない)</li>
+                <li>クライアント側で <span class="inline-code">workflow_run.*</span> イベントを処理し、run の進捗と結果を追跡する</li>
+            </ol>
+
+            <div class="warning-box">
+                <h4>⚠️ 移行時の注意</h4>
+                <p>既存エージェントの <span class="inline-code">multiagent.type</span> を変更する場合は、coordinator タイプからの移行手順を事前に確認すること。また、<span class="inline-code">ant__</span> プレフィックスはシステム予約となるため、この名前で始まるカスタムツールを持つエージェントは、有効化と同じ更新内でツールの名前変更または削除が必要 (そうしないと 400 エラーで更新が失敗する)。</p>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>📄 数百件のドキュメントレビュー</h4>
+                <p>契約書などのドキュメントをフェーズ 1 で並列に読み取り (ファンアウト)、フェーズ 2 で統合エージェントが結果をまとめる。少数件はメインエージェントが自分で処理し、件数が多い場合のみ run を開始する、といった使い分けもシステムプロンプトで指示できる</p>
+            </div>
+            <div class="use-case">
+                <h4>🔍 監査・マイグレーション・ディープリサーチ</h4>
+                <p>大量の作業単位を持つタスクの自動化に適する。レビューが通るまでドラフトを修正させるなど、フェーズ内の繰り返しや条件分岐もプログラムとして表現できる</p>
+            </div>
+            <div class="use-case">
+                <h4>🔗 多数ソースのクロスチェック</h4>
+                <p>多数の情報ソースを並列に照合し、結果を統合する。実行中もメインエージェントはユーザーとの対話や進捗確認に専念でき、メインスレッドが塞がらない</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <h3>エージェントがエージェント群をオーケストレーションする段階へ</h3>
+                <p>サブエージェント委任との最大の違いは、エージェントが作業の分割・並列化・統合をワークフローとして一度に記述し、サーバーがバックグラウンドで実行する点にある。これにより、数百件規模の作業単位を含むタスクをメインスレッドを塞がずに処理できる。</p>
+                <p>一方で、run 内のすべてのエージェントがトークンを消費するため、セッションバジェットの設定が実質的に必須となる。ベータ機能であるため、同時スレッド数の上限 (64) などは今後変更される可能性がある点に留意が必要となる。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>• <a href="https://platform.claude.com/docs/en/managed-agents/multiagent-orchestration#dynamic-workflows" target="_blank" rel="noopener noreferrer">Dynamic workflows (Multiagent orchestration)</a></li>
+                <li>• <a href="https://platform.claude.com/docs/en/managed-agents/multiagent-orchestration#turn-on-dynamic-workflows" target="_blank" rel="noopener noreferrer">Turn on dynamic workflows</a></li>
+                <li>• <a href="https://platform.claude.com/docs/en/managed-agents/workflow-runs" target="_blank" rel="noopener noreferrer">Workflow runs</a></li>
+                <li>• <a href="https://platform.claude.com/docs/en/managed-agents/session-threads" target="_blank" rel="noopener noreferrer">Session threads</a></li>
+                <li>• <a href="https://platform.claude.com/docs/en/managed-agents/budgets" target="_blank" rel="noopener noreferrer">Budgets</a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
