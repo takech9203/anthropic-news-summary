@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance API が Claude Docs ドキュメントの Word ファイルダウンロードに対応 (ベータ) - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .category-badge.beta {
+            background: var(--warning);
+            color: #FFFFFF;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.4);
+        }
+
+        .info-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            color: var(--text-secondary);
+        }
+
+        .info-table code {
+            background: var(--anthropic-light);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+            word-break: break-all;
+        }
+
+        .inline-code {
+            background: var(--anthropic-light);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Scope Pills */
+        .scope-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .scope-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--anthropic-light);
+            border: 2px dashed var(--anthropic-coral);
+            border-radius: 24px;
+            padding: 10px 20px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Warning / Attention */
+        .warning-box {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border: 2px solid var(--warning);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .warning-box h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #B45309;
+            margin-bottom: 10px;
+        }
+
+        .warning-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box ul {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .warning-box ul li {
+            margin-bottom: 6px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action List */
+        .action-list {
+            counter-reset: action;
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--anthropic-light);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .action-item::before {
+            counter-increment: action;
+            content: counter(action);
+            width: 28px;
+            height: 28px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-item div h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .action-item div p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Sub heading */
+        .sub-heading {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .note-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer ul {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .footer ul li {
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <span class="category-badge">エンタープライズ</span>
+                <span class="category-badge">コンプライアンス</span>
+                <span class="category-badge beta">ベータ</span>
+                <h1>Compliance API が Claude Docs ドキュメントの<br>Word ファイルダウンロードに対応</h1>
+                <p class="date">📅 2026-10-08 | Claude Developer Platform Release Notes</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📝</div>
+                    <div class="key-point-content">
+                        <h3>Claude Docs ドキュメントを Word 形式で取得可能に</h3>
+                        <p>Compliance API が Claude Docs ドキュメントを Word ファイルとしてダウンロードできるようになった。Claude Enterprise 組織向けのベータ提供である。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📋</div>
+                    <div class="key-point-content">
+                        <h3>一覧は List code artifacts で行う</h3>
+                        <p>Claude Docs ドキュメントは GET /v1/compliance/apps/code/artifacts で、artifact_type が claude_docs のエントリとして返る。ファイルとアーティファクトが独立に一覧されないという従来の原則の例外となる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗜️</div>
+                    <div class="key-point-content">
+                        <h3>ダウンロードは ZIP 形式</h3>
+                        <p>コンテンツエンドポイントを multi_file_format=zip 付きで呼び出すと、テキストを持つタブごとに 1 つの Word (.docx) ファイルを含む ZIP アーカイブが返る。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚫</div>
+                    <div class="key-point-content">
+                        <h3>取得できるのは現在のテキストのみ</h3>
+                        <p>versions リストは空、published_version_id は null であり、コメント、アップロードされたファイル、編集履歴は ZIP に含まれない。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>既存インテグレーションへの破壊的変更なし</h3>
+                        <p>本機能は新しい取得経路の追加であり、既存のチャット、ファイル、プロジェクト系エンドポイントの仕様に変更はない。既存の Compliance Access Key でそのまま利用できる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📋 claude_docs としての一覧</h3>
+                    <p>List code artifacts エンドポイントが、Claude Docs ドキュメントを artifact_type が claude_docs のアーティファクトとして返す。所有者情報、公開範囲 (read_mode)、更新日時 (updated_at) も含まれる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 タブごとの .docx を含む ZIP</h3>
+                    <p>GET .../artifacts/{artifact_id}/content?multi_file_format=zip が、テキストを持つタブごとに 1 つの Word (.docx) ファイルを含む ZIP アーカイブを返す。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📄 現在のテキストのみを取得</h3>
+                    <p>Claude Docs ドキュメントの versions リストは空で、published_version_id は null。バージョン単位ではなく、現在のテキストのみをダウンロードする。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔑 既存のキーとスコープで利用可能</h3>
+                    <p>claude.ai で作成した Compliance Access Key の read:compliance_user_data スコープで取得できる。新しいキーやスコープの追加は不要。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏢 Claude Enterprise 組織限定</h3>
+                    <p>本機能を含むページのエンドポイントは Claude Enterprise 組織のみが利用できる。Admin API キーでは 403 Forbidden が返る。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="sub-heading">🔌 対象エンドポイント</h3>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>エンドポイント</th>
+                        <th>役割</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>GET /v1/compliance/apps/code/artifacts</code></td>
+                        <td>コードアーティファクトの一覧 (claude_docs を含む)</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET /v1/compliance/apps/code/artifacts/{artifact_id}/content?multi_file_format=zip</code></td>
+                        <td>Claude Docs ドキュメントの現在のテキストを ZIP で取得 (ベータ)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-heading">🔐 認証とスコープ</h3>
+            <div class="scope-pills">
+                <span class="scope-pill">🔑 read:compliance_user_data — 取得に必要</span>
+            </div>
+            <p class="note-text">取得には claude.ai で作成した Compliance Access Key (<span class="inline-code">sk-ant-api01-...</span>) が必要。チャット、ファイル、プロジェクト系のエンドポイントは Admin API キー (<span class="inline-code">sk-ant-admin01-...</span>) では利用できず、403 Forbidden が返る。</p>
+
+            <h3 class="sub-heading">📋 List code artifacts の主なパラメータ</h3>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>limit</code></td>
+                        <td>最大件数 (デフォルト 20、最大 100)</td>
+                    </tr>
+                    <tr>
+                        <td><code>organization_ids</code></td>
+                        <td>組織 ID フィルター (最大 500 件)</td>
+                    </tr>
+                    <tr>
+                        <td><code>user_ids</code></td>
+                        <td>所有者ユーザー ID フィルター (最大 200 件)</td>
+                    </tr>
+                    <tr>
+                        <td><code>updated_at.gt/gte/lt/lte</code></td>
+                        <td>更新日時フィルター (RFC 3339 形式)</td>
+                    </tr>
+                    <tr>
+                        <td><code>page</code></td>
+                        <td>前のレスポンスの <code>next_page</code> トークンによるページネーション</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="note-text">レスポンスの <span class="inline-code">artifact_type</span> は <span class="inline-code">claude_docs</span> のほか、<span class="inline-code">claude_slides</span>、<span class="inline-code">claude_design</span>、<span class="inline-code">claude_design_systems</span>、<span class="inline-code">claude_motion</span>、<span class="inline-code">code</span>、<span class="inline-code">other</span> を取り得る。結果はアーティファクト ID 順にソートされる。</p>
+
+            <h3 class="sub-heading">⚖️ Claude Docs ドキュメントと他のアーティファクトの違い</h3>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>一般のコードアーティファクト</th>
+                        <th>Claude Docs ドキュメント</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>artifact_type</code></td>
+                        <td><code>code</code> など</td>
+                        <td><code>claude_docs</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>versions</code></td>
+                        <td>直近約 20 バージョンのメタデータ</td>
+                        <td>空</td>
+                    </tr>
+                    <tr>
+                        <td><code>published_version_id</code></td>
+                        <td>公開バージョンの ID</td>
+                        <td><code>null</code></td>
+                    </tr>
+                    <tr>
+                        <td>コンテンツ取得</td>
+                        <td>バージョン単位でダウンロード</td>
+                        <td><code>content?multi_file_format=zip</code> で現在のテキストを取得</td>
+                    </tr>
+                    <tr>
+                        <td>取得形式</td>
+                        <td>バージョンのコンテンツ</td>
+                        <td>タブごとの Word (.docx) を含む ZIP</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-heading">🏗️ アーキテクチャ</h3>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph ClaudeAI["💬 claude.ai Claude Enterprise"]
+        Docs["📝 Claude Docs ドキュメント<br/>複数タブ構成"]
+    end
+
+    subgraph ComplianceAPI["🔒 Compliance API"]
+        ListEP["📋 GET /code/artifacts<br/>artifact_type: claude_docs"]
+        ContentEP["📦 GET /code/artifacts/id/content<br/>multi_file_format=zip ベータ"]
+    end
+
+    subgraph Output["🗜️ ZIP アーカイブ"]
+        direction LR
+        Docx1["📄 タブ 1 の .docx"]
+        Docx2["📄 タブ 2 の .docx"]
+        Docx1 ~~~ Docx2
+    end
+
+    subgraph Excluded["🚫 ZIP に含まれないもの"]
+        direction LR
+        Comments["💬 コメント"]
+        Uploads["📎 アップロードファイル"]
+        History["🕘 編集履歴"]
+        Comments ~~~ Uploads ~~~ History
+    end
+
+    subgraph Audit["🛡️ 企業の監査システム"]
+        direction LR
+        Discovery["⚖️ eDiscovery"]
+        DLP["🔐 DLP"]
+        Discovery ~~~ DLP
+    end
+
+    ReadKey(["🔑 read:compliance_user_data"])
+
+    Docs --> ListEP
+    ReadKey -.-> ListEP
+    ReadKey -.-> ContentEP
+    ListEP -->|"artifact_id"| ContentEP
+    ContentEP --> Output
+    Docs -.-> Excluded
+    Output --> Discovery
+    Output --> DLP
+
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef beta fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef excluded fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class ClaudeAI,ComplianceAPI,Output,Excluded,Audit container
+    class Docs input
+    class ListEP process
+    class ContentEP,ReadKey beta
+    class Docx1,Docx2 storage
+    class Comments,Uploads,History excluded
+    class Discovery,DLP decision
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Claude Docs ドキュメントの一覧</span>
+                </div>
+                <pre><code class="language-bash"># コードアーティファクトを一覧し、artifact_type が claude_docs の
+# エントリを抽出する。next_page が無くなるまでページングする
+curl --fail-with-body -sS -G \
+  "https://api.anthropic.com/v1/compliance/apps/code/artifacts" \
+  --header "x-api-key: $ANTHROPIC_COMPLIANCE_ACCESS_KEY" \
+  --header "anthropic-version: 2023-06-01" \
+  --data-urlencode "limit=100" \
+  | jq '[.data[] | select(.artifact_type == "claude_docs")]'</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Claude Docs ドキュメントの Word ダウンロード</span>
+                </div>
+                <pre><code class="language-bash"># 現在のテキストを、テキストを持つタブごとに 1 つの Word (.docx)
+# ファイルを含む ZIP アーカイブとしてダウンロードする (ベータ)。
+# コメント、アップロードされたファイル、編集履歴は含まれない
+artifact_id="cart_01Tu9VwXyZaBcDeFgHiJkLmN"
+
+curl --fail-with-body -sS -G \
+  "https://api.anthropic.com/v1/compliance/apps/code/artifacts/$artifact_id/content" \
+  --header "x-api-key: $ANTHROPIC_COMPLIANCE_ACCESS_KEY" \
+  --header "anthropic-version: 2023-06-01" \
+  --data-urlencode "multi_file_format=zip" \
+  --output "${artifact_id}.zip"</code></pre>
+            </div>
+        </section>
+
+        <!-- Warnings -->
+        <section class="section">
+            <h2 class="section-title">注意点</h2>
+            <div class="warning-box">
+                <h4>⚠️ 取得できる内容には限界がある</h4>
+                <p>Compliance API 経由で取得できるのは Claude Docs ドキュメントの現在のテキストのみである。監査要件に対して何が証跡として残るかを関係者と確認する必要がある。</p>
+                <ul>
+                    <li>コメント、アップロードされたファイル、編集履歴は ZIP に含まれない</li>
+                    <li><strong>versions</strong> リストは空で、<strong>published_version_id</strong> は <strong>null</strong>。過去バージョンは取得できない</li>
+                    <li>Compliance API 経由の Claude Docs ダウンロードはベータであり、仕様が変わる可能性がある</li>
+                </ul>
+            </div>
+            <div class="warning-box">
+                <h4>🔁 完全な列挙にはページネーションと時間フィルターの注意点がある</h4>
+                <p>ページネーションは next_page トークン方式で、has_more が true でも次ページが空の場合があるため、next_page が無くなるまで続ける必要がある。また、updated_at の時間フィルターは結果整合性のあるインデックスに対して照合されるため、コンプライアンス上完全な列挙には時間フィルターを省略し、増分エクスポートではウィンドウ間に十分な重なりを設けて id で重複排除することが推奨されている。</p>
+            </div>
+            <div class="warning-box">
+                <h4>❓ コンテンツエンドポイント単体のリファレンスは未確認</h4>
+                <p>コンテンツエンドポイント (.../content) 単体の API リファレンスページの URL は、調査時点では特定できていない。エンドポイントの仕様は Retrieve files and artifacts セクションの記述に基づく。multi_file_format に zip 以外の値が指定できるかどうかも、ドキュメント上では確認できていない。</p>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>⚖️ eDiscovery (電子証拠開示)</h4>
+                <p>コンプライアンス / eDiscovery 担当者は、Claude Docs で作成されたドキュメントを証跡としてエクスポートできる。List code artifacts で claude_docs のエントリを一覧し、タブごとの Word ファイルを含む ZIP として取得する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔐 DLP (データ損失防止)</h4>
+                <p>セキュリティチームは、組織内で作成された Claude Docs ドキュメントの内容を Word 形式で取り出し、DLP で機微情報の検査にかけられる。ZIP を展開してタブ単位の .docx を検査パイプラインに流し込める。</p>
+            </div>
+            <div class="use-case">
+                <h4>🛡️ 監査カバレッジの整理</h4>
+                <p>Claude Enterprise 管理者は、Claude Docs の組織展開に際して監査カバレッジを整理できる。取得できるのは現在のテキストのみという限界を踏まえ、何が証跡として残るかを監査要件に反映する。</p>
+            </div>
+        </section>
+
+        <!-- Required Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <div class="action-list">
+                <div class="action-item">
+                    <div>
+                        <h4>エクスポート対象への追加</h4>
+                        <p>アーティファクトのエクスポートを実装している場合、List code artifacts の結果から artifact_type が claude_docs のエントリを選別し、ZIP ダウンロード経路を追加する。</p>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div>
+                        <h4>カバレッジの限界を把握する</h4>
+                        <p>取得できるのは現在のテキストのみで、コメント、アップロードされたファイル、編集履歴は含まれない。監査要件に対して何が証跡として残るかを関係者と確認する。</p>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div>
+                        <h4>ZIP 展開処理の実装</h4>
+                        <p>レスポンスは単一の Word ファイルではなく、テキストを持つタブごとに .docx を含む ZIP アーカイブである。展開とタブ単位の保存に対応する。</p>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div>
+                        <h4>完全列挙の設計</h4>
+                        <p>updated_at フィルターには結果整合性の注意点があるため、完全なエクスポートでは時間フィルターを省略し、増分エクスポートでは重なりを設けて id で重複排除する。</p>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div>
+                        <h4>ベータであることの考慮</h4>
+                        <p>本番の監査要件に組み込む場合は、ベータ提供であり仕様が変わる可能性があるという前提を明示する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 12px;"><strong>関連リンク:</strong></p>
+            <ul>
+                <li>📖 <a href="https://platform.claude.com/docs/en/manage-claude/compliance-api" target="_blank" rel="noopener noreferrer">Compliance API</a></li>
+                <li>📖 <a href="https://platform.claude.com/docs/en/manage-claude/compliance-content-data#retrieve-files-and-artifacts" target="_blank" rel="noopener noreferrer">Retrieve and delete chats, files, and projects - Retrieve files and artifacts</a></li>
+                <li>📖 <a href="https://platform.claude.com/docs/en/api/compliance/code/artifacts/list" target="_blank" rel="noopener noreferrer">List Code Artifacts (API リファレンス)</a></li>
+                <li>📖 <a href="https://platform.claude.com/docs/en/manage-claude/compliance-api-access" target="_blank" rel="noopener noreferrer">Set up the Compliance API</a></li>
+            </ul>
+            <p style="margin-top: 12px;">このインフォグラフィックは 2026-10-08 の Claude Developer Platform リリースノートを基に作成されています。</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
