@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.299 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 28px 0 12px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code,
+        .key-point-content code,
+        .use-case code,
+        .fix-list code,
+        .section p code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 5px;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 4px;
+            padding: 1px 5px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Fix list */
+        .fix-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .fix-list li {
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .fix-list li .fix-icon {
+            flex-shrink: 0;
+        }
+
+        .fix-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Security list variation */
+        .fix-list.security li {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFF8F0 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin-bottom: 6px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.299</h1>
+                <p class="subtitle">アイドルコンパクション、<code style="background: rgba(212,165,116,0.25); border-radius: 4px; padding: 1px 6px;">CLAUDE_CODE_DISABLE_FILE_MENTIONS</code>、Mod API 拡張、セキュリティ修正を含む全 190 件の大型リリース</p>
+                <p class="date">📅 2026-10-14</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">190</div>
+                    <div class="stat-label">全変更件数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">33</div>
+                    <div class="stat-label">追加</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">36</div>
+                    <div class="stat-label">変更・改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">121</div>
+                    <div class="stat-label">修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5 日分</div>
+                    <div class="stat-label">集約された変更</div>
+                </div>
+            </div>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📦</div>
+                    <div class="key-point-content">
+                        <h3>5 日分をまとめた大型リリース (全 190 件)</h3>
+                        <p>v2.1.296 (2026-10-09 公開) 以降の v2.1.297 / v2.1.298 は npm に公開されなかったため、本リリースに 5 日分の変更が集約された。修正が 121 件と全体の 6 割以上を占める。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗜️</div>
+                    <div class="key-point-content">
+                        <h3>アイドルコンパクション</h3>
+                        <p>200K トークン超の会話を約 54 分放置すると、1 時間のプロンプトキャッシュが失効する前に自動コンパクト。復帰後の最初のメッセージで会話全体を再処理するコストを回避できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📎</div>
+                    <div class="key-point-content">
+                        <h3><code>CLAUDE_CODE_DISABLE_FILE_MENTIONS</code></h3>
+                        <p><code>@</code> ファイルメンションでファイルの内容ではなくパスのみを渡す環境変数。大きなファイルをメンションしてもコンテキストを一括消費しなくなる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>Mod / プラグイン API の大幅拡張</h3>
+                        <p><code>$.prompt.media</code> によるプロンプト添付メディアの読み取り、<code>$.session.identity()</code> によるサインイン情報の取得、Text / Box のスタイル拡張など。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>重要なセキュリティ修正</h3>
+                        <p>サンドボックスから <code>--plugin-dir</code> への書き込み防止、サードパーティゲートウェイへの API キー漏洩の修正、<code>__proto__</code> キーによる <code>tool.check</code> ガード回避の修正など。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🗜️ アイドルコンパクション</h3>
+                    <p>200K トークン以上の会話を約 54 分放置すると自動でコンパクトを実行。発動の最小トークン数は <code>CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS</code> で変更でき、settings.json の <code>"idleCompaction": false</code> で無効化できる。v2.1.290 以降が必要。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📎 <code>CLAUDE_CODE_DISABLE_FILE_MENTIONS</code></h3>
+                    <p><code>@</code> メンション時にパスのみを Claude に渡す。Claude は必要に応じてファイルツールで読み込むため、メンション直後のコンテキスト消費を抑えられる。ファイルの一部だけ読めば足りるワークフローで有効。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧩 Mod API 拡張</h3>
+                    <p><code>$.prompt.media</code> で添付画像・ドキュメントのバイト列を読み取り (managed Mod)、<code>$.session.identity()</code> でサインイン方法や組織情報を取得。<code>Text</code> に <code>size</code> / <code>weight</code> / <code>mono</code> / <code>tabular</code>、<code>Box</code> に名前付きスペーシングが追加され、<code>bold</code> は非推奨に。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ セキュリティ修正</h3>
+                    <p>サンドボックス突破につながる <code>--plugin-dir</code> への書き込みを防止。<code>ANTHROPIC_BASE_URL</code> のゲートウェイ用 API キーが Anthropic へのリクエストに付いて送られる漏洩と、<code>__proto__</code> キーによる <code>tool.check</code> ガード回避を修正。プランモードの書き込み防止も強化。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔧 安定性の修正 (121 件)</h3>
+                    <p>デバッグログや stderr によるメモリリーク、MCP の HTTP 接続 30 秒ハングや OAuth ヘッダー欠落、Remote Control / クラウドセッションの大容量ファイル転送・二重実行、BOM 付き UTF-16LE の文字化けなどを修正。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="section-subtitle">⏱️ アイドルコンパクションの動作フロー</h3>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">プロンプトキャッシュの有効期限は 1 時間。失効前の約 54 分時点でコンパクトを済ませておくことで、次のメッセージ送信時の会話全体の再処理コストを回避する。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Conv["💬 200K+ トークンの会話"] --> Idle{"⏱️ 約 54 分<br/>アイドル?"}
+    Idle -->|はい| Compact["🗜️ 自動コンパクト実行<br/>キャッシュ失効前に処理"]
+    Idle -->|いいえ| Keep["📝 そのまま継続"]
+    Compact --> Next["✉️ 次のメッセージは<br/>再処理なしで送信"]
+    Cache["🕐 プロンプトキャッシュ<br/>有効期限 1 時間"] -.-> Idle
+
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Conv input
+    class Idle decision
+    class Compact,Next internal
+    class Keep,Cache process
+                </pre>
+            </div>
+
+            <h3 class="section-subtitle">🔐 MCP allow ルールのスコープ厳格化</h3>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p><code>mcp__a</code> という allow ルールが <code>a__b</code> や <code>a_</code> という名前のサーバーにまで一致していた。deny / ask ルールは正規化名に <code>__</code> を含むサーバーに適用されないことがあった。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p>ルールは名前を指定したサーバーのみに適用。正規化名に <code>__</code> を含むサーバーは <code>mcp__&lt;完全な正規化名&gt;__*</code> と記述する。エージェントの <code>tools:</code> リストも同様に厳密化された。</p>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">💻 コードサンプル</h3>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">アイドルコンパクションの調整とファイルメンションの制御例。最小トークン数は環境変数で、無効化は settings.json で行う。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">環境変数での調整</span>
+                </div>
+                <pre><code class="language-bash"># アイドルコンパクションの発動を 150K トークンからに変更
+export CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS=150000
+
+# @ ファイルメンションでパスのみを渡す
+export CLAUDE_CODE_DISABLE_FILE_MENTIONS=1</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings.json でアイドルコンパクションを無効化</span>
+                </div>
+                <pre><code class="language-json">{
+  "idleCompaction": false
+}</code></pre>
+            </div>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">Mod の <code>Text</code> で新しいスタイルプロパティを使う例 (<code>bold</code> は非推奨となり <code>weight</code> を使う)。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSX</span>
+                    <span class="code-title">Text / Box の新スタイル</span>
+                </div>
+                <pre><code class="language-javascript">&lt;Box gap="md"&gt;
+  &lt;Text size="lg" weight="bold"&gt;合計&lt;/Text&gt;
+  &lt;Text mono tabular&gt;1,526,987&lt;/Text&gt;
+&lt;/Box&gt;</code></pre>
+            </div>
+        </section>
+
+        <!-- Security fixes detail -->
+        <section class="section">
+            <h2 class="section-title">セキュリティ関連の修正</h2>
+            <ul class="fix-list security">
+                <li><span class="fix-icon">🚫</span><span><strong>サンドボックスから <code>--plugin-dir</code> への書き込み防止</strong>: このフォルダーのコードは Claude Code がサンドボックス外でリロード・実行するため、サンドボックス突破につながる経路だった。</span></li>
+                <li><span class="fix-icon">🔑</span><span><strong>サードパーティゲートウェイへの API キー漏洩の修正</strong>: feature flag、起動、fast mode、プロファイル、フィードバックの各リクエストが、<code>ANTHROPIC_BASE_URL</code> のゲートウェイ用 API キーを Anthropic へのリクエストに付けて送っていた問題を修正。</span></li>
+                <li><span class="fix-icon">🧬</span><span><strong><code>__proto__</code> キーによる <code>tool.check</code> ガード回避の修正</strong>: Mod の hook に渡される値から <code>__proto__</code> キーが黙って除去され、別の Mod のツール呼び出しに対するガードを回避できる可能性があった。</span></li>
+                <li><span class="fix-icon">🔗</span><span><strong>macOS サンドボックスのシンボリックリンク対応</strong>: 拒否パスがシンボリックリンク経由で実体パスとして読み書きできていた問題や、グロブルール起点の再チェック漏れを修正。</span></li>
+                <li><span class="fix-icon">📝</span><span><strong>プランモードの書き込み防止</strong>: hook が許可した書き込み (MCP ツール、ファイル、シェルコマンド) をプランモードが実行してしまう問題を修正。</span></li>
+                <li><span class="fix-icon">🔒</span><span><strong>資格情報の露出防止</strong>: 説明なしで開始されたエージェントチームメイトが、プロンプト内の資格情報の一部をタスク説明に表示していた問題を修正。</span></li>
+            </ul>
+        </section>
+
+        <!-- Other fixes and changes -->
+        <section class="section">
+            <h2 class="section-title">その他の修正・変更 (抜粋)</h2>
+            <ul class="fix-list">
+                <li><span class="fix-icon">🧠</span><span><strong>メモリリーク</strong>: 大量のデバッグログ使用時のメモリ増加、stderr の読み手がいない場合の無制限な増加、サブエージェント多数実行後のセッション再開時の高メモリ使用などを修正。</span></li>
+                <li><span class="fix-icon">🔌</span><span><strong>MCP 接続</strong>: 通知応答を終了しないサーバーでの 30 秒ハング、OAuth で <code>headers</code> / <code>headersHelper</code> が送られない問題、バックグラウンド再接続中のツール呼び出し失敗・二重実行、<code>constructor</code> / <code>prototype</code> という名前のサーバーが接続されない問題を修正。</span></li>
+                <li><span class="fix-icon">📡</span><span><strong>Remote Control / クラウドセッション</strong>: 30〜35 MiB のファイルが届かない問題、低速回線での claude.ai 表示フリーズ、ワーカー交代直後の未応答・二重応答、承認済みツール呼び出しの二重実行 (v2.1.296 リグレッション) を修正。</span></li>
+                <li><span class="fix-icon">🔤</span><span><strong>ファイルエンコーディング</strong>: BOM 付き UTF-16LE の Read 文字化けと、Write が Windows-1252 / Shift-JIS / GBK / UTF-16BE を黙って UTF-8 に変換する問題を修正 (現在は拒否)。</span></li>
+                <li><span class="fix-icon">🪟</span><span><strong>Windows</strong>: 孤児 PowerShell プロセスによるメモリ枯渇と、Git for Windows 不在時に hook がフェイルオープンする問題を修正 (失敗したガードは呼び出しをブロック)。</span></li>
+                <li><span class="fix-icon">🔄</span><span><strong>動作変更</strong>: <code>UserPromptSubmit</code> hook がスキル / カスタムコマンド展開前に実行されるように。プラグイン hook が処理できないブロック可能アクションは通過ではなく拒否に。終了時の resume コマンドはセッション名ではなく ID で表示。</span></li>
+                <li><span class="fix-icon">➕</span><span><strong>その他の追加</strong>: <code>--shutdown-drain-sec</code> (セルフホストランナー)、エージェントビューの <code>/effort</code> と <code>/fast</code>、<code>claude plugin eval</code> の <code>--disallow-tools</code>、帰属ブロック制御の <code>CLAUDE_CODE_ATTRIBUTION_HEADER=0</code>、<code>/usage</code> の警告追加。</span></li>
+                <li><span class="fix-icon">🧰</span><span><strong>VSCode / Cloud sessions / Claude Tag / Code Review</strong>: 未送信プロンプトがセッション切り替えで失われる問題の修正、Python 拡張と並行起動による起動時間改善、ルーティンの環境移動の修正、Claude in Slack のキャンバス削除対応と 100 人超チャンネルへの静かな参加など計 20 件。</span></li>
+            </ul>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>💬 長時間セッションの利用者: 離席後のコストと待ち時間を削減</h4>
+                <p>200K トークンを超える会話を開いたまま離席しても、アイドルコンパクションがキャッシュ失効前に自動でコンパクトするため、復帰後の最初のメッセージにかかる時間とコストが改善される。発動条件は <code>CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS</code> で調整でき、不要なら <code>"idleCompaction": false</code> で無効化できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🏢 サードパーティゲートウェイの利用組織: 更新とキーローテーションの検討</h4>
+                <p><code>ANTHROPIC_BASE_URL</code> でゲートウェイを利用する組織は、API キー漏洩が修正された v2.1.299 への更新を推奨。過去のバージョンで漏洩の懸念がある場合はキーのローテーションを検討する。<code>mcp__&lt;server&gt;</code> 形式のルールを運用するチームは、スコープ厳格化に合わせてルールの書き換えを確認する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧩 Mod / プラグイン開発者: 新 API への移行と hook の見直し</h4>
+                <p><code>bold</code> から <code>weight</code> への移行、<code>turn.start</code> がサブエージェントのターンも受け取るようになったことへの <code>e.agentId</code> による分岐、<code>UserPromptSubmit</code> hook の実行タイミング変更 (展開前) の確認が必要。<code>$.prompt.media</code> や <code>$.session.identity()</code> で managed Mod の機能を拡張できる。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連リンク:</strong></p>
+            <p>・<a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">npm: @anthropic-ai/claude-code</a></p>
+            <p>・<a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code 公式ドキュメント</a></p>
+            <p>・<a href="https://code.claude.com/docs/en/settings" target="_blank" rel="noopener noreferrer">Claude Code の設定</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

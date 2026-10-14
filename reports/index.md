@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-14](2026/2026-10-14-claude-code-v2-1-299.md) - Claude Code v2.1.299: アイドルコンパクション、`CLAUDE_CODE_DISABLE_FILE_MENTIONS`、Mod API 拡張、セキュリティ修正を含む 190 件の大型リリース
 - [2026-10-09](2026/2026-10-09-managed-agents-dynamic-workflows.md) - Managed Agents のダイナミックワークフローがベータ提供開始
 - [2026-10-09](2026/2026-10-09-claude-code-v2-1-296.md) - Claude Code v2.1.296: Claude apps gateway の `code` ポリシーキー、サブエージェントの `autoCompactWindow`、Read ツールの `allow_large` 追加など 79 件の変更
 - [2026-10-09](2026/2026-10-09-claude-code-v2-1-294-v2-1-295.md) - Claude Code v2.1.294 / v2.1.295: hook の `onFailure: "block"` 追加、Program Status Protocol (OSC 7501) 対応、Claude apps gateway の大幅強化など 2 バージョンで 145 件の変更
