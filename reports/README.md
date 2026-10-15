@@ -5,7 +5,11 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-14](2026/2026-10-14-singapore-office-opening.md) - Anthropic がシンガポールオフィスを開設しシンガポール政府と MOU を締結
+- [2026-10-14](2026/2026-10-14-claude-code-v2-1-300.md) - Claude Code v2.1.300: Mod 向け `virtualText` と `prompt.change` フック、OpenTelemetry GenAI 属性、AWS 向け `/advisor` を含む 88 件のアップデート
 - [2026-10-14](2026/2026-10-14-claude-code-v2-1-299.md) - Claude Code v2.1.299: アイドルコンパクション、`CLAUDE_CODE_DISABLE_FILE_MENTIONS`、Mod API 拡張、セキュリティ修正を含む 190 件の大型リリース
+- [2026-10-14](2026/2026-10-14-api-opentelemetry-export.md) - OpenTelemetry エクスポート (ベータ) と Claude Managed Agents スケジュールデプロイメントの AWS 対応
+- [2026-10-14](2026/2026-10-14-2026-us-midterms.md) - 2026 年米国中間選挙への準備: Anthropic の選挙セーフガード最新報告
 - [2026-10-09](2026/2026-10-09-managed-agents-dynamic-workflows.md) - Managed Agents のダイナミックワークフローがベータ提供開始
 - [2026-10-09](2026/2026-10-09-claude-code-v2-1-296.md) - Claude Code v2.1.296: Claude apps gateway の `code` ポリシーキー、サブエージェントの `autoCompactWindow`、Read ツールの `allow_large` 追加など 79 件の変更
 - [2026-10-09](2026/2026-10-09-claude-code-v2-1-294-v2-1-295.md) - Claude Code v2.1.294 / v2.1.295: hook の `onFailure: "block"` 追加、Program Status Protocol (OSC 7501) 対応、Claude apps gateway の大幅強化など 2 バージョンで 145 件の変更

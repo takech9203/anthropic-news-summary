@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.300 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subsection-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .section p.lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.88em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.35);
+            border-radius: 6px;
+            padding: 1px 6px;
+            color: #8a5a2a;
+            word-break: break-all;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 20px 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .stat-card.total {
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-value {
+            color: var(--anthropic-dark);
+        }
+
+        /* Change breakdown bar */
+        .change-bar {
+            display: flex;
+            width: 100%;
+            height: 28px;
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 20px 0 8px;
+        }
+
+        .change-bar span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .bar-added { background: var(--success); }
+        .bar-fixed { background: var(--info); }
+        .bar-improved { background: #8B5CF6; }
+        .bar-changed { background: var(--warning); }
+        .bar-removed { background: #F43F5E; }
+
+        .change-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .change-legend .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Fix list */
+        .fix-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .fix-list li {
+            position: relative;
+            padding: 12px 16px 12px 40px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .fix-list li::before {
+            content: '🔧';
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            font-size: 14px;
+        }
+
+        .fix-list.changed li::before { content: '🔁'; }
+        .fix-list.action li::before { content: '✅'; }
+        .fix-list.migrate li::before { content: '🚚'; }
+        .fix-list.target li::before { content: '🎯'; }
+
+        .fix-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Tag badges for component fixes */
+        .component-tag {
+            display: inline-block;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 { color: #DC2626; }
+        .comparison-card.after h4 { color: #059669; }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Related links */
+        .related-links {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .related-links li {
+            padding: 10px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .related-links a {
+            color: #8a5a2a;
+            text-decoration: none;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .related-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            line-height: 1.9;
+            opacity: 0.95;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-box code.inline {
+            background: rgba(212, 165, 116, 0.2);
+            border-color: rgba(212, 165, 116, 0.4);
+            color: var(--anthropic-coral);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .comparison { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code / CLI アップデート</span>
+                <h1>Claude Code v2.1.300</h1>
+                <p class="subtitle">Mod 向け virtualText と prompt.change フック、OpenTelemetry GenAI 属性、AWS 向け /advisor を含む 88 件のアップデート</p>
+                <p class="date">📅 2026-10-14 発表 (GitHub Releases 18:24 UTC で確認) | ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.300 (変更 88 件の内訳)</h2>
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-value">88</div>
+                    <div class="stat-label">変更の総数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">➕ 追加</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">59</div>
+                    <div class="stat-label">🔧 修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">📈 改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">🔁 変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">🗑️ 削除</div>
+                </div>
+            </div>
+            <div class="change-bar" aria-hidden="true">
+                <span class="bar-added" style="width: 13.6%;">12</span>
+                <span class="bar-fixed" style="width: 67.1%;">59</span>
+                <span class="bar-improved" style="width: 4.5%;">4</span>
+                <span class="bar-changed" style="width: 13.6%;">12</span>
+                <span class="bar-removed" style="width: 1.2%;"></span>
+            </div>
+            <div class="change-legend">
+                <span><span class="dot bar-added"></span>追加 12</span>
+                <span><span class="dot bar-fixed"></span>修正 59</span>
+                <span><span class="dot bar-improved"></span>改善 4</span>
+                <span><span class="dot bar-changed"></span>変更 12</span>
+                <span><span class="dot bar-removed"></span>削除 1</span>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要: キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📦</div>
+                    <div class="key-point-content">
+                        <h3>同日 2 本目のフォローアップリリース</h3>
+                        <p>5 日分の変更をまとめた大型リリース v2.1.299 (2026-10-14 00:23 UTC 公開) の同日中に公開。全 88 件 (追加 12 件、修正 59 件、改善 4 件、変更 12 件、削除 1 件) の変更を含む。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>Mod (プラグインの hooks モジュール) 向け API の拡張</h3>
+                        <p>下書きにも送信内容にも含まれないテキストを入力欄に描画する <code class="inline">virtualText</code>、タイプ以外の変化を検知する <code class="inline">prompt.change</code> フック、トランスクリプト表示の <code class="inline">$.ui.view({ agentId })</code>、右から左へ書く言語向けの <code class="inline">Text</code> の <code class="inline">dir</code> プロパティが追加された。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>OpenTelemetry の強化</h3>
+                        <p><code class="inline">api_request</code> イベントでキャッシュ書き込みを有効期間別に分割 (<code class="inline">cache_creation_5m_tokens</code> / <code class="inline">cache_creation_1h_tokens</code>) し、トレーススパンに GenAI セマンティック規約属性を追加。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">☁️</div>
+                    <div class="key-point-content">
+                        <h3>Claude Platform on AWS で /advisor が利用可能に</h3>
+                        <p><code class="inline">/advisor</code>、<code class="inline">advisorModel</code> 設定、または <code class="inline">--advisor</code> フラグで選択するまで動作しない。<code class="inline">CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1</code> で無効化できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>広範囲の安定性修正</h3>
+                        <p>SessionEnd フックが実行されないことがある問題、/tasks からサブエージェントが消える問題、git の reftable リポジトリ対応、OpenTelemetry イベントの正確性など、59 件の修正を含む。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要機能 1: Mod API の拡張</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>👻 virtualText</h3>
+                    <p>プロンプト入力欄の中に描画されるテキストで、下書き (draft) にも送信されるプロンプトにも一切含まれない。入力欄内にヒントや注釈を表示する用途に使える。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 prompt.change フック</h3>
+                    <p>プロンプト欄のテキストがタイプ以外の操作で変わったときに発生。履歴の呼び出し、クリア、アンドゥ、プラグインによる入力が対象。従来の <code class="inline">prompt.edit</code> (タイプによる編集) を補完する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🖥️ $.ui.view</h3>
+                    <p>依頼に応じてエージェントのトランスクリプトをメインビューに表示できる <code class="inline">$.ui.view({ agentId })</code>。<code class="inline">$.ui.view({})</code> で元のビューに戻る。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>↔️ Text の dir プロパティ</h3>
+                    <p>右から左へ書く言語向けのプロパティ。Windows と VS Code のターミナルでは行がその方向に読まれ、右端に揃えられる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🪝 agent.spawn の書き換え対応</h3>
+                    <p>これまでワークフローエージェントに対して拒否しかできなかった <code class="inline">agent.spawn</code> フックが、本バージョンから <code class="inline">prompt</code> と <code class="inline">model</code> の書き換えに対応した。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">主要機能 2: OpenTelemetry の強化</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⏱️ キャッシュトークンの有効期間別分割</h3>
+                    <p><code class="inline">api_request</code> イベントで、プロンプトキャッシュの書き込みトークンを有効期間 (5 分 / 1 時間) 別に <code class="inline">cache_creation_5m_tokens</code> / <code class="inline">cache_creation_1h_tokens</code> に分割して記録。キャッシュ戦略ごとのコスト分析が可能になる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏷️ GenAI セマンティック規約属性</h3>
+                    <p><code class="inline">gen_ai.provider.name</code>、<code class="inline">gen_ai.conversation.id</code>、<code class="inline">gen_ai.tool.name</code>、<code class="inline">error.type</code> などの属性がトレーススパンに追加。標準規約に対応した APM / 可観測性ツールとの統合が容易になる。</p>
+                </div>
+            </div>
+            <h3 class="subsection-title">🔧 OpenTelemetry 関連の修正</h3>
+            <ul class="fix-list">
+                <li>Mod の <code class="inline">prompt.submit</code> フックが書き換えまたは破棄したプロンプトが、<code class="inline">user_prompt</code> イベントとインタラクションスパン、セッションタイトルのリクエストに、タイプされたままの内容で記録されていた問題を修正</li>
+                <li>reftable ref ストレージを使うリポジトリで <code class="inline">git commit -q</code> の後に <code class="inline">tool_result</code> イベントの <code class="inline">git_commit_id</code> が欠落する問題を修正</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">主要機能 3: Claude Platform on AWS の /advisor</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🧭 /advisor の追加</h3>
+                    <p>Claude Platform on AWS で <code class="inline">/advisor</code> が利用可能になった。<code class="inline">/advisor</code>、<code class="inline">advisorModel</code> 設定、または <code class="inline">--advisor</code> フラグで選択するまで、アドバイザーは動作しない。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚫 無効化オプション</h3>
+                    <p>環境変数 <code class="inline">CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1</code> で機能を無効化できる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fixes -->
+        <section class="section">
+            <h2 class="section-title">修正: フック、/tasks、エージェントビュー</h2>
+            <ul class="fix-list">
+                <li><strong>SessionEnd フック</strong>: バックグラウンドコマンドの実行中に終了すると SessionEnd フックが実行されないことがある問題を修正</li>
+                <li><strong>/tasks</strong>: メッセージを送ったサブエージェントが完了直後に /tasks から消え、会話に戻る手段がなくなる問題を修正</li>
+                <li><strong>エージェントビュー</strong>: 入力がまとめて届いたときに "up" や "escape" といったタイプした単語がキー操作として解釈され、返信中にピークが動いたり下書きが消えたりする問題を修正。完了した親エージェントが閲覧中にパンくずから消える問題も修正</li>
+                <li><strong>エージェントフックの model</strong>: <code class="inline">haiku</code> のようなエイリアスが解決されるようになり、サブエージェントのモデルによる上書きがなくなり、利用できないモデルは (アクションを許可するのではなく) 呼び出し元のモデルにフォールバックするようになった</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">修正: reftable リポジトリと --worktree</h2>
+            <p class="lead">git の reftable ref ストレージを使うリポジトリへの対応が強化された。</p>
+            <ul class="fix-list">
+                <li>ブランチが ".invalid" と表示され、<code class="inline">--worktree</code> でワークツリーを再度開けない問題を修正</li>
+                <li>Claude Desktop と Remote Control セッションの diff ビューが、コンフリクトした cherry-pick や revert を検知しない問題を修正</li>
+                <li><code class="inline">--worktree</code> セッションが、コミット ID のような名前のタグやブランチがあると誤ったコミットから開始することがある問題を修正</li>
+                <li>ベアリポジトリのワークツリーで origin のデフォルトブランチを取得できない場合に <code class="inline">--worktree</code> が失敗する問題を修正 (フォールバックのベースが現在のチェックアウトの HEAD になった)</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">修正: クラウドセッションと MCP</h2>
+            <ul class="fix-list">
+                <li><strong>クラウドセッション</strong>: 組織ポリシーを読み取れないときにターンごとに 5 分間ハングする問題 (即座に終了し理由を表示するようになった)、長い返信の途中でセッションが再起動した際に回答済みメッセージを再実行することがある問題、セッション自身のネットワーク設定によるブロックを組織ポリシーによるものと Claude に伝えていた問題を修正</li>
+                <li><strong>Cowork クラウドセッション</strong>: Write / Edit / NotebookEdit がローカルコンピューター上のパスに対して (ファイルが届いていないのに) 成功を報告する問題を修正</li>
+                <li><strong>MCP</strong>: API が MCP ツールの入力スキーマを拒否すると会話が毎ターン 400 エラーで失敗する問題を修正 (以降はそのツールをパラメータなしで送信する)。コンパクション後に接続が完了した MCP サーバーのツールと指示が次のツール呼び出しまで Claude に伝わらない問題も修正</li>
+                <li><strong>ヘッドレス / Agent SDK</strong>: 出力トークン上限で切れた返信や、リトライされた返信に続くコンパクションの後、セッション再開時にコンパクションが保持したメッセージや要約が失われる問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Changed -->
+        <section class="section">
+            <h2 class="section-title">動作変更 (Changed、抜粋)</h2>
+            <ul class="fix-list changed">
+                <li><strong>gzip 圧縮</strong>: api.anthropic.com への大きなリクエストは、テレメトリが無効でも gzip 圧縮を使うようになった。<code class="inline">CLAUDE_CODE_GZIP_REQUEST_BODIES=0</code> で無効化できる</li>
+                <li><strong>ローカルトランスクリプト</strong>: 各 API リクエストのシステムプロンプト、ツール、パラメータも記録するようになり、共有したトランスクリプトからリクエストを正確に再現できるようになった</li>
+                <li><strong>終了時の動作</strong>: 終了要求から 1.5 秒経っても実行中のバックグラウンドコマンドは強制終了されるようになった (従来はフルスクリーンモードで残ることがあった)</li>
+                <li><strong>フックの updatedInput の検証</strong>: PreToolUse / PermissionRequest フックの <code class="inline">updatedInput</code> が Claude 自身の入力と同様に検証されるようになった。未知のキーは除去され、ツールが拒否する入力は呼び出し自体が拒否される</li>
+                <li><strong>claude remote-control の --sandbox / --no-sandbox フラグの削除</strong>: 効果がなかったため削除され、指定するとエラーで終了する。サンドボックス化は settings の <code class="inline">sandbox.enabled</code> で設定する</li>
+            </ul>
+        </section>
+
+        <!-- Component fixes -->
+        <section class="section">
+            <h2 class="section-title">VSCode・Cloud sessions・Claude Tag・Code Review</h2>
+            <ul class="fix-list">
+                <li><span class="component-tag">VSCode 12 件</span>エディターで選択したテキストがメッセージに追加されるのを止める <code class="inline">claudeCode.attachSelection</code> 設定を追加。利用クレジット切れ後も fast mode が有効なままリクエストが拒否と再送を繰り返す問題、常時思考モデルで Thinking トグルが Off に切り替わる問題、Windows での Shift+ドラッグによるファイルパス挿入の問題などを修正</li>
+                <li><span class="component-tag">Cloud sessions 2 件</span>組織が "Always allow" を無効にしているコネクタツールで Cowork の承認プロンプトから "Allow for this task" が消えていた問題 (v2.1.292 のリグレッション) などを修正</li>
+                <li><span class="component-tag">Remote Control 1 件</span>claude.ai とデスクトップアプリの diff ビューが削除・リネームされたファイルを変更として表示する問題を修正 (手元のマシンに v2.1.296 以降が必要)</li>
+                <li><span class="component-tag">Claude Tag 5 件</span>Slack Connect チャンネルのサポート (Owner または管理者が有効化、デフォルトは無効)、承認が必要なコネクタアクションに対するスレッド内の非公開 Allow once / Deny カード、Slack ボイスクリップの文字起こし読み取りを追加</li>
+                <li><span class="component-tag">Code Review 2 件</span>GitHub の組織メンバーシップが非公開の書き込み権限保持者による <code class="inline">@claude review</code> コメントが無視される問題などを修正</li>
+            </ul>
+        </section>
+
+        <!-- Technical details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細 1: プロンプト入力欄まわりの Mod フックの整理</h2>
+            <p class="lead">本バージョンの <code class="inline">prompt.change</code> と <code class="inline">virtualText</code> の追加により、Mod はプロンプト入力欄に対して「タイプによる編集」「タイプ以外の変化」「送信」のそれぞれに反応し、入力欄内に送信されない表示を加えられるようになった。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph PromptBox["⌨️ プロンプト入力欄"]
+        direction LR
+        Draft["📝 下書きテキスト"]
+        Virtual["👻 virtualText<br/>送信されない描画テキスト"]
+        Draft ~~~ Virtual
+    end
+
+    subgraph Hooks["🔧 Mod フック"]
+        direction LR
+        Edit["✏️ prompt.edit<br/>タイプによる編集"]
+        Change["🔄 prompt.change<br/>履歴呼び出し・クリア<br/>アンドゥ・プラグイン入力"]
+        Submit["📤 prompt.submit<br/>送信時"]
+        Edit ~~~ Change ~~~ Submit
+    end
+
+    User(["👤 ユーザー"]) --> PromptBox
+    PromptBox --> Hooks
+    Submit --> API["📨 送信プロンプト<br/>virtualText は含まれない"]
+
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class PromptBox,Hooks layer
+    class Draft,Virtual process
+    class Edit,Change,Submit,API internal
+    class User user
+                </pre>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">技術詳細 2: キャッシュ書き込みトークンの有効期間別分割</h2>
+            <p class="lead">Claude API のプロンプトキャッシュには 5 分と 1 時間の 2 種類の有効期間があり、書き込みコストが異なる。1 時間キャッシュを活用する長時間セッションのコスト分析に有用である。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <p>従来の OpenTelemetry <code class="inline">api_request</code> イベントでは、キャッシュ書き込みトークンが一括で記録されていた。どちらの有効期間の書き込みかは区別できなかった。</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <p><code class="inline">cache_creation_5m_tokens</code> と <code class="inline">cache_creation_1h_tokens</code> に分割され、どちらの有効期間の書き込みがどれだけ発生しているかをメトリクスとして追跡できる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p class="lead">Mod からエージェントのトランスクリプトをメインビューに表示する例と、関連する環境変数の設定例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JavaScript</span>
+                    <span class="code-title">エージェントのトランスクリプト表示の切り替え</span>
+                </div>
+                <pre><code class="language-javascript">// エージェントのトランスクリプトをメインビューに表示
+$.ui.view({ agentId });
+
+// 元のビューに戻る
+$.ui.view({});</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">関連する環境変数の設定例</span>
+                </div>
+                <pre><code class="language-bash"># Claude Platform on AWS のアドバイザー機能を無効化
+export CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1
+
+# api.anthropic.com への大きなリクエストの gzip 圧縮を無効化
+export CLAUDE_CODE_GZIP_REQUEST_BODIES=0</code></pre>
+            </div>
+        </section>
+
+        <!-- Impact: targets -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響: 対象</h2>
+            <ul class="fix-list target">
+                <li><strong>Mod / プラグインの開発者</strong>: <code class="inline">virtualText</code>、<code class="inline">prompt.change</code> フック、<code class="inline">$.ui.view({ agentId })</code>、<code class="inline">Text</code> の <code class="inline">dir</code>、<code class="inline">agent.spawn</code> でのワークフローエージェントの書き換え</li>
+                <li><strong>OpenTelemetry で Claude Code の利用状況を監視・分析しているチーム</strong>: キャッシュトークンの分割、GenAI セマンティック規約属性、<code class="inline">user_prompt</code> イベントの正確性修正</li>
+                <li><strong>Claude Platform on AWS の利用者</strong>: <code class="inline">/advisor</code></li>
+                <li><strong>git の reftable ref ストレージを使うリポジトリでの利用者</strong>: <code class="inline">--worktree</code>、diff ビュー、<code class="inline">git_commit_id</code> の修正</li>
+                <li><strong>SessionEnd フックや /tasks、エージェントビューを利用するユーザー</strong></li>
+                <li><strong>クラウドセッション、Cowork、ヘッドレス / Agent SDK、VSCode 拡張、Claude in Slack (Claude Tag)、Code Review の利用者</strong></li>
+            </ul>
+        </section>
+
+        <!-- Impact: actions -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響: 必要なアクション</h2>
+            <ul class="fix-list action">
+                <li><strong>Mod 開発者</strong>: タイプ以外のプロンプト変化 (履歴呼び出し、クリア、アンドゥ、プラグインによる入力) に反応する必要がある Mod は、新しい <code class="inline">prompt.change</code> フックの利用を検討する。ワークフローエージェントの <code class="inline">prompt</code> / <code class="inline">model</code> を調整したい場合は <code class="inline">agent.spawn</code> フックで書き換えられるようになった</li>
+                <li><strong>OpenTelemetry の利用チーム</strong>: キャッシュ書き込みトークンが <code class="inline">cache_creation_5m_tokens</code> / <code class="inline">cache_creation_1h_tokens</code> に分割されたため、キャッシュコストを集計しているダッシュボードやアラートがあれば両フィールドを反映する。トレーススパンの GenAI 属性 (<code class="inline">gen_ai.provider.name</code> など) を活用した標準ベースの分析も可能になった</li>
+                <li><strong>Claude Platform on AWS の利用者</strong>: アドバイザーを使う場合は <code class="inline">/advisor</code>、<code class="inline">advisorModel</code> または <code class="inline">--advisor</code> で選択する。組織として無効化したい場合は <code class="inline">CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1</code> を設定する</li>
+                <li><strong>claude remote-control の利用者</strong>: <code class="inline">--sandbox</code> / <code class="inline">--no-sandbox</code> フラグは削除され、指定するとエラーになる。サンドボックス化は settings の <code class="inline">sandbox.enabled</code> へ移行する</li>
+                <li><strong>PreToolUse / PermissionRequest フックの利用者</strong>: <code class="inline">updatedInput</code> の検証が厳格化され、未知のキーは除去、ツールが拒否する入力は呼び出し拒否となるため、フックが返す入力の内容を確認する</li>
+                <li><strong>gzip 圧縮を避けたい環境</strong>: api.anthropic.com への大きなリクエストがテレメトリ無効時でも gzip 圧縮されるようになった。プロキシなどで問題がある場合は <code class="inline">CLAUDE_CODE_GZIP_REQUEST_BODIES=0</code> で無効化する</li>
+            </ul>
+        </section>
+
+        <!-- Migration -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド</h2>
+            <ul class="fix-list migrate">
+                <li><code class="inline">claude remote-control</code> の <code class="inline">--sandbox</code> / <code class="inline">--no-sandbox</code> フラグは削除された。settings の <code class="inline">sandbox.enabled</code> に移行する</li>
+                <li>フックの <code class="inline">updatedInput</code> が検証されるようになったため、未知のキーを返していたフックは動作確認が必要</li>
+                <li>ローカルトランスクリプトが各 API リクエストのシステムプロンプト、ツール、パラメータも記録するようになったため、トランスクリプトを共有する際は含まれる情報が増えている点に留意する</li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Code v2.1.300 は、同日公開の大型リリース v2.1.299 に続くフォローアップで、全 88 件の変更を含む。追加面では、プロンプト入力欄に送信されないテキストを描画する <code class="inline">virtualText</code>、タイプ以外のプロンプト変化を検知する <code class="inline">prompt.change</code> フック、エージェントのトランスクリプト表示を切り替える <code class="inline">$.ui.view({ agentId })</code> といった Mod API の拡張が中心で、v2.1.299 から続く Mod エコシステム強化の流れを引き継いでいる。</p>
+                <p>可観測性の面では、OpenTelemetry の <code class="inline">api_request</code> イベントでキャッシュ書き込みトークンが有効期間別 (5 分 / 1 時間) に分割され、トレーススパンに GenAI セマンティック規約属性が追加されたことで、標準的なツールによるコスト分析と監視がしやすくなった。修正面では、SessionEnd フック、/tasks、reftable リポジトリ、クラウドセッション、MCP、ヘッドレス / Agent SDK の再開処理など広範囲の安定性向上が図られており、該当機能の利用者には更新を推奨できるリリースである。</p>
+            </div>
+        </section>
+
+        <!-- Related links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="related-links">
+                <li>📝 <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog (v2.1.300)</a></li>
+                <li>🏷️ <a href="https://github.com/anthropics/claude-code/releases" target="_blank" rel="noopener noreferrer">GitHub Releases: Claude Code</a></li>
+                <li>📦 <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer">npm: @anthropic-ai/claude-code</a></li>
+                <li>📄 Claude Code v2.1.299 のレポート (reports/2026/2026-10-14-claude-code-v2-1-299.md)</li>
+                <li>📚 <a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code 公式ドキュメント</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p>発表日: 2026-10-14 | カテゴリ: Claude Code / CLI アップデート | 本インフォグラフィックは Claude Code Changelog のレポートをもとに作成</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

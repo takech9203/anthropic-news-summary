@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenTelemetry エクスポート (ベータ) と Managed Agents スケジュールデプロイメントの AWS 対応 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 16px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 28px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subsection-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .section p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .section p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Comparison (content mode cards) */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.mode-metadata {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            border: 2px solid #64B5F6;
+        }
+
+        .comparison-card.mode-full {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.mode-metadata h4 {
+            color: #1565C0;
+        }
+
+        .comparison-card.mode-full h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        table.info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        table.info-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        table.info-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        table.info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+        }
+
+        table.info-table td.center {
+            text-align: center;
+        }
+
+        table.info-table tr:nth-child(even) td {
+            background: var(--anthropic-light);
+        }
+
+        /* Partner chips */
+        .chip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .chip {
+            background: var(--anthropic-cream);
+            border: 1.5px solid rgba(212, 165, 116, 0.5);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Steps */
+        .step-list {
+            counter-reset: step;
+            list-style: none;
+            display: grid;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .step-list li {
+            counter-increment: step;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .step-list li::before {
+            content: counter(step);
+            width: 28px;
+            height: 28px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        /* Note / callout */
+        .callout {
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .callout.warning {
+            background: #FFF3E0;
+            border: 2px solid #FFB74D;
+        }
+
+        .callout.info {
+            background: #E8F1FF;
+            border: 2px solid #90CAF9;
+        }
+
+        .callout strong {
+            color: var(--text-primary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Links list */
+        .link-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .link-list li {
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+
+        .link-list a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .link-list a:hover {
+            color: var(--anthropic-coral);
+            text-decoration: underline;
+        }
+
+        .link-list .url {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <span class="category-badge">観測性</span>
+                <span class="category-badge">Managed Agents</span>
+                <h1>OpenTelemetry エクスポート (ベータ) と Claude Managed Agents スケジュールデプロイメントの AWS 対応</h1>
+                <p class="date">📅 2026-10-14 | ソース: Claude Developer Platform Release Notes</p>
+                <p class="lead">Messages API と Managed Agents セッションを既存の観測バックエンドでトレース可能に。さらに cron 式によるエージェントの定期実行が Claude Platform on AWS でも利用可能になりました。</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📡</div>
+                    <div class="key-point-content">
+                        <h3>OpenTelemetry エクスポートがベータ版で登場</h3>
+                        <p>Messages API リクエストと Claude Managed Agents セッションを、お客様が利用中の観測バックエンド (Datadog、Grafana Cloud、Langfuse など) でトレースできるようになりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧰</div>
+                    <div class="key-point-content">
+                        <h3>7 言語の SDK がスパン出力に対応</h3>
+                        <p>Claude SDK は Python、TypeScript、C#、Go、Java、PHP、Ruby の 7 言語でクライアント側のスパンを出力します。コードでトレーサープロバイダーを登録して設定します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🎯</div>
+                    <div class="key-point-content">
+                        <h3>Claude Console から API 側スパンを取得</h3>
+                        <p>Claude Console で OpenTelemetry destination を追加すると、API 側 (サーバー側) のスパンを取得できます。設定には Admin 権限が必要です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⏰</div>
+                    <div class="key-point-content">
+                        <h3>スケジュールデプロイメントが Claude Platform on AWS に対応</h3>
+                        <p>cron 式で指定したスケジュールに従い、エージェントが自律的にセッションを開始できます。各実行はお客様の AWS アカウント内の IAM ロールとしてセッションを作成します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📏</div>
+                    <div class="key-point-content">
+                        <h3>GenAI セマンティック規約に準拠</h3>
+                        <p>API と SDK は GenAI セマンティック規約の属性を使用するため、同規約をサポートするプラットフォームは追加設定なしでスパンを認識できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p>OpenTelemetry はベンダー中立の観測性標準であり、多くの観測プラットフォームがサポートしています。<strong>トレース</strong>は 1 つのリクエストがシステムを通過する完全な記録、<strong>スパン</strong>はトレース内の 1 ステップ (モデルリクエストやツール使用など) を表します。</p>
+            <p>これまで Claude API のリクエスト内部の挙動 (各モデル実行、サーバーツールの実行、エージェントのターンなど) を既存の観測基盤で可視化する公式な仕組みはありませんでした。今回のベータリリースにより、以下が可能になります。</p>
+            <div class="feature-grid" style="margin-top: 16px;">
+                <div class="feature-card">
+                    <h3>🔍 デバッグ</h3>
+                    <p>失敗したリクエストや遅いリクエストの原因を、トレースで詳細に調査できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💰 コスト・性能追跡</h3>
+                    <p>トークン消費とレイテンシーを継続的に追跡できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧪 評価構築</h3>
+                    <p>実トラフィックから評価 (eval) を構築できます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Numbers -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">スパン出力に対応する SDK 言語</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">紹介されている観測パートナー</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0.75 MB</div>
+                    <div class="stat-label">Full content 時のスパンあたり最大コンテンツ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1,000</div>
+                    <div class="stat-label">組織あたりのスケジュールデプロイメント上限</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main changes 1: OTel -->
+        <section class="section">
+            <h2 class="section-title">主な変更点 1: OpenTelemetry エクスポート (ベータ)</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🧰 SDK トレーシング</h3>
+                    <p>Claude SDK (Python、TypeScript、C#、Go、Java、PHP、Ruby) がクライアント側のスパンを出力。コードでトレーサープロバイダーを登録して設定します。権限は不要です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 API トレーシング</h3>
+                    <p>Claude Console で OpenTelemetry destination を追加すると、API 側 (サーバー側) のスパンを取得できます。設定には Admin 権限が必要です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔗 両方の併用</h3>
+                    <p>SDK と API の両方を設定すると、1 つのリクエストの SDK スパンと API スパンを 1 つのトレースで確認できます。なお Claude Platform on AWS へのリクエストでは、API スパンは独立したトレースになります。</p>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">📊 SDK トレーシングと API トレーシングで取得できる情報</h3>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>取得できる情報</th>
+                            <th>SDK トレーシング</th>
+                            <th>API トレーシング</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Messages API リクエスト</td><td class="center">✅</td><td class="center">✅</td></tr>
+                        <tr><td>Sessions API リクエスト</td><td class="center">✅</td><td class="center">✅</td></tr>
+                        <tr><td>トークン使用量</td><td class="center">✅</td><td class="center">✅</td></tr>
+                        <tr><td>リクエスト内の各モデル実行</td><td class="center">—</td><td class="center">✅</td></tr>
+                        <tr><td>Managed Agents のターン</td><td class="center">—</td><td class="center">✅</td></tr>
+                        <tr><td>API が実行するサーバーツール</td><td class="center">—</td><td class="center">✅</td></tr>
+                        <tr><td>ツールランナーが実行するクライアントツール</td><td class="center">✅</td><td class="center">—</td></tr>
+                        <tr><td>セルフホストサンドボックス内のツール</td><td class="center">✅</td><td class="center">—</td></tr>
+                        <tr><td>その他の API リクエスト (ファイルアップロードなど)</td><td class="center">✅</td><td class="center">—</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="subsection-title">🤝 観測パートナー</h3>
+            <p>OTLP を受け付ける任意の観測プラットフォームにトレースを送信できます。パートナーとして以下が紹介されています。</p>
+            <div class="chip-list">
+                <span class="chip">Arize AI</span>
+                <span class="chip">Braintrust</span>
+                <span class="chip">Databricks</span>
+                <span class="chip">Datadog</span>
+                <span class="chip">Grafana Cloud</span>
+                <span class="chip">Honeycomb</span>
+                <span class="chip">Langfuse</span>
+                <span class="chip">LangSmith</span>
+                <span class="chip">New Relic</span>
+                <span class="chip">PostHog</span>
+                <span class="chip">Sentry</span>
+                <span class="chip">Splunk</span>
+            </div>
+        </section>
+
+        <!-- Main changes 2: Scheduled deployments -->
+        <section class="section">
+            <h2 class="section-title">主な変更点 2: スケジュールデプロイメントの AWS 対応</h2>
+            <p>スケジュールデプロイメントは、エージェントが自律的にセッションを開始し、予測可能なサイクルでタスクを完了できるようにする機能です。Deployments API で作成・管理します。今回のアップデートで、この機能が Claude Platform on AWS でも利用可能になりました。</p>
+            <div class="feature-grid" style="margin-top: 16px;">
+                <div class="feature-card">
+                    <h3>🗓️ スケジュール定義</h3>
+                    <p>標準 POSIX cron 式 (分 時 日 月 曜日) と IANA タイムゾーン識別子で定義。粒度は分単位までです。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔐 AWS 固有の要件</h3>
+                    <p>各実行はお客様の AWS アカウント内の IAM ロールとしてセッションを作成します。デプロイメント作成前に、エージェントの execution_identity に aws_role タイプと role_arn の設定が必要です (未設定の場合は 400 エラー)。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📜 実行履歴</h3>
+                    <p>各実行は deployment run レコードとして記録され、成功時はセッション ID、失敗時はエラー種別 (environment_archived_error、session_rate_limited_error など) を確認できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 ライフサイクル管理</h3>
+                    <p>pause / unpause / archive の操作が可能です。ライフサイクル変更は Webhook イベントとして配信されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💵 予算管理</h3>
+                    <p>budget オブジェクトで実行ごとのコスト上限を設定可能です。累積ではなく各実行に個別に適用されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📈 上限</h3>
+                    <p>組織あたり最大 1,000 件のスケジュールデプロイメントを作成できます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <p>OpenTelemetry トレースの流れを示します。SDK トレーシングはクライアント側のスパンを、API トレーシングはサーバー側のスパンを観測バックエンドに送信します。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph App["💻 お客様のアプリケーション"]
+        direction LR
+        SDK["🧰 Claude SDK&lt;br/&gt;Python / TypeScript / C#&lt;br/&gt;Go / Java / PHP / Ruby"]
+        Tracer["📡 トレーサープロバイダー&lt;br/&gt;クライアントスパンを出力"]
+        SDK ~~~ Tracer
+    end
+
+    subgraph Platform["🏢 Claude Platform"]
+        subgraph API["🔌 Claude API"]
+            Messages["📨 Messages API"]
+            Sessions["🤖 Managed Agents&lt;br/&gt;Sessions API"]
+        end
+        Dest["🎯 OpenTelemetry Destination&lt;br/&gt;Claude Console で追加&lt;br/&gt;サーバースパンを出力"]
+    end
+
+    subgraph Backend["🗄️ 観測バックエンド"]
+        OTLP["📥 OTLP エンドポイント&lt;br/&gt;Datadog / Grafana Cloud&lt;br/&gt;Langfuse / Honeycomb など"]
+    end
+
+    SDK --> Messages
+    SDK --> Sessions
+    Messages --> Dest
+    Sessions --> Dest
+    Tracer --> OTLP
+    Dest --> OTLP
+
+    classDef app fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef dest fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef backend fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class SDK,Tracer app
+    class Messages,Sessions api
+    class Dest dest
+    class OTLP backend
+    class App,Platform,API,Backend container
+                </pre>
+            </div>
+        </section>
+
+        <!-- Technical details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <h3 class="subsection-title">🎚️ コンテンツモード</h3>
+            <p>OpenTelemetry エクスポートでは、スパンにモデルのプロンプトとレスポンスを含めるかどうかをコンテンツモードで制御します。</p>
+            <div class="comparison" style="margin-top: 12px;">
+                <div class="comparison-card mode-metadata">
+                    <h4>Metadata only (デフォルト)</h4>
+                    <p>識別子、タイミング、ステータス、トークン数と、エージェントやツールの名前・説明などお客様が選択したテキストのみを含みます。</p>
+                </div>
+                <div class="comparison-card mode-full">
+                    <h4>Full content</h4>
+                    <p>Metadata only の内容に加えてモデルのプロンプトとレスポンスを含みます。失敗や遅延の原因分析、会話全文の確認、実トレースからの評価構築に利用できます。</p>
+                </div>
+            </div>
+            <div class="callout warning">
+                <strong>⚠️ 注意</strong>: Full content では各スパンのコンテンツはデフォルトで最大 0.75 MB です。上限を超えると SDK または API がコンテンツを短縮し、anthropic.content.truncated を true に設定します。HIPAA、FERPA、K-12 のデータ取り扱い制限がある組織では、destination はコンテンツモードに関係なくメタデータのみをエクスポートします (SDK スパンは影響を受けません)。
+            </div>
+
+            <h3 class="subsection-title">🔢 トークンのカウント</h3>
+            <p>トークンを重複なくカウントするには、リクエストごとに 1 つのソースのスパンだけを合計します。Messages API リクエストに SDK スパンと API スパンの両方がある場合は API スパンを合計します。両者は同じ anthropic.messages.create という名前のため、kind (SDK 側は CLIENT、API 側は SERVER) で区別します。</p>
+            <div class="callout info">
+                <strong>ℹ️ 補足</strong>: エクスポートされたスパンの配信はベストエフォートであり、API 使用量の完全な記録が保証されるわけではありません。使用量の正確な追跡には Usage API を使用します。
+            </div>
+
+            <h3 class="subsection-title">🕰️ スケジュールデプロイメントの DST (夏時間) の扱い</h3>
+            <p>cron スケジュールはウォールクロック (現地時刻の文字どおりの一致) で動作します。春の時間送りで存在しない時刻はトリガーされず、秋の時間戻しで 2 回発生する時刻は 2 回実行されます。実行の欠落や重複が許容できない場合は、現地時間 1 時から 3 時の時間帯を避けるか、UTC を使用します。</p>
+            <p>また、負荷分散のため、実際の実行には実行間隔の最大 15% (最小 5 秒、最大 9 分) のジッターが適用されます。</p>
+        </section>
+
+        <!-- Code samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p>スケジュールデプロイメントの作成例 (Python)。毎週金曜日の 20 時 (America/New_York) にコンプライアンススキャンを実行します。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">スケジュールデプロイメントの作成</span>
+                </div>
+                <pre><code class="language-python">deployment = client.beta.deployments.create(
+    name="Weekly compliance scan",
+    agent=agent.id,
+    environment_id=environment.id,
+    initial_events=[
+        {
+            "type": "user.message",
+            "content": [{"type": "text", "text": "Run the weekly compliance scan."}],
+        },
+    ],
+    schedule={
+        "type": "cron",
+        "expression": "0 20 * * 5",
+        "timezone": "America/New_York",
+    },
+)</code></pre>
+            </div>
+            <p>レスポンスには schedule.upcoming_runs_at に次回以降の実行予定時刻が含まれ、スケジュールが正しく設定されたことを確認できます。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">レスポンス例</span>
+                </div>
+                <pre><code class="language-json">{
+  "id": "depl_01xyz",
+  "status": "active",
+  "paused_reason": null,
+  "schedule": {
+    "type": "cron",
+    "expression": "0 20 * * 5",
+    "timezone": "America/New_York",
+    "last_run_at": null,
+    "upcoming_runs_at": [
+      "2026-05-09T00:00:00Z",
+      "2026-05-16T00:00:00Z",
+      "2026-05-23T00:00:00Z"
+    ]
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="subsection-title">🎯 対象</h3>
+            <div class="use-case">
+                <h4>観測性を強化したい開発者・SRE チーム</h4>
+                <p>Claude API (Messages API) を本番環境で運用し、観測性を強化したい開発者・SRE チーム。</p>
+            </div>
+            <div class="use-case">
+                <h4>Managed Agents のデバッグ・監視</h4>
+                <p>Claude Managed Agents のセッションをデバッグ・監視したいお客様。</p>
+            </div>
+            <div class="use-case">
+                <h4>AWS 環境での定期実行</h4>
+                <p>AWS 環境で Claude Managed Agents を定期実行したいお客様。</p>
+            </div>
+
+            <h3 class="subsection-title">✅ 必要なアクション: OpenTelemetry エクスポートを利用する場合</h3>
+            <ol class="step-list">
+                <li>SDK トレーシング: アプリケーションでトレーサープロバイダーを登録する (権限は不要)</li>
+                <li>API トレーシング: Claude Console で OpenTelemetry destination を追加する (Admin 権限が必要)</li>
+                <li>コンテンツモード (Metadata only / Full content) を要件に合わせて選択する。観測プラットフォーム側のアクセス制御と保持設定が組織の要件を満たすか確認する</li>
+            </ol>
+
+            <h3 class="subsection-title">✅ 必要なアクション: スケジュールデプロイメントを Claude Platform on AWS で利用する場合</h3>
+            <ol class="step-list">
+                <li>IAM ロールを用意する。信頼ポリシーで aws-external-anthropic.amazonaws.com サービスプリンシパルに sts:AssumeRole と sts:SetSourceIdentity を許可する</li>
+                <li>ロールに aws-external-anthropic:CreateSession、sts:GetWebIdentityToken、sts:TagGetWebIdentityToken の権限を付与する</li>
+                <li>エージェントの execution_identity に {"type": "aws_role", "role_arn": "..."} を設定する (設定する IAM プリンシパルには対象ロールへの iam:PassRole が必要)</li>
+                <li>Deployments API または ant apply でデプロイメントを作成する</li>
+            </ol>
+
+            <h3 class="subsection-title">🔀 移行ガイド</h3>
+            <p>既存機能の破壊的変更はありません。いずれも追加機能のため、移行作業は不要です。</p>
+            <div class="callout warning">
+                <strong>⚠️ ベータに関する注意</strong>: OpenTelemetry エクスポートはベータ版であり、Anthropic との契約の Beta Services 条項の下で提供されます。スケジュールデプロイメントの利用にはベータヘッダー managed-agents-2026-04-01 が必要です。
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p>今回のアップデートは、Claude API を本番運用する組織にとって運用面の強化が中心です。OpenTelemetry エクスポート (ベータ) により、既存の観測基盤 (Datadog、Grafana Cloud、Langfuse など) で Messages API リクエストと Managed Agents セッションを他のアプリケーショントレースと同じ場所で可視化でき、デバッグ、コスト追跡、評価構築のワークフローが大きく改善されます。7 言語の SDK がスパン出力に対応し、GenAI セマンティック規約に準拠している点も、既存ツールとの統合を容易にします。</p>
+            <p>また、スケジュールデプロイメントの Claude Platform on AWS 対応により、AWS 環境のお客様も IAM ロールベースのアクセス制御を維持したまま、エージェントの定期実行 (週次スキャン、定期レポート作成など) を構築できるようになりました。両機能ともベータ段階のため、本番導入時はベータ条項とデータ保持要件の確認を推奨します。</p>
+        </section>
+
+        <!-- Related links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="link-list">
+                <li><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude Developer Platform Release Notes</a><span class="url">https://platform.claude.com/docs/en/release-notes/overview</span></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/opentelemetry" target="_blank" rel="noopener noreferrer">OpenTelemetry for the Claude API</a><span class="url">https://platform.claude.com/docs/en/manage-claude/opentelemetry</span></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/opentelemetry/api#add-a-destination" target="_blank" rel="noopener noreferrer">API トレーシングの設定 (destination の追加)</a><span class="url">https://platform.claude.com/docs/en/manage-claude/opentelemetry/api#add-a-destination</span></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/opentelemetry/sdk" target="_blank" rel="noopener noreferrer">SDK トレーシングの設定</a><span class="url">https://platform.claude.com/docs/en/manage-claude/opentelemetry/sdk</span></li>
+                <li><a href="https://platform.claude.com/docs/en/api/opentelemetry/spans" target="_blank" rel="noopener noreferrer">OpenTelemetry スパンリファレンス</a><span class="url">https://platform.claude.com/docs/en/api/opentelemetry/spans</span></li>
+                <li><a href="https://platform.claude.com/docs/en/managed-agents/scheduled-deployments" target="_blank" rel="noopener noreferrer">Scheduled deployments</a><span class="url">https://platform.claude.com/docs/en/managed-agents/scheduled-deployments</span></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/claude-platform-on-aws#claude-managed-agents" target="_blank" rel="noopener noreferrer">Claude Platform on AWS</a><span class="url">https://platform.claude.com/docs/en/build-with-claude/claude-platform-on-aws#claude-managed-agents</span></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-10-14 | ソース: Claude Developer Platform Release Notes | カテゴリ: API / 観測性 / Managed Agents</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
