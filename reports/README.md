@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-16](2026/2026-10-16-claude-code-v2-1-301.md) - Claude Code v2.1.301 リリース: リトライ制御の新環境変数、vim モード強化、OpenTelemetry イベント拡充
+- [2026-10-15](2026/2026-10-15-opus-5-5-fast-mode-ga-compliance-api.md) - Claude Opus 5.5 ファストモードがリサーチプレビュー終了、Compliance API にユーザー設定取得機能を追加
+- [2026-10-15](2026/2026-10-15-independent-evaluators-update.md) - 独立評価者に関するアップデート: METR に従業員同等アクセスを付与開始
 - [2026-10-14](2026/2026-10-14-singapore-office-opening.md) - Anthropic がシンガポールオフィスを開設しシンガポール政府と MOU を締結
 - [2026-10-14](2026/2026-10-14-claude-code-v2-1-300.md) - Claude Code v2.1.300: Mod 向け `virtualText` と `prompt.change` フック、OpenTelemetry GenAI 属性、AWS 向け `/advisor` を含む 88 件のアップデート
 - [2026-10-14](2026/2026-10-14-claude-code-v2-1-299.md) - Claude Code v2.1.299: アイドルコンパクション、`CLAUDE_CODE_DISABLE_FILE_MENTIONS`、Mod API 拡張、セキュリティ修正を含む 190 件の大型リリース

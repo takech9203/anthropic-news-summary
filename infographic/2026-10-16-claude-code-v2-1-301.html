@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.301 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subsection-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .section p.lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.88em;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.35);
+            border-radius: 6px;
+            padding: 1px 6px;
+            color: #8a5a2a;
+            word-break: break-all;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 20px 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .stat-card.total {
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+        }
+
+        .stat-card.total .stat-value {
+            color: var(--anthropic-dark);
+        }
+
+        /* Change breakdown bar */
+        .change-bar {
+            display: flex;
+            width: 100%;
+            height: 28px;
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 20px 0 8px;
+        }
+
+        .change-bar span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .bar-added { background: var(--success); }
+        .bar-fixed { background: var(--info); }
+        .bar-improved { background: #8B5CF6; }
+        .bar-changed { background: var(--warning); }
+        .bar-vscode { background: #F43F5E; }
+
+        .change-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .change-legend .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Fix list */
+        .fix-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .fix-list li {
+            position: relative;
+            padding: 12px 16px 12px 40px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .fix-list li::before {
+            content: '🔧';
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            font-size: 14px;
+        }
+
+        .fix-list.changed li::before { content: '🔁'; }
+        .fix-list.improved li::before { content: '📈'; }
+        .fix-list.vscode li::before { content: '🧩'; }
+        .fix-list.action li::before { content: '✅'; }
+        .fix-list.migrate li::before { content: '🚚'; }
+        .fix-list.target li::before { content: '🎯'; }
+
+        .fix-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Table */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 16px 0;
+        }
+
+        .info-table th {
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            text-align: left;
+            padding: 10px 14px;
+            font-weight: 700;
+        }
+
+        .info-table th:first-child { border-radius: 10px 0 0 0; }
+        .info-table th:last-child { border-radius: 0 10px 0 0; }
+
+        .info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Related links */
+        .related-links {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .related-links li {
+            padding: 10px 16px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .related-links a {
+            color: #8a5a2a;
+            text-decoration: none;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .related-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            line-height: 1.9;
+            opacity: 0.95;
+            margin-bottom: 12px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-box code.inline {
+            background: rgba(212, 165, 116, 0.2);
+            border-color: rgba(212, 165, 116, 0.4);
+            color: var(--anthropic-coral);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 24px; }
+            .feature-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code / CLI アップデート</span>
+                <h1>Claude Code v2.1.301</h1>
+                <p class="subtitle">リトライ制御の新環境変数、vim モード強化、OpenTelemetry イベント拡充を含む 53 件のアップデート</p>
+                <p class="date">📅 2026-10-16 (changelog 公開確認日) | ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.301 (変更 53 件の内訳)</h2>
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-value">53</div>
+                    <div class="stat-label">変更の総数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">➕ 新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">35</div>
+                    <div class="stat-label">🔧 修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">📈 改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">🔁 変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">🧩 VS Code 拡張</div>
+                </div>
+            </div>
+            <div class="change-bar" aria-hidden="true">
+                <span class="bar-added" style="width: 11.3%;">6</span>
+                <span class="bar-fixed" style="width: 66.1%;">35</span>
+                <span class="bar-improved" style="width: 7.5%;">4</span>
+                <span class="bar-changed" style="width: 3.8%;">2</span>
+                <span class="bar-vscode" style="width: 11.3%;">6</span>
+            </div>
+            <div class="change-legend">
+                <span><span class="dot bar-added"></span>新機能 6</span>
+                <span><span class="dot bar-fixed"></span>修正 35</span>
+                <span><span class="dot bar-improved"></span>改善 4</span>
+                <span><span class="dot bar-changed"></span>変更 2</span>
+                <span><span class="dot bar-vscode"></span>VS Code 拡張 6</span>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要: キーポイント</h2>
+            <p class="lead">v2.1.301 は、無人運用 (CI やリトライウォッチドッグ) や可観測性 (OpenTelemetry) を重視する組織向けの機能追加と、ターミナル互換性やモデル切り替えまわりの安定性修正が中心の大規模メンテナンスリリースである。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">⏱️</div>
+                    <div class="key-point-content">
+                        <h3>新環境変数 CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS</h3>
+                        <p>無人リトライモードで、使用量制限のリセットが遠すぎる場合に待機せずリクエストを終了できるようになった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⌨️</div>
+                    <div class="key-point-content">
+                        <h3>vim モードの強化</h3>
+                        <p>対応する括弧へジャンプする <code class="inline">%</code> モーションの追加に加え、Escape 後に INSERT モードに留まる問題や AskUserQuestion の回答が破棄される問題を修正。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>OpenTelemetry イベントの拡充</h3>
+                        <p><code class="inline">tool_decision</code> イベントに <code class="inline">classifier_verdict</code>、<code class="inline">permission_mode</code>、<code class="inline">classifier_category</code> が追加され、auto モードの分類器判断と権限ルールを区別可能になった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛟</div>
+                    <div class="key-point-content">
+                        <h3>モデルエイリアスのフォールバック</h3>
+                        <p><code class="inline">fable</code> および <code class="inline">best</code> エイリアスが、最新の Fable モデルを利用できない組織でもエラーにならず、前世代の Fable モデルで 1 回リトライするようになった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📝</div>
+                    <div class="key-point-content">
+                        <h3>コンテキストウィンドウ縮小時の挙動改善</h3>
+                        <p>小さいコンテキストウィンドウのモデルへ切り替える際、長すぎる会話は切り替え前のモデルが先に要約するようになった。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features: Added -->
+        <section class="section">
+            <h2 class="section-title">主要機能: 新機能 (Added) 6 件</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⏱️ リトライ待機の上限設定</h3>
+                    <p><code class="inline">CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS</code> を追加。無人リトライモード (<code class="inline">CLAUDE_CODE_RETRY_WATCHDOG</code>) で、リセットが遠すぎる使用量制限に当たった場合、待機せずリクエストを終了する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📡 OpenTelemetry トレーシングガイド</h3>
+                    <p><code class="inline">claude-api</code> スキルに OpenTelemetry トレーシングのガイダンスを追加。<code class="inline">ant</code> CLI によるトレース送信先の設定方法を含む。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⌨️ vim モードの % モーション</h3>
+                    <p>対応する括弧へのジャンプが可能に。単独でも d/c/y との組み合わせでも使用できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 mod の複数行入力</h3>
+                    <p>mod の <code class="inline">Input</code> に <code class="inline">rows</code> を追加。ターミナル上で複数行のテキストフィールドを表示でき、Enter で送信、Shift+Enter または Enter 前のバックスラッシュで改行する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏷️ tool_decision イベントの属性追加 1</h3>
+                    <p><code class="inline">classifier_verdict</code> と <code class="inline">permission_mode</code> を追加。auto モードの分類器による判断と権限ルールによる判断を区別できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏷️ tool_decision イベントの属性追加 2</h3>
+                    <p><code class="inline">OTEL_LOG_TOOL_DETAILS=1</code> のとき、分類器ブロックが一致した組み込みルール名を示す <code class="inline">classifier_category</code> を追加。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fixes: Model / API -->
+        <section class="section">
+            <h2 class="section-title">修正: モデル・API まわり (4 件)</h2>
+            <ul class="fix-list">
+                <li><code class="inline">fable</code> (および <code class="inline">best</code>) モデルエイリアスが、組織で最新の Fable モデルを利用できない場合に Anthropic API 上でエラーになる問題を修正。前世代の Fable モデルで 1 回リトライする</li>
+                <li>小さいコンテキストウィンドウのモデルへ切り替えた際、確認なしに前のモデルによる要約で使用量クレジットを消費することがあるケースを修正</li>
+                <li>要求したモデルと異なるモデル名を応答に含める LLM ゲートウェイ配下で、選択していないモデル上で会話が繰り返しコンパクトされる問題を修正</li>
+                <li>モデル名に <code class="inline">application-inference-profile</code> を含むモデルへの切り替え時、プロバイダーが Bedrock でないのに <code class="inline">awsAuthRefresh</code> コマンドが実行され、モデル切り替えフックが遅延する問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Fixes: Tools / Permissions -->
+        <section class="section">
+            <h2 class="section-title">修正: ツール・権限まわり (5 件)</h2>
+            <ul class="fix-list">
+                <li><strong>Grep / Glob</strong>: 検索プログラムが結果を返す前に予期せず失敗した場合に「一致なし」と報告していた問題を修正。検索が失敗したというエラーを返すようになった</li>
+                <li><strong>Read ツール</strong>: .xlsm、.parquet、.epub、.heic などのバイナリファイルをテキストとして読み込んでいた問題を修正</li>
+                <li>ターン中に送信されたメッセージによって権限チェック中に中断されたツール呼び出しが、ユーザーによる拒否としてモデルに報告されていた問題を修正</li>
+                <li><strong>PreToolUse フック</strong>: Edit や Write を対象とする環境でアーティファクトの更新が拒否される問題を修正。ファイルを編集してから再公開する動作に変更</li>
+                <li>プラグインまたはスキルのフックによる <code class="inline">ask</code> 判断の権限プロンプトに、フックの提供元が表示されない問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Fixes: Auth / Session -->
+        <section class="section">
+            <h2 class="section-title">修正: 認証・セッションまわり (3 件)</h2>
+            <ul class="fix-list">
+                <li>ディスクフルによりログイン情報を更新できない際の誤解を招く「Please run /login」エラーを修正。該当ディスクを明示し、ファイル削除を案内するようになった</li>
+                <li><code class="inline">claude auth status</code> や <code class="inline">claude plugin list</code> などの短いコマンドがトークン更新の途中で終了した後に発生する、サインイン更新のタイムアウトや予期しないサインアウトを修正</li>
+                <li>未プッシュのコミットを保持している可能性がある <code class="inline">WorktreeCreate</code> フック作成のワークツリーを、終了時に確認なしで削除していた問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Fixes: Skills / Workflows / Mods -->
+        <section class="section">
+            <h2 class="section-title">修正: スキル・ワークフロー・mods まわり (7 件)</h2>
+            <ul class="fix-list">
+                <li>引数名が非常に多い、または非常に長いスキルやコマンドの起動時に数秒間停止する問題を修正。先頭 64 個、各 64 文字までの引数名のみ埋め込むようになった</li>
+                <li>スキル、コマンド、フックの引数が多数のプレースホルダーを埋める際に大量のメモリを使用する問題を修正</li>
+                <li><code class="inline">/rewind</code> 使用後にスキルがモデルに提示されなくなる問題を修正</li>
+                <li>ワークフローエージェントがステップをスキップしても実行が成功と報告されることがある問題を修正</li>
+                <li>同一セッションで Bash の <code class="inline">cd</code> 実行後、ワークフロースクリプトの読み取り・編集・再実行が権限を求められたり拒否されたりする問題を修正</li>
+                <li>mod の <code class="inline">$.model.fork</code> が、新しい Claude Code プロセスの最初の応答完了前に呼ばれると <code class="inline">nothing-to-fork</code> を返す問題を修正 (<code class="inline">claude -p</code> 実行やクラウドセッションで発生)</li>
+                <li><code class="inline">/claude-api</code> スキルが、Claude Platform on AWS で CMEK 外部キーエンドポイントが利用不可と誤って記載していた問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Fixes: Terminal / UI -->
+        <section class="section">
+            <h2 class="section-title">修正: ターミナル・UI まわり (10 件)</h2>
+            <ul class="fix-list">
+                <li>VTE 0.53 より古いターミナル (RHEL 8 の MATE Terminal など) で、<code class="inline">&gt;0q</code> などの文字がフォルダ信頼プロンプトを覆い、終了時にシェルプロンプトの前に <code class="inline">&gt;4m</code> が表示される問題を修正</li>
+                <li>一部バージョンの iTerm2 で起動時にプロンプトに <code class="inline">GOK</code> という文字列が表示される問題を修正</li>
+                <li><strong>vim モード</strong>: 低速または高負荷のマシンで Escape 後も INSERT モードに留まることがある問題を修正</li>
+                <li><strong>vim モード</strong>: Esc が AskUserQuestion の入力済み回答を破棄する問題を修正。自由入力フィールドが vim の NORMAL モードに対応し、Esc は NORMAL モードからのみキャンセルする</li>
+                <li>ヘッダー行のみの Markdown テーブルがターミナル幅を超えると何も描画されない問題を修正 (プラン承認カード上のプランを含む)</li>
+                <li>再開したセッションのコンパクト行が、読み込まれていない履歴に対して ctrl+o を案内していた問題を修正。以前のメッセージの保存場所を表示し、フルスクリーンでも表示されるようになった</li>
+                <li>応答を中断した直後に「new task? /clear to save tokens」のヒントが再表示される問題を修正</li>
+                <li>ダーク ANSI テーマと 16 色ターミナルでの淡色テキスト表示を修正 (塗りつぶしボックス内で淡色化、選択・検索ハイライト下では淡色化しない、リスト説明文を他の補助テキストと同様に淡色化)</li>
+                <li>reftable リポジトリで git チェックのタイムアウトや失敗時に、<code class="inline">/diff</code> がコンフリクト中の cherry-pick や revert を検知しない問題を修正</li>
+                <li>フルスクリーンモードで <code class="inline">/compact</code> および自動コンパクト時に、表示中のトランスクリプト再構築で UI が一時的にフリーズする問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Fixes: Self-hosted runner / Windows -->
+        <section class="section">
+            <h2 class="section-title">修正: セルフホストランナー・Windows (4 件)</h2>
+            <ul class="fix-list">
+                <li>管理設定で MCP サーバーが制限されている場合に、Slack から開始したセッションがリポジトリを見つけられない・アタッチできない問題を修正 (<code class="inline">deniedMcpServers</code> で該当ツールを無効化)</li>
+                <li>無関係なセットアップやセッション失敗が git の missing-ref 文言を含む場合に、ソースブランチ削除済みと報告されリトライされない問題を修正</li>
+                <li>終了中のセッションに対し、失敗または拒否されたセッションリリースのリトライをログが約束していた問題を修正。失敗の繰り返しは回数を表示するようになった</li>
+                <li><strong>Windows</strong>: 停止したバックグラウンド PowerShell コマンドの出力ファイルに、終了を示す <code class="inline">[killed]</code> 行が欠けていた問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Improved -->
+        <section class="section">
+            <h2 class="section-title">改善 (Improved) 4 件</h2>
+            <ul class="fix-list improved">
+                <li><strong>モデル切り替え</strong>: 小さいコンテキストウィンドウのモデルへの切り替えを改善。新モデルに対して長すぎる会話は、切り替え前のモデルが先に要約するようになった</li>
+                <li><strong>レンダリング性能</strong>: 長時間実行のサブエージェント動作中のレンダリング性能を改善。進捗トレイルが毎回全体を再処理せず、増分更新されるようになった</li>
+                <li><strong>アーティファクト</strong>: Claude が作成するページがスティッキーヘッダー上部の帯域を塗りつぶすようになり、モバイルアプリでスクロールしたテキストが透けて見えなくなった</li>
+                <li><strong>mods</strong>: VS Code およびデスクトップ・モバイルアプリでは、質問ダイアログ上部のツリーが Markdown と最大 48 行に対応 (ターミナルは従来どおりプレーンテキスト 12 行)</li>
+            </ul>
+        </section>
+
+        <!-- Changed -->
+        <section class="section">
+            <h2 class="section-title">変更 (Changed) 2 件</h2>
+            <ul class="fix-list changed">
+                <li><strong>mod フックの .catch ハンドラー</strong>: フック自身が throw またはタイムアウトした場合のみ実行されるよう変更。フック自身の呼び出し配下で発生したイベントは、その <code class="inline">.catch</code> を呼ばずにフックをスキップする</li>
+                <li><strong>mod の $.env.set</strong>: 変数の設定または解除が完了すると <code class="inline">{}</code> で解決し、書き込みが行われない場合は理由を示す <code class="inline">{ deny }</code> で解決するよう変更</li>
+            </ul>
+        </section>
+
+        <!-- VSCode -->
+        <section class="section">
+            <h2 class="section-title">VS Code 拡張 (VSCode) 6 件</h2>
+            <ul class="fix-list vscode">
+                <li>Claude の応答で LaTeX 数式レンダリングに対応。<code class="inline">$$</code> と複数行の <code class="inline">\[ … \]</code> ブロック、インラインの <code class="inline">$…$</code> と <code class="inline">\(…\)</code> を含む</li>
+                <li>Pro および Max プラン向けに、VS Code と JetBrains パネルの使用量制限バナーへ「Get more usage」リンクを追加</li>
+                <li>パネルをクラッシュまたはフリーズさせる会話が、リロードのたびに再度開かれる問題を修正</li>
+                <li>長い思考 (thinking) 中にチャットパネルが遅くなる問題を修正。更新のたびに思考テキスト全体を再パースしないようになった</li>
+                <li>一部の言語サーバーで、診断結果がルールコード (例: MD013) の代わりに「[object Object]」と表示される問題を修正</li>
+                <li>ディクテーションが提供されない環境 (claude.ai 以外のサインイン、リモートウィンドウ) で、マイク権限確認のためにネイティブディクテーション音声モジュールが読み込まれていた問題を修正</li>
+            </ul>
+        </section>
+
+        <!-- Technical details 1 -->
+        <section class="section">
+            <h2 class="section-title">技術詳細 1: 無人リトライモードの待機制御</h2>
+            <p class="lead">従来、<code class="inline">CLAUDE_CODE_RETRY_WATCHDOG</code> による無人リトライモードでは、使用量制限に達するとリセット時刻まで待機し続けていた。新しい環境変数により、待機時間の上限をミリ秒単位で指定できる。CI パイプラインなど時間制約のある環境で、ジョブが長時間ハングすることを防止できる。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">リトライ待機の上限設定</span>
+                </div>
+                <pre><code class="language-bash"># 使用量制限のリセットまで 30 分を超える場合はリクエストを終了する
+export CLAUDE_CODE_RETRY_WATCHDOG=1
+export CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS=1800000</code></pre>
+            </div>
+        </section>
+
+        <!-- Technical details 2 -->
+        <section class="section">
+            <h2 class="section-title">技術詳細 2: OpenTelemetry tool_decision イベントの拡充</h2>
+            <p class="lead">ツール実行の許可・拒否イベントに新しい属性が追加され、判断の由来を分析できるようになった。権限ルールによるブロックと auto モード分類器によるブロックを監視基盤上で区別でき、組織のガバナンス運用やルールチューニングに活用できる。</p>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>内容</th>
+                        <th>条件</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">classifier_verdict</code></td>
+                        <td>auto モード分類器の判定結果</td>
+                        <td>常時</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">permission_mode</code></td>
+                        <td>判断時の権限モード</td>
+                        <td>常時</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">classifier_category</code></td>
+                        <td>分類器ブロックが一致した組み込みルール名</td>
+                        <td><code class="inline">OTEL_LOG_TOOL_DETAILS=1</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Technical details 3: Mermaid -->
+        <section class="section">
+            <h2 class="section-title">技術詳細 3: モデル切り替え時のコンテキスト処理フロー</h2>
+            <p class="lead">コンテキストウィンドウの小さいモデルへの切り替え時の挙動が改善された。あわせて、確認なしに要約で使用量クレジットが消費されるケースも修正されており、意図しないコスト発生を防ぐ設計になっている。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Start(["👤 モデル切り替え操作"]) --> Check{"💬 会話が新モデルの<br/>コンテキストに収まるか"}
+    Check -->|収まる| Switch["🤖 新モデルへ切り替え"]
+    Check -->|収まらない| Summarize["📝 切り替え前のモデルが<br/>会話を要約"]
+    Summarize --> Switch
+    Switch --> Done(["✅ 会話を継続"])
+
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+
+    class Start input
+    class Check decision
+    class Summarize internal
+    class Switch,Done process
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code sample -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p class="lead">無人リトライモードと OpenTelemetry の詳細収集を組み合わせた設定例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">環境変数の設定と実行例</span>
+                </div>
+                <pre><code class="language-bash"># 無人リトライモードで待機時間の上限を設定する例
+export CLAUDE_CODE_RETRY_WATCHDOG=1
+export CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS=1800000
+
+# OpenTelemetry で tool_decision イベントの詳細を収集する例
+export OTEL_LOG_TOOL_DETAILS=1
+
+claude -p "リポジトリのテストを実行して結果を報告してください"</code></pre>
+            </div>
+        </section>
+
+        <!-- Use cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🤖 CI / 無人運用でのリトライ制御</h4>
+                <p>リトライウォッチドッグに待機時間の上限を設定することで、使用量制限のリセットが遠すぎる場合に待機せずリクエストを終了できる。CI パイプラインなど時間制約のある環境で、ジョブが長時間ハングすることを防止できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>📊 OpenTelemetry によるガバナンス運用</h4>
+                <p><code class="inline">tool_decision</code> イベントの新属性により、権限ルールによるブロックと auto モード分類器によるブロックを監視基盤上で区別できる。組織のガバナンス運用やルールチューニングに活用できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🛟 モデル提供状況が異なる組織での継続利用</h4>
+                <p><code class="inline">fable</code> / <code class="inline">best</code> エイリアスのフォールバックにより、最新の Fable モデルが組織で未提供でもエラーにならず、前世代の Fable モデルで継続利用できる。</p>
+            </div>
+        </section>
+
+        <!-- Impact: targets -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響: 対象</h2>
+            <ul class="fix-list target">
+                <li><strong>CI / 無人運用で Claude Code を使用する開発者</strong>: リトライウォッチドッグの待機上限設定が利用可能</li>
+                <li><strong>OpenTelemetry で Claude Code を監視する組織</strong>: <code class="inline">tool_decision</code> イベントの新属性により権限判断の分析が向上</li>
+                <li><strong>vim モードのユーザー</strong>: <code class="inline">%</code> モーション追加と INSERT モード残留・回答破棄の修正により操作性が向上</li>
+                <li><strong><code class="inline">fable</code> / <code class="inline">best</code> エイリアスのユーザー</strong>: 最新モデルが組織で未提供でもフォールバックにより継続利用可能</li>
+                <li><strong>mods / スキル / ワークフローの開発者</strong>: <code class="inline">.catch</code> の挙動変更、<code class="inline">$.env.set</code> の戻り値変更、複数行 <code class="inline">Input</code> への対応が必要または利用可能</li>
+                <li><strong>古いターミナル環境 (RHEL 8 など) や iTerm2 のユーザー</strong>: 表示崩れの修正</li>
+                <li><strong>VS Code / JetBrains 拡張のユーザー</strong>: LaTeX レンダリング、パフォーマンス改善</li>
+            </ul>
+        </section>
+
+        <!-- Impact: actions -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響: 必要なアクション</h2>
+            <p class="lead">通常の利用では自動更新により適用されるため、特別な対応は不要。手動更新する場合は <code class="inline">claude update</code> を実行する。</p>
+            <ul class="fix-list action">
+                <li>無人運用で使用量制限の長時間待機を避けたい場合は、<code class="inline">CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS</code> を設定する</li>
+                <li>OpenTelemetry で <code class="inline">classifier_category</code> を収集したい場合は、<code class="inline">OTEL_LOG_TOOL_DETAILS=1</code> を設定する</li>
+                <li>mod 開発者は、フックの <code class="inline">.catch</code> ハンドラーがフック自身の throw / タイムアウト時のみ実行される新しい挙動と、<code class="inline">$.env.set</code> の戻り値 (<code class="inline">{}</code> または <code class="inline">{ deny }</code>) を前提にコードを確認する</li>
+            </ul>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">手動更新コマンド</span>
+                </div>
+                <pre><code class="language-bash">claude update</code></pre>
+            </div>
+        </section>
+
+        <!-- Migration -->
+        <section class="section">
+            <h2 class="section-title">移行ガイド: mod 開発者向けの注意点</h2>
+            <p class="lead">破壊的変更は少ないが、mod 開発者は以下の 2 点に注意が必要である。</p>
+            <ul class="fix-list migrate">
+                <li><strong>.catch の実行条件の変更</strong>: フックの呼び出し配下で発生したイベントでは <code class="inline">.catch</code> が呼ばれなくなった。配下イベントのエラー処理に <code class="inline">.catch</code> を利用していた場合は、処理の見直しが必要</li>
+                <li><strong>$.env.set の戻り値</strong>: 設定・解除の完了時は <code class="inline">{}</code>、書き込みが行われない場合は理由付きの <code class="inline">{ deny }</code> で解決する。戻り値を参照している mod は新形式に対応する</li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Code v2.1.301 は、無人運用の制御性 (リトライ待機上限)、可観測性 (OpenTelemetry イベント拡充)、操作性 (vim モード強化)、安定性 (モデルエイリアスのフォールバック、ターミナル互換性修正) を幅広く強化したリリースである。特に CI や監視基盤と組み合わせて Claude Code を運用する組織にとって有用な改善が多い。</p>
+                <p>mod 開発者は <code class="inline">.catch</code> と <code class="inline">$.env.set</code> の挙動変更を確認のうえ、既存 mod の互換性を検証することが推奨される。</p>
+            </div>
+        </section>
+
+        <!-- Related links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="related-links">
+                <li>📝 <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Claude Code Changelog (公式)</a></li>
+                <li>📦 <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code リポジトリ</a></li>
+                <li>📚 <a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></li>
+                <li>📊 <a href="https://code.claude.com/docs/en/monitoring-usage" target="_blank" rel="noopener noreferrer">Claude Code モニタリング (OpenTelemetry)</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p>発表日: 2026-10-16 (changelog 公開確認日) | カテゴリ: Claude Code / CLI アップデート | 本インフォグラフィックは Claude Code Changelog のレポートをもとに作成</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

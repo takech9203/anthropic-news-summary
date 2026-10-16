@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Opus 5.5 ファストモードがリサーチプレビュー終了、Compliance API にユーザー設定取得機能を追加 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 16px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .subsection-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 28px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subsection-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .section p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .section p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p,
+        .comparison-card li {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+        }
+
+        .comparison-card li::before {
+            content: '• ';
+            color: var(--text-muted);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        table.info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        table.info-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        table.info-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        table.info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+        }
+
+        table.info-table td.center {
+            text-align: center;
+        }
+
+        table.info-table tr:nth-child(even) td {
+            background: var(--anthropic-light);
+        }
+
+        /* Badge inside tables / text */
+        .status-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-badge.ga {
+            background: #D1FAE5;
+            color: #059669;
+            border: 1px solid #34D399;
+        }
+
+        .status-badge.preview {
+            background: #FFF3E0;
+            color: #B45309;
+            border: 1px solid #FFB74D;
+        }
+
+        /* Inline code */
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            background: var(--anthropic-cream);
+            border: 1px solid rgba(212, 165, 116, 0.4);
+            border-radius: 6px;
+            padding: 2px 6px;
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        /* Steps */
+        .step-list {
+            counter-reset: step;
+            list-style: none;
+            display: grid;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .step-list li {
+            counter-increment: step;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .step-list li::before {
+            content: counter(step);
+            width: 28px;
+            height: 28px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        /* Note / callout */
+        .callout {
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .callout.warning {
+            background: #FFF3E0;
+            border: 2px solid #FFB74D;
+        }
+
+        .callout.info {
+            background: #E8F1FF;
+            border: 2px solid #90CAF9;
+        }
+
+        .callout strong {
+            color: var(--text-primary);
+        }
+
+        /* Constraint list */
+        .constraint-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .constraint-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #FFF3E0;
+            border: 1.5px solid rgba(255, 152, 0, 0.4);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .constraint-list li::before {
+            content: '⚠️';
+            flex-shrink: 0;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Links list */
+        .link-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .link-list li {
+            background: var(--anthropic-light);
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+
+        .link-list a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .link-list a:hover {
+            color: var(--anthropic-coral);
+            text-decoration: underline;
+        }
+
+        .link-list .url {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <span class="category-badge">ファストモード</span>
+                <span class="category-badge">Compliance API</span>
+                <h1>Claude Opus 5.5 ファストモードがリサーチプレビュー終了、Compliance API にユーザー設定取得機能を追加</h1>
+                <p class="date">📅 2026-10-15 | ソース: Claude Developer Platform Release Notes</p>
+                <p class="lead">Claude Opus 5.5 のファストモードがアクセス申請・ベータヘッダー不要で一般提供に。Azure ホストの Microsoft Foundry にも提供範囲が拡大し、Compliance API にはユーザー設定取得エンドポイント (ベータ) が追加されました。</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>Opus 5.5 ファストモードがリサーチプレビューを終了</h3>
+                        <p>アクセス申請が不要になり、<code class="inline">fast-mode-2026-02-01</code> ベータヘッダーなしで利用できるようになりました (送信し続けても動作は継続します)。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>各使用ティアにデフォルトレート制限を設定</h3>
+                        <p>Start、Build、Scale の各使用ティアにデフォルトのファストモードレート制限が設定されました。Evaluation ティアの組織は、Start、Build、Scale ティアに移行するとファストモードを利用できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🪟</div>
+                    <div class="key-point-content">
+                        <h3>Claude in Microsoft Foundry でも提供開始</h3>
+                        <p>Azure でホストされるデプロイメント向けに、Claude in Microsoft Foundry で Opus 5.5 のファストモードが利用可能になりました。Anthropic でホストされる Microsoft Foundry デプロイメントでは利用できません。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>Compliance API にユーザー設定取得エンドポイントを追加 (ベータ)</h3>
+                        <p>組織メンバーが claude.ai で保存した「Instructions for Claude」および Cowork の「Global instructions」のテキストを取得できます。Claude Enterprise 組織向けのベータ機能です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔬</div>
+                    <div class="key-point-content">
+                        <h3>Opus 5 / Opus 4.8 は引き続きリサーチプレビュー</h3>
+                        <p>Claude Opus 5 と Claude Opus 4.8 のファストモードはリサーチプレビューのままであり、これらのモデルにはベータヘッダーの送信とアクセス申請が引き続き必要です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Numbers -->
+        <section class="section">
+            <h2 class="section-title">数字で見るアップデート</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">2.5 倍</div>
+                    <div class="stat-label">標準速度比の最大出力トークン毎秒 (OTPS)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$8 / $40</div>
+                    <div class="stat-label">Opus 5.5 ファストモード料金 (入力 / 出力、MTok あたり)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3 ティア</div>
+                    <div class="stat-label">デフォルトレート制限が設定されたティア (Start / Build / Scale)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3 件</div>
+                    <div class="stat-label">2026-10-15 の Claude Developer Platform アップデート</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p><strong>ファストモード</strong>は、同一のモデルをより高速な推論構成で実行する機能であり、標準速度と比較して最大 2.5 倍の出力トークン毎秒 (OTPS) を実現します。モデルの重みや動作は変わらず、知能や機能に変化はありません。2026 年 2 月のリサーチプレビュー開始以降、利用にはアクセス申請と <code class="inline">fast-mode-2026-02-01</code> ベータヘッダーの送信が必要でした。</p>
+            <p><strong>Compliance API</strong> は、Claude Enterprise 組織のコンプライアンス担当者が組織内のデータを監査するための API であり、これまでにチャットデータ取得などのエンドポイントが提供されてきました。</p>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: Opus 5.5 ファストモード</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (リサーチプレビュー)</h4>
+                    <ul>
+                        <li>アクセス申請が必要</li>
+                        <li><code class="inline">fast-mode-2026-02-01</code> ベータヘッダーの送信が必須</li>
+                        <li>提供は Claude API のみ</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (一般提供)</h4>
+                    <ul>
+                        <li>アクセス申請は不要</li>
+                        <li>ベータヘッダー不要 (<code class="inline">speed: "fast"</code> の指定のみ)</li>
+                        <li>Start / Build / Scale ティアにデフォルトレート制限を設定</li>
+                        <li>Claude in Microsoft Foundry (Azure ホスト) でも利用可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main changes -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⚡ Opus 5.5 ファストモードの GA</h3>
+                    <p>アクセス申請とベータヘッダーが不要になり、<code class="inline">speed: "fast"</code> を設定するだけで利用できます。Start、Build、Scale の各使用ティアにデフォルトのファストモードレート制限が設定されました。Evaluation ティアの組織は上位ティアへの移行で利用可能になります。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🪟 Microsoft Foundry での提供</h3>
+                    <p>Azure でホストされるデプロイメント向けに、Claude in Microsoft Foundry で Opus 5.5 のファストモードが利用可能になりました。Anthropic でホストされる Microsoft Foundry デプロイメントでは利用できない点に注意が必要です。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ Compliance API の新エンドポイント</h3>
+                    <p>各組織メンバーが claude.ai で保存した「Instructions for Claude」および Cowork の「Global instructions」のテキストを返すエンドポイントが追加されました。Claude Enterprise 組織向けのベータ機能で、既存の Compliance Access Key と <code class="inline">read:compliance_user_data</code> スコープで呼び出します。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <p>ファストモードのモデル別ステータスと提供プラットフォームの関係を示します。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Dev(["👤 開発者"]) --> Request["📨 Messages API リクエスト&lt;br/&gt;speed: fast"]
+
+    subgraph Platform["🏢 Claude Developer Platform"]
+        Request --> Check{"モデル判定"}
+        Check -->|"Opus 5.5"| GA["⚡ ファストモード GA&lt;br/&gt;ベータヘッダー不要&lt;br/&gt;デフォルトレート制限あり"]
+        Check -->|"Opus 5 / Opus 4.8"| Preview["🔬 リサーチプレビュー&lt;br/&gt;ベータヘッダー必要&lt;br/&gt;アクセス申請必要"]
+    end
+
+    subgraph Hosting["☁️ 提供プラットフォーム"]
+        direction LR
+        ClaudeAPI["🔌 Claude API"]
+        Foundry["🪟 Microsoft Foundry&lt;br/&gt;Azure ホスト"]
+        ClaudeAPI ~~~ Foundry
+    end
+
+    GA --> ClaudeAPI
+    GA --> Foundry
+    Preview --> ClaudeAPI
+
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef ga fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#33691E
+    classDef preview fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#5D4037
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef api fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+
+    class Dev user
+    class Request process
+    class Check decision
+    class GA ga
+    class Preview preview
+    class Platform,Hosting platform
+    class ClaudeAPI,Foundry api
+                </pre>
+            </div>
+        </section>
+
+        <!-- Technical details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <h3 class="subsection-title">🚀 ファストモードの利用方法</h3>
+            <p>リクエストに <code class="inline">speed: "fast"</code> を設定するだけで有効化できます。レスポンスの <code class="inline">usage.speed</code> フィールドで、実際に使用された速度 (<code class="inline">"fast"</code> または <code class="inline">"standard"</code>) を確認できます。</p>
+
+            <h3 class="subsection-title">🗂️ 対応モデルとプラットフォーム</h3>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>モデル</th>
+                            <th>対応プラットフォーム</th>
+                            <th>ステータス</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Claude Opus 5.5 (claude-opus-5-5)</td>
+                            <td>Claude API (Managed Agents 含む)、Claude in Microsoft Foundry (Azure ホスト)</td>
+                            <td class="center"><span class="status-badge ga">一般提供</span></td>
+                        </tr>
+                        <tr>
+                            <td>Claude Opus 5 (claude-opus-5)</td>
+                            <td>Claude API (Managed Agents 含む)</td>
+                            <td class="center"><span class="status-badge preview">リサーチプレビュー</span></td>
+                        </tr>
+                        <tr>
+                            <td>Claude Opus 4.8 (claude-opus-4-8)</td>
+                            <td>Claude API (Managed Agents 含む)</td>
+                            <td class="center"><span class="status-badge preview">リサーチプレビュー</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="subsection-title">📏 ファストモードのレート制限</h3>
+            <p>ファストモードには標準の Opus レート制限とは別の専用レート制限があります。制限を超えると API は <code class="inline">retry-after</code> ヘッダー付きの <code class="inline">429</code> エラーを返します。レスポンスヘッダー (<code class="inline">anthropic-fast-input-tokens-limit</code> など) でファストモードのレート制限状況を確認できます。</p>
+
+            <h3 class="subsection-title">🚧 ファストモードの制約事項</h3>
+            <p>ドキュメントによると、以下の制約があります。</p>
+            <ul class="constraint-list">
+                <li>ファストモードと標準速度を切り替えるとプロンプトキャッシュが無効になる (異なる速度のリクエストはキャッシュされたプレフィックスを共有しない)</li>
+                <li>速度向上は出力トークン毎秒 (OTPS) に焦点があり、最初のトークンまでの時間 (TTFT) は対象外</li>
+                <li>Batch API では利用できない</li>
+                <li>Priority Tier コミットメントでは利用できない</li>
+                <li>Claude Platform on AWS では現在利用できない</li>
+            </ul>
+        </section>
+
+        <!-- Pricing -->
+        <section class="section">
+            <h2 class="section-title">料金情報: ファストモード料金</h2>
+            <p>ファストモードは標準料金に対するプレミアム価格で提供され、200K 入力トークンを超えるリクエストを含むフルコンテキストウィンドウに適用されます。</p>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>モデル</th>
+                            <th>入力</th>
+                            <th>出力</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Claude Opus 5.5</td>
+                            <td>$8 USD / MTok</td>
+                            <td>$40 USD / MTok</td>
+                        </tr>
+                        <tr>
+                            <td>Claude Opus 5 / Claude Opus 4.8</td>
+                            <td>$10 USD / MTok</td>
+                            <td>$50 USD / MTok</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="callout info">
+                <strong>ℹ️ 補足</strong>: プロンプトキャッシュやデータレジデンシーの料金乗数は、ファストモード料金の上に重ねて適用されます。
+            </div>
+        </section>
+
+        <!-- API changes -->
+        <section class="section">
+            <h2 class="section-title">API 変更点</h2>
+
+            <h3 class="subsection-title">🔁 ヘッダー変更: ファストモード</h3>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>対象</th>
+                            <th>変更内容</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Claude Opus 5.5 へのリクエスト</td>
+                            <td><code class="inline">fast-mode-2026-02-01</code> ベータヘッダーが不要に (送信し続けても動作は継続)</td>
+                        </tr>
+                        <tr>
+                            <td>Claude Opus 5 / Opus 4.8 へのリクエスト</td>
+                            <td>ベータヘッダーの送信とアクセス申請が引き続き必要</td>
+                        </tr>
+                        <tr>
+                            <td>レスポンスヘッダー</td>
+                            <td><code class="inline">anthropic-fast-input-tokens-limit</code> などでファストモードのレート制限状況を確認可能。超過時は <code class="inline">retry-after</code> 付き <code class="inline">429</code> エラー</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="subsection-title">➕ 新エンドポイント: Compliance API ユーザー設定取得 (ベータ)</h3>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>内容</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>エンドポイント</td>
+                            <td><code class="inline">GET /v1/compliance/organizations/{org_uuid}/user_preferences</code></td>
+                        </tr>
+                        <tr>
+                            <td>認証</td>
+                            <td>既存の Compliance Access Key と <code class="inline">read:compliance_user_data</code> スコープ</td>
+                        </tr>
+                        <tr>
+                            <td>返されるデータ</td>
+                            <td>各組織メンバーが claude.ai で保存した「Instructions for Claude」および Cowork の「Global instructions」のテキスト</td>
+                        </tr>
+                        <tr>
+                            <td>対象</td>
+                            <td>Claude Enterprise 組織 (ベータ)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Code samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p>Claude Opus 5.5 でファストモードを利用する例 (ベータヘッダー不要)。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">Opus 5.5 ファストモードの利用</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+response = client.messages.create(
+    model="claude-opus-5-5",
+    max_tokens=4096,
+    speed="fast",  # ファストモードを有効化
+    messages=[
+        {"role": "user", "content": "Refactor this module to use dependency injection"}
+    ],
+)
+
+# 実際に使用された速度を確認
+print(response.usage.speed)  # "fast" または "standard"</code></pre>
+            </div>
+            <p>Compliance API でユーザー設定を取得する例。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Compliance API ユーザー設定の取得</span>
+                </div>
+                <pre><code class="language-bash">curl "https://api.anthropic.com/v1/compliance/organizations/{org_uuid}/user_preferences" \
+  -H "x-api-key: $COMPLIANCE_ACCESS_KEY" \
+  -H "anthropic-version: 2023-06-01"</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer impact / Use cases -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響・ユースケース</h2>
+
+            <h3 class="subsection-title">🎯 対象</h3>
+            <div class="use-case">
+                <h4>Claude Opus 5.5 を利用する API 開発者</h4>
+                <p>特に Start、Build、Scale ティアの組織。アクセス申請なしで <code class="inline">speed: "fast"</code> を設定するだけで、最大 2.5 倍の出力速度を本番ワークロードに適用できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>Azure 上で Claude in Microsoft Foundry を利用する開発者</h4>
+                <p>Azure でホストされるデプロイメントで Opus 5.5 のファストモードが利用できるようになり、Azure 環境のまま高速な推論構成を選択できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>Claude Enterprise 組織のコンプライアンス担当者・監査ツール開発者</h4>
+                <p>新しいユーザー設定取得エンドポイントにより、組織メンバーが保存したカスタム指示 (Instructions for Claude、Cowork の Global instructions) を監査対象に含められます。</p>
+            </div>
+
+            <h3 class="subsection-title">✅ 必要なアクション</h3>
+            <ol class="step-list">
+                <li><strong>Opus 5.5 でファストモードを使う開発者</strong>: アクセス申請は不要。リクエストに <code class="inline">speed: "fast"</code> を設定するだけで利用できます。<code class="inline">fast-mode-2026-02-01</code> ベータヘッダーは削除してかまいません (残しても動作します)</li>
+                <li><strong>Opus 5 / Opus 4.8 でファストモードを使う開発者</strong>: 引き続きリサーチプレビューのため、ベータヘッダーの送信とアクセス申請が必要です</li>
+                <li><strong>Compliance API 利用者</strong>: 既存の Compliance Access Key に <code class="inline">read:compliance_user_data</code> スコープを付与し、新エンドポイントを呼び出します</li>
+            </ol>
+
+            <h3 class="subsection-title">🔀 移行ガイド</h3>
+            <p>Opus 5.5 向けのファストモードリクエストからベータヘッダーを削除できます。ただし削除は必須ではなく、ヘッダーを送信し続けてもリクエストは正常に動作します。旧モデルでファストモードを利用していた場合は、ファストモード対応モデルへの移行が推奨されています。</p>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <p>Claude Opus 5.5 のファストモードがリサーチプレビューを終了し、アクセス申請やベータヘッダーなしで <code class="inline">speed: "fast"</code> を指定するだけで最大 2.5 倍の出力速度を利用できるようになりました。Start、Build、Scale ティアにはデフォルトレート制限が設定され、Azure ホストの Microsoft Foundry にも提供範囲が拡大しました。一方、Opus 5 と Opus 4.8 のファストモードは引き続きリサーチプレビューである点に注意が必要です。</p>
+            <p>あわせて Compliance API にユーザー設定取得エンドポイントが追加され、Claude Enterprise 組織の監査機能が強化されました。</p>
+        </section>
+
+        <!-- Related links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="link-list">
+                <li><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude Developer Platform Release Notes</a><span class="url">https://platform.claude.com/docs/en/release-notes/overview</span></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/fast-mode" target="_blank" rel="noopener noreferrer">Fast mode ドキュメント</a><span class="url">https://platform.claude.com/docs/en/build-with-claude/fast-mode</span></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/compliance-api" target="_blank" rel="noopener noreferrer">Compliance API</a><span class="url">https://platform.claude.com/docs/en/manage-claude/compliance-api</span></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/compliance-org-data#list-user-preferences" target="_blank" rel="noopener noreferrer">List user preferences</a><span class="url">https://platform.claude.com/docs/en/manage-claude/compliance-org-data#list-user-preferences</span></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry" target="_blank" rel="noopener noreferrer">Claude in Microsoft Foundry</a><span class="url">https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry</span></li>
+                <li><a href="https://platform.claude.com/docs/en/about-claude/pricing#fast-mode-pricing" target="_blank" rel="noopener noreferrer">料金 (Fast mode pricing)</a><span class="url">https://platform.claude.com/docs/en/about-claude/pricing#fast-mode-pricing</span></li>
+                <li><a href="https://platform.claude.com/docs/en/api/rate-limits" target="_blank" rel="noopener noreferrer">レート制限</a><span class="url">https://platform.claude.com/docs/en/api/rate-limits</span></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-10-15 | ソース: Claude Developer Platform Release Notes | カテゴリ: API アップデート / エンタープライズ管理</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
