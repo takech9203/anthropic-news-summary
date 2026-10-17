@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-16](2026/2026-10-16-claude-code-v2-1-302.md) - Claude Code v2.1.302 リリース: auto モード分類器のモデル指定、Idle compaction 設定、Claude Design 終了告知
 - [2026-10-16](2026/2026-10-16-claude-code-v2-1-301.md) - Claude Code v2.1.301 リリース: リトライ制御の新環境変数、vim モード強化、OpenTelemetry イベント拡充
 - [2026-10-15](2026/2026-10-15-opus-5-5-fast-mode-ga-compliance-api.md) - Claude Opus 5.5 ファストモードがリサーチプレビュー終了、Compliance API にユーザー設定取得機能を追加
 - [2026-10-15](2026/2026-10-15-independent-evaluators-update.md) - 独立評価者に関するアップデート: METR に従業員同等アクセスを付与開始
