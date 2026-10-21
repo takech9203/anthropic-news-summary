@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-21](2026/2026-10-21-claude-code-v2-1-306.md) - Claude Code v2.1.306 リリース
+- [2026-10-20](2026/2026-10-20-inference-hooks-ga-user-profiles-org-webhooks.md) - Claude API 更新: Inference Hooks が GA、ユーザープロファイルでエンドカスタマー単位の安全対策、Admin API に組織 Webhook がベータ追加
+- [2026-10-20](2026/2026-10-20-claude-code-v2-1-305.md) - Claude Code v2.1.305 リリース
 - [2026-10-19](2026/2026-10-19-claude-code-v2-1-304.md) - Claude Code v2.1.304 リリース
 - [2026-10-18](2026/2026-10-18-public-benefit-fund.md) - Anthropic、公益基金「Anthropic Public Benefit Fund」を発表 - 株式の 5% をコミット
 - [2026-10-18](2026/2026-10-18-claude-code-v2-1-303.md) - Claude Code v2.1.303 リリース: バグ修正と信頼性の向上

@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inference Hooks GA / ユーザープロファイル / 組織 Webhook - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .sub-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 28px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .section p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .section p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card .status-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .status-tag.ga {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .status-tag.new {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .status-tag.beta {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Detail list */
+        .detail-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .detail-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 10px 16px 10px 40px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .detail-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 16px;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+        }
+
+        .detail-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            margin: 12px 0 20px;
+        }
+
+        .info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .info-table th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .info-table th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .info-table tr:nth-child(even) td {
+            background: var(--anthropic-light);
+        }
+
+        .info-table code,
+        .section code:not(.hljs),
+        .detail-list code,
+        .key-point-content code,
+        .use-case code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: rgba(212, 165, 116, 0.18);
+            color: #8a5a2b;
+            padding: 1px 6px;
+            border-radius: 6px;
+            word-break: break-all;
+        }
+
+        /* Callout */
+        .callout {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 18px 20px;
+            border-radius: 12px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .callout.warning {
+            background: #FFF3E0;
+            border: 2px solid #FFB74D;
+            color: #7c4a03;
+        }
+
+        .callout.info {
+            background: #E8F1FF;
+            border: 2px solid #90CAF9;
+            color: #1e4976;
+        }
+
+        .callout .callout-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .callout p {
+            margin: 0;
+            color: inherit;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        .use-case ul {
+            margin: 8px 0 0 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .use-case ul li {
+            margin-bottom: 6px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Links */
+        .link-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .link-list li {
+            font-size: 13.5px;
+            padding-left: 24px;
+            position: relative;
+            word-break: break-all;
+        }
+
+        .link-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+        }
+
+        .link-list a {
+            color: #8a5a2b;
+            text-decoration: none;
+        }
+
+        .link-list a:hover {
+            text-decoration: underline;
+            color: var(--anthropic-coral);
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .summary-box p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <h1>Inference Hooks が GA、ユーザープロファイルでエンドカスタマー単位の安全対策、Admin API に組織 Webhook がベータ追加</h1>
+                <p class="subtitle">エンタープライズ管理と安全対策に関する 3 つの更新 — ガバナンスと安全対策を「組織単位」からより細かい粒度へ</p>
+                <p class="date">📅 2026-10-20 | ソース: Claude API リリースノート | カテゴリ: Claude API / エンタープライズ / Admin API</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p>2026 年 10 月 20 日、Claude Developer Platform リリースノートで、エンタープライズ管理と安全対策に関する 3 つの更新が発表されました。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🪝</div>
+                    <div class="key-point-content">
+                        <h3>Inference hooks の GA 化</h3>
+                        <p>Claude Enterprise 組織向けの Inference hooks がベータを終了しました。推論前のインライン制御が正式機能になりました。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗂️</div>
+                    <div class="key-point-content">
+                        <h3>ユーザープロファイルの提供開始</h3>
+                        <p>各 API リクエストがどのエンドカスタマー向けかを Anthropic に伝達できるようになりました。プラットフォームやゲートウェイの運営者、API アクセスの再販事業者では、安全対策の執行 (safety enforcement) を組織全体ではなく特定のエンドカスタマーに限定できます。SDK と <code>ant</code> CLI が新しい <code>/v1/user_profiles</code> エンドポイントに対応しています。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔔</div>
+                    <div class="key-point-content">
+                        <h3>Admin API に組織 Webhook をベータ追加</h3>
+                        <p><code>webhooks-2026-10-07</code> ベータヘッダーで利用します。<code>/v1/organizations/webhooks</code> エンドポイントで Webhook エンドポイントを登録でき、ユーザープロファイルへの制限 / BAN の開始と終了の 2 種のイベントに対応します。アクセスには Anthropic アカウントチームへの連絡が必要です。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="callout info" style="margin-top: 20px;">
+                <span class="callout-icon">🧭</span>
+                <p>3 つの更新はいずれも「組織単位ではなく、より細かい粒度でガバナンスと安全対策を適用する」という方向性でつながっています。</p>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p>Anthropic は API トラフィックに対して自動化された安全性分類器を実行しています。従来は、プラットフォームやゲートウェイ経由のリクエストはすべて運営者の組織名義で届くため、1 つのエンドカスタマーの問題行動が組織全体への執行アクションにつながるリスクがありました。</p>
+            <p>今回のユーザープロファイルは、この問題を解決するための仕組みです。組織 Webhook は、そのプロファイルに対する執行アクションの開始・終了を通知として受け取るための補完機能です。また、Claude Enterprise 組織向けの Inference hooks が GA となり、推論前のインライン制御が正式機能になりました。</p>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🪝 Inference hooks</h3>
+                    <span class="status-tag ga">GA (ベータ終了)</span>
+                    <p>組織やセキュリティベンダーの AI セキュリティサーバーに、ガバナンス対象のプロンプトを推論実行前にルーティングし、allow/deny を判定。deny されたリクエストはモデルに到達しません。Claude Enterprise 組織向け。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🗂️ ユーザープロファイル</h3>
+                    <span class="status-tag new">提供開始</span>
+                    <p>エンドカスタマーごとにプロファイルを登録し、リクエストに <code>anthropic-user-profile-id</code> ヘッダーを付与。執行アクション (保留やブロックなど) を 1 つのエンドカスタマーに限定でき、他のトラフィックは影響を受けません。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔔 組織 Webhook</h3>
+                    <span class="status-tag beta">ベータ</span>
+                    <p>ユーザープロファイルへの執行アクション (制限 / BAN) の開始と終了をイベントとして受信。Standard Webhooks 仕様の署名付き配信。利用には Anthropic アカウントチームへの連絡が必要です。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detail 1: Inference hooks -->
+        <section class="section">
+            <h2 class="section-title">詳細 1: Inference hooks がベータ終了</h2>
+            <p>Inference hooks が、Claude Enterprise 組織向けにベータを終了しました。公式ドキュメントによると、以下の仕組みです。</p>
+            <ul class="detail-list">
+                <li><strong>目的</strong>: 組織またはセキュリティベンダーが運用する AI セキュリティサーバー (HTTPS サービス) に、ガバナンス対象のプロンプトを推論実行前にルーティングし、allow/deny の判定を受けます。deny されたリクエストはモデルに到達しません</li>
+                <li><strong>フックイベント</strong>: <code>prompt</code> (推論開始前に 1 回) と <code>tool_call</code> (ツール呼び出し実行前、Validate tool calls 有効時) の 2 種類</li>
+                <li><strong>適用範囲</strong>: フックは Anthropic のサーバー上で動作するため、claude.ai、Cowork、Claude Code、Claude for Microsoft 365 など、組織内のすべての Claude 製品のガバナンス対象リクエストに一律に適用されます。ユーザーデバイスへのインストールは不要です</li>
+                <li><strong>署名</strong>: 各リクエストは Standard Webhooks 仕様に従って署名されます</li>
+                <li><strong>段階的展開</strong>: シャドウモード (ブロックせず判定のみ観測)、ロールアウト率の指定、ロールによる除外設定に対応します</li>
+                <li><strong>対象外</strong>: Platform 組織 (Claude Platform 経由の API アクセス) は対象外です。Amazon Bedrock と Google Cloud でも利用できません</li>
+            </ul>
+            <div class="callout info">
+                <span class="callout-icon">🔐</span>
+                <p>設定には claude.ai の <code>organization:manage</code> 権限 (Owner および Primary owner ロールのみ) が必要です。</p>
+            </div>
+        </section>
+
+        <!-- Detail 2: User profiles -->
+        <section class="section">
+            <h2 class="section-title">詳細 2: ユーザープロファイル</h2>
+            <p>ユーザープロファイルが提供開始されました。各 API リクエストがどのエンドカスタマー向けかを Anthropic に伝達する仕組みで、安全対策の執行アクション (保留やブロックなど) を組織全体ではなく 1 つのエンドカスタマーに限定できます。該当エンドカスタマー以外のトラフィックは影響を受けません。</p>
+
+            <h3 class="sub-title">🔄 利用の流れ</h3>
+            <ul class="detail-list">
+                <li><strong>プロファイル登録</strong>: エンドカスタマーごとに <code>POST /v1/user_profiles</code> で 1 回登録し、返される <code>uprof_</code> プレフィックスの ID を保存します</li>
+                <li><strong>リクエストへの付与</strong>: そのエンドカスタマーに代わって送信するすべてのリクエストに、<code>anthropic-user-profile-id</code> ヘッダーで ID を送信します</li>
+                <li><strong>SDK/CLI 対応</strong>: SDK と <code>ant</code> CLI には、ヘッダーを送信する引数 <code>user_profile_id</code> (CLI は <code>--user-profile-id</code>) があります</li>
+                <li><strong>対応リクエスト</strong>: Messages API のほか、トークンカウント、Message Batches、OpenAI SDK 互換リクエストでも同様に機能します。バッチでは中のすべてのリクエストに適用されます</li>
+                <li><strong>課金</strong>: プロファイルは課金対象ではなく、料金に影響しません</li>
+            </ul>
+
+            <h3 class="sub-title">🏷️ access_type によるプロファイルの区別</h3>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>トラフィックの主体</th>
+                        <th>プロファイル</th>
+                        <th><code style="background: rgba(255,255,255,0.15); color: #E8C9A8;">access_type</code></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>自社プロダクトのサインアップ済みユーザー</td>
+                        <td>ユーザーごとに 1 つ</td>
+                        <td><code>application</code> (デフォルト)</td>
+                    </tr>
+                    <tr>
+                        <td>API アクセスを再販する相手企業 (ゲートウェイなど)</td>
+                        <td>企業ごとに 1 つ</td>
+                        <td><code>passthrough</code> (明示指定が必要)</td>
+                    </tr>
+                    <tr>
+                        <td>自組織自身の利用</td>
+                        <td>不要 (プロファイルなしは自組織の利用と見なされる)</td>
+                        <td>該当なし</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-title">📌 公式ドキュメント記載の注意点</h3>
+            <ul class="detail-list">
+                <li>プロファイルには送信した情報と Anthropic が設定するプログラムステータスのみが含まれ、会話内容は含まれません。Anthropic は送信された詳細を検証しません</li>
+                <li><code>POST /v1/user_profiles</code> は冪等ではないため、呼び出すたびに新しいプロファイルが作成されます。作成はカスタマーオンボーディング時に 1 回だけ行います</li>
+                <li>エンドカスタマー向けトラフィックの組織と自社内部利用の組織は分離することが推奨されています。プロファイルはワークスペースではなく組織に属します</li>
+                <li>ID が不正、または送信元組織のものでない場合、API は <code>400</code> <code>invalid_request_error</code> を返します</li>
+                <li>Amazon Bedrock と Google Cloud には <code>/v1/user_profiles</code> エンドポイントがないため、Claude API または Claude Platform on AWS の組織でプロファイルを作成します。Claude in Amazon Bedrock ではリクエストボディのトップレベルの <code>user_profile_id</code> フィールドで ID を送信します</li>
+                <li><code>passthrough</code> プロファイルは企業を識別するもので、リクエストが特定の個人からのものである場合は、Messages リクエストの <code>metadata.user_id</code> フィールドで個人識別子も送信します</li>
+            </ul>
+        </section>
+
+        <!-- Detail 3: Organization webhooks -->
+        <section class="section">
+            <h2 class="section-title">詳細 3: Admin API に組織 Webhook (ベータ)</h2>
+            <p>組織 Webhook が Admin API にベータとして追加されました。<code>webhooks-2026-10-07</code> ベータヘッダーを付けて利用します。アクセスのリクエストには Anthropic アカウントチームへの連絡が必要です。</p>
+
+            <h3 class="sub-title">📬 対応イベントタイプ</h3>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>イベント</th>
+                        <th>トリガー</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>user_profile.enforcement_action_opened</code></td>
+                        <td>Anthropic がユーザープロファイルに執行アクション (制限または BAN) を開始したとき</td>
+                    </tr>
+                    <tr>
+                        <td><code>user_profile.enforcement_action_resolved</code></td>
+                        <td>執行アクションが終了したとき。Anthropic が解除するか、<code>expires_at</code> の時刻を過ぎたとき</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout warning">
+                <span class="callout-icon">⚠️</span>
+                <p><strong>重要な注意点</strong>: 公式ドキュメントによると、現時点ではイベント配信は稼働していません (Anthropic はまだこの 2 種のイベントを送信していません)。エンドポイントの登録と、ドキュメントに記載されたイベント形式に基づくハンドラーの構築は可能です。</p>
+            </div>
+
+            <h3 class="sub-title">⚙️ 仕組みの詳細</h3>
+            <ul class="detail-list">
+                <li><strong>エンドポイント管理</strong>: <code>/v1/organizations/webhooks</code> 配下のエンドポイントで、一覧・作成・取得・更新・削除・署名シークレットの再生成を行います。作成・変更・削除には admin、owner、primary owner のいずれかのロールが必要です</li>
+                <li><strong>配信仕様</strong>: 配信は Standard Webhooks 仕様に従い、<code>webhook-id</code>、<code>webhook-timestamp</code>、<code>webhook-signature</code> ヘッダーが付与されます。エンドポイント作成時に発行される <code>whsec_</code> プレフィックスの署名シークレットで検証します</li>
+                <li><strong>応答要件</strong>: 5 秒以内に <code>2xx</code> ステータスを返す必要があります。重複配信があり得るため、イベント <code>id</code> で重複排除します</li>
+                <li><strong>再試行と自動無効化</strong>: 配信失敗時は数分間にわたり数回再試行され、すべて失敗するとイベントは破棄されます。リダイレクト応答、非パブリック IP への解決、継続的な配信失敗があると、Anthropic はエンドポイントを無効化します</li>
+                <li><strong>上限</strong>: 1 組織あたり最大 32 エンドポイント (無効化されたものも数に含まれます)</li>
+                <li><strong>イベントの内容</strong>: イベントには ID のみが含まれます (<code>data.id</code> がプロファイル ID、<code>data.enforcement_action_id</code> が <code>enac_</code> プレフィックスのアクション ID)。変更内容は <code>GET /v1/user_profiles/{id}</code> でプロファイルを取得して確認します</li>
+                <li><strong>利用条件</strong>: 組織 Webhook が有効化されており、HIPAA readiness が無効な Claude API 組織で利用できます</li>
+            </ul>
+        </section>
+
+        <!-- Technical details / Architecture -->
+        <section class="section">
+            <h2 class="section-title">技術詳細: 全体フロー</h2>
+            <p>3 つの更新を組み合わせると、「エンドカスタマー単位の帰属 → プロファイル単位の執行 → Webhook による通知 → プロファイル取得による状態確認」という一連のフローが構成されます。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Platform["🏢 プラットフォーム事業者"]
+        Onboard(["👤 エンドカスタマーの登録"])
+        App["🖥️ アプリケーション / ゲートウェイ"]
+        Handler["📥 Webhook ハンドラー"]
+    end
+
+    subgraph Anthropic["☁️ Anthropic"]
+        Profiles["🗂️ /v1/user_profiles"]
+        Messages["📨 Messages API"]
+        Safety["🛡️ 安全性分類器"]
+        Action["⚖️ 執行アクション<br/>プロファイル単位の制限 / BAN"]
+        Webhooks["🔔 組織 Webhook<br/>webhooks-2026-10-07 ベータ"]
+    end
+
+    Onboard --> Profiles
+    Profiles -->|uprof_ ID を返却| App
+    App -->|anthropic-user-profile-id ヘッダー| Messages
+    Messages --> Safety
+    Safety -.->|問題検出時| Action
+    Action -.->|enforcement_action_opened / resolved| Webhooks
+    Webhooks -.->|イベント配信<br/>現時点では未稼働| Handler
+    Handler -->|GET /v1/user_profiles/id で状態確認| Profiles
+
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class Onboard input
+    class App,Handler process
+    class Profiles,Messages,Safety,Webhooks internal
+    class Action warning
+    class Platform,Anthropic layer
+                </pre>
+            </div>
+            <div class="callout warning">
+                <span class="callout-icon">💡</span>
+                <p>ポイントは、プロファイルを付与していないリクエストは「自組織の利用」として扱われることです。プロファイルなしのリクエストが執行アクションのトリガーになった場合、アクションは組織全体に適用されます。エンドカスタマーのトラフィックには漏れなくプロファイル ID を付与することが重要です。</p>
+            </div>
+        </section>
+
+        <!-- Developer Impact / Use Cases -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響 / ユースケース</h2>
+
+            <h3 class="sub-title">🎯 対象</h3>
+            <div class="use-case">
+                <h4>🪝 セキュリティ・コンプライアンスチーム (Inference hooks)</h4>
+                <p>Claude Enterprise 組織でインライン制御を検討しているチームが対象です。GA 化を機にベータ利用を見送っていた場合も導入を再検討できます。シャドウモードから始めることで、ブロックなしで判定の観測が可能です。</p>
+            </div>
+            <div class="use-case">
+                <h4>🗂️ プラットフォーム / ゲートウェイ運営者・再販事業者 (ユーザープロファイル)</h4>
+                <p>エンドカスタマーのトラフィックを自組織名義で送信しているすべての開発者が対象です。推奨されるアクションは以下のとおりです。</p>
+                <ul>
+                    <li>カスタマーオンボーディングフローに <code>POST /v1/user_profiles</code> によるプロファイル作成を組み込み、返された <code>uprof_</code> ID を顧客レコードに保存する</li>
+                    <li>すべてのリクエストに <code>anthropic-user-profile-id</code> ヘッダー (SDK では <code>user_profile_id</code> 引数) で ID を付与する</li>
+                    <li>再販の場合は <code>access_type</code> を <code>passthrough</code> に設定する</li>
+                    <li>既存顧客基盤を一括登録する前に、Anthropic アカウントチームに連絡する (プロファイル作成はレート制限あり)</li>
+                </ul>
+            </div>
+            <div class="use-case">
+                <h4>🔔 執行アクションを検知したい組織管理者 (組織 Webhook)</h4>
+                <p>利用にはアカウントチームへのアクセス申請が必要です。イベント配信は現時点で未稼働のため、まずはエンドポイント登録とハンドラー実装の準備段階として利用します。署名シークレットは作成時の応答にのみ含まれるため、安全に保管してください。</p>
+            </div>
+
+            <h3 class="sub-title">🔀 移行ガイド</h3>
+            <p>ユーザープロファイルと組織 Webhook は新機能のため、既存コードへの破壊的変更はありません。ただし、組織 Webhook のドキュメントによると、<code>anthropic-beta</code> ヘッダーに <code>user-profiles-2026-09-04</code> 以前の値を指定しているリクエストでは、プロファイルの <code>enforcement_status</code> と <code>enforcement_actions</code> フィールドが応答に含まれず、<code>enforcement_status[]</code> によるリストフィルタが <code>400</code> を返します。これらのフィールドを利用するには、該当のベータ値をリクエストから削除してください。</p>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p>ユーザープロファイルの作成と、Messages API リクエストへの付与の例です (公式ドキュメントのサンプルを抜粋)。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">プロファイル作成とリクエストへの付与</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+# 1. エンドカスタマーのオンボーディング時にプロファイルを 1 回作成
+# 再販先企業の場合は access_type="passthrough" を指定
+profile = client.user_profiles.create(
+    name="Acme Analytics, Inc.",
+    access_type="passthrough",
+    external_user_details={"reference_id": "cust-8f2a1c", "country": "US"},
+)
+print(profile.id)  # uprof_... を顧客レコードに保存する
+
+# 2. そのエンドカスタマーに代わるすべてのリクエストに ID を付与
+message = client.messages.create(
+    model="claude-opus-5-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello, Claude"}],
+    user_profile_id=profile.id,
+)
+print(message)</code></pre>
+            </div>
+
+            <p>組織 Webhook エンドポイントの登録例です (Admin API キーと <code>webhooks-2026-10-07</code> ベータヘッダーが必要)。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Webhook エンドポイントの登録</span>
+                </div>
+                <pre><code class="language-bash">curl "https://api.anthropic.com/v1/organizations/webhooks" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "anthropic-beta: webhooks-2026-10-07" \
+  -H "content-type: application/json" \
+  -d '{
+    "url": "https://example.com/anthropic-webhooks",
+    "name": "Enforcement actions",
+    "enabled_events": [
+      "user_profile.enforcement_action_opened",
+      "user_profile.enforcement_action_resolved"
+    ]
+  }'</code></pre>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section summary-box">
+            <h2 class="section-title" style="color: white;">まとめ</h2>
+            <p>2026 年 10 月 20 日の更新は、エンタープライズ組織のガバナンス (<strong>Inference hooks の GA 化</strong>)、プラットフォーム事業者の安全対策の粒度向上 (<strong>ユーザープロファイル</strong>)、執行アクションの可観測性 (<strong>組織 Webhook</strong>) という 3 つの柱で構成されています。</p>
+            <p style="margin-top: 12px;">特にユーザープロファイルは、プラットフォーム・ゲートウェイ・再販事業者にとって「1 ユーザーの問題で組織全体が影響を受ける」リスクを軽減する実用的な仕組みであり、追加コストなしで導入できます。組織 Webhook はベータ機能であり、現時点ではイベント配信が未稼働である点に注意してください。最新情報は公式ドキュメントを参照してください。</p>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="link-list">
+                <li><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude API リリースノート</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/inference-hooks" target="_blank" rel="noopener noreferrer">Inference hooks</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/user-profiles" target="_blank" rel="noopener noreferrer">User profiles for end-customer attribution</a></li>
+                <li><a href="https://platform.claude.com/docs/en/api/user_profiles" target="_blank" rel="noopener noreferrer">User profiles API リファレンス</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/organization-webhooks" target="_blank" rel="noopener noreferrer">Organization webhooks</a></li>
+                <li><a href="https://platform.claude.com/docs/en/api/beta/organization/webhooks" target="_blank" rel="noopener noreferrer">Organization webhooks API リファレンス</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/admin-api" target="_blank" rel="noopener noreferrer">Admin API</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-10-20 | Anthropic News Summary プロジェクトにより生成</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
