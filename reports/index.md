@@ -5,7 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-21](2026/2026-10-21-claude-code-v2-1-307.md) - Claude Code v2.1.307 リリース
 - [2026-10-21](2026/2026-10-21-claude-code-v2-1-306.md) - Claude Code v2.1.306 リリース
+- [2026-10-21](2026/2026-10-21-christopher-stubbs-ltbt.md) - 物理学者 Christopher Stubbs 氏が Anthropic の Long-Term Benefit Trust に参加
+- [2026-10-21](2026/2026-10-21-api-version-2026-10-21-sdk-major-releases.md) - API version 2026-10-21 リリースと SDK/CLI メジャーバージョン公開
 - [2026-10-20](2026/2026-10-20-inference-hooks-ga-user-profiles-org-webhooks.md) - Claude API 更新: Inference Hooks が GA、ユーザープロファイルでエンドカスタマー単位の安全対策、Admin API に組織 Webhook がベータ追加
 - [2026-10-20](2026/2026-10-20-claude-code-v2-1-305.md) - Claude Code v2.1.305 リリース
 - [2026-10-19](2026/2026-10-19-claude-code-v2-1-304.md) - Claude Code v2.1.304 リリース
