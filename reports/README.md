@@ -5,6 +5,10 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-22](2026/2026-10-22-life-sciences-guest-investigators.md) - ライフサイエンス分野のゲスト・インベスティゲーターを公募開始
+- [2026-10-22](2026/2026-10-22-claude-models-on-google-cloud.md) - Claude Models on Google Cloud (Anthropic managed) ローンチ
+- [2026-10-22](2026/2026-10-22-claude-code-v2-1-308-v2-1-309.md) - Claude Code v2.1.308 / v2.1.309 リリース
+- [2026-10-22](2026/2026-10-22-agent-skills-agentic-ai-foundation.md) - Agent Skills を Agentic AI Foundation に寄贈 — オープン標準としての中立的な運営へ
 - [2026-10-21](2026/2026-10-21-claude-code-v2-1-307.md) - Claude Code v2.1.307 リリース
 - [2026-10-21](2026/2026-10-21-claude-code-v2-1-306.md) - Claude Code v2.1.306 リリース
 - [2026-10-21](2026/2026-10-21-christopher-stubbs-ltbt.md) - 物理学者 Christopher Stubbs 氏が Anthropic の Long-Term Benefit Trust に参加

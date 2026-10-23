@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Models on Google Cloud (Anthropic managed) ローンチ - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 28px 0 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-subtitle:first-of-type {
+            margin-top: 0;
+        }
+
+        .section p.lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code,
+        .key-point-content code,
+        .use-case code,
+        .info-table code,
+        .note-box code,
+        p code, li code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: rgba(212, 165, 116, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p, .comparison-card li {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul {
+            padding-left: 20px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 560px;
+        }
+
+        .info-table th {
+            background: var(--anthropic-dark);
+            color: #FFF8F0;
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .info-table th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .info-table th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .info-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .info-table tbody tr:nth-child(even) {
+            background: var(--anthropic-light);
+        }
+
+        .info-table td.row-label {
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .pill.ok {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .pill.ng {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .pill.accent {
+            background: rgba(212, 165, 116, 0.25);
+            color: #7a5a30;
+        }
+
+        /* Diff list */
+        .diff-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .diff-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .diff-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 13px;
+        }
+
+        /* Checklist (supported / unsupported) */
+        .check-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .check-card {
+            border-radius: 16px;
+            padding: 20px 24px;
+        }
+
+        .check-card.supported {
+            background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+            border: 2px solid #6EE7B7;
+        }
+
+        .check-card.unsupported {
+            background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+            border: 2px solid #FCA5A5;
+        }
+
+        .check-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .check-card.supported h4 {
+            color: #065F46;
+        }
+
+        .check-card.unsupported h4 {
+            color: #991B1B;
+        }
+
+        .check-card ul {
+            list-style: none;
+        }
+
+        .check-card li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .check-card li::before {
+            flex-shrink: 0;
+        }
+
+        .check-card.supported li::before {
+            content: '✅';
+        }
+
+        .check-card.unsupported li::before {
+            content: '🚫';
+        }
+
+        /* Steps */
+        .steps {
+            display: grid;
+            gap: 14px;
+            counter-reset: step;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+
+        .step-num {
+            counter-increment: step;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-num::before {
+            content: counter(step);
+        }
+
+        .step-content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .step-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .step-content .code-block {
+            margin: 12px 0 0;
+        }
+
+        /* Note Box */
+        .note-box {
+            background: #FFF3E0;
+            border: 2px solid #FFB74D;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: #5D4037;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .note-box .note-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: #F5EDE4;
+            border-radius: 16px;
+            padding: 28px 32px;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        .summary-box code {
+            background: rgba(212, 165, 116, 0.2);
+            color: #E8C9A8;
+        }
+
+        /* Links */
+        .link-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .link-list li {
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-size: 13px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .link-list li::before {
+            content: '🔗';
+            flex-shrink: 0;
+        }
+
+        .link-list a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .link-list a:hover {
+            color: var(--anthropic-coral);
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison,
+            .check-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">プラットフォーム</span>
+                <span class="category-badge">クラウド統合</span>
+                <h1>Claude Models on Google Cloud<br>(Anthropic managed) ローンチ</h1>
+                <p class="subtitle">Google Cloud プロジェクト経由で Claude API のフル機能にアクセス。IAM で制御、Marketplace で課金</p>
+                <p class="date">📅 発表日: 2026-10-22 | ソース: Claude Developer Platform Release Notes</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 — 5 つのキーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">☁️</div>
+                    <div class="key-point-content">
+                        <h3>Google Cloud プロジェクト経由で Claude API にアクセス</h3>
+                        <p>Anthropic が運営する Claude API に、ユーザー自身の Google Cloud プロジェクトを入り口としてアクセスできる新しい提供形態。ベース URL は <code>https://claude.googleapis.com/v1/projects/{project}/locations/global/workspaces/{workspace}/invoke</code> で、この後ろに通常の Claude API パス (例: <code>/v1/messages</code>) を続けます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>Google Cloud IAM によるアクセス制御</h3>
+                        <p>API キーは不要。3 つの事前定義ロール (<code>claude.viewer</code> / <code>claude.user</code> / <code>claude.admin</code>) で、既存の Google Cloud の権限管理に Claude API を統合できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💳</div>
+                    <div class="key-point-content">
+                        <h3>Google Cloud Marketplace による課金</h3>
+                        <p>使用量は Claude Consumption Unit (1 ユニット = 0.01 米ドル) として Google Cloud に報告され、Google Cloud の請求書に表示。Anthropic からの個別請求はなく、Google Cloud の支出コミットメントにもカウントされます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔁</div>
+                    <div class="key-point-content">
+                        <h3>Claude API とのリクエスト互換性が高い</h3>
+                        <p>差分はベース URL、認証ヘッダー、ワークスペース指定の 3 点のみ。<code>anthropic-version</code> / <code>anthropic-beta</code> ヘッダー、リクエストボディ、ストリーミング、レスポンスは Claude API と同一です。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>Claude Opus 5.5 の Fast mode に対応</h3>
+                        <p>Claude API と同様に、本プラットフォーム上でも Claude Opus 5.5 の Fast mode が利用できます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background: Before / After -->
+        <section class="section">
+            <h2 class="section-title">背景 — Google Cloud 経由の Claude 利用が変わる</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before: Google managed のみ</h4>
+                    <ul>
+                        <li>Google が Agent Platform (旧 Vertex AI) の一部として Claude モデルを運営する形態のみ</li>
+                        <li>Agent Platform 固有のエンドポイント (<code>:rawPredict</code> / <code>:streamRawPredict</code>) やリクエスト形式が必要</li>
+                        <li>Claude API 本体との差分が存在</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After: Anthropic managed が追加</h4>
+                    <ul>
+                        <li>Claude API そのものを <strong>Anthropic が運営したまま</strong>、Google Cloud プロジェクトをアクセスと課金の入り口にできる</li>
+                        <li>Claude API のエンドポイント・リクエスト形式・機能をそのまま利用可能</li>
+                        <li>Google Cloud の IAM と Marketplace 課金を活用</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見るポイント</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">3 点</div>
+                    <div class="stat-label">Claude API との差分<br>(URL / 認証 / ワークスペース)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3 種</div>
+                    <div class="stat-label">IAM 事前定義ロール<br>(viewer / user / admin)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$0.01</div>
+                    <div class="stat-label">1 Claude Consumption Unit<br>あたりの単価</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0 個</div>
+                    <div class="stat-label">管理すべき API キー<br>(Google Cloud 認証のみ)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Features -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔌 Claude API へのプロジェクト経由アクセス</h3>
+                    <p>ベース URL は <code>claude.googleapis.com</code> のプロジェクトスコープ URL。後ろに通常の Claude API パスを続けるだけで、Claude API のフル機能を利用できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ IAM によるアクセス制御</h3>
+                    <p>3 つの事前定義ロールで権限を一元管理。API を呼び出す ID には <code>roles/claude.user</code> を付与します。Claude Console を開けるのは <code>claude.admin</code> のみです。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💳 Marketplace 課金</h3>
+                    <p>Anthropic が使用量を計測し、Claude Consumption Unit として Google Cloud に報告。請求は Google Cloud の請求書に統合され、支出コミットメントにもカウントされます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Opus 5.5 Fast mode 対応</h3>
+                    <p>Claude API と同様に、Claude Opus 5.5 の Fast mode が本プラットフォーム上でも利用可能です。</p>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle" style="margin-top: 28px;">🛡️ IAM 事前定義ロールの詳細</h3>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>ロール</th>
+                            <th>表示名</th>
+                            <th>許可される操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="row-label"><code>roles/claude.viewer</code></td>
+                            <td>Claude Viewer</td>
+                            <td>ワークスペースリソースの参照 (読み取り専用)</td>
+                        </tr>
+                        <tr>
+                            <td class="row-label"><code>roles/claude.user</code></td>
+                            <td>Claude User</td>
+                            <td>Viewer の権限に加え、メッセージ送信、トークンカウント、バッチ / ファイル / スキル / Claude Managed Agents リソースの管理</td>
+                        </tr>
+                        <tr>
+                            <td class="row-label"><code>roles/claude.admin</code></td>
+                            <td>Claude Admin</td>
+                            <td>User の権限に加え、組織レベルの操作。Claude Console を開けるのはこのロールのみ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術的な詳細</h2>
+
+            <h3 class="section-subtitle">🔐 認証方式 — API キーは使用しない</h3>
+            <p class="lead">各リクエストは <code>Authorization: Bearer</code> ヘッダーで Google OAuth 2.0 アクセストークン (<code>cloud-platform</code> スコープ) を送信します。SDK クライアントは Application Default Credentials (ADC) からトークンを取得するため、Compute Engine、GKE、Cloud Run 上ではワークロードにアタッチされたサービスアカウントが自動的に使われます。Workload Identity Federation やサービスアカウントの impersonation にも対応しています。</p>
+
+            <h3 class="section-subtitle">🔁 Claude API との差分は 3 点のみ</h3>
+            <p class="lead">その他 (<code>anthropic-version</code> / <code>anthropic-beta</code> ヘッダー、リクエストボディ、ストリーミング、レスポンス) は Claude API と同一です。</p>
+            <div class="diff-list">
+                <div class="diff-item">
+                    <div class="diff-num">1</div>
+                    <div><strong>ベース URL</strong>: <code>https://api.anthropic.com</code> の代わりにプロジェクトスコープの URL を使用</div>
+                </div>
+                <div class="diff-item">
+                    <div class="diff-num">2</div>
+                    <div><strong>認証</strong>: <code>x-api-key</code> ヘッダーの代わりに <code>Authorization: Bearer</code> ヘッダーを使用</div>
+                </div>
+                <div class="diff-item">
+                    <div class="diff-num">3</div>
+                    <div><strong>ワークスペース</strong>: <code>anthropic-workspace-id</code> ヘッダーの代わりに URL にワークスペース ID を含める</div>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">📦 SDK クライアント — AnthropicGoogleCloud (ベータ)</h3>
+            <p class="lead">新しいクライアント <code>AnthropicGoogleCloud</code> (ベータ) が各言語の SDK で提供されます。環境変数 <code>ANTHROPIC_GOOGLE_CLOUD_PROJECT</code> と <code>ANTHROPIC_GOOGLE_CLOUD_WORKSPACE_ID</code> からプロジェクト ID とワークスペース ID を自動解決します。<code>ant</code> CLI も対応しています。</p>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>言語</th>
+                            <th>クライアント</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="row-label">Python / TypeScript など</td><td><code>AnthropicGoogleCloud</code></td></tr>
+                        <tr><td class="row-label">C#</td><td><code>AnthropicGoogleCloudClient</code></td></tr>
+                        <tr><td class="row-label">Go</td><td><code>googlecloud.NewClient()</code></td></tr>
+                        <tr><td class="row-label">Java</td><td><code>GoogleCloudBackend</code></td></tr>
+                        <tr><td class="row-label">PHP</td><td><code>Anthropic\GoogleCloud\Client</code></td></tr>
+                        <tr><td class="row-label">Ruby</td><td><code>Anthropic::GoogleCloudClient</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="section-subtitle">🏷️ モデル ID</h3>
+            <p class="lead">Claude API と同じモデル ID (例: <code>claude-opus-5-5</code>) を使用します。Google managed で使われる <code>@</code> 区切りのスナップショット表記 (例: <code>claude-haiku-4-5@20251001</code>) は、Claude 4.6 より前のモデルではハイフン区切り (<code>claude-haiku-4-5-20251001</code>) に置き換えます。</p>
+
+            <h3 class="section-subtitle">✅ サポートされる機能 / 🚫 されない機能</h3>
+            <div class="check-columns">
+                <div class="check-card supported">
+                    <h4>✅ Claude API と同様に動作</h4>
+                    <ul>
+                        <li>Fast mode</li>
+                        <li>ツール使用 (Web 検索、Web フェッチ、コード実行、メモリツール、MCP コネクタなど)</li>
+                        <li>Agent Skills / Files API</li>
+                        <li>プロンプトキャッシュ / 拡張思考</li>
+                        <li>ストリーミング / 構造化出力 / トークンカウント</li>
+                        <li>Message Batches API</li>
+                        <li>Claude Managed Agents</li>
+                        <li>CMEK (Google Cloud KMS キー)</li>
+                        <li>Compliance API</li>
+                    </ul>
+                </div>
+                <div class="check-card unsupported">
+                    <h4>🚫 利用できない機能</h4>
+                    <ul>
+                        <li>API キー (認証は Google Cloud 認証情報のみ)</li>
+                        <li>MCP トンネル</li>
+                        <li>セルフホスト環境でのメモリストア</li>
+                        <li>事前構築されたセルフホストサンドボックスワーカー (<code>ant</code> CLI や SDK のワーカーは非対応のため、Environments Work エンドポイントを直接呼び出す独自ワーカーの実装が必要)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">📋 監査ログ</h3>
+            <p class="lead">Cloud Audit Logs が <code>claude.googleapis.com</code> サービスとして API アクティビティを記録します。Admin Activity ログ (暗号化キー、認証情報ボールトなど) は常に有効です。</p>
+            <div class="note-box">
+                <span class="note-icon">⚠️</span>
+                <div>Data Access ログ (メッセージ、バッチ、ファイルなど大半のルート) はデフォルトで<strong>無効</strong>のため、リクエスト記録が必要な場合はプロジェクトの監査ログ設定で有効化が必要です。</div>
+            </div>
+
+            <h3 class="section-subtitle">🗄️ データ保持</h3>
+            <p class="lead">Anthropic がデータ処理者となり、Claude API と同じデータ保持ポリシーに従います。Zero Data Retention (ZDR) はリクエストベースで利用可能ですが、他の Anthropic 組織の ZDR 契約は引き継がれません。トラスト & セーフティなど一部の支援サービスは Google Cloud 外でデータを処理します。</p>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <p class="lead">アプリケーションから ADC 経由で Bearer トークンを取得し、Google Cloud ゲートウェイで IAM チェックを通過後、Anthropic が運営する Claude API に到達します。使用量は計測され Marketplace に報告されます。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph GCP["☁️ Google Cloud プロジェクト"]
+        direction TB
+        App["🖥️ アプリケーション&lt;br/&gt;AnthropicGoogleCloud SDK"]
+        ADC["🔐 Application Default Credentials&lt;br/&gt;サービスアカウント / ユーザー認証"]
+        subgraph Gateway["🚪 Google Cloud ゲートウェイ"]
+            Endpoint["🔌 claude.googleapis.com"]
+            IAM{"🛡️ IAM チェック&lt;br/&gt;roles/claude.user"}
+        end
+        Marketplace["💳 Google Cloud Marketplace&lt;br/&gt;課金・請求"]
+        Audit[("📋 Cloud Audit Logs")]
+    end
+
+    subgraph Anthropic["🏢 Anthropic"]
+        API["📨 Claude API&lt;br/&gt;Anthropic が運営"]
+        subgraph Models["🤖 モデル"]
+            Opus["⭐ Claude Opus 5.5&lt;br/&gt;Fast mode 対応"]
+        end
+        Console["🎛️ Claude Console&lt;br/&gt;platform.claude.com"]
+        Meter["📊 使用量計測&lt;br/&gt;Claude Consumption Units"]
+    end
+
+    App --> ADC
+    ADC --&gt;|"Bearer トークン"| Endpoint
+    Endpoint --> IAM
+    IAM --&gt;|"許可"| API
+    IAM -.-&gt;|"拒否 HTTP 403"| App
+    API --> Opus
+    Endpoint -.-> Audit
+    API --> Meter
+    Meter -.-&gt;|"使用量レポート"| Marketplace
+    Console -.-&gt;|"ワークスペース管理"| API
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef model fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+
+    class GCP,Anthropic platform
+    class Gateway,Models layer
+    class App,Console process
+    class ADC,Endpoint,Meter internal
+    class Marketplace input
+    class IAM decision
+    class API,Opus model
+    class Audit storage
+                </pre>
+            </div>
+        </section>
+
+        <!-- Comparison with Google managed -->
+        <section class="section">
+            <h2 class="section-title">Google managed との比較</h2>
+            <p class="lead">Google Cloud 経由の Claude 利用には 2 つの提供形態があります。Anthropic managed は Claude API ネイティブな開発体験が特徴です。</p>
+            <div class="table-wrapper">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>観点</th>
+                            <th>🟢 Anthropic managed (新)</th>
+                            <th>🔵 Google managed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="row-label">API サーフェス</td>
+                            <td>Claude API エンドポイント <code>/v1/{endpoint}</code></td>
+                            <td>Agent Platform の prediction エンドポイント</td>
+                        </tr>
+                        <tr>
+                            <td class="row-label">リクエスト形式</td>
+                            <td>Claude API と同一 (<code>model</code> はボディ、<code>anthropic-version</code> ヘッダー)</td>
+                            <td><code>model</code> は URL、<code>anthropic_version</code> はボディ</td>
+                        </tr>
+                        <tr>
+                            <td class="row-label">ストリーミング</td>
+                            <td>ボディの <code>"stream": true</code></td>
+                            <td>別エンドポイント <code>:streamRawPredict</code></td>
+                        </tr>
+                        <tr>
+                            <td class="row-label">ロケーション</td>
+                            <td><code>global</code> のみ (US 推論は <code>inference_geo: "us"</code> で指定)</td>
+                            <td>global / マルチリージョン / リージョナル</td>
+                        </tr>
+                        <tr>
+                            <td class="row-label">Anthropic 組織</td>
+                            <td>プロジェクトごとに新規作成</td>
+                            <td>なし</td>
+                        </tr>
+                        <tr>
+                            <td class="row-label">課金</td>
+                            <td>Google Cloud Marketplace</td>
+                            <td>Agent Platform 使用量として Google Cloud</td>
+                        </tr>
+                        <tr>
+                            <td class="row-label">レート制限</td>
+                            <td>Anthropic が管理</td>
+                            <td>Google Cloud が管理</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="section-subtitle">🎯 対象となるチーム</h3>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🏢</div>
+                    <div class="key-point-content">
+                        <h3>Google Cloud を標準基盤とする企業</h3>
+                        <p>IAM による一元的なアクセス制御と Marketplace 経由の課金で Claude API を利用したい開発チーム</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔄</div>
+                    <div class="key-point-content">
+                        <h3>Google managed (Agent Platform / Vertex AI) の既存ユーザー</h3>
+                        <p>Claude API のネイティブな機能セット (Files API、Agent Skills、Claude Managed Agents など) を使いたいチーム</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>api.anthropic.com を API キーで直接利用中のチーム</h3>
+                        <p>Google Cloud の請求・権限管理への統合を検討しているチーム</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">📝 必要なアクション (セットアップ 5 ステップ)</h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h4>Marketplace でサブスクライブ</h4>
+                        <p>Google Cloud Marketplace で「Claude Models on Google Cloud (Anthropic managed)」のリスティングを購入</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h4>サービスの有効化</h4>
+                        <p>利用する各プロジェクトで 2 つのサービスを有効化</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">Bash</span>
+                                <span class="code-title">gcloud でサービスを有効化</span>
+                            </div>
+                            <pre><code class="language-bash">gcloud services enable claude.googleapis.com \
+  anthropic-managed-claude.cloudpartnerservices.goog \
+  --project=my-project-id</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h4>Anthropic 組織のセットアップ</h4>
+                        <p>Google Cloud コンソールの Claude ページから Activate し、組織情報を登録 (既存の Anthropic 組織とは別の新しい組織が作成される点に注意)</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h4>IAM ロールの付与</h4>
+                        <p>API を呼び出す ID に <code>roles/claude.user</code> を付与</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h4>環境変数の設定</h4>
+                        <p><code>ANTHROPIC_GOOGLE_CLOUD_PROJECT</code> と <code>ANTHROPIC_GOOGLE_CLOUD_WORKSPACE_ID</code> を設定 (ワークスペース ID は Claude Console の Settings &gt; Workspaces で確認)</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">🚚 移行ガイド</h3>
+            <div class="use-case">
+                <h4>Google managed からの移行</h4>
+                <p>SDK クライアントを <code>AnthropicVertex</code> から <code>AnthropicGoogleCloud</code> に置き換えます。Messages API の呼び出し自体はほぼそのまま使えますが、Claude 4.6 より前のモデル ID は <code>@</code> をハイフンに変更する必要があります。</p>
+            </div>
+            <div class="use-case">
+                <h4>既存の Anthropic 組織からの移行</h4>
+                <p>既存組織を Anthropic managed の組織に変換することはできません。新組織を作成するカットオーバー方式となり、API キー、ワークスペース、Console 設定は引き継がれません。ファイル、スキル、バッチなどの保存リソースも既存組織に残ります。2 つの組織は並行稼働できるため、段階的な移行が可能です。</p>
+            </div>
+            <div class="note-box">
+                <span class="note-icon">💡</span>
+                <div>既存の割引がある場合は、セットアップ前に Anthropic または Google Cloud の担当者への連絡が推奨されています。</div>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">AnthropicGoogleCloud クライアントでの呼び出し</span>
+                </div>
+                <pre><code class="language-python"># pip install -U "anthropic[google_cloud]"
+# 事前に以下を設定:
+#   export ANTHROPIC_GOOGLE_CLOUD_PROJECT="my-project-id"
+#   export ANTHROPIC_GOOGLE_CLOUD_WORKSPACE_ID="wrkspc_01AbCdEf23GhIj"
+#   gcloud auth application-default login
+
+from anthropic import AnthropicGoogleCloud
+
+client = AnthropicGoogleCloud()
+
+message = client.messages.create(
+    model="claude-opus-5-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello, Claude"}],
+)
+print(message)</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">cURL での呼び出し例</span>
+                </div>
+                <pre><code class="language-bash">curl "https://claude.googleapis.com/v1/projects/$ANTHROPIC_GOOGLE_CLOUD_PROJECT/locations/global/workspaces/$ANTHROPIC_GOOGLE_CLOUD_WORKSPACE_ID/invoke/v1/messages" \
+  -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+  -H "content-type: application/json" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-opus-5-5",
+    "max_tokens": 1024,
+    "messages": [{"role": "user", "content": "Hello, Claude"}]
+  }'</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🏦 エンタープライズのガバナンス統合</h4>
+                <p>Google Cloud を標準基盤とする企業が、API キーの発行・管理を廃止し、既存の IAM ポリシーとサービスアカウントで Claude API へのアクセスを一元管理。Cloud Audit Logs による監査証跡と CMEK による暗号化で、コンプライアンス要件にも対応できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>💰 請求とコスト管理の一本化</h4>
+                <p>Claude の利用料金を Google Cloud の請求書に統合し、Anthropic からの個別請求を排除。Marketplace 経由の課金は Google Cloud の支出コミットメントにもカウントされるため、既存のクラウド契約を有効活用できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🚀 Google managed からの機能アップグレード</h4>
+                <p>Agent Platform (Vertex AI) 経由で Claude を利用中のチームが、SDK クライアントの置き換えだけで Files API、Agent Skills、Claude Managed Agents、Fast mode などの Claude API ネイティブ機能を利用可能に。Compute Engine、GKE、Cloud Run 上ではサービスアカウントが自動的に使われます。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Models on Google Cloud (Anthropic managed) のローンチにより、Google Cloud ユーザーは <strong>API キーの管理なし</strong>に、IAM ベースのアクセス制御と Marketplace 経由の一元的な課金で Claude API のフル機能を利用できるようになりました。Claude API とのリクエスト互換性が高く (差分は<strong>ベース URL、認証ヘッダー、ワークスペース指定の 3 点のみ</strong>)、Fast mode、Claude Managed Agents、CMEK などの最新機能にも対応しています。</p>
+                <p style="margin-top: 12px;">Google managed (Agent Platform 経由) と比べて <strong>Claude API ネイティブな開発体験</strong>が得られる一方、既存の Anthropic 組織からの移行は新組織へのカットオーバーとなる点、API キーや MCP トンネルが使えない点には注意が必要です。なお、本サービスの料金単価 (Claude API 直接利用との価格差の有無) については公式ドキュメントに明記がなく、確認が必要です。</p>
+            </div>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="link-list">
+                <li><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">リリースノート (Claude Developer Platform Release Notes)</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/anthropic-managed" target="_blank" rel="noopener noreferrer">Claude Models on Google Cloud (Anthropic managed) 公式ドキュメント</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/overview" target="_blank" rel="noopener noreferrer">Claude Models on Google Cloud 概要 (2 つの提供形態の比較)</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/fast-mode" target="_blank" rel="noopener noreferrer">Fast mode ドキュメント</a></li>
+                <li><a href="https://platform.claude.com/docs/en/api/claude-models-on-google-cloud-anthropic-managed-iam-permissions" target="_blank" rel="noopener noreferrer">IAM permissions for Claude Models on Google Cloud (Anthropic managed)</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/data-residency#inference-geo" target="_blank" rel="noopener noreferrer">データレジデンシー (inference_geo)</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-10-22 | Claude Developer Platform Release Notes | カテゴリ: プラットフォーム / クラウド統合</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
