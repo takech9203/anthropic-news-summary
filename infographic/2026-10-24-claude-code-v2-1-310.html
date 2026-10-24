@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.310 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Category Cards */
+        .category-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .category-card.behavior {
+            border-color: rgba(245, 158, 11, 0.35);
+            background: linear-gradient(135deg, #FFFFFF 0%, #FFF8EC 100%);
+        }
+
+        .category-card.improve {
+            border-color: rgba(16, 185, 129, 0.3);
+            background: linear-gradient(135deg, #FFFFFF 0%, #F0FBF6 100%);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .category-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .category-header h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .count-badge {
+            display: inline-block;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        .fix-list {
+            list-style: none;
+        }
+
+        .fix-list li {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            padding: 8px 0 8px 24px;
+            position: relative;
+            border-bottom: 1px dashed rgba(212, 165, 116, 0.25);
+        }
+
+        .fix-list li:last-child {
+            border-bottom: none;
+        }
+
+        .fix-list li::before {
+            content: '✔';
+            position: absolute;
+            left: 2px;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+        }
+
+        .fix-list.change-list li::before {
+            content: '⚡';
+        }
+
+        .fix-list.improve-list li::before {
+            content: '↑';
+            color: var(--success);
+        }
+
+        .fix-list li strong {
+            color: var(--text-primary);
+        }
+
+        .fix-list code,
+        .use-case code,
+        .key-point-content code,
+        .feature-card code,
+        .migration-note code,
+        .action-content code,
+        .section-lead code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+            background: rgba(212, 165, 116, 0.15);
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #8a5a2b;
+        }
+
+        .os-tag {
+            display: inline-block;
+            background: var(--anthropic-dark);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 0 8px;
+            margin-right: 6px;
+        }
+
+        /* Platform grid */
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 760px) {
+            .platform-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .platform-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .platform-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Action list */
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .action-num {
+            width: 32px;
+            height: 32px;
+            background: var(--anthropic-dark);
+            color: var(--anthropic-coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .action-content h4 {
+            font-size: 14.5px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .action-content p {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+        }
+
+        .migration-note {
+            background: #FFF3E0;
+            border: 2px solid #FFCC80;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-top: 20px;
+        }
+
+        .migration-note h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 10px;
+        }
+
+        .migration-note ul {
+            list-style: none;
+        }
+
+        .migration-note li {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            padding: 4px 0 4px 20px;
+            position: relative;
+        }
+
+        .migration-note li::before {
+            content: '⚠';
+            position: absolute;
+            left: 0;
+            color: var(--warning);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: #fff;
+            border-radius: 16px;
+            padding: 24px 28px;
+        }
+
+        .summary-box p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .summary-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        .summary-box code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+            background: rgba(212, 165, 116, 0.2);
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #E8C9A8;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <span class="category-badge">リリース</span>
+                <h1>Claude Code v2.1.310 リリース</h1>
+                <p class="subtitle">Monitor ツールの Bedrock / Vertex / Foundry 対応でエンタープライズ環境の機能ギャップを解消</p>
+                <p class="date">📅 2026-10-24 (CHANGELOG.md 更新日) | ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📡</div>
+                    <div class="key-point-content">
+                        <h3>Monitor ツールがクラウドプロバイダー経由でも利用可能に</h3>
+                        <p>Monitor ツールとプラグインモニターが Amazon Bedrock、Google Vertex AI、Microsoft Foundry、およびテレメトリーや非必須トラフィックが無効化された環境でも利用可能になった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔁</div>
+                    <div class="key-point-content">
+                        <h3>ゲートウェイ互換性のリトライ対応</h3>
+                        <p><code>effort-2025-11-24</code> ベータ値や会話途中のシステムメッセージを拒否する一部のゲートウェイ・互換サーバーの背後でリクエストが失敗する問題を修正。これらを除いてリトライするようになった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🗜️</div>
+                    <div class="key-point-content">
+                        <h3>圧縮とメモリ使用量の信頼性向上</h3>
+                        <p>「Prompt is too long」エラー後の圧縮が高密度テキストを残しすぎる問題の修正や、大規模トランスクリプトでの非対話セッションのメモリ使用量改善が含まれる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔐</div>
+                    <div class="key-point-content">
+                        <h3>Enterprise カスタムロールで Cloud sessions を制御可能に</h3>
+                        <p>Enterprise のカスタムロールに Claude Code クラウドセッションと Remote Control の権限が追加され、Owner がロールごとにアクセスを制御できるようになった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-content">
+                        <h3>各プラットフォームにも広く修正</h3>
+                        <p>VSCode 拡張、Cloud sessions、Claude Tag (Slack 連携)、Code Review の各プラットフォームにも修正・改善が及んでいる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background + Diagram -->
+        <section class="section">
+            <h2 class="section-title">背景: Monitor ツールの対応拡大</h2>
+            <p class="section-lead">Claude Code は、Anthropic API 直接接続だけでなく、Amazon Bedrock、Google Vertex AI、Microsoft Foundry といったクラウドプロバイダー経由でも利用できる。これまで Monitor ツールとプラグインモニターはこれらの環境では利用できなかったが、v2.1.310 で解消された。あわせて、これらの環境では長いフォアグラウンドの sleep もブロックされるようになった。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Providers["☁️ 接続経路"]
+        direction LR
+        Anthropic["🏢 Anthropic API<br/>直接接続"]
+        Bedrock["🟠 Amazon Bedrock"]
+        Vertex["🔵 Google Vertex AI"]
+        Foundry["🟣 Microsoft Foundry"]
+        Telemetry["🔇 テレメトリー<br/>無効化環境"]
+        Anthropic ~~~ Bedrock ~~~ Vertex ~~~ Foundry ~~~ Telemetry
+    end
+    Anthropic --> CC["🤖 Claude Code v2.1.310"]
+    Bedrock --> CC
+    Vertex --> CC
+    Foundry --> CC
+    Telemetry --> CC
+    CC --> Monitor["📡 Monitor ツール<br/>全経路で利用可能に"]
+    CC --> Plugin["🧩 プラグインモニター<br/>全経路で利用可能に"]
+    CC -.-> Sleep["⏱️ 長いフォアグラウンド sleep<br/>ブロックされる"]
+
+    classDef provider fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef core fill:#FFF8F0,stroke:#D4A574,stroke-width:2px,color:#1a1a2e
+    classDef enabled fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef container fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class Anthropic,Bedrock,Vertex,Foundry,Telemetry provider
+    class CC core
+    class Monitor,Plugin enabled
+    class Sleep warning
+    class Providers container
+                </pre>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要機能・修正</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📡 Monitor ツールの対応拡大</h3>
+                    <p>Bedrock、Vertex、Foundry 上、およびテレメトリーや非必須トラフィックが無効化された環境でも Monitor ツールとプラグインモニターが利用可能になった。これらの環境では長いフォアグラウンドの sleep もブロックされる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔁 ゲートウェイ互換性</h3>
+                    <p><code>effort-2025-11-24</code> ベータ値や会話途中のシステムメッセージを拒否するゲートウェイ・互換サーバーの背後でリクエストが失敗する問題を修正。これらを除いてリトライするようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🗜️ 圧縮の修正</h3>
+                    <p>「Prompt is too long」エラー後の圧縮が、base64 や SVG などの高密度なテキストを含む会話を残しすぎて、次のリクエストが再び失敗し得る問題を修正した。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧭 auto mode のプロンプト改善</h3>
+                    <p>作業ディレクトリ外の最初の読み取り前のプロンプトが、読み取りをブロックするとシェルコマンドが権限を求めるようになる旨を伝えるようになった。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔐 Enterprise カスタムロール対応</h3>
+                    <p>Cloud sessions で、Enterprise のカスタムロールに Claude Code クラウドセッションと Remote Control の権限が追加され、Owner がロールごとにアクセスを制御できるようになった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical details: Fixes -->
+        <section class="section">
+            <h2 class="section-title">技術詳細: 修正</h2>
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🔧</div>
+                    <h3>信頼性に関わる修正</h3>
+                    <span class="count-badge">6 件</span>
+                </div>
+                <ul class="fix-list">
+                    <li><strong>ゲートウェイ互換性</strong>: <code>effort-2025-11-24</code> ベータ値や会話途中のシステムメッセージを拒否する一部のゲートウェイ・互換サーバーの背後でリクエストが失敗する問題を修正。これらを除いてリトライするようになった</li>
+                    <li><strong>バックグラウンドクリーンアップ</strong>: <code>cleanupPeriodDays</code> を非常に大きな値に設定した場合に、貼り付けた画像などの最近のファイルがバックグラウンドクリーンアップで削除される問題を修正</li>
+                    <li><strong>圧縮</strong>: 「Prompt is too long」エラー後の圧縮が、base64 や SVG などの高密度なテキストを含む会話を残しすぎて、次のリクエストが再び失敗し得る問題を修正</li>
+                    <li><strong>権限プロンプト</strong>: ファイル読み取りの権限プロンプトが<strong>シンボリックリンクの参照先を表示しない</strong>問題を修正</li>
+                    <li><strong>auto-continue タイムアウト</strong>: 長い編集の後に外部エディターを閉じた瞬間に、質問の auto-continue タイムアウトが発火する問題を修正</li>
+                    <li><span class="os-tag">Windows</span><strong>フック</strong>: Git Bash がない環境で、フックのコマンドが引用符付き文字列のみの場合に、PreToolUse と PermissionRequest フックが<strong>ツール呼び出しを通過させてしまう</strong>問題を修正</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Technical details: Improvements + Behavior changes -->
+        <section class="section">
+            <h2 class="section-title">技術詳細: 改善と動作変更</h2>
+            <div class="category-card improve">
+                <div class="category-header">
+                    <div class="category-icon">📈</div>
+                    <h3>改善</h3>
+                    <span class="count-badge">4 件</span>
+                </div>
+                <ul class="fix-list improve-list">
+                    <li><strong>auto mode のプロンプト</strong>: 作業ディレクトリ外の最初の読み取り前のプロンプトが、読み取りをブロックするとシェルコマンドが権限を求めるようになる旨を伝えるようになった</li>
+                    <li><strong>メモリ使用量</strong>: トランスクリプトファイルが非常に大きい場合の、非対話セッション (<code>-p</code>、Agent SDK) の圧縮時のメモリ使用量を改善</li>
+                    <li><strong>mod の <code>Image</code> 描画</strong>: <code>allow-passthrough</code> と <code>focus-events</code> が有効な tmux 内で、kitty、Ghostty、iTerm2 3.5 以降において、<code>alt</code> テキストのみが表示されていた問題を改善し、画像が描画されるようになった</li>
+                    <li><span class="os-tag">Linux</span><strong>サンドボックス診断</strong>: <code>/sandbox</code> とサンドボックス起動時の警告が、bubblewrap によるサンドボックス起動を妨げる Ubuntu の AppArmor によるユーザー名前空間の制限と、その解除方法を示すようになった</li>
+                </ul>
+            </div>
+            <div class="category-card behavior">
+                <div class="category-header">
+                    <div class="category-icon">⚡</div>
+                    <h3>動作変更</h3>
+                    <span class="count-badge">1 件</span>
+                </div>
+                <ul class="fix-list change-list">
+                    <li><strong>MCP ツール呼び出しのタイムアウトエラー</strong>: 非対話セッションで、サーバーの elicitation が未回答のまま MCP ツール呼び出しがタイムアウトした場合のエラーが変更された。回答が得られなかったこと、および呼び出しを繰り返さないことを Claude に伝えるようになった</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Platform specific -->
+        <section class="section">
+            <h2 class="section-title">プラットフォーム別の修正・改善</h2>
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <h4>💻 VSCode 拡張 <span class="count-badge">2 件</span></h4>
+                    <ul class="fix-list">
+                        <li>プランレビューカードの「Send feedback and keep planning」ボタンで Enter を押すと、コメントを返す代わりにプランを承認してしまう問題を修正</li>
+                        <li>Session history の Web タブから開いたクラウドセッションで「Switch branch &amp; continue」の後、パネルに「Something went wrong」と表示される問題を修正</li>
+                    </ul>
+                </div>
+                <div class="platform-card">
+                    <h4>☁️ Cloud sessions <span class="count-badge">7 件</span></h4>
+                    <ul class="fix-list">
+                        <li>Enterprise のカスタムロールにクラウドセッションと Remote Control の権限が追加され、Owner がロールごとにアクセスを制御できるようになった</li>
+                        <li>クラウド環境のセットアップスクリプトをファイルから読み込む Choose file ボタンが追加された</li>
+                        <li>クラウド環境の編集ダイアログで、保存やアーカイブの失敗時にダイアログ内にエラーが表示されない問題を修正</li>
+                        <li>ルーティンの API トークン操作の失敗がトーストのみで通知される問題を修正。エラーがルーティン編集ダイアログ内に表示されるようになった</li>
+                        <li>セッション開始チェックリストが、セットアップスクリプトの出力をスクロールボックスで表示するよう改善された</li>
+                        <li>管理設定で Cloud sessions または Remote Control を有効化する際に確認を求め、その権限を持つカスタムロールを一覧表示するよう変更された</li>
+                        <li>クラウド環境ダイアログが、ネットワークアクセス、セットアップスクリプト、環境変数を行から開くよう変更された</li>
+                    </ul>
+                </div>
+                <div class="platform-card">
+                    <h4>💬 Claude Tag (Slack 連携) <span class="count-badge">3 件</span></h4>
+                    <ul class="fix-list">
+                        <li><code>!restart</code> や <code>!help</code> などの <code>!</code> コマンドが、太字・斜体・取り消し線で送信されると通常のメッセージとして扱われる問題を修正</li>
+                        <li>バンドルリストのバックグラウンド更新が失敗した際に、管理者のチャンネルページとワークスペースページがロードエラーに置き換えられる問題を修正</li>
+                        <li>管理設定の支出上限ページが、チャンネル名の読み込み中に「フィルターに一致するチャンネルなし」と報告する問題を修正</li>
+                    </ul>
+                </div>
+                <div class="platform-card">
+                    <h4>🔍 Code Review <span class="count-badge">2 件</span></h4>
+                    <ul class="fix-list">
+                        <li>リポジトリリストの更新に失敗した後、Code Review 管理セクションがリポジトリとスイッチを非表示にする問題を修正</li>
+                        <li>Code Review 管理セクションが初回ロードをリトライし、それでも失敗した場合に 1 つの Try again バナーを表示するよう改善された</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Developer impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響と必要なアクション</h2>
+            <p class="section-lead"><strong>対象</strong>: Amazon Bedrock / Google Vertex AI / Microsoft Foundry 経由で Claude Code を利用しているエンタープライズユーザー、テレメトリーや非必須トラフィックを無効化して運用している組織、ゲートウェイや互換サーバーの背後で利用しているチーム、<code>-p</code> や Agent SDK による非対話セッションを大規模トランスクリプトで実行しているユーザー、Cloud sessions / Claude Tag / Code Review を利用している組織の管理者。</p>
+            <div class="action-item">
+                <div class="action-num">1</div>
+                <div class="action-content">
+                    <h4>アップデートの適用</h4>
+                    <p><code>claude update</code> または npm 経由で v2.1.310 に更新する。</p>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-num">2</div>
+                <div class="action-content">
+                    <h4>Bedrock / Vertex / Foundry 環境での Monitor 利用</h4>
+                    <p>これまで利用できなかった Monitor ツールとプラグインモニターが使えるようになったため、監視を前提としたワークフローの導入を検討できる。あわせて、長いフォアグラウンドの sleep がブロックされるようになった点に注意する。</p>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-num">3</div>
+                <div class="action-content">
+                    <h4><code>cleanupPeriodDays</code> の設定確認</h4>
+                    <p>非常に大きな値を設定していた環境では、最近のファイルが誤削除される問題が修正されたため、意図どおりの保持期間になっているか確認する。</p>
+                </div>
+            </div>
+            <div class="action-item">
+                <div class="action-num">4</div>
+                <div class="action-content">
+                    <h4>Enterprise 管理者: 権限設計の見直し</h4>
+                    <p>カスタムロールで Cloud sessions と Remote Control のアクセスをロール単位で制御できるようになったため、権限設計の見直しを検討する。</p>
+                </div>
+            </div>
+            <div class="migration-note">
+                <h4>移行ガイド: 注意すべき動作の変化</h4>
+                <ul>
+                    <li>破壊的変更はない</li>
+                    <li>Bedrock / Vertex / Foundry およびテレメトリー無効環境では、Monitor 関連機能の有効化と長いフォアグラウンド sleep のブロックという動作の変化がある</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🏢 クラウドプロバイダー経由のエンタープライズ運用</h4>
+                <p>Amazon Bedrock、Google Vertex AI、Microsoft Foundry 経由で Claude Code を利用している組織では、これまで使えなかった Monitor ツールとプラグインモニターが利用可能になる。テレメトリーを無効化した環境でも同様に使えるため、監視を前提としたワークフローをエンタープライズ環境に導入できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔀 ゲートウェイの背後での安定運用</h4>
+                <p><code>effort-2025-11-24</code> ベータ値や会話途中のシステムメッセージを拒否するゲートウェイ・互換サーバーの背後で運用しているチームでは、これまで失敗していたリクエストが自動的にリトライされるようになり、ゲートウェイ起因の失敗が減少する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 Agent SDK による大規模な非対話実行</h4>
+                <p><code>-p</code> や Agent SDK で大規模トランスクリプトの非対話セッションを実行しているユーザーは、圧縮時のメモリ使用量改善と「Prompt is too long」エラー後の圧縮修正により、長時間のバッチ処理やエージェント実行の安定性が向上する。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p><strong>v2.1.310</strong> は、Monitor ツールとプラグインモニターの <strong>Bedrock / Vertex / Foundry 対応</strong>を中心に、エンタープライズ環境での機能ギャップを埋めるリリースである。</p>
+                <p><strong>ゲートウェイ互換性のリトライ対応</strong>、圧縮の修正、<strong>Windows フックのフェイルオープン修正</strong>など、運用の信頼性に関わる修正も多い。クラウドプロバイダー経由で Claude Code を利用している組織や、ゲートウェイの背後で運用しているチームには特に有益なアップデートである。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連リンク:</strong> <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code GitHub リポジトリ</a></p>
+            <p>発表日: 2026-10-24 (CHANGELOG.md 更新日) | カテゴリ: Claude Code</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFFFFF',
+                clusterBorder: '#CCCCCC',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+</body>
+</html>

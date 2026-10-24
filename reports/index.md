@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-24](2026/2026-10-24-claude-code-v2-1-310.md) - Claude Code v2.1.310 リリース
 - [2026-10-22](2026/2026-10-22-life-sciences-guest-investigators.md) - ライフサイエンス分野のゲスト・インベスティゲーターを公募開始
 - [2026-10-22](2026/2026-10-22-claude-models-on-google-cloud.md) - Claude Models on Google Cloud (Anthropic managed) ローンチ
 - [2026-10-22](2026/2026-10-22-claude-code-v2-1-308-v2-1-309.md) - Claude Code v2.1.308 / v2.1.309 リリース
