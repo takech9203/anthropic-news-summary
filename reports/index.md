@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-26](2026/2026-10-26-claude-code-v2-1-311.md) - Claude Code v2.1.311 リリース
+- [2026-10-26](2026/2026-10-26-anthropic-s1-ipo-filing.md) - Anthropic、IPO に向けて SEC に S-1 登録届出書を公開提出 - ティッカー「ANT」で Nasdaq 上場へ
 - [2026-10-24](2026/2026-10-24-claude-code-v2-1-310.md) - Claude Code v2.1.310 リリース
 - [2026-10-22](2026/2026-10-22-life-sciences-guest-investigators.md) - ライフサイエンス分野のゲスト・インベスティゲーターを公募開始
 - [2026-10-22](2026/2026-10-22-claude-models-on-google-cloud.md) - Claude Models on Google Cloud (Anthropic managed) ローンチ
