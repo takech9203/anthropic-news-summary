@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.312 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Category Labels */
+        .category-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+
+        .category-label.added {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .category-label.fixed {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .category-label.changed {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .change-group {
+            margin-bottom: 28px;
+        }
+
+        .change-group:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .more-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 12px;
+            text-align: right;
+        }
+
+        /* Component List */
+        .component-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .component-item {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .component-item h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--anthropic-dark);
+        }
+
+        .component-item p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Tech Detail Cards */
+        .tech-detail {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tech-detail code,
+        .component-item code,
+        .use-case code,
+        .key-point-content code,
+        .feature-card code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: rgba(212, 165, 116, 0.18);
+            border-radius: 4px;
+            padding: 2px 6px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code / CLI アップデート</span>
+                <h1>Claude Code v2.1.312</h1>
+                <p class="subtitle">OIDC 認証の柔軟化とクリックで送信機能の追加、多数の不具合修正を含むリリース</p>
+                <p class="date">📅 2026-10-27 | ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3><code>oidc.user_id_claim</code> の追加</h3>
+                        <p>Claude apps gateway で、Microsoft Entra ID の <code>oid</code> など <code>sub</code> 以外の id_token クレームでユーザーを識別できるようになった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🖱️</div>
+                    <div class="key-point-content">
+                        <h3>クリックで送信</h3>
+                        <p>フルスクリーン表示で、キュー済みメッセージの「to send now」ヒントをクリックすると、対応するキーと同様に即時送信できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>巨大な CLAUDE.md の上書き防止</h3>
+                        <p>冒頭部分しか読んでいない状態での上書きを防止。Write ツールが全体を読むか、その場で編集するよう Claude に求めるようになった。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚙️</div>
+                    <div class="key-point-content">
+                        <h3>未認識モデル名への短縮システムプロンプト</h3>
+                        <p>Bedrock / Vertex / Foundry / Mantle で、カスタムデプロイ名や推論プロファイル ARN に短いシステムプロンプトを使用するよう変更。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔀</div>
+                    <div class="key-point-content">
+                        <h3>フックの同時実行数制限</h3>
+                        <p>プロンプト / エージェントフックの同時実行数を、サブエージェントを含めセッションあたり最大 24 に制限。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Changes -->
+        <section class="section">
+            <h2 class="section-title">主要変更</h2>
+
+            <div class="change-group">
+                <span class="category-label added">✨ Added (新機能)</span>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>🔑 <code>oidc.user_id_claim</code></h3>
+                        <p>Claude apps gateway に追加。Microsoft Entra ID の <code>oid</code> のように、<code>sub</code> 以外の id_token クレームでユーザーを識別できる。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🖱️ クリックで送信</h3>
+                        <p>フルスクリーン表示で、キュー済みメッセージの下に表示される「to send now」ヒントをクリックすると、そのメッセージを即時送信できる。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="change-group">
+                <span class="category-label fixed">🔧 Fixed (修正)</span>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>🏢 managed settings 取得</h3>
+                        <p>VS Code 拡張機能からサインインした後、そのセッションの残りの間 managed settings と組織ポリシーが取得されない問題を修正。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📄 巨大ファイルの上書き防止</h3>
+                        <p>非常に大きな CLAUDE.md、rules ファイル、@-included ファイルを冒頭しか読まずに上書きしてしまう問題を修正。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📁 スキルが見つからない問題</h3>
+                        <p>git リポジトリ内で Bash の <code>cd</code> により深い階層へ移動した後、ディレクトリ単位および <code>paths:</code> 指定のスキルが見つからない問題を修正。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>⌨️ vim モードの挙動</h3>
+                        <p><code>d</code>、<code>c</code>、<code>y</code> に残り行数より大きいカウント付きの <code>gj</code> / <code>gk</code> を組み合わせるとテキストを削除またはコピーしてしまう問題を修正。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🖥️ <code>claude -p</code> の出力なし</h3>
+                        <p>無効な名前のコマンドがすべてのコマンドの読み込みを停止させ、<code>claude -p</code> が出力なしになることがある問題を修正。</p>
+                    </div>
+                </div>
+                <p class="more-note">ほか、セッション再開時の返信欠落、PDF 読み込みエラー、effort レベル表示など多数の修正あり</p>
+            </div>
+
+            <div class="change-group">
+                <span class="category-label changed">🔄 Changed (動作変更)</span>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>📝 短縮システムプロンプト</h3>
+                        <p>Bedrock / Vertex / Foundry / Mantle で、未認識のモデル名に短いシステムプロンプトを使用。<code>CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0</code> で従来動作を維持できる。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🔁 自動モデル切り替えの拡大</h3>
+                        <p>フラグされたメッセージ後の自動モデル切り替えが、カスタムデプロイ名など未認識のモデル名もカバー。<code>CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK=1</code> で無効化できる。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🔀 フック同時実行制限</h3>
+                        <p>プロンプト / エージェントフックはセッションあたり最大 24 並列。タイムアウト超過待機分は最大 12。1 秒未満の <code>timeout</code> は 1 秒として扱われる。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>⏱️ 「5-hour limit」表記</h3>
+                        <p>使用量制限メッセージで、5 時間ウィンドウを「session limit」ではなく「5-hour limit」と呼ぶよう変更。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📊 OpenTelemetry の変更</h3>
+                        <p><code>mcp_server.name</code> が公式マーケットプレイスプラグインの固定 URL リモート MCP サーバーの実際の名前を報告。<code>claude_code.safety_event</code> の送信は停止。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Component Changes -->
+        <section class="section">
+            <h2 class="section-title">コンポーネント別の改善</h2>
+            <div class="component-list">
+                <div class="component-item">
+                    <h4>💻 VSCode</h4>
+                    <p>組織設定の読み込み失敗時にタブへ理由を表示し、Retry または再サインインを選択可能に。使用量制限のリセット表示を時刻表示 ("Resets at 3:10 PM") に変更。</p>
+                </div>
+                <div class="component-item">
+                    <h4>☁️ Cloud sessions</h4>
+                    <p>ルーティンのモデルピッカーに effort レベルを追加。セットアップスクリプト欄に Bash エディターを追加。リポジトリ追加時のステップ表示を改善。再送信の重複実行やエラー表示の問題を修正。</p>
+                </div>
+                <div class="component-item">
+                    <h4>🎮 Remote Control</h4>
+                    <p>アーカイブ解除したセッションが再接続まで作業中として表示される問題を修正。アイドルとして表示されるようになった。</p>
+                </div>
+                <div class="component-item">
+                    <h4>🏷️ Claude Tag</h4>
+                    <p>Slack のリトライ通知でモデル名やレート制限到達を表示。チャンネル ID 変更時の設定リセット、ネットワークアクセス None 環境での無応答、誤ったスレッドへのファイル投稿を修正。</p>
+                </div>
+                <div class="component-item">
+                    <h4>🔍 Code Review</h4>
+                    <p>GitHub の push イベント遅延時に古いコミットをレビューする問題を修正。プルリクエストの現在のコミットをレビューするようになった。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <div class="tech-detail">
+                <h4>🔑 OIDC 認証の柔軟化</h4>
+                <p><code>oidc.user_id_claim</code> により、Microsoft Entra ID など <code>sub</code> 以外のクレームを使う IdP との統合が容易になる。</p>
+            </div>
+
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart LR
+    IdP["🏢 IdP<br/>Microsoft Entra ID など"] -->|"id_token"| GW["🔌 Claude apps gateway"]
+    GW --> Claim{"🔑 oidc.user_id_claim"}
+    Claim -->|"デフォルト"| Sub["sub クレーム"]
+    Claim -.->|"カスタム指定"| Oid["oid など任意のクレーム"]
+    Sub --> User(["👤 ユーザー識別"])
+    Oid --> User
+                </pre>
+            </div>
+
+            <div class="tech-detail">
+                <h4>⚙️ 動作を制御する環境変数</h4>
+                <p>サードパーティプラットフォームでの動作変更は、以下の環境変数で制御できる。</p>
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">環境変数の設定例</span>
+                </div>
+                <pre><code class="language-bash"># Bedrock / Vertex / Foundry / Mantle の未認識モデル名に対し
+# 従来のフルシステムプロンプトを維持する
+export CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0
+
+# フラグされたメッセージ後の自動モデル切り替えを無効化する
+export CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK=1
+
+# サブエージェントの autoCompactWindow の引き下げに対応
+# (引き上げは引き続き行われない)
+export CLAUDE_CODE_AUTO_COMPACT_WINDOW=&lt;value&gt;</code></pre>
+            </div>
+
+            <div class="tech-detail">
+                <h4>🔀 フックの同時実行制限</h4>
+                <p>プロンプト / エージェントフックはセッションあたり最大 24 並列 (サブエージェント含む)。イベントのタイムアウトより長く待機したものは最大 12 に制限される。</p>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🏢 Microsoft Entra ID と連携するエンタープライズ管理者</h4>
+                <p>Claude apps gateway の <code>oidc.user_id_claim</code> を設定することで、<code>sub</code> ではなく <code>oid</code> などの id_token クレームでユーザーを識別でき、既存の ID 基盤との統合が容易になる。</p>
+            </div>
+            <div class="use-case">
+                <h4>☁️ Bedrock / Vertex / Foundry / Mantle でカスタムデプロイを使うユーザー</h4>
+                <p>カスタムデプロイ名や推論プロファイル ARN に対して短縮システムプロンプトが適用される。従来のフルプロンプトが必要な場合は <code>CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0</code> を設定する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔀 多数のフックを並列実行する構成のユーザー</h4>
+                <p>セッションあたり最大 24 の同時実行制限が導入されたため、プロンプトフック / エージェントフックを多数利用する構成では制限の影響を確認する。</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連リンク:</strong> <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code リポジトリ</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
