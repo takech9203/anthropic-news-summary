@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-28](2026/2026-10-28-ai-for-science-expands-foundations-research-institutions.md) - AI for Science プログラムが世界 20 の科学財団・研究機関に拡大
 - [2026-10-27](2026/2026-10-27-expanding-partnership-gsa.md) - GSA との提携拡大により Claude をあらゆるレベルの政府機関へ提供
 - [2026-10-27](2026/2026-10-27-early-progress-drug-development.md) - Claude による創薬加速の初期成果 - 6 組織との研究パートナーシップを報告
 - [2026-10-27](2026/2026-10-27-claude-code-v2-1-312.md) - Claude Code v2.1.312 リリース
