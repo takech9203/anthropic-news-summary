@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usage and Cost Analytics API ベータリリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .sub-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 28px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .section p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .section p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card .status-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .status-tag.ga {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .status-tag.new {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .status-tag.beta {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        .status-tag.legacy {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Detail list */
+        .detail-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .detail-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 10px 16px 10px 40px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .detail-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 16px;
+            color: var(--anthropic-coral);
+            font-weight: 700;
+        }
+
+        .detail-list li strong {
+            color: var(--text-primary);
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            margin: 12px 0 20px;
+        }
+
+        .info-table th {
+            background: var(--anthropic-dark);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .info-table th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .info-table th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.25);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .info-table tr:nth-child(even) td {
+            background: var(--anthropic-light);
+        }
+
+        .info-table code,
+        .section code:not(.hljs),
+        .detail-list code,
+        .key-point-content code,
+        .use-case code,
+        .comparison-card code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85em;
+            background: rgba(212, 165, 116, 0.18);
+            color: #8a5a2b;
+            padding: 1px 6px;
+            border-radius: 6px;
+            word-break: break-all;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .comparison-card ul li {
+            font-size: 13.5px;
+            color: #374151;
+            padding-left: 22px;
+            position: relative;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 4px;
+            color: #DC2626;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 4px;
+            color: #059669;
+        }
+
+        .comparison-card.before code {
+            background: rgba(220, 38, 38, 0.12);
+            color: #991B1B;
+        }
+
+        .comparison-card.after code {
+            background: rgba(5, 150, 105, 0.12);
+            color: #065F46;
+        }
+
+        /* Callout */
+        .callout {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 18px 20px;
+            border-radius: 12px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .callout.warning {
+            background: #FFF3E0;
+            border: 2px solid #FFB74D;
+            color: #7c4a03;
+        }
+
+        .callout.info {
+            background: #E8F1FF;
+            border: 2px solid #90CAF9;
+            color: #1e4976;
+        }
+
+        .callout .callout-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .callout p {
+            margin: 0;
+            color: inherit;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case:last-child {
+            margin-bottom: 0;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        .use-case ul {
+            margin: 8px 0 0 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .use-case ul li {
+            margin-bottom: 6px;
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Links */
+        .link-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+
+        .link-list li {
+            font-size: 13.5px;
+            padding-left: 24px;
+            position: relative;
+            word-break: break-all;
+        }
+
+        .link-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+        }
+
+        .link-list a {
+            color: #8a5a2b;
+            text-decoration: none;
+        }
+
+        .link-list a:hover {
+            text-decoration: underline;
+            color: var(--anthropic-coral);
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: white;
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .summary-box p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API アップデート</span>
+                <h1>Usage and Cost Analytics API がベータ版でリリース - 使用量とコストの分析が大幅に強化</h1>
+                <p class="subtitle">Claude Console と Claude Enterprise の両組織を単一の API でカバーする統合分析 API — actor ディメンション、最大 5 ディメンションのグループ化、ランキングに対応</p>
+                <p class="date">📅 2026-10-29 | ソース: Claude Developer Platform Release Notes | カテゴリ: API アップデート</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p>Anthropic は 2026 年 10 月 29 日、組織のトークン使用量とコストを詳細に分析できる <strong>Usage and Cost Analytics API</strong> をベータ版としてリリースしました。</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>2 つのエンドポイントで構成</h3>
+                        <p><code>GET /v1/organizations/analytics/usage</code> はトークン数とリクエスト数を、<code>GET /v1/organizations/analytics/cost</code> は USD 建てのコストを返します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤝</div>
+                    <div class="key-point-content">
+                        <h3>Console と Enterprise を統合する単一 API</h3>
+                        <p>同一のエンドポイント、パラメータ、レスポンスフィールドで Claude Console と Claude Enterprise の両方の組織に対応し、1 つのインテグレーションで両組織タイプをカバーできます。Claude Platform on AWS や Claude Models on Google Cloud (Anthropic managed) にも対応します。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔍</div>
+                    <div class="key-point-content">
+                        <h3>豊富なディメンションで分析</h3>
+                        <p><code>model</code>、<code>workspace_id</code>、<code>api_key_id</code>、<code>actor</code>、<code>service_tier</code>、<code>context_window</code>、<code>inference_geo</code>、<code>speed</code>、<code>product</code> などで最大 5 つまでグループ化できます。actor ディメンションでユーザー / サービスアカウント単位の帰属も把握できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏷️</div>
+                    <div class="key-point-content">
+                        <h3>ベータヘッダーが必要</h3>
+                        <p>すべてのリクエストに <code>anthropic-beta: analytics-usage-cost-2026-08-24</code> と <code>anthropic-version</code> ヘッダーが必要です (SDK と <code>ant</code> CLI は自動で付与)。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📦</div>
+                    <div class="key-point-content">
+                        <h3>既存 API はレガシーに位置付け</h3>
+                        <p>従来の Usage and Cost API (<code>usage_report/messages</code>、<code>cost_report</code>) と Claude Enterprise Analytics API のレポートエンドポイントはレガシー化されました。引き続きサポートされますが、新規のインテグレーションには新 API の利用が推奨されます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Background -->
+        <section class="section">
+            <h2 class="section-title">背景</h2>
+            <p>これまで、組織の使用量とコストをプログラムから取得する手段は、組織の種類によって分かれていました。Claude Console (Claude Platform) の組織は Admin API の Usage and Cost API を、Claude Enterprise (claude.ai) の組織は Claude Enterprise Analytics API のレポートエンドポイントを使用する必要があり、それぞれレスポンス形式やグループ化の機能が異なっていました。</p>
+            <p>新しい Usage and Cost Analytics API は、同一のエンドポイント、パラメータ、レスポンスフィールドで両方の組織タイプに対応する統合 API として設計されており、1 つのインテグレーションで両方をカバーできます。</p>
+        </section>
+
+        <!-- Feature Cards -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📊 Usage エンドポイント</h3>
+                    <span class="status-tag beta">ベータ</span>
+                    <p><code>/v1/organizations/analytics/usage</code> がトークン数とリクエスト数を返します。<code>uncached_input_tokens</code>、キャッシュ作成 / 読み取りトークン、<code>output_tokens</code>、<code>total_tokens</code>、<code>server_tool_use</code> (<code>web_search_requests</code> など)、<code>requests</code> を含みます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💰 Cost エンドポイント</h3>
+                    <span class="status-tag beta">ベータ</span>
+                    <p><code>/v1/organizations/analytics/cost</code> が USD 建てコストを返します。<code>amount</code> (割引適用後・クレジット適用前) と <code>list_amount</code> (定価ベース) を、セント単位・小数点以下 6 桁の 10 進文字列で表現します (例: <code>"41280.000000"</code> は 412.80 米ドル)。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>👤 actor ディメンション</h3>
+                    <span class="status-tag new">新機能</span>
+                    <p>リクエストの帰属先 (ユーザー、サービスアカウント、フェデレーションされたクラウド ID、または API キー自体) を識別できます。ユーザー単位のコスト配賦やチャージバックに活用できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎛️ 柔軟なフィルタリング</h3>
+                    <span class="status-tag new">新機能</span>
+                    <p>ブラケット記法 (<code>models[]=...</code> など) で各フィルタに最大 100 個の値を指定できます。同一フィルタ内は OR、異なるフィルタ間は AND で結合されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📈 ランキングとタイムシリーズ</h3>
+                    <span class="status-tag new">新機能</span>
+                    <p><code>order_by</code> でトークン数、リクエスト数、コストなどのメトリクスによるランキングを取得できます。<code>time_bucket_width</code> (<code>1m</code>、<code>1h</code>、<code>1d</code>) と <code>order_by=time</code> の組み合わせで時系列データを構築できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 レガシー API のサポート継続</h3>
+                    <span class="status-tag legacy">レガシー</span>
+                    <p>Usage and Cost API (<code>usage_report/messages</code>、<code>cost_report</code>) と Claude Enterprise Analytics API の <code>usage_report</code>、<code>cost_report</code>、<code>user_usage_report</code>、<code>user_cost_report</code> はレガシーとなりましたが、引き続きサポートされます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After Comparison -->
+        <section class="section">
+            <h2 class="section-title">Before / After: レガシー API との比較</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before: レガシー Usage and Cost API</h4>
+                    <ul>
+                        <li>組織タイプごとに別々の API (Console は Admin API、Enterprise は Analytics API)</li>
+                        <li>ベータヘッダー不要</li>
+                        <li>データは通常 5 分以内に反映</li>
+                        <li><code>data</code> は時間バケットのリスト (空バケットを含む)</li>
+                        <li><code>bucket_width</code> (デフォルト <code>1d</code>)、任意の日付範囲</li>
+                        <li><code>account_ids[]</code> や <code>group_by[]=description</code> によるグループ化</li>
+                        <li>デフォルトワークスペースは <code>workspace_id: null</code></li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After: Usage and Cost Analytics API</h4>
+                    <ul>
+                        <li>Console と Enterprise の両組織を単一 API で統合</li>
+                        <li><code>analytics-usage-cost-2026-08-24</code> ベータヘッダーが必須</li>
+                        <li><code>data</code> は <code>order_by</code> でランク付けされた行のリスト (使用量のない組み合わせは行なし)</li>
+                        <li><code>time_bucket_width</code> (省略時は全期間の合計)</li>
+                        <li><code>actor</code>、<code>product</code>、<code>cost_type</code>、<code>token_type</code> など構造化ディメンションでグループ化 (最大 5 つ)</li>
+                        <li>デフォルトワークスペースも実際の <code>workspace_id</code> を持つ</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="sub-title">🔀 移行時の主な変更点</h3>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>レガシー Usage and Cost API</th>
+                        <th>Usage and Cost Analytics API</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ベータヘッダー不要</td>
+                        <td><code>analytics-usage-cost-2026-08-24</code> ベータヘッダーが必須</td>
+                    </tr>
+                    <tr>
+                        <td>データは通常 5 分以内に反映</td>
+                        <td>通常 4 時間以内、最大 24 時間</td>
+                    </tr>
+                    <tr>
+                        <td><code>data</code> は時間バケットのリスト (空バケットを含む)</td>
+                        <td><code>data</code> は <code>order_by</code> でランク付けされた行のリスト (使用量のない組み合わせは行なし)</td>
+                    </tr>
+                    <tr>
+                        <td><code>bucket_width</code> (デフォルト <code>1d</code>)</td>
+                        <td><code>time_bucket_width</code> (デフォルトなし、省略時は全期間の合計)</td>
+                    </tr>
+                    <tr>
+                        <td><code>limit</code> はページあたりのバケット数</td>
+                        <td><code>limit</code> はページあたりの行数 (1〜1,000、デフォルト 20)</td>
+                    </tr>
+                    <tr>
+                        <td>任意の日付範囲</td>
+                        <td><code>starting_at</code> は 2026 年 1 月 1 日以降かつ過去 365 日以内、最大 31 日間 / リクエスト</td>
+                    </tr>
+                    <tr>
+                        <td><code>account_ids[]</code>、<code>group_by[]=account_id</code> など</td>
+                        <td><code>actor_ids[]</code>、<code>group_by[]=actor</code> または <code>actor_type</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>group_by[]=description</code> (コストレポート)</td>
+                        <td>構造化ディメンション (<code>model</code>、<code>cost_type</code>、<code>token_type</code> など) でグループ化</td>
+                    </tr>
+                    <tr>
+                        <td>デフォルトワークスペースは <code>workspace_id: null</code></td>
+                        <td>デフォルトワークスペースも実際の <code>workspace_id</code> を持つ</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="callout info">
+                <span class="callout-icon">🧭</span>
+                <p>Claude Enterprise のレポートエンドポイントからの移行では、キー、フィルタ / ディメンション名、メトリクスフィールド、カーソルのルールなどがそのまま引き継がれ、新たに必要なのはベータヘッダーのみです。<code>user_usage_report</code> / <code>user_cost_report</code> の代替は <code>group_by[]=actor&amp;actor_types[]=user_actor</code> となります。</p>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="sub-title">🔌 エンドポイントとベータヘッダー</h3>
+            <ul class="detail-list">
+                <li><strong>Usage</strong>: <code>GET /v1/organizations/analytics/usage</code> — トークン数とリクエスト数を返します</li>
+                <li><strong>Cost</strong>: <code>GET /v1/organizations/analytics/cost</code> — USD 建てのコストを返します</li>
+                <li><strong>必須ヘッダー</strong>: <code>anthropic-beta: analytics-usage-cost-2026-08-24</code> と <code>anthropic-version</code> (SDK と <code>ant</code> CLI は自動で付与)</li>
+            </ul>
+
+            <h3 class="sub-title">🔐 認証</h3>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>組織タイプ</th>
+                        <th>認証方法</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Claude Console</td>
+                        <td>Admin API キー (<code>sk-ant-admin01-...</code>)、または <code>org:admin</code> スコープの OAuth トークン</td>
+                    </tr>
+                    <tr>
+                        <td>Claude Enterprise</td>
+                        <td><code>read:analytics</code> スコープのキー (Analytics API キー)</td>
+                    </tr>
+                    <tr>
+                        <td>Claude Platform on AWS</td>
+                        <td>AWS IAM (<code>ListAccountUsage</code> / <code>ListAccountCost</code> アクション)</td>
+                    </tr>
+                    <tr>
+                        <td>Claude Models on Google Cloud</td>
+                        <td>Google Cloud 認証情報 (<code>usageAnalytics.list</code> / <code>costAnalytics.list</code> 権限)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="sub-title">🔍 グループ化ディメンション</h3>
+            <ul class="detail-list">
+                <li><strong>共通ディメンション</strong>: <code>model</code>、<code>workspace_id</code>、<code>api_key_id</code>、<code>actor</code>、<code>actor_type</code>、<code>service_tier</code>、<code>context_window</code>、<code>inference_geo</code>、<code>speed</code>、<code>product</code> などで最大 5 つまでグループ化可能</li>
+                <li><strong>Cost 限定ディメンション</strong>: <code>cost_type</code> (トークン、Web 検索、コード実行、セッション使用量) と <code>token_type</code> があり、5 ディメンション制限の対象外</li>
+                <li><strong>フィルタリング</strong>: ブラケット記法で各フィルタに最大 100 個の値を指定可能。同一フィルタ内は OR、異なるフィルタ間は AND で結合</li>
+            </ul>
+
+            <h3 class="sub-title">📊 レスポンスの構成</h3>
+            <ul class="detail-list">
+                <li><strong>共通構造</strong>: 各行は <code>starting_at</code> / <code>ending_at</code> (期間)、<code>group</code> (ディメンション)、メトリクスで構成</li>
+                <li><strong>Usage メトリクス</strong>: <code>uncached_input_tokens</code>、<code>cache_creation</code> (<code>ephemeral_1h_input_tokens</code>、<code>ephemeral_5m_input_tokens</code>)、<code>cache_read_input_tokens</code>、<code>output_tokens</code>、<code>total_tokens</code>、<code>server_tool_use</code>、<code>requests</code></li>
+                <li><strong>Cost メトリクス</strong>: <code>amount</code> (割引適用後・クレジット適用前)、<code>list_amount</code> (定価ベース)、<code>currency</code> (常に <code>"USD"</code>)、<code>requests</code>。金額はセント単位の小数点以下 6 桁の 10 進文字列</li>
+            </ul>
+
+            <h3 class="sub-title">📅 日付範囲と時間バケット</h3>
+            <ul class="detail-list">
+                <li>タイムスタンプは RFC 3339 形式 (UTC)。<code>starting_at</code> は含み、<code>ending_at</code> は含まない</li>
+                <li><code>starting_at</code> は 2026 年 1 月 1 日以降かつ過去 365 日以内である必要がある</li>
+                <li>1 リクエストの範囲は最大 31 日間。<code>time_bucket_width=1m</code> の場合は最大 24 時間</li>
+                <li><code>time_bucket_width</code> を指定する場合は <code>ending_at</code> が必須</li>
+            </ul>
+
+            <h3 class="sub-title">🕒 データ鮮度とページネーション</h3>
+            <ul class="detail-list">
+                <li><strong>データ鮮度</strong>: レスポンスの <code>data_refreshed_at</code> タイムスタンプで確認可能。データは通常 4 時間以内に更新され、最大 24 時間かかる場合がある。遅延イベントの到着と照合処理により、暦月終了の約 7 日後まで値が修正される可能性がある</li>
+                <li><strong>ページネーション</strong>: <code>limit</code> は 1 ページあたりの行数 (1〜1,000、デフォルト 20)。<code>has_more</code> が <code>true</code> の場合、<code>next_page</code> の値で次のページを取得。全ページは同一のデータスナップショットを読み取る</li>
+            </ul>
+            <div class="callout warning">
+                <span class="callout-icon">⚠️</span>
+                <p>レガシー API (通常 5 分以内にデータ反映) と比較すると、新 API のデータ反映は遅くなる点に注意が必要です (通常 4 時間以内、最大 24 時間)。</p>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <p>新 API と レガシー API、グループ化ディメンションの関係を示します。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Clients["👥 クライアント"]
+        direction LR
+        Console["🏢 Claude Console 組織<br/>Admin API キー"]
+        Enterprise["🏢 Claude Enterprise 組織<br/>Analytics API キー"]
+        Console ~~~ Enterprise
+    end
+
+    subgraph NewAPI["✨ Usage and Cost Analytics API ベータ"]
+        direction LR
+        Usage["📊 /v1/organizations/analytics/usage<br/>トークン数・リクエスト数"]
+        Cost["💰 /v1/organizations/analytics/cost<br/>USD 建てコスト"]
+        Usage ~~~ Cost
+    end
+
+    subgraph LegacyAPI["📦 レガシー API - サポート継続"]
+        direction LR
+        UsageReport["📄 usage_report<br/>cost_report"]
+        UserReport["👤 user_usage_report<br/>user_cost_report"]
+        UsageReport ~~~ UserReport
+    end
+
+    subgraph Dimensions["🔍 グループ化・フィルタリング"]
+        direction LR
+        Dim1["🤖 model"]
+        Dim2["🗂️ workspace_id"]
+        Dim3["🔑 api_key_id"]
+        Dim4["👤 actor"]
+        Dim1 ~~~ Dim2 ~~~ Dim3 ~~~ Dim4
+    end
+
+    Console -->|"anthropic-beta ヘッダー"| NewAPI
+    Enterprise -->|"anthropic-beta ヘッダー"| NewAPI
+    Console -.->|"引き続き利用可能"| LegacyAPI
+    Enterprise -.->|"引き続き利用可能"| LegacyAPI
+    NewAPI --> Dimensions
+
+    classDef client fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+    classDef newapi fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#33691E
+    classDef legacy fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#5D4037
+    classDef dim fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef boundary fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+
+    class Console,Enterprise client
+    class Usage,Cost newapi
+    class UsageReport,UserReport legacy
+    class Dim1,Dim2,Dim3,Dim4 dim
+    class Clients,NewAPI,LegacyAPI,Dimensions boundary
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Samples -->
+        <section class="section">
+            <h2 class="section-title">コード例</h2>
+            <p>モデル別の日次トークン使用量を取得する例です。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">モデル別の日次トークン使用量</span>
+                </div>
+                <pre><code class="language-bash">curl --globoff "https://api.anthropic.com/v1/organizations/analytics/usage?\
+starting_at=2026-09-01T00:00:00Z&\
+ending_at=2026-09-08T00:00:00Z&\
+time_bucket_width=1d&\
+group_by[]=model&\
+limit=10" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "anthropic-beta: analytics-usage-cost-2026-08-24" \
+  -H "x-api-key: $ANTHROPIC_API_KEY"</code></pre>
+            </div>
+
+            <p>Python SDK を使用した例です。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">Python SDK での使用量取得</span>
+                </div>
+                <pre><code class="language-python">client = anthropic.Anthropic()
+
+rows = client.beta.organization.analytics.usage.list(
+    starting_at="2026-09-01T00:00:00Z",
+    ending_at="2026-09-08T00:00:00Z",
+    time_bucket_width="1d",
+    group_by=["model"],
+    limit=10,
+)
+
+for row in rows:
+    print(f"{row.starting_at} {row.group.model}: {row.usage.total_tokens}")</code></pre>
+            </div>
+
+            <p>モデル、コストタイプ、トークンタイプ別のコストを取得する例です。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ディメンション別のコスト取得</span>
+                </div>
+                <pre><code class="language-bash">curl --globoff "https://api.anthropic.com/v1/organizations/analytics/cost?\
+starting_at=2026-09-01T00:00:00Z&\
+ending_at=2026-10-01T00:00:00Z&\
+group_by[]=model&\
+group_by[]=cost_type&\
+group_by[]=token_type" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "anthropic-beta: analytics-usage-cost-2026-08-24" \
+  -H "x-api-key: $ANTHROPIC_API_KEY"</code></pre>
+            </div>
+        </section>
+
+        <!-- Use Cases / Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">ユースケース / 開発者への影響</h2>
+            <div class="use-case">
+                <h4>💸 コスト配賦・チャージバック</h4>
+                <p>actor ディメンションにより、ユーザー、サービスアカウント、フェデレーションされたクラウド ID 単位でコストの帰属先を特定できます。部門やチームごとのコスト配賦、チャージバックの仕組みをより細かい粒度で構築できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>📊 予算モニタリング・ダッシュボード構築</h4>
+                <p><code>time_bucket_width</code> と <code>order_by=time</code> の組み合わせで時系列データを構築し、使用量やコストの推移を可視化できます。Datadog、Grafana Cloud などのオブザーバビリティプラットフォームとの連携を管理する運用チームにも有用です。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧩 組織タイプをまたぐ統合インテグレーション</h4>
+                <p>Claude Console と Claude Enterprise の両組織を 1 つのインテグレーションでカバーできるため、複数の組織タイプを運用する企業や、マルチテナント向けの分析ツールを提供する開発者のメンテナンスコストを削減できます。</p>
+            </div>
+
+            <h3 class="sub-title">✅ 必要なアクション</h3>
+            <ul class="detail-list">
+                <li><strong>新規インテグレーション</strong>: Usage and Cost Analytics API (<code>/v1/organizations/analytics/usage</code> と <code>/v1/organizations/analytics/cost</code>) を使用する</li>
+                <li><strong>既存インテグレーション</strong>: レガシー API は引き続きサポートされるため、即時の移行は不要。ただし、より多くのグループ化 / フィルタリングディメンション (actor、product、cost_type、token_type など) が必要な場合は移行を検討する</li>
+                <li><strong>ベータヘッダーの付与</strong>: 直接 HTTP で呼び出す場合は <code>anthropic-beta: analytics-usage-cost-2026-08-24</code> ヘッダーを忘れずに付与する</li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section summary-box">
+            <h2 class="section-title" style="color: white;">まとめ</h2>
+            <p>Usage and Cost Analytics API のベータリリースにより、Claude Console と Claude Enterprise の両組織が<strong>単一の API</strong> で使用量とコストを詳細に分析できるようになりました。<strong>actor ディメンション</strong>によるユーザー / サービスアカウント単位の帰属、<strong>最大 5 ディメンションのグループ化</strong>、メトリクスによる<strong>ランキング</strong>など、従来の API より大幅に強化された分析機能を提供します。</p>
+            <p style="margin-top: 12px;">レガシー API は引き続きサポートされるため既存インテグレーションへの即時の影響はありませんが、新規開発では新 API の採用が推奨されます。コスト配賦やチャージバック、ダッシュボード構築に取り組む組織にとって重要なアップデートです。</p>
+        </section>
+
+        <!-- Related Links -->
+        <section class="section">
+            <h2 class="section-title">関連リンク</h2>
+            <ul class="link-list">
+                <li><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude Developer Platform Release Notes</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/usage-cost-analytics-api" target="_blank" rel="noopener noreferrer">Usage and Cost Analytics API ドキュメント</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/usage-cost-api" target="_blank" rel="noopener noreferrer">Usage and Cost API ドキュメント (レガシー)</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/analytics-api" target="_blank" rel="noopener noreferrer">Analytics APIs - 組織に必要な API とキータイプの選択</a></li>
+                <li><a href="https://platform.claude.com/docs/en/api/beta/organization/analytics/usage/list" target="_blank" rel="noopener noreferrer">Usage API リファレンス</a></li>
+                <li><a href="https://platform.claude.com/docs/en/api/beta/organization/analytics/cost/list" target="_blank" rel="noopener noreferrer">Cost API リファレンス</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/admin-api" target="_blank" rel="noopener noreferrer">Admin API ドキュメント</a></li>
+                <li><a href="https://platform.claude.com/docs/en/manage-claude/claude-code-analytics-api" target="_blank" rel="noopener noreferrer">Claude Code Analytics API ドキュメント</a></li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;">発表日: 2026-10-29 | Anthropic News Summary プロジェクトにより生成</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

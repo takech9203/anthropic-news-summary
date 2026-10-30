@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-30](2026/2026-10-30-claude-code-v2-1-314.md) - Claude Code v2.1.314 リリース
+- [2026-10-29](2026/2026-10-29-usage-cost-analytics-api.md) - Usage and Cost Analytics API がベータ版でリリース - 使用量とコストの分析が大幅に強化
+- [2026-10-28](2026/2026-10-28-messages-api-128mb-request-size.md) - Messages API と Token Counting API の最大リクエストサイズが 128 MB に拡大
 - [2026-10-28](2026/2026-10-28-ai-for-science-expands-foundations-research-institutions.md) - AI for Science プログラムが世界 20 の科学財団・研究機関に拡大
 - [2026-10-27](2026/2026-10-27-expanding-partnership-gsa.md) - GSA との提携拡大により Claude をあらゆるレベルの政府機関へ提供
 - [2026-10-27](2026/2026-10-27-early-progress-drug-development.md) - Claude による創薬加速の初期成果 - 6 組織との研究パートナーシップを報告

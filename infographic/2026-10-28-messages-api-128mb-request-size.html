@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages API と Token Counting API の最大リクエストサイズが 128 MB に拡大 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+        :root {
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card code {
+            background: rgba(212, 165, 116, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+        }
+
+        /* Endpoint Table */
+        .endpoint-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .endpoint-table th,
+        .endpoint-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+        }
+
+        .endpoint-table th {
+            background: var(--anthropic-cream);
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .endpoint-table td code {
+            background: rgba(26, 26, 46, 0.06);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--anthropic-dark);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        .limit-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .limit-badge.new {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .limit-badge.neutral {
+            background: var(--anthropic-cream);
+            color: var(--text-secondary);
+        }
+
+        .limit-badge.small {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-size {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card.before .comparison-size {
+            color: #DC2626;
+        }
+
+        .comparison-card.after .comparison-size {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-card ul li {
+            padding: 6px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '\2717';
+            color: #DC2626;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '\2713';
+            color: #059669;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid-container h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding-left: 12px;
+            border-left: 3px solid var(--anthropic-coral);
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Auth Note */
+        .auth-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #FFF3E0;
+            border: 1px solid #FF9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .auth-note-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .info-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #E3F2FD;
+            border: 1px solid #64B5F6;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .endpoint-table {
+                font-size: 12px;
+            }
+
+            .endpoint-table th,
+            .endpoint-table td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API アップデート</span>
+                <h1>Messages API と Token Counting API の最大リクエストサイズが 128 MB に拡大</h1>
+                <p class="date">2026-10-28</p>
+            </div>
+        </header>
+
+        <!-- 概要 -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <p style="font-size: 15px; color: var(--text-secondary); margin-bottom: 20px;">
+                Anthropic は 2026 年 10 月 28 日、ファーストパーティ Claude API における Messages API と Token Counting API の最大リクエストサイズを、従来の 32 MB から 128 MB に引き上げました。Base64 エンコードされた画像やドキュメントを多数含むリクエストや、大量のメッセージ履歴を含む長いコンテキストのリクエストを、従来の 4 倍のサイズまで単一の API 呼び出しで送信できます。
+            </p>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">📦</div>
+                    <div class="key-point-content">
+                        <h3>32 MB から 128 MB へ 4 倍に拡大</h3>
+                        <p>Messages API の最大リクエストサイズが 128 MB に引き上げられ、画像や PDF を多数含むマルチモーダルリクエストを分割せずに送信できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔢</div>
+                    <div class="key-point-content">
+                        <h3>Token Counting API も同時に 128 MB に拡大</h3>
+                        <p>Token Counting API は Messages API と同じリクエスト形式を受け取るため、両者の制限が揃うことで、送信前のトークン数見積もりというユースケースをそのまま維持できます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏢</div>
+                    <div class="key-point-content">
+                        <h3>適用対象はファーストパーティ Claude API のみ</h3>
+                        <p>128 MB の上限は <code>https://api.anthropic.com</code> 固有のものです。Amazon Bedrock や Google Cloud などのクラウドプラットフォームには異なる制限 (20〜32 MB) が適用されます。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">✅</div>
+                    <div class="key-point-content">
+                        <h3>既存コードへの変更は不要</h3>
+                        <p>本変更は上限の引き上げであり、後方互換性に影響はありません。移行作業は不要です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After 比較 -->
+        <section class="section">
+            <h2 class="section-title">Before / After</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before</h4>
+                    <div class="comparison-size">32 MB</div>
+                    <ul>
+                        <li>マルチモーダルリクエストが制限に達しやすい</li>
+                        <li>32 MB を超えるリクエストは分割して送信が必要</li>
+                        <li>413 <code>request_too_large</code> エラーが発生しやすい</li>
+                        <li>大きなリクエストのトークン数を事前見積もりできない場合がある</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After</h4>
+                    <div class="comparison-size">128 MB</div>
+                    <ul>
+                        <li>従来の 4 倍のサイズを単一の API 呼び出しで送信可能</li>
+                        <li>リクエスト分割ロジックの統合・簡素化を検討できる</li>
+                        <li>413 エラーの発生頻度が低下</li>
+                        <li>Token Counting API も 128 MB で事前検証がそのまま可能</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 統計情報 -->
+        <section class="section">
+            <h2 class="section-title">数字で見るリクエストサイズ制限</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">4 倍</div>
+                    <div class="stat-label">引き上げ幅<br>32 MB → 128 MB</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">128 MB</div>
+                    <div class="stat-label">Messages API<br>Token Counting API</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">256 MB</div>
+                    <div class="stat-label">Message Batches API</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">500 MB</div>
+                    <div class="stat-label">Files API</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 主要機能 -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📨 Messages API</h3>
+                    <p>最大リクエストサイズが 32 MB から 128 MB に拡大 (4 倍)。Base64 エンコードされた画像や PDF、長い会話履歴を含む大きなリクエストを単一呼び出しで送信できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔢 Token Counting API</h3>
+                    <p>Messages API と同時に 128 MB へ引き上げ。送信予定のリクエストをそのまま事前検証し、トークン数を見積もるワークフローを維持できます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏢 適用範囲</h3>
+                    <p>ファーストパーティ Claude API (<code>https://api.anthropic.com</code>) のみに適用。パートナー運営のクラウドプラットフォームには独自の制限が適用されます。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚠️ 制限超過時の動作</h3>
+                    <p>制限を超えたリクエストは、従来どおり HTTP ステータスコード 413 の <code>request_too_large</code> エラーで拒否されます。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技術詳細 -->
+        <section class="section">
+            <h2 class="section-title">技術詳細: エンドポイント別のサイズ制限</h2>
+            <p style="font-size: 14px; color: var(--text-secondary);">
+                公式ドキュメントの API overview (Request size limits) によると、変更後のファーストパーティ Claude API のリクエストサイズ制限は以下のとおりです。
+            </p>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>エンドポイント</th>
+                        <th>最大リクエストサイズ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Messages API、Token Counting API</td>
+                        <td><span class="limit-badge new">128 MB (今回拡大)</span></td>
+                    </tr>
+                    <tr>
+                        <td>Message Batches API</td>
+                        <td><span class="limit-badge neutral">256 MB</span></td>
+                    </tr>
+                    <tr>
+                        <td>Files API</td>
+                        <td><span class="limit-badge neutral">500 MB</span></td>
+                    </tr>
+                    <tr>
+                        <td>Sessions、Agents、Environments</td>
+                        <td><span class="limit-badge neutral">32 MB</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p style="font-size: 14px; color: var(--text-secondary); margin-top: 24px;">
+                <strong>クラウドプラットフォームでの制限</strong>: パートナー運営プラットフォームには独自のリクエストサイズ制限があります。
+            </p>
+            <table class="endpoint-table">
+                <thead>
+                    <tr>
+                        <th>プラットフォーム</th>
+                        <th>最大リクエストサイズ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ファーストパーティ Claude API</td>
+                        <td><span class="limit-badge new">128 MB</span></td>
+                    </tr>
+                    <tr>
+                        <td>Claude Platform on AWS</td>
+                        <td><span class="limit-badge neutral">32 MB</span></td>
+                    </tr>
+                    <tr>
+                        <td>Claude Models on Google Cloud (Anthropic managed)</td>
+                        <td><span class="limit-badge neutral">32 MB</span></td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft Foundry</td>
+                        <td><span class="limit-badge neutral">32 MB</span></td>
+                    </tr>
+                    <tr>
+                        <td>Claude Models on Google Cloud (Google managed)</td>
+                        <td><span class="limit-badge small">30 MB</span></td>
+                    </tr>
+                    <tr>
+                        <td>Amazon Bedrock</td>
+                        <td><span class="limit-badge small">20 MB</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="auth-note">
+                <span class="auth-note-icon">&#x26A0;</span>
+                <div>
+                    <strong>メッセージ数の上限</strong>: Messages API にはリクエストサイズとは別に、1 リクエストあたり最大 100,000 メッセージという上限も存在します。
+                </div>
+            </div>
+        </section>
+
+        <!-- アーキテクチャ図 -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ図</h2>
+            <div class="mermaid-container">
+                <h3>プラットフォーム別リクエストサイズ制限の全体像</h3>
+                <pre class="mermaid">
+flowchart TD
+    subgraph Client["👤 クライアントアプリケーション"]
+        direction LR
+        Req["📦 大きなリクエスト&lt;br/&gt;画像 / ドキュメント / 長いコンテキスト"]
+    end
+
+    subgraph FirstParty["🏢 ファーストパーティ Claude API"]
+        direction LR
+        Messages["📨 Messages API&lt;br/&gt;32 MB → 128 MB"]
+        TokenCount["🔢 Token Counting API&lt;br/&gt;32 MB → 128 MB"]
+        Batches["📚 Message Batches API&lt;br/&gt;256 MB"]
+        Files[("📁 Files API&lt;br/&gt;500 MB")]
+        Messages ~~~ TokenCount ~~~ Batches ~~~ Files
+    end
+
+    subgraph Partner["☁️ クラウドプラットフォーム"]
+        direction LR
+        Bedrock{{"🟠 Amazon Bedrock&lt;br/&gt;20 MB"}}
+        Vertex{{"🔵 Google Cloud&lt;br/&gt;Google managed 30 MB"}}
+        Managed{{"🟣 Anthropic 運営&lt;br/&gt;AWS / GCP / Foundry 32 MB"}}
+        Bedrock ~~~ Vertex ~~~ Managed
+    end
+
+    Req --&gt; Messages
+    Req --&gt; TokenCount
+    Req -.-&gt; Bedrock
+    Req -.-&gt; Vertex
+    Req -.-&gt; Managed
+    Messages -.-&gt;|"413 request_too_large&lt;br/&gt;128 MB 超過時"| Req
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef external fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class Client,FirstParty,Partner platform
+    class Messages,TokenCount,Batches api
+    class Files storage
+    class Req input
+    class Bedrock,Vertex,Managed external
+                </pre>
+            </div>
+        </section>
+
+        <!-- コードサンプル -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+                Token Counting API を使用して、大きなリクエストを送信する前にトークン数を確認する例です。リクエストサイズ制限 (128 MB) は Messages API と Token Counting API で共通のため、送信予定のリクエストをそのまま事前検証できます。
+            </p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">送信前のトークン数確認と Messages API 呼び出し</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+import base64
+
+client = anthropic.Anthropic()
+
+# 画像を Base64 エンコードしてコンテンツに含める
+with open("large_document_page.png", "rb") as f:
+    image_data = base64.standard_b64encode(f.read()).decode("utf-8")
+
+messages = [
+    {
+        "role": "user",
+        "content": [
+            {
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": "image/png",
+                    "data": image_data,
+                },
+            },
+            {"type": "text", "text": "この画像の内容を要約してください。"},
+        ],
+    }
+]
+
+# 送信前にトークン数をカウント (最大リクエストサイズ: 128 MB)
+count = client.messages.count_tokens(
+    model="claude-sonnet-4-5",
+    messages=messages,
+)
+print(f"入力トークン数: {count.input_tokens}")
+
+# Messages API で送信 (最大リクエストサイズ: 128 MB)
+response = client.messages.create(
+    model="claude-sonnet-4-5",
+    max_tokens=1024,
+    messages=messages,
+)
+print(response.content[0].text)</code></pre>
+            </div>
+        </section>
+
+        <!-- ユースケース -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🖼️ 大規模マルチモーダルリクエストの統合</h4>
+                <p>Base64 エンコードされた画像や PDF を多数含むリクエストでは、エンコードによってデータサイズが元のバイナリより増加します。これまで 32 MB の制限を回避するためにリクエストを分割していた場合、単一リクエストへの統合を検討でき、実装を簡素化できます。</p>
+            </div>
+            <div class="use-case">
+                <h4>📜 長いコンテキストを扱うアプリケーション</h4>
+                <p>長い会話履歴や大量のドキュメントをコンテキストに含むリクエストを 1 回の API 呼び出しで送信できます。413 <code>request_too_large</code> エラーに対するハンドリングやリトライロジックを実装している場合、発生頻度の低下が見込まれます。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔢 送信前のトークン数見積もりワークフロー</h4>
+                <p>Token Counting API も同じ 128 MB に拡大されたため、大きなリクエストでも送信前にトークン数を正確に見積もれます。複数の API 呼び出しで同じファイルを再利用する場合は、リクエストに直接埋め込む代わりに Files API (最大 500 MB) の利用も引き続き選択肢となります。</p>
+            </div>
+            <div class="auth-note">
+                <span class="auth-note-icon">&#x26A0;</span>
+                <div>
+                    <strong>マルチプラットフォーム構成での注意</strong>: Amazon Bedrock (20 MB) や Google Cloud の Google managed (30 MB)、Anthropic 運営のクラウドプラットフォーム (32 MB) を併用している場合、ファーストパーティ API 向けの大きなリクエストをそのまま送信するとエラーになる可能性があります。最も小さい上限に合わせた設計か、プラットフォームごとの分岐処理を検討してください。
+                </div>
+            </div>
+            <div class="info-note">
+                <span class="auth-note-icon">&#x2139;&#xFE0F;</span>
+                <div>
+                    <strong>移行作業は不要</strong>: 本変更は上限の引き上げであり、後方互換性に影響はありません。ファーストパーティ Claude API を利用しているすべての開発者が、コード変更なしで恩恵を受けられます。
+                </div>
+            </div>
+        </section>
+
+        <!-- フッター -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-top: 8px;"><strong>関連リンク:</strong>
+                <a href="https://platform.claude.com/docs/en/api/overview#request-size-limits" target="_blank" rel="noopener noreferrer">Request size limits</a> |
+                <a href="https://platform.claude.com/docs/en/api/messages" target="_blank" rel="noopener noreferrer">Messages API</a> |
+                <a href="https://platform.claude.com/docs/en/api/messages/count_tokens" target="_blank" rel="noopener noreferrer">Token Counting API</a> |
+                <a href="https://platform.claude.com/docs/en/build-with-claude/files" target="_blank" rel="noopener noreferrer">Files API</a> |
+                <a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing" target="_blank" rel="noopener noreferrer">Batch processing</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/languages/python.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
