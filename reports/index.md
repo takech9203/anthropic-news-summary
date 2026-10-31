@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-10-31](2026/2026-10-31-claude-code-v2-1-316.md) - Claude Code v2.1.316 リリース
+- [2026-10-30](2026/2026-10-30-opus-4-8-fast-mode-deprecation.md) - Claude Opus 4.8 のファストモード非推奨化 -- 2026 年 11 月 30 日に削除、Opus 5.5 への移行が必要
 - [2026-10-30](2026/2026-10-30-claude-code-v2-1-314.md) - Claude Code v2.1.314 リリース
 - [2026-10-29](2026/2026-10-29-usage-cost-analytics-api.md) - Usage and Cost Analytics API がベータ版でリリース - 使用量とコストの分析が大幅に強化
 - [2026-10-28](2026/2026-10-28-messages-api-128mb-request-size.md) - Messages API と Token Counting API の最大リクエストサイズが 128 MB に拡大
