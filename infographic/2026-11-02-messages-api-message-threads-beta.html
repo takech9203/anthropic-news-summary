@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages API にメッセージスレッド機能がベータ提供開始 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;        /* メインアクセント */
+            --anthropic-dark: #1a1a2e;         /* ダーク背景 */
+            --anthropic-light: #FFF8F0;        /* ライト背景 */
+            --anthropic-cream: #F5EDE4;        /* セカンダリ背景 */
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 16px;
+        }
+
+        .beta-header-chip {
+            display: inline-block;
+            margin-top: 12px;
+            background: rgba(212, 165, 116, 0.15);
+            border: 1px dashed var(--anthropic-coral);
+            color: #E8C9A8;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 8px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .sub-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            color: var(--anthropic-dark);
+        }
+
+        .section p.body-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li {
+            padding-left: 1.5em;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 12px 0 8px;
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            color: var(--anthropic-dark);
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.4);
+            white-space: nowrap;
+        }
+
+        .info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            background: var(--anthropic-cream);
+            color: #9a5b2d;
+            padding: 2px 6px;
+            border-radius: 6px;
+            word-break: break-all;
+        }
+
+        .error-badge {
+            display: inline-block;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+
+        .error-badge.e404 {
+            background: #FFF3E0;
+            color: #E65100;
+            border: 1px solid #FF9800;
+        }
+
+        .error-badge.e400 {
+            background: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #F44336;
+        }
+
+        /* Notice / Warning boxes */
+        .notice {
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .notice.warning {
+            background: #FFF3E0;
+            border: 1px solid rgba(255, 152, 0, 0.5);
+        }
+
+        .notice.info {
+            background: #E8F1FF;
+            border: 1px solid rgba(74, 144, 226, 0.4);
+        }
+
+        .notice.success {
+            background: #E9F7EC;
+            border: 1px solid rgba(102, 187, 106, 0.5);
+        }
+
+        .notice strong {
+            color: var(--text-primary);
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step;
+            display: grid;
+            gap: 12px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .step-number {
+            counter-increment: step;
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .step p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: rgba(255, 255, 255, 0.92);
+            border-radius: 16px;
+            padding: 28px 32px;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        /* Link list */
+        .link-list {
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .link-list li {
+            margin-bottom: 8px;
+            padding-left: 1.4em;
+            position: relative;
+        }
+
+        .link-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+        }
+
+        .link-list a {
+            color: #9a5b2d;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .link-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #9a5b2d;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude API</span>
+                <h1>Messages API にメッセージスレッド機能がベータ提供開始</h1>
+                <p class="date">📅 2026-11-02 | ソース: Claude API Release Notes</p>
+                <p class="lead">会話をサーバー側で短期間保持し、2 回目以降は新しいメッセージのみを送信。長い会話やエージェントループのリクエストサイズとレイテンシを削減</p>
+                <span class="beta-header-chip">anthropic-beta: message-threads-2026-08-12</span>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🧵</div>
+                    <div class="key-point-content">
+                        <h3>会話をサーバー側で短期間保持</h3>
+                        <p>メッセージスレッドを使用すると、API が会話をサーバー側で保持するため、2 回目以降のリクエストでは新しいメッセージのみを送信すればよくなる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>リクエストサイズ削減と TTFT の短縮・安定化</h3>
+                        <p>長い会話やエージェントループでリクエストサイズが小さくなり、検証やトークン化の大部分が新しいターンのみを対象とするため、最初のトークンまでの時間 (time to first token) が短縮・安定化される。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔧</div>
+                    <div class="key-point-content">
+                        <h3>導入は thread パラメータ 1 つだけ</h3>
+                        <p>リクエストに <code class="inline">thread</code> フィールドを 1 つ追加するだけで利用でき、レスポンスは通常のメッセージ形式のまま変わらない。料金やレート制限の変更もない。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🌐</div>
+                    <div class="key-point-content">
+                        <h3>マルチプラットフォーム対応</h3>
+                        <p>Claude API に加え、Claude Platform on AWS、Google Cloud 上の Claude モデル (Anthropic 管理)、Microsoft Foundry でも利用できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>ベストエフォートのため会話のコピー保持が前提</h3>
+                        <p>スレッドの保存は保証されない。アプリケーション側で会話全体を保持し、404 エラー時に create リクエストで再送するリプレイ処理の実装が前提となる。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: スレッドなし vs スレッドあり</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (ステートレス)</h4>
+                    <ul>
+                        <li>毎ターン会話履歴全体を送信する必要がある</li>
+                        <li>会話が長くなるほどリクエストサイズが増大</li>
+                        <li>検証とトークン化が会話全体に対して毎回実行される</li>
+                        <li>最初のトークンまでの時間が徐々に悪化</li>
+                        <li>多数のツール呼び出しを繰り返す長時間のエージェントループで影響が顕著</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (メッセージスレッド)</h4>
+                    <ul>
+                        <li>2 回目以降は新しいメッセージのみを送信</li>
+                        <li>リクエストサイズが小さくなる</li>
+                        <li>検証やトークン化の大部分が新しいターンのみを対象</li>
+                        <li>最初のトークンまでの時間が短縮・安定化</li>
+                        <li>料金とレート制限は変更なし</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>➕ thread パラメータの追加</h3>
+                    <p>Messages API リクエストに <code class="inline">thread</code> フィールドを 1 つ追加するだけで利用できる。レスポンスは通常のメッセージ形式のまま変わらない。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🆕 スレッドの作成 (create)</h3>
+                    <p>初回リクエストで会話全体、<code class="inline">system</code>、<code class="inline">tools</code> を送信し、<code class="inline">{"type": "create"}</code> を追加する。API は Claude の応答を含む会話をレスポンスの <code class="inline">id</code> に紐付けて保存する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>▶️ スレッドの継続 (continue)</h3>
+                    <p>2 回目以降は新しいメッセージのみを送信し、<code class="inline">{"type": "continue", "previous_message_id": ...}</code> を追加する。<code class="inline">system</code> と <code class="inline">tools</code> は省略する (スレッドが create リクエストの値を保持する)。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⏳ 有効期限</h3>
+                    <p>スレッドは最後のリクエストから 5 分で期限切れとなり、最後の使用から最大 1 時間以内に削除される。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔁 リプレイ (再送)</h3>
+                    <p>スレッドはベストエフォートであり、継続できない場合は 404 エラー (<code class="inline">thread_not_found</code>) が返る。その際はアプリケーション側が保持する会話全体を新しい create リクエストで再送信する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧰 SDK スレッドヘルパー</h3>
+                    <p>Python、TypeScript、C#、Go、Java、PHP、Ruby の各 SDK にスレッドヘルパーが用意されており、ベータヘッダーの付与、create / continue の切り替え、404 エラー時のリプレイを自動で処理する。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats: data retention policy -->
+        <section class="section">
+            <h2 class="section-title">数字で見るデータ保持ポリシー</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">5 分</div>
+                    <div class="stat-label">最後のリクエストからの有効期限</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1 時間</div>
+                    <div class="stat-label">最後の使用からの最大削除期限</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">最大 4 個</div>
+                    <div class="stat-label">thread 利用時の cache_control ブレークポイント</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0 円</div>
+                    <div class="stat-label">追加料金なし・レート制限の変更なし</div>
+                </div>
+            </div>
+            <div class="notice info">
+                <strong>データ保持の仕組み</strong>: スレッドの内容 (会話、システムプロンプト、ツール) はメモリ上に保持され、サーバー管理キーで暗号化される。永続ストレージには書き込まれず、最後の使用から最大 1 時間以内に削除される。ZDR (ゼロデータ保持) の対象外だが、他の ZDR 対象機能の利用には影響しない。
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="sub-title">📋 リクエストフィールドの扱い (3 グループ)</h3>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>グループ</th>
+                            <th>フィールド</th>
+                            <th>ルール</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>create 専用</strong></td>
+                            <td><code class="inline">system</code>、<code class="inline">tools</code></td>
+                            <td>create リクエストでのみ送信する。continue リクエストに含めると 400 エラー</td>
+                        </tr>
+                        <tr>
+                            <td><strong>固定</strong></td>
+                            <td><code class="inline">model</code>、<code class="inline">tool_choice</code>、<code class="inline">thinking</code>、<code class="inline">context_management</code>、<code class="inline">output_config</code>、トップレベル <code class="inline">cache_control</code>、<code class="inline">anthropic-beta</code> 値のセットなど</td>
+                            <td>毎リクエストで create 時と同じ値を送信する。異なる値は 400 エラー (<code class="inline">thread_fingerprint_mismatch</code>)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>自由</strong></td>
+                            <td><code class="inline">max_tokens</code>、<code class="inline">stop_sequences</code>、<code class="inline">stream</code>、<code class="inline">metadata</code>、<code class="inline">service_tier</code> など</td>
+                            <td>ターンごとに変更可能</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="sub-title">💾 プロンプトキャッシュとの関係</h3>
+            <p class="body-text">スレッドは自動でプロンプトをキャッシュしない。プロンプトキャッシュは従来どおり <code class="inline">cache_control</code> ブレークポイントで制御する。毎ターンキャッシュするには、トップレベル <code class="inline">cache_control</code> をスレッドの全リクエストで送信する。<code class="inline">thread</code> 付きリクエストで指定できる <code class="inline">cache_control</code> ブレークポイントは最大 4 個となる。</p>
+
+            <h3 class="sub-title">🚨 エラー処理</h3>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>ステータス</th>
+                            <th>error_code</th>
+                            <th>意味</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="error-badge e404">404</span></td>
+                            <td><code class="inline">thread_not_found</code></td>
+                            <td>スレッドを継続できない。会話全体を新しい create リクエストで再送する</td>
+                        </tr>
+                        <tr>
+                            <td><span class="error-badge e400">400</span></td>
+                            <td><code class="inline">thread_fingerprint_mismatch</code></td>
+                            <td>固定フィールドの値が create 時と異なる</td>
+                        </tr>
+                        <tr>
+                            <td><span class="error-badge e400">400</span></td>
+                            <td><code class="inline">thread_already_continued</code></td>
+                            <td>各レスポンス <code class="inline">id</code> は 1 回しか継続できない</td>
+                        </tr>
+                        <tr>
+                            <td><span class="error-badge e400">400</span></td>
+                            <td><code class="inline">thread_continue_in_flight</code></td>
+                            <td>同じ <code class="inline">id</code> からの別の continue リクエストが実行中</td>
+                        </tr>
+                        <tr>
+                            <td><span class="error-badge e400">400</span></td>
+                            <td><code class="inline">thread_unsupported_request</code></td>
+                            <td>スレッドが対応していない機能や組織設定を使用している</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="sub-title">🚫 サポートされない機能</h3>
+            <div class="notice warning">
+                Message Batches、トークンカウント、コンパクション (compaction on demand)、コンテキスト編集 (一部を除く)、HIPAA readiness 有効組織、Inference hooks 有効組織では利用できない。また、スレッドの一覧取得・読み取り・削除用の API は提供されない。
+            </div>
+
+            <h3 class="sub-title">💰 料金とレート制限</h3>
+            <div class="notice success">
+                スレッドの利用による料金やレート制限の変更はない。
+            </div>
+        </section>
+
+        <!-- Architecture (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ: スレッドのライフサイクル</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant C as 👤 クライアント
+    participant A as 🔌 Messages API
+    participant S as 🗄️ スレッドストア
+    participant M as 🤖 Claude モデル
+
+    Note over C,A: ターン 1 - thread type create
+    C->>A: 会話全体 + system + tools
+    A->>M: 会話全体を処理
+    M-->>A: 応答
+    A->>S: 会話 + 応答を id に紐付けて保存
+    A-->>C: 応答 msg_001
+
+    Note over C,A: ターン 2 - thread type continue
+    C->>A: 新しいメッセージのみ + previous_message_id msg_001
+    A->>S: 保存済みの会話を取得して再構築
+    A->>M: 再構築した会話を処理
+    M-->>A: 応答
+    A->>S: 更新した会話を保存
+    A-->>C: 応答 msg_002
+
+    Note over S: 最終リクエストから 5 分で期限切れ<br/>最大 1 時間以内に削除
+
+    Note over C,A: 期限切れ後の continue
+    C->>A: continue リクエスト
+    A-->>C: 404 thread_not_found
+    C->>A: 会話全体を新しい create リクエストで再送
+    A-->>C: 応答 msg_003 で継続
+                </pre>
+            </div>
+        </section>
+
+        <!-- Code Sample -->
+        <section class="section">
+            <h2 class="section-title">コードサンプル</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span class="code-title">スレッドの作成と継続</span>
+                </div>
+                <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+# ターン 1: 会話全体を送信してスレッドを作成する
+first = client.beta.messages.create(
+    model="claude-opus-5-5",
+    max_tokens=1024,
+    cache_control={"type": "ephemeral"},
+    system="You are a support agent for Acme. Keep replies short.",
+    messages=[{"role": "user", "content": "Hi! I have a question about an order."}],
+    thread={"type": "create"},
+    betas=["message-threads-2026-08-12"],
+)
+
+# ターン 2: 新しいメッセージと前回レスポンスの id のみを送信する
+# system と tools は省略する (スレッドが保持している)
+second = client.beta.messages.create(
+    model="claude-opus-5-5",
+    max_tokens=1024,
+    cache_control={"type": "ephemeral"},
+    messages=[
+        {"role": "user", "content": "How long does standard shipping usually take?"}
+    ],
+    thread={"type": "continue", "previous_message_id": first.id},
+    betas=["message-threads-2026-08-12"],
+)
+
+for block in second.content:
+    if block.type == "text":
+        print(block.text)</code></pre>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="sub-title">🎯 対象となる開発者</h3>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">💬</div>
+                    <div class="key-point-content">
+                        <p>Messages API で長い会話やマルチターンのエージェントループを実装している開発者</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <p>ツール呼び出しを多数繰り返すエージェントアプリケーションの開発者</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📉</div>
+                    <div class="key-point-content">
+                        <p>最初のトークンまでの時間 (レイテンシ) やリクエストサイズの削減を求める開発者</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="sub-title">✅ 必要なアクション</h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <p>全リクエストにベータヘッダー <code class="inline">message-threads-2026-08-12</code> を付与する (SDK ヘルパー利用時は自動付与)</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <p>初回リクエストに <code class="inline">"thread": {"type": "create"}</code> を追加する</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <p>以降のリクエストでは新しいメッセージのみを送信し、<code class="inline">"thread": {"type": "continue", "previous_message_id": ...}</code> を指定する</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <p>アプリケーション側で会話全体のコピーを必ず保持し、404 エラー (<code class="inline">thread_not_found</code>) 時に create リクエストで再送するリプレイ処理を最初から実装する</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <p>毎ターンのキャッシュが必要な場合は、トップレベル <code class="inline">cache_control</code> を全リクエストで送信する</p>
+                </div>
+            </div>
+
+            <h3 class="sub-title">🔄 移行ガイド</h3>
+            <div class="notice info">
+                既存のステートレスな実装はそのまま動作するため、移行は必須ではない。スレッドを導入する場合でも、アプリケーションが会話の信頼できる情報源 (source of truth) であり続ける点に注意が必要である。スレッドの保存は保証されないため、会話のコピーを手元で管理し続ける設計を維持する。SDK のスレッドヘルパーや beta ツールランナー (デフォルトでスレッドを使用) を利用すると、リプレイ処理などを自動化できる。
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🤖 長時間稼働するエージェントループ</h4>
+                <p>多数のツール呼び出しを繰り返す長時間のエージェントループでは、従来は会話が長くなるほど TTFT が悪化していた。スレッドを使うことで新しいターンのみが処理対象となり、レイテンシが短縮・安定化される。</p>
+            </div>
+            <div class="use-case">
+                <h4>💬 マルチターンのチャットアプリケーション</h4>
+                <p>カスタマーサポートのような連続した会話では、2 回目以降のリクエストで新しいメッセージのみを送信すればよく、リクエストサイズを大幅に削減できる。system と tools はスレッドが保持する。</p>
+            </div>
+            <div class="use-case">
+                <h4>🧰 SDK ヘルパーによる自動化</h4>
+                <p>Python、TypeScript、C#、Go、Java、PHP、Ruby の SDK スレッドヘルパーや beta ツールランナーを使えば、ベータヘッダーの付与、create / continue の切り替え、404 エラー時のリプレイを自動で処理できる。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                メッセージスレッドは、長い会話やエージェントループにおける<strong>リクエストサイズとレイテンシの課題</strong>に対する実用的な解決策である。<strong><code style="font-family: 'JetBrains Mono', monospace;">thread</code> パラメータを 1 つ追加するだけ</strong>で導入でき、料金やレート制限の変更もない。一方で、スレッドの保存はベストエフォートであり有効期限も 5 分と短いため、<strong>アプリケーション側で会話のコピーを保持し、リプレイ処理を実装すること</strong>が前提となる。SDK のスレッドヘルパーを利用すれば、これらの処理の多くを自動化できる。長時間稼働するエージェントを構築する開発者にとって、導入を検討する価値の高い機能である。
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p style="margin-bottom: 12px;"><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-bottom: 8px;"><strong>関連リンク:</strong></p>
+            <ul class="link-list">
+                <li><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude API Release Notes</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/message-threads" target="_blank" rel="noopener noreferrer">Message threads ドキュメント</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-caching" target="_blank" rel="noopener noreferrer">Prompt caching</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/streaming" target="_blank" rel="noopener noreferrer">Streaming</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/claude-platform-on-aws" target="_blank" rel="noopener noreferrer">Claude Platform on AWS</a></li>
+                <li><a href="https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry" target="_blank" rel="noopener noreferrer">Claude in Microsoft Foundry</a></li>
+            </ul>
+            <p style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(212, 165, 116, 0.4);">発表日: 2026-11-02 | カテゴリ: Claude API | ソース: Claude API Release Notes</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-11-02](2026/2026-11-02-messages-api-message-threads-beta.md) - Messages API にメッセージスレッド機能がベータ提供開始
+- [2026-11-02](2026/2026-11-02-claude-code-v2-1-317.md) - Claude Code v2.1.317 リリース
 - [2026-10-31](2026/2026-10-31-claude-code-v2-1-316.md) - Claude Code v2.1.316 リリース
 - [2026-10-30](2026/2026-10-30-opus-4-8-fast-mode-deprecation.md) - Claude Opus 4.8 のファストモード非推奨化 -- 2026 年 11 月 30 日に削除、Opus 5.5 への移行が必要
 - [2026-10-30](2026/2026-10-30-claude-code-v2-1-314.md) - Claude Code v2.1.314 リリース
