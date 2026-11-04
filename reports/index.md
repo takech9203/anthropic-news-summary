@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-11-03](2026/2026-11-03-text-watermarking-claude-models.md) - Claude Mythos 5 / Opus 4.7 / Sonnet 4.6 の生成テキストに Anthropic のテキスト透かしを付与
+- [2026-11-03](2026/2026-11-03-claude-code-v2-1-318.md) - Claude Code v2.1.318 リリース
 - [2026-11-02](2026/2026-11-02-messages-api-message-threads-beta.md) - Messages API にメッセージスレッド機能がベータ提供開始
 - [2026-11-02](2026/2026-11-02-claude-code-v2-1-317.md) - Claude Code v2.1.317 リリース
 - [2026-10-31](2026/2026-10-31-claude-code-v2-1-316.md) - Claude Code v2.1.316 リリース
