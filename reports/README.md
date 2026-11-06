@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-11-05](2026/2026-11-05-ip-allowlist-admin-api-signout.md) - IP アローリストと Admin API サインアウト機能がベータ提供開始 - 組織のセキュリティ管理を強化
 - [2026-11-03](2026/2026-11-03-text-watermarking-claude-models.md) - Claude Mythos 5 / Opus 4.7 / Sonnet 4.6 の生成テキストに Anthropic のテキスト透かしを付与
 - [2026-11-03](2026/2026-11-03-claude-code-v2-1-318.md) - Claude Code v2.1.318 リリース
 - [2026-11-02](2026/2026-11-02-messages-api-message-threads-beta.md) - Messages API にメッセージスレッド機能がベータ提供開始
