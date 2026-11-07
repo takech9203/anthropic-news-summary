@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.319 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Fix / Change Lists */
+        .fix-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .fix-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 12px 16px 12px 40px;
+            background: var(--anthropic-cream);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .fix-list li::before {
+            content: '🔧';
+            position: absolute;
+            left: 14px;
+            top: 11px;
+            font-size: 14px;
+        }
+
+        .fix-list.added li::before {
+            content: '➕';
+        }
+
+        .fix-list.improved li::before {
+            content: '✨';
+        }
+
+        .fix-list.changed li::before {
+            content: '🔄';
+        }
+
+        .fix-list.removed li::before {
+            content: '🗑️';
+        }
+
+        .fix-list.security li {
+            background: #FFEBEE;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .fix-list.security li::before {
+            content: '🛡️';
+        }
+
+        .fix-list li code,
+        .key-point-content p code,
+        .feature-card p code,
+        .use-case p code,
+        .tech-detail p code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12.5px;
+            background: rgba(212, 165, 116, 0.18);
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        .fix-list.security li code {
+            background: rgba(244, 67, 54, 0.12);
+            color: #b71c1c;
+        }
+
+        /* Highlight callout */
+        .callout {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE9CC 100%);
+            border: 2px solid rgba(245, 158, 11, 0.4);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .callout strong {
+            color: var(--anthropic-dark);
+        }
+
+        .callout code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12.5px;
+            background: rgba(212, 165, 116, 0.25);
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        /* Tech Details */
+        .tech-detail {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Component changes */
+        .component-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .component-card {
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 18px 22px;
+        }
+
+        .component-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .component-card ul {
+            list-style: none;
+        }
+
+        .component-card li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding-left: 18px;
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .component-card li::before {
+            content: '▸';
+            position: absolute;
+            left: 2px;
+            color: var(--anthropic-coral);
+        }
+
+        .component-card li code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            background: rgba(212, 165, 116, 0.18);
+            border-radius: 4px;
+            padding: 1px 4px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        /* Action list */
+        .action-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .action-list li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 12px 16px 12px 40px;
+            background: #E9F7EC;
+            border: 1px solid rgba(102, 187, 106, 0.35);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .action-list li::before {
+            content: '✅';
+            position: absolute;
+            left: 13px;
+            top: 11px;
+            font-size: 14px;
+        }
+
+        .action-list li code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12.5px;
+            background: rgba(102, 187, 106, 0.18);
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #2e7d32;
+            word-break: break-all;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: rgba(255, 255, 255, 0.92);
+            border-radius: 16px;
+            padding: 24px 28px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code / CLI アップデート</span>
+                <h1>Claude Code v2.1.319 リリース</h1>
+                <p class="subtitle">auto mode のサーバーサイドチェック挙動変更、MCP タスクのバックグラウンド実行、<code style="font-family: monospace;">permissions.denyInsteadOfPrompting</code> など 146 件の変更を含む大型アップデート</p>
+                <p class="date">📅 2026-11-06 | ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.319</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">146</div>
+                    <div class="stat-label">変更の総数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">ハイライト</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">セキュリティ関連の修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">中心テーマ<br>auto mode と MCP タスク</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 - キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">☁️</div>
+                    <div class="key-point-content">
+                        <h3>auto mode のサーバーサイドチェック挙動変更</h3>
+                        <p>テレメトリまたはフィーチャーフラグが無効な環境 (LLM ゲートウェイ配下を含む) では、サーバーが確認できない呼び出しは確認または拒否され、組み込み分類器へのフォールバックは行われない。従来の動作は <code>CLAUDE_CODE_AUTO_MODE_SERVER=0</code> で維持できる (Bedrock、Vertex、Foundry は変更なし)</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>MCP タスクのバックグラウンド実行</h3>
+                        <p>MCP サーバーがツール呼び出しをタスクとして実行する場合、Claude Code は即座にバックグラウンドへ移動し、完了時に結果を Claude に伝える。長時間実行の MCP ツールでターンがブロックされなくなった。フィーチャーフラグのフェッチなしでも動作する</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🚦</div>
+                    <div class="key-point-content">
+                        <h3>permissions.denyInsteadOfPrompting 設定</h3>
+                        <p>権限プロンプトで待機することになるツール呼び出しを拒否してターンを継続する新設定。ターミナルセッション、サブエージェント、teammates で有効で、無人実行や長時間の自律タスクでのプロンプト待ちによる停止を回避できる</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>/claude-api latency-optimize コマンド</h3>
+                        <p>Claude API を利用するコードのどこでユーザーを待たせているかを特定し、より高速な設定を eval に対して試行する新コマンドが追加された</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>複数のセキュリティ修正</h3>
+                        <p>細工された環境変数プレフィックスによる Bash 権限バイパス、accept-edits / auto mode で <code>sed</code> が権限チェックをすり抜けるケース、worktree 作成時のサンドボックスエスケープなどを修正</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features (Added) -->
+        <section class="section">
+            <h2 class="section-title">主要機能 (Added)</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔌 MCP タスクのバックグラウンド化</h3>
+                    <p>タスクとして実行される MCP ツール呼び出しを即座にバックグラウンドへ移動。従来どおり待機させるには <code>CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND</code>、機能自体の無効化は <code>CLAUDE_CODE_DISABLE_MCP_TASKS=1</code> を設定する</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚦 denyInsteadOfPrompting</h3>
+                    <p><code>permissions.denyInsteadOfPrompting</code> により、権限プロンプトで待機する代わりにツール呼び出しを拒否してターンを継続。無人実行での停止を防げる</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ /claude-api latency-optimize</h3>
+                    <p>Claude API コードの待ち時間の発生箇所を特定し、より高速な設定を eval に対して試行するコマンド</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏳️ フィーチャーフラグのみ停止</h3>
+                    <p><code>CLAUDE_CODE_DISABLE_FEATURE_FLAGS</code> で、テレメトリを無効化せずにフラグのフェッチだけを停止。すべてのフラグは組み込みデフォルト値を使用する</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💰 /usage に支出額を表示</h3>
+                    <p>本日・今週・今月の支出額を表示 (支出上限のない Claude apps gateway 配下の開発者向け、ゲートウェイが本バージョン以降の場合)</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 /tasks に履歴行を追加</h3>
+                    <p>「Earlier in this session」行で終了したサブエージェントが一覧され、リストから消えた後やセッション再起動後でも再度開いてメッセージを送れる</p>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">➕ その他の追加</h3>
+            <ul class="fix-list added">
+                <li>Claude apps gateway に <code>admin.pooled_conflict_rule</code> と <code>admin.pooled_priority_order</code> を追加。複数グループに属する開発者のプールグループ予算の支払い順を設定できる</li>
+                <li>Claude apps gateway にオプションの <code>login_notice</code> 設定を追加。ブラウザ検証ページとサインイン画面に運用者定義のメッセージを表示できる</li>
+                <li><code>CLAUDE_GATEWAY_LOG_FORMAT=json</code> を追加。運用ログ行が <code>severity</code>、<code>time</code>、<code>message</code> を持つ JSON になる</li>
+                <li>あるポリシーが名前で列挙するカスタムモデル ID を別ポリシーの <code>availableModels</code> も許可している場合の起動時警告を追加</li>
+                <li>Claude Desktop の 11 月 10 日の変更に先立ち、<code>desktopHome</code> がないまま <code>coworkTabEnabled: false</code> や <code>chatSessionRetentionDays</code> に依存するポリシーへの起動時警告を追加</li>
+                <li>claude.ai ログイン終了後に <code>ant auth login</code> で継続し使用量が Claude Console 組織に課金される場合の警告と、課金先組織名の起動時表示を追加</li>
+                <li>クラウドセッションの <code>/loop</code> 確認に、タイマーはコンテナとともに停止する旨の注記と存続するループの提案を追加</li>
+            </ul>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="section-subtitle">☁️ auto mode サーバーサイドチェックの判定フロー</h3>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Start(["🤖 auto mode のツール呼び出し"]) --> EnvCheck{"🔍 実行環境"}
+    EnvCheck -->|"Bedrock / Vertex / Foundry"| Legacy["✅ 従来どおりの動作<br/>変更なし"]
+    EnvCheck -->|"テレメトリ / フラグ無効<br/>LLM ゲートウェイ配下"| FlagCheck{"⚙️ CLAUDE_CODE_AUTO_MODE_SERVER"}
+    FlagCheck -->|"0"| Classifier["🧮 組み込み分類器を継続使用"]
+    FlagCheck -->|"未設定"| NoFallback["⚠️ フォールバックなし<br/>確認または拒否"]
+    FlagCheck -->|"1"| Server["☁️ サーバーサイドチェック<br/>DISABLE_EXPERIMENTAL_BETAS<br/>設定時も有効"]
+
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+
+    class Start input
+    class EnvCheck,FlagCheck decision
+    class Legacy,Classifier,Server process
+    class NoFallback warning
+                </pre>
+            </div>
+            <div class="callout">
+                <strong>管理対象設定の注意:</strong> managed settings で <code>CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS</code> を設定している場合、サーバーサイドチェックを使うには <code>CLAUDE_CODE_AUTO_MODE_SERVER=1</code> も同時に設定する必要がある
+            </div>
+
+            <h3 class="section-subtitle">🔌 MCP タスクのバックグラウンド実行フロー</h3>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+sequenceDiagram
+    participant C as 🤖 Claude
+    participant CC as 💻 Claude Code
+    participant M as 🔌 MCP サーバー
+
+    C->>CC: ツール呼び出し
+    CC->>M: 呼び出しを転送
+    M-->>CC: タスクとして実行を開始
+    CC->>CC: 即座にバックグラウンドへ移動
+    CC-->>C: ターンを継続
+    M-->>CC: タスク完了
+    CC-->>C: 結果を通知
+                </pre>
+            </div>
+
+            <div class="tech-detail">
+                <h4>🔌 MCP タスクの仕組み</h4>
+                <p>MCP サーバーがツール呼び出しをタスクとして実行すると、Claude Code は呼び出しを待たずに即座にバックグラウンドへ移動し、完了時に結果を Claude に通知する。MCP タスクはフィーチャーフラグのフェッチなしでも動作する (Bedrock、Vertex、Foundry、LLM ゲートウェイ、<code>DISABLE_TELEMETRY</code> 環境を含む)。同期的な動作が必要な場合は <code>CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND</code> を、機能自体の無効化は <code>CLAUDE_CODE_DISABLE_MCP_TASKS=1</code> を設定する</p>
+            </div>
+            <div class="tech-detail">
+                <h4>🚦 denyInsteadOfPrompting の適用範囲</h4>
+                <p>ターミナルセッション、サブエージェント、teammates に適用される。権限プロンプトで停止する代わりにツール呼び出しが拒否され、Claude は別のアプローチでターンを継続できるため、無人実行での停止を防げる</p>
+            </div>
+            <div class="tech-detail">
+                <h4>🏳️ フィーチャーフラグとテレメトリの分離</h4>
+                <p>従来はテレメトリを無効化するとフィーチャーフラグのフェッチも止まっていたが、<code>CLAUDE_CODE_DISABLE_FEATURE_FLAGS</code> によりフラグのフェッチのみを停止できる。すべてのフラグは組み込みデフォルト値で動作する</p>
+            </div>
+            <div class="tech-detail">
+                <h4>👁️ Monitor ツールの権限整合性</h4>
+                <p>WebSocket 監視を含む Monitor の動作が Bash コマンドの権限ルールと一貫するようになり、ask ルールの対象コマンドは bypass mode や auto mode でもプロンプトが省略されない。監視経由での権限ルール迂回ができなくなった</p>
+            </div>
+        </section>
+
+        <!-- Security Fixes -->
+        <section class="section">
+            <h2 class="section-title">セキュリティ修正</h2>
+            <ul class="fix-list security">
+                <li>細工された環境変数プレフィックスにより、コマンドの一部が権限チェックから隠される Bash 権限バイパスを修正</li>
+                <li>accept-edits / auto mode で <code>sed</code> コマンドが権限チェックをすり抜けるケースを修正</li>
+                <li>worktree 作成時のサンドボックスエスケープを修正</li>
+                <li><code>/rewind</code> がディレクトリシンボリックリンク経由でファイルを復元・削除し得るケースを修正</li>
+            </ul>
+        </section>
+
+        <!-- Fixed -->
+        <section class="section">
+            <h2 class="section-title">重要な修正 (Fixed)</h2>
+
+            <h3 class="section-subtitle">🔌 MCP・ツール実行</h3>
+            <ul class="fix-list">
+                <li>古いハンドシェイクの MCP サーバーが、新しいサーバーでのみ使用する拡張の宣言により接続に失敗したり空の結果を返したりする問題を修正</li>
+                <li>claude.ai コネクタ上の長時間実行 MCP ツール呼び出しが <code>--resume</code> 後に結果を報告しないことがある問題を修正</li>
+                <li><code>claude -p --resume</code> にプロンプトを渡した際、MCP サーバーが見つからないと保留中のツール呼び出しが失われる問題を修正。終了コード 1 で終了し、呼び出しを保持して以降の入力を拒否する</li>
+                <li>ほぼ即座に完了するバックグラウンド Bash コマンドが、完了と報告されながら出力を失う問題を修正</li>
+                <li>Bash ツールの変更ファイル diff が、コマンド終了直前に書き込まれたファイルを見落とす問題を修正</li>
+                <li>権限プロンプト表示中にノートブックが変更された場合に <code>NotebookEdit</code> が誤ったセルを変更するケースを修正</li>
+                <li>Write が上書き対象ファイルを読めない場合にターンを拒否として終了させる問題を修正</li>
+                <li>プレーンな <code>timeout DURATION</code> でラップされた読み取り専用コマンド (例: <code>timeout 30 rg foo</code>) への不要な権限プロンプトを修正</li>
+            </ul>
+
+            <h3 class="section-subtitle">🤖 auto mode・権限</h3>
+            <ul class="fix-list">
+                <li><code>claude -p</code> が auto mode で安全性チェック不能によりアクションを拒否された場合に終了コード 0 で終了する問題を修正。テキストおよび JSON 出力で終了コード 1 を返す</li>
+                <li>クライアントがモデル変更と auto mode のリクエストを連続して送信した場合に auto mode が誤って拒否されるケースを修正</li>
+                <li>サーバーサイドレビューがセッションに届いていない場合に <code>/status</code> が「Auto mode server: Enabled」と表示する問題を修正</li>
+                <li>権限ルールや <code>autoMode</code> 設定が非常に大きい場合に auto mode が理由を示さずアクションを拒否する問題を修正。理由を説明し、deny ルールがなければターミナルで確認を求める</li>
+                <li>引用符付きの単語で書かれたコマンドを Bash の deny / ask ルールが見逃すケースを修正</li>
+                <li>管理対象設定の <code>CLAUDE_CODE_AUTO_MODE_SERVER=1</code> が、ゲートウェイ URL がそこにのみ設定されサーバー管理設定を取得できない場合に無視されるケースを修正</li>
+            </ul>
+
+            <h3 class="section-subtitle">💬 セッション・設定・UI</h3>
+            <ul class="fix-list">
+                <li>先頭にスペース、タブ、改行があるスラッシュコマンドが実行されずプレーンテキストとして送信される問題を修正</li>
+                <li>401 で失敗し続けるリクエストがリトライのたびにログインをリフレッシュし、他のセッションで 401 を引き起こす問題を修正</li>
+                <li><code>/context</code> が以降のターンでフルのビジュアルグリッドを Claude に送信する問題を修正。Claude はテーブルのみを読む</li>
+                <li>NFS、SMB、Lustre などのネットワークファイルシステム上のプロジェクトで、Linux の起動時にすべてのプロジェクトファイルが列挙されるケースを修正</li>
+                <li>Claude Code がファイルを書き込んだ直後数秒以内の設定ファイル編集が無視される問題を修正</li>
+                <li>レガシー名のまま残った設定ファイルが警告なしに設定を隠す問題を修正。どちらが使用されているかを stderr で表示する</li>
+                <li>読み取り専用フォルダーやバインドマウントされたファイルへの保存中にディスクが満杯になると、<code>~/.claude.json</code> や編集済みファイルが空または途中で切れた状態になる問題を修正</li>
+                <li><code>/diff</code> 関連の 3 件を修正。<code>HEAD</code> という名前のファイルがある場合の「Diff unavailable」、claude.ai とモバイルでの読み込み失敗、64 ターン以上がファイルを編集したセッションでペインが空で開く問題</li>
+                <li><code>/rewind</code> が <code>/branch</code> 以前のチェックポイントへのコード復元時に「No files were restored」で失敗する問題を修正</li>
+                <li><code>/clear</code> が、実行を継続するバックグラウンドエージェント、teammates、ワークフローの実行中コマンドを終了させる問題を修正</li>
+                <li><code>opus-5-5</code> のようなモデル名の誤記に対し、意図したモデルを提案する代わりに Claude Code の更新を案内する問題を修正</li>
+                <li>Monitor の WebSocket 監視が、<code>CLAUDE_CODE_PROXY_RESOLVES_HOSTS</code> 設定済みで DNS を持たないマシンのプロキシ配下で失敗する問題を修正</li>
+                <li>サブエージェントのハンドバックレポートが、verbose モード以外で展開した際に内部マーカーと出所注記を表示する問題を修正</li>
+                <li>Agent SDK ホストが、ディスク満杯時に汎用の終了コードエラーを受け取るケースと、OpenTelemetry の <code>claude_code.session.count</code> が <code>prewarm()</code> プロセスを誤カウントする問題を修正</li>
+            </ul>
+
+            <h3 class="section-subtitle">☁️ クラウドセッション・リモート</h3>
+            <ul class="fix-list">
+                <li>クラウドセッションがワーカー移動時に、PermissionRequest フックが追加したものなどセッションスコープの deny / ask 権限ルールを失う問題を修正</li>
+                <li>クラウドセッションの <code>/permissions</code> が「利用できない」とだけ返答する問題を修正。ルールの所在と変更方法を案内する</li>
+                <li><code>/clear</code> 後も実行を続けるバックグラウンドタスクが、Claude Code on the web のタスクリストから消える問題を修正</li>
+                <li>モバイルと web のクラウドセッションのスラッシュコマンドメニューに非表示コマンドが表示される問題を修正</li>
+                <li>agents view が、権限プロンプト待ちのバックグラウンドセッションに返信を送信したように見える問題を修正</li>
+                <li>セルフホストランナーセッションが、モデルアクセス更新の拒否が続いた際に説明なく失敗する問題を修正。より早くリトライし、警告を投稿する</li>
+                <li>Remote Control セッションが、使用量上限の解除後も他のデバイスで「Limit reached」と表示し続ける問題を修正</li>
+                <li><code>claude remote-control</code> が初回実行時の質問に回答がないまま終了コード 0 で静かに終了する問題と、改行なしのパイプされた <code>y</code> を無視する問題を修正</li>
+            </ul>
+
+            <div class="callout">
+                <strong>このほかの修正:</strong> Claude in Chrome の接続断からの復帰時の動作、Ghostty + tmux での Cmd+クリック、<code>/rename</code> の保存失敗時の警告、<code>${CLAUDE_PLUGIN_ROOT}</code> の <code>subagentStatusLine</code> での置換、プラグイン更新時の依存関係インストール、スクリーンリーダーモードでの Ctrl+G、TLS 検査プロキシ配下の証明書エラー対応、WebFetch の claude.ai 共有チャットリンクへの応答など多数の修正が含まれる
+            </div>
+        </section>
+
+        <!-- Improved -->
+        <section class="section">
+            <h2 class="section-title">改善 (Improved)</h2>
+            <ul class="fix-list improved">
+                <li>Windows での設定保存を改善。他のプログラムが開いているファイルをより長く待機し、強制終了で <code>~/.claude.json</code> が空になる可能性を低減</li>
+                <li><code>/model</code> ピッカーを改善。古いモデルは「More models」行の下にグループ化される</li>
+                <li>ターミナルの <code>/context</code> を改善。各リストは上位 10 行のみ、オンデマンドロードの MCP ツールはサーバーごとに 1 行を共有</li>
+                <li>ヒント、<code>/stats</code> / <code>/model</code> / <code>/sandbox</code> の詳細、拒否されたアクションのメッセージなど、セカンダリテキストのコントラストを改善</li>
+                <li>Claude in Chrome を改善。短時間の切断後は復帰を最大 6 秒待機し、<code>javascript_tool</code> の結果は 60,000 文字まで会話に残る</li>
+                <li><code>claude purge</code> と古いセッションのクリーンアップを改善。削除できなかったフォルダーをリトライし、残る場合はエラーとして報告</li>
+                <li>macOS / Windows で、大文字小文字のみが異なるパスの拒否メッセージがその綴りを明示する</li>
+                <li>Claude apps gateway の改善。警告がアップストリーム名を示し、支出上限エラーは「spend limit reached · resets Dec 1」形式で表示される</li>
+                <li>クラウドセッションの <code>/usage</code> が、プラン上限を表示できない場合に claude.ai の Settings → Usage へのリンクを示す</li>
+            </ul>
+        </section>
+
+        <!-- Changed / Removed -->
+        <section class="section">
+            <h2 class="section-title">動作変更 (Changed) と削除 (Removed)</h2>
+            <ul class="fix-list changed">
+                <li><strong>Monitor ツールの権限ルール適用</strong>: WebSocket 監視がすべての Bash コマンドのルールに従う。deny ルールは監視を拒否し、ask ルール下では Monitor への allow、bypass mode、auto mode のいずれもプロンプトをスキップしない</li>
+                <li><strong>auto mode 設定の保護</strong>: プロジェクト外でサーバーサイドチェックを無効化した場合、プロジェクトの設定ファイルやプラグインがそれを再有効化できなくなった</li>
+                <li><code>CLAUDE_CODE_PROXY_RESOLVES_HOSTS</code> は、ホストがネットワークを管理する環境では設定ファイルから設定できなくなった。プロセス環境で設定する</li>
+                <li>セッションの Bash / PowerShell の完全一致 ask ルールは、より広い deny ルールがコマンドをカバーする場合、確認ではなく拒否される</li>
+                <li>Bash ツールが、参照・表示系以外のフラグ付き <code>which</code> の実行前に権限を求める</li>
+                <li><code>--add-dir</code> のディレクトリは、信頼ダイアログの承認後に初めてプラグインマーケットプレイスを登録する</li>
+                <li>ネストされたスキルのロードを変更。Bash サンドボックス有効時、開始フォルダーより下の <code>.claude/skills</code> のスキルは、そこで開始するか <code>/cd</code> した場合のみロードされる</li>
+                <li>自己ペースの <code>/loop</code> は、再スケジュールなしにターンが終了した時点で終了する。従来の動作は <code>CLAUDE_CODE_LOOP_KEEPALIVE=1</code> で維持できる</li>
+                <li>PostToolUse フックが、ターン中断後に完了したツール呼び出しでも実行される (最大 10 秒)</li>
+                <li>セーフガードがサブエージェントを停止した後、Claude は自分で作業する代わりに、より狭いプロンプトでのリトライまたはユーザーへの報告を指示される</li>
+                <li>クラウドセッションは、deny / ask ルールをすべて維持できないワーカー移動時に、セッションスコープの allow ルールを破棄する</li>
+                <li>TLS 検査プロキシ配下の自動証明書修復は、<code>ALL_PROXY</code> が唯一のプロキシ変数の場合は実行されない。<code>HTTPS_PROXY</code> に http:// URL を設定する</li>
+                <li>アーティファクトデータベースの保存を変更。他者が書き込んだ可能性のある行の保存では各ファイルに隠しマーカーファイルが付与される</li>
+                <li><code>/claude-api managed-agents-onboard</code> のテンプレートを Claude Console に合わせて更新。Performance tuner を削除し、2 つを改名、5 つで web 検索とフェッチを無効化</li>
+            </ul>
+            <h3 class="section-subtitle">🗑️ 削除</h3>
+            <ul class="fix-list removed">
+                <li>Claude Code 組み込みの Claude in Chrome ツールから、拡張機能に保存されたショートカットの一覧表示と起動を行う <code>shortcuts_list</code> と <code>shortcuts_execute</code> を削除</li>
+            </ul>
+        </section>
+
+        <!-- Component Changes -->
+        <section class="section">
+            <h2 class="section-title">コンポーネント別の変更</h2>
+            <div class="component-grid">
+                <div class="component-card">
+                    <h4>🔌 Gateway</h4>
+                    <ul>
+                        <li>AWS GovCloud と他のアップストリームの混在、およびゲートウェイ環境のベース URL 変数に対する起動時警告を追加</li>
+                        <li>Amazon Bedrock ガードレールが転送されず、どの <code>bedrock</code> アップストリームも <code>guardrail</code> を設定していない場合の起動時ログ警告を追加</li>
+                        <li>すべてのアップストリームが Amazon Bedrock の場合に、Claude Desktop が常に失敗する web 検索ツールを提供する問題を修正</li>
+                    </ul>
+                </div>
+                <div class="component-card">
+                    <h4>🏃 セルフホストランナー</h4>
+                    <ul>
+                        <li><code>--use-anthropic-git-proxy</code> や <code>--configure-git</code> で開始したランナーが、起動チェックの失敗で終了する前に登録してしまう問題を修正</li>
+                        <li><code>CLAUDE_RUNNER_CHECKOUT_PATH</code> を変更。各リポジトリが独自のフォルダーを持ち、名前の重複時は <code>-2</code>、<code>-3</code> などが付く</li>
+                        <li>セッション終了時のデバッグログアップロードを削除。失敗したセッションのログはランナーホストに残る</li>
+                        <li><code>--trust-workspace false</code> が、リポジトリの設定ファイルとスキル内のフックの実行も停止する</li>
+                    </ul>
+                </div>
+                <div class="component-card">
+                    <h4>💻 VSCode</h4>
+                    <ul>
+                        <li>50,000 文字を超えるプロンプトが警告なく切り捨てられる問題を修正。プロンプトは通知とともにチャットボックスに残る</li>
+                        <li>ウィンドウのリロード後に未承認のプランを Claude が実行する問題を修正</li>
+                        <li>アンケートや「Report a problem」クリックが未完成のプロンプトを送信する問題、削除済みセッションのファイル復活、音声入力の多重開始などを修正</li>
+                        <li>大規模ワークスペースの診断ツールを改善。問題のないファイルを省き、コンパクトな JSON を返す</li>
+                        <li>サインインやコネクタ、API アドレスを指すリンクは、ブラウザで開く代わりにアドレス付きテキストとして表示される</li>
+                    </ul>
+                </div>
+                <div class="component-card">
+                    <h4>☁️ Cloud sessions / Code Review / Claude Tag</h4>
+                    <ul>
+                        <li>スケジュールされたタスクが memory という名前のコネクタを静かに除外する問題を修正</li>
+                        <li>クラウドセッションで待機中メッセージの Send now が実行中のバックグラウンドエージェントを終了させる問題を修正</li>
+                        <li>Code Review: GitHub 組織のリンク解除時に、その組織の All repositories 設定も無効化される</li>
+                        <li>Claude Tag: チャンネルリスト読み込み失敗のブロック解消、auto mode の allow ルール保存の上書き問題を修正。Enterprise 組織の Models 管理ページに Claude Tag 行を追加</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース - 開発者への影響</h2>
+            <div class="use-case">
+                <h4>🏢 LLM ゲートウェイ配下やテレメトリ無効環境で auto mode を利用する組織</h4>
+                <p>サーバーが確認できない呼び出しがフォールバックなしで確認・拒否されるようになったため、挙動の変化を確認する。従来の組み込み分類器を使い続ける場合は <code>CLAUDE_CODE_AUTO_MODE_SERVER=0</code> を、managed settings で <code>CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS</code> を設定している場合は <code>CLAUDE_CODE_AUTO_MODE_SERVER=1</code> も併せて設定する</p>
+            </div>
+            <div class="use-case">
+                <h4>🤖 CI / 無人実行環境 (claude -p、Agent SDK) の開発者</h4>
+                <p><code>claude -p</code> が auto mode で安全性チェック不能により拒否された場合、終了コード 1 を返すようになったため、終了コードを監視するスクリプトは変化を考慮する。権限プロンプトによる停止を避けたい場合は <code>permissions.denyInsteadOfPrompting</code> の利用を検討する</p>
+            </div>
+            <div class="use-case">
+                <h4>🔌 長時間実行の MCP ツールを持つ MCP サーバー開発者</h4>
+                <p>タスクとして実行される呼び出しが即座にバックグラウンドへ移動するようになった。同期動作が前提のクライアント統合は <code>CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND</code> でオプトアウトできる</p>
+            </div>
+            <h3 class="section-subtitle">✅ 必要なアクション</h3>
+            <ul class="action-list">
+                <li>自己ペースの <code>/loop</code> を利用するユーザー: 従来のフォールバック起床を維持するには <code>CLAUDE_CODE_LOOP_KEEPALIVE=1</code> を設定する</li>
+                <li>Claude API のレイテンシに課題がある開発者: <code>/claude-api latency-optimize</code> を実行し、待ち時間の発生箇所の特定と高速な設定の検証を行う</li>
+                <li>セルフホストランナーの運用者: 失敗セッションのログはランナーホスト上で確認する。<code>CLAUDE_RUNNER_CHECKOUT_PATH</code> のフォルダー命名変更 (重複時の <code>-2</code>、<code>-3</code> サフィックス) に依存するスクリプトがあれば更新する</li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Code v2.1.319 は <strong>146 件の変更</strong>を含む大型リリースで、<strong>auto mode のサーバーサイドチェックの厳格化</strong>と <strong>MCP タスクのバックグラウンド実行対応</strong>が中心。サーバーが確認できない呼び出しのフォールバック廃止は LLM ゲートウェイ配下やテレメトリ無効環境の組織に直接影響するため、<code style="font-family: monospace;">CLAUDE_CODE_AUTO_MODE_SERVER</code> の設定方針を決めておく必要がある。<strong>permissions.denyInsteadOfPrompting</strong> や <code style="font-family: monospace;">claude -p</code> の終了コード修正は無人実行の制御性を高め、Bash 権限バイパスやサンドボックスエスケープなどの<strong>セキュリティ修正</strong>、Monitor ツールの権限ルール適用により権限モデルの一貫性も強化された。<code style="font-family: monospace;">/claude-api latency-optimize</code> や <code style="font-family: monospace;">/tasks</code> の履歴行など日常の開発体験の改善も幅広く、ほぼすべての利用者に関係するアップデートである</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連リンク:</strong> <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">Claude Code リポジトリ</a> | <a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a></p>
+            <p style="margin-top: 8px;">このインフォグラフィックは reports/2026/2026-11-06-claude-code-v2-1-319.md を元に生成されました</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+</body>
+</html>
