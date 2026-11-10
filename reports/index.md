@@ -5,6 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-11-10](2026/2026-11-10-claude-code-v2-1-322.md) - Claude Code v2.1.322 リリース
+- [2026-11-09](2026/2026-11-09-claude-fable-5-2-mythos-5-2.md) - Claude Fable 5.2 / Claude Mythos 5.2 発表: 高度な技術作業向け最上位モデルがコーディング・金融・科学で新基準を確立
+- [2026-11-09](2026/2026-11-09-claude-code-v2-1-321.md) - Claude Code v2.1.321 リリース
 - [2026-11-06](2026/2026-11-06-claude-code-v2-1-319.md) - Claude Code v2.1.319 リリース
 - [2026-11-05](2026/2026-11-05-ip-allowlist-admin-api-signout.md) - IP アローリストと Admin API サインアウト機能がベータ提供開始 - 組織のセキュリティ管理を強化
 - [2026-11-03](2026/2026-11-03-text-watermarking-claude-models.md) - Claude Mythos 5 / Opus 4.7 / Sonnet 4.6 の生成テキストに Anthropic のテキスト透かしを付与
