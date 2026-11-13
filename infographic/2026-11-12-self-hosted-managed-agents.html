@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>セルフホスト型 Claude Managed Agents の提供開始 - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;        /* メインアクセント */
+            --anthropic-dark: #1a1a2e;         /* ダーク背景 */
+            --anthropic-light: #FFF8F0;        /* ライト背景 */
+            --anthropic-cream: #F5EDE4;        /* セカンダリ背景 */
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-right: 8px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header .lead {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 16px;
+        }
+
+        .header-chip {
+            display: inline-block;
+            margin-top: 12px;
+            background: rgba(212, 165, 116, 0.15);
+            border: 1px dashed var(--anthropic-coral);
+            color: #E8C9A8;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 8px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .sub-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            color: var(--anthropic-dark);
+        }
+
+        .section p.body-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card ul li {
+            padding-left: 1.5em;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card.before ul li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .comparison-card.after ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: 700;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 12px 0 8px;
+        }
+
+        .info-table th {
+            background: var(--anthropic-cream);
+            color: var(--anthropic-dark);
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 2px solid rgba(212, 165, 116, 0.4);
+            white-space: nowrap;
+        }
+
+        .info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.15);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .host-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+
+        .host-badge.anthropic {
+            background: #E8F1FF;
+            color: #1565C0;
+            border: 1px solid rgba(74, 144, 226, 0.5);
+        }
+
+        .host-badge.self {
+            background: #E9F7EC;
+            color: #2E7D32;
+            border: 1px solid #66BB6A;
+        }
+
+        .host-badge.choice {
+            background: #F3E5F5;
+            color: #6A1B9A;
+            border: 1px solid rgba(123, 97, 255, 0.5);
+        }
+
+        code.inline {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            background: var(--anthropic-cream);
+            color: #9a5b2d;
+            padding: 2px 6px;
+            border-radius: 6px;
+            word-break: break-all;
+        }
+
+        /* Notice / Warning boxes */
+        .notice {
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .notice.warning {
+            background: #FFF3E0;
+            border: 1px solid rgba(255, 152, 0, 0.5);
+        }
+
+        .notice.info {
+            background: #E8F1FF;
+            border: 1px solid rgba(74, 144, 226, 0.4);
+        }
+
+        .notice.success {
+            background: #E9F7EC;
+            border: 1px solid rgba(102, 187, 106, 0.5);
+        }
+
+        .notice strong {
+            color: var(--text-primary);
+        }
+
+        .notice ul {
+            list-style: none;
+            margin-top: 8px;
+        }
+
+        .notice ul li {
+            padding-left: 1.4em;
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .notice.warning ul li::before {
+            content: '⚠️';
+            position: absolute;
+            left: 0;
+            font-size: 11px;
+        }
+
+        .notice.info ul li::before {
+            content: 'ℹ️';
+            position: absolute;
+            left: 0;
+            font-size: 11px;
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step;
+            display: grid;
+            gap: 12px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .step-number {
+            counter-increment: step;
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .step p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: rgba(255, 255, 255, 0.92);
+            border-radius: 16px;
+            padding: 28px 32px;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        /* Link list */
+        .link-list {
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .link-list li {
+            margin-bottom: 8px;
+            padding-left: 1.4em;
+            position: relative;
+        }
+
+        .link-list li::before {
+            content: '🔗';
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+        }
+
+        .link-list a {
+            color: #9a5b2d;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .link-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: #9a5b2d;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">API</span>
+                <span class="category-badge">エージェント</span>
+                <span class="category-badge">エンタープライズ</span>
+                <h1>セルフホスト型 Claude Managed Agents の提供開始</h1>
+                <p class="date">📅 2026-11-12 | ソース: Claude API リリースノート</p>
+                <p class="lead">Managed Agents サービス全体 (API、エージェントループ、エージェント・セッション・セッション履歴の保存) を自社のクラウドアカウントやオンプレミスのデータセンターで実行可能に。推論プロバイダーも Claude API (デフォルト) のほか Amazon Bedrock、Google Cloud、Microsoft Foundry、自社ゲートウェイから選択できる</p>
+                <span class="header-chip">cma-server | PostgreSQL 16+ | ant beta:worker</span>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要</h2>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🏢</div>
+                    <div class="key-point-content">
+                        <h3>サービス全体を自社インフラでホスト可能に</h3>
+                        <p>これまでの「セルフホスト型サンドボックス」(ツール実行環境のみ自社ホスト) から拡張され、API、エージェントループ、エージェント・セッション・セッション履歴のストレージまで、Managed Agents サービス全体を自社のクラウドアカウントまたはオンプレミスで実行できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🤖</div>
+                    <div class="key-point-content">
+                        <h3>推論プロバイダーを選択可能</h3>
+                        <p>モデル呼び出しの送信先として、デフォルトの Claude API のほか、Amazon Bedrock、Claude Models on Google Cloud、Microsoft Foundry、自社のモデルゲートウェイを選択できる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>既存の API との互換性を維持</h3>
+                        <p>自社サーバーはホステッドサービスと同じ API を持つため、既存の SDK と <code class="inline">ant</code> CLI がそのまま利用できる。一部の機能差分は公式ドキュメントの「Differences from the hosted service」に記載されている。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📝</div>
+                    <div class="key-point-content">
+                        <h3>アクセス申請制</h3>
+                        <p>ダウンロードへのアクセスには Anthropic アカウントチームへの連絡が必要。サーバーソフトウェアは「Software License Agreement: Claude Managed Agents Server」に基づいてライセンスされる。</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>運用とセキュリティは自社の責任範囲に</h3>
+                        <p>ホステッドサービスで Anthropic が担っていたサーバーの保護、メモリストアのホスティング、異常利用の検知などは自社の責任となる。データレジデンシーやコンプライアンス要件の厳しい組織に適した選択肢である。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After: セルフホストの範囲</h2>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (セルフホスト型サンドボックス)</h4>
+                    <ul>
+                        <li>自社ホストできるのはツール実行環境 (サンドボックス) のみ</li>
+                        <li>API、エージェントループ、データ保存は Anthropic 側で実行</li>
+                        <li>エージェント・セッション・履歴は Anthropic 側に保存</li>
+                        <li>推論先は Anthropic (Claude API) に固定</li>
+                    </ul>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (セルフホスト型 Managed Agents)</h4>
+                    <ul>
+                        <li>サービス全体 (API、エージェントループ、ストレージ) を自社インフラで実行</li>
+                        <li>エージェント・セッション・履歴を自社のデータベースに保存</li>
+                        <li>推論プロバイダーを Claude API、Bedrock、Google Cloud、Foundry、自社ゲートウェイから選択</li>
+                        <li>オンプレミスやデータレジデンシー要件に対応</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="sub-title">🗂️ ホスティングオプションの比較</h3>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>オプション</th>
+                            <th>サンドボックス</th>
+                            <th>サービス</th>
+                            <th>モデル</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>クラウドサンドボックス (デフォルト)</strong></td>
+                            <td><span class="host-badge anthropic">Anthropic</span></td>
+                            <td><span class="host-badge anthropic">Anthropic</span></td>
+                            <td><span class="host-badge anthropic">Anthropic</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>セルフホスト型サンドボックス</strong></td>
+                            <td><span class="host-badge self">自社</span></td>
+                            <td><span class="host-badge anthropic">Anthropic</span></td>
+                            <td><span class="host-badge anthropic">Anthropic</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>セルフホスト型 Managed Agents (New)</strong></td>
+                            <td><span class="host-badge self">自社</span></td>
+                            <td><span class="host-badge self">自社</span></td>
+                            <td><span class="host-badge choice">Anthropic または選択したプロバイダー</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要機能</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🏢 サービス全体の自社ホスト</h3>
+                    <p>API、エージェントループ、エージェント・セッション・セッション履歴のストレージを自社インフラ (クラウドアカウントまたはオンプレミスのデータセンター) で実行できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 推論プロバイダーの選択</h3>
+                    <p>モデル呼び出しの送信先として、Claude API (デフォルト) のほか、Amazon Bedrock、Claude Models on Google Cloud、Microsoft Foundry、自社のモデルゲートウェイを選択できる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔌 既存の API との互換性</h3>
+                    <p>自社サーバーはホステッドサービスと同じ API を持つため、SDK と <code class="inline">ant</code> CLI がそのまま利用できる。既存コードは自社サーバーに対してもそのまま動作する。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🖥️ Web コンソール</h3>
+                    <p>サーバーのアドレスで Web ページが提供され、自社の ID プロバイダー経由でサインインし、エージェントの作成やセッションの実行ができる。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 アクセス申請制</h3>
+                    <p>ダウンロードへのアクセスには Anthropic アカウントチームへの連絡が必要。各リリースのアーカイブにはオペレーターガイド (<code class="inline">operator-guide.md</code>) が含まれ、設定・運用に Claude を活用できる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture (Mermaid) -->
+        <section class="section">
+            <h2 class="section-title">アーキテクチャ</h2>
+            <p class="body-text">1 つのデプロイメントは、1 台以上のサーバー、そのデータベース、自社のサンドボックスで構成される。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Network["🏢 自社インフラ"]
+        Apps(["👤 自社アプリケーション<br/>SDK / ant CLI"])
+        subgraph Service["🖥️ Managed Agents サービス"]
+            Server["🔌 cma-server<br/>API とエージェントループ"]
+            DB[("🗄️ PostgreSQL 16+<br/>エージェント / セッション / 履歴")]
+        end
+        subgraph Sandbox["📦 自社サンドボックス"]
+            Worker["⚙️ ワーカー<br/>シェル / ファイルツール実行"]
+        end
+    end
+
+    subgraph Providers["🤖 推論プロバイダー"]
+        direction LR
+        ClaudeAPI["⭐ Claude API<br/>デフォルト"]
+        Bedrock["☁️ Amazon Bedrock"]
+        GCloud["☁️ Google Cloud"]
+        Foundry["☁️ Microsoft Foundry"]
+        ClaudeAPI ~~~ Bedrock ~~~ GCloud ~~~ Foundry
+    end
+
+    Apps -->|Managed Agents API| Server
+    Worker -->|作業をポーリング| Server
+    Server --> DB
+    Server -->|モデル呼び出し| ClaudeAPI
+    Server -.->|選択可能| Bedrock
+    Server -.->|選択可能| GCloud
+    Server -.->|選択可能| Foundry
+
+    classDef platform fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef layer fill:none,stroke:#E1BEE7,stroke-width:2px,color:#666666
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef storage fill:#DCEDC8,stroke:#C5E1A5,stroke-width:2px,color:#33691E
+    classDef model fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef user fill:#E3F2FD,stroke:#BBDEFB,stroke-width:2px,color:#1565C0
+
+    class Network platform
+    class Service,Sandbox,Providers layer
+    class Server,Worker internal
+    class DB storage
+    class ClaudeAPI,Bedrock,GCloud,Foundry model
+    class Apps user
+                </pre>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="sub-title">🧩 デプロイメントの主要コンポーネント</h3>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>コンポーネント</th>
+                            <th>役割</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>サーバー</strong> <code class="inline">cma-server</code></td>
+                            <td>API の提供、エージェントループの実行、エージェント・セッション・履歴の保存を担う。エージェントがモデルを必要とするたびに、設定された推論プロバイダーを呼び出す。サーバー自体はエージェントのシェルツールやファイルツールを実行しない</td>
+                        </tr>
+                        <tr>
+                            <td><strong>データベース</strong></td>
+                            <td>PostgreSQL 16 以降。データベースなしの場合、サーバーはデータをメモリ上に保持し、再起動でデータは消去される</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ワーカー</strong></td>
+                            <td>サーバーから作業を取得し、エージェントのシェルツールとファイルツールを自社サンドボックス内で実行するプログラム。<code class="inline">ant beta:worker</code> コマンドまたは SDK ワーカーとして動作する</td>
+                        </tr>
+                        <tr>
+                            <td><strong>コンソール</strong></td>
+                            <td>サーバーのアドレスで提供される Web ページ。自社の ID プロバイダー経由でサインインし、エージェントの作成やセッションの実行ができる</td>
+                        </tr>
+                        <tr>
+                            <td><strong>管理 CLI</strong> <code class="inline">cma-server-admin</code></td>
+                            <td>環境と環境キーを作成する。Linux (x86-64 および Arm) と Apple シリコン搭載 macOS で動作する</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="sub-title">🔐 3 種類のクレデンシャル</h3>
+            <div class="table-wrap">
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>クレデンシャル</th>
+                            <th>保持者</th>
+                            <th>認証対象</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>サーバー API キー</strong></td>
+                            <td>自社アプリケーション、<code class="inline">ant</code> CLI、管理 CLI</td>
+                            <td>自社サーバーへのリクエスト</td>
+                        </tr>
+                        <tr>
+                            <td><strong>推論クレデンシャル</strong></td>
+                            <td>サーバー</td>
+                            <td>推論プロバイダーへのモデル呼び出し</td>
+                        </tr>
+                        <tr>
+                            <td><strong>環境キー</strong></td>
+                            <td>サーバーをポーリングするワーカー</td>
+                            <td>環境の作業キューとセッション</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="sub-title">🌐 ネットワーク外に出るデータ</h3>
+            <div class="notice info">
+                モデル呼び出しごとに、サーバーはツール入力・ツール結果を含むそれまでの会話を推論プロバイダーに送信する。Claude API への呼び出しには、セッション、エージェント、環境の ID も含まれる。
+            </div>
+
+            <h3 class="sub-title">⚠️ セキュリティ上の注意</h3>
+            <div class="notice warning">
+                <ul>
+                    <li>エージェントの <code class="inline">bash</code> ツールはワーカープロセスの権限とネットワークアクセスを持つ実際のシェルであり、ワーカー自体はシェルを分離しない。分離は実行環境 (コンテナや VM) に依存する</li>
+                    <li>ホステッドサービスで Anthropic が担っていたサーバーの保護、メモリストアのホスティング、異常利用の検知などは、自社の責任範囲となる</li>
+                    <li>データベースを構成しない場合、データはメモリ上に保持され、サーバーの再起動で消去される</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Developer Impact -->
+        <section class="section">
+            <h2 class="section-title">開発者への影響</h2>
+
+            <h3 class="sub-title">🎯 対象</h3>
+            <div class="key-points">
+                <div class="key-point">
+                    <div class="key-point-icon">🗄️</div>
+                    <div class="key-point-content">
+                        <p>エージェント、セッション、セッション履歴を自社インフラに保存する必要がある組織</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">☁️</div>
+                    <div class="key-point-content">
+                        <p>モデル呼び出しを Amazon Bedrock、Claude Models on Google Cloud、Microsoft Foundry、自社モデルゲートウェイに送信する必要がある組織</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🏛️</div>
+                    <div class="key-point-content">
+                        <p>オンプレミスやデータレジデンシーの要件を持つエンタープライズ</p>
+                    </div>
+                </div>
+            </div>
+            <div class="notice success">
+                <strong>補足</strong>: ツール実行のみを自社インフラで行いたい場合は、Anthropic がサービスを運用するセルフホスト型サンドボックスが引き続き推奨される。
+            </div>
+
+            <h3 class="sub-title">✅ 必要なアクション</h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <p><strong>アクセス申請</strong>: Anthropic アカウントチームに連絡し、ダウンロードへのアクセスを申請する</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <p><strong>クイックスタートの実施</strong>: 公式の「Get started with self-hosted Claude Managed Agents」に従ってサーバーを起動し、最初のセッションを実行する</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <p><strong>運用体制の整備</strong>: サーバー、データベース (PostgreSQL 16 以降)、サンドボックスの運用とセキュリティ確保、各リリースのインストールを自社で行う</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <p><strong>機能差分の確認</strong>: 一部の機能はホステッドサービスのみで提供されるため、導入前に「Differences from the hosted service」を確認する</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <p><strong>ライセンスの確認</strong>: サーバーソフトウェアは「Software License Agreement: Claude Managed Agents Server」に基づいてライセンスされる</p>
+                </div>
+            </div>
+
+            <h3 class="sub-title">🔁 移行ガイド</h3>
+            <div class="notice info">
+                自社サーバーはホステッドサービスと同じ API を持つため、既存の SDK や <code class="inline">ant</code> CLI を使用するコードは自社サーバーに対してもそのまま動作する。各リリースのアーカイブにはそのバージョンのオペレーターガイド (<code class="inline">operator-guide.md</code>) が含まれており、サーバーの設定・運用や接続コードの作成に Claude を活用できる。
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース</h2>
+            <div class="use-case">
+                <h4>🏛️ データレジデンシー要件への対応</h4>
+                <p>エージェント、セッション、セッション履歴を自社のクラウドアカウントやオンプレミスのデータセンターに保存できるため、データの保管場所に関する規制やコンプライアンス要件の厳しいエンタープライズでも Managed Agents を採用できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>☁️ 既存のクラウド契約を活用した推論</h4>
+                <p>モデル呼び出しを Amazon Bedrock、Claude Models on Google Cloud、Microsoft Foundry に送信できるため、既存のクラウド契約や調達ルートを活用しながらエージェントを運用できる。自社のモデルゲートウェイを経由させることで、組織の統制ポリシーも適用できる。</p>
+            </div>
+            <div class="use-case">
+                <h4>🔌 既存コードを変えないセルフホスト移行</h4>
+                <p>自社サーバーはホステッドサービスと同じ API を持つため、SDK や <code class="inline">ant</code> CLI を使用する既存のアプリケーションは、接続先を変えるだけでセルフホスト環境でもそのまま動作する。段階的な移行や検証がしやすい。</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                セルフホスト型 Claude Managed Agents の提供開始により、Managed Agents のホスティング選択肢は「クラウドサンドボックス」「セルフホスト型サンドボックス」に加えて<strong>「サービス全体のセルフホスト」</strong>まで拡大した。エージェントデータの自社保存や<strong>推論プロバイダーの選択</strong> (Amazon Bedrock、Google Cloud、Microsoft Foundry、自社ゲートウェイ) が可能になり、データレジデンシーやコンプライアンス要件の厳しいエンタープライズでも Managed Agents を採用しやすくなった。一方で、<strong>サーバー・データベース・サンドボックスの運用とセキュリティは自社の責任</strong>となるため、導入時にはホステッドサービスとの機能差分と運用体制の確認が重要である。利用を希望する場合は、Anthropic アカウントチームへの連絡が必要となる。
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p style="margin-bottom: 12px;"><strong>出典:</strong> <a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">https://platform.claude.com/docs/en/release-notes/overview</a></p>
+            <p style="margin-bottom: 8px;"><strong>関連リンク:</strong></p>
+            <ul class="link-list">
+                <li><a href="https://platform.claude.com/docs/en/release-notes/overview" target="_blank" rel="noopener noreferrer">Claude API リリースノート (出典)</a></li>
+                <li><a href="https://platform.claude.com/docs/en/managed-agents/self-hosted" target="_blank" rel="noopener noreferrer">Self-hosted Claude Managed Agents</a></li>
+                <li><a href="https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes" target="_blank" rel="noopener noreferrer">Self-hosted sandboxes</a></li>
+                <li><a href="https://platform.claude.com/docs/en/managed-agents/self-hosted/quickstart" target="_blank" rel="noopener noreferrer">Get started with self-hosted Claude Managed Agents</a></li>
+                <li><a href="https://platform.claude.com/docs/en/managed-agents/self-hosted/inference-provider" target="_blank" rel="noopener noreferrer">Inference provider</a></li>
+                <li><a href="https://platform.claude.com/docs/en/managed-agents/self-hosted/differences" target="_blank" rel="noopener noreferrer">Differences from the hosted service</a></li>
+                <li><a href="https://platform.claude.com/docs/en/managed-agents/self-hosted-data-and-access" target="_blank" rel="noopener noreferrer">Data and access in self-hosted Claude Managed Agents</a></li>
+                <li><a href="https://www.anthropic.com/legal/self-hosted-managed-agents-license" target="_blank" rel="noopener noreferrer">Software License Agreement: Claude Managed Agents Server</a></li>
+            </ul>
+            <p style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(212, 165, 116, 0.4);">発表日: 2026-11-12 | カテゴリ: API / エージェント / エンタープライズ | ソース: Claude API リリースノート</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

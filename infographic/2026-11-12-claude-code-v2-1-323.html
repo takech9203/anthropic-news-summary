@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.323 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point.highlight {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE9CC 100%);
+            border: 2px solid rgba(212, 165, 116, 0.5);
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding-left: 18px;
+            margin-top: 8px;
+        }
+
+        .feature-card ul li {
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p code,
+        .feature-card p code,
+        .feature-card ul code,
+        .use-case p code,
+        .tech-detail p code,
+        .callout code,
+        .detail-list code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12.5px;
+            background: rgba(212, 165, 116, 0.18);
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        /* Highlight callout */
+        .callout {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE9CC 100%);
+            border: 2px solid rgba(245, 158, 11, 0.4);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .callout strong {
+            color: var(--anthropic-dark);
+        }
+
+        /* Detail list */
+        .detail-list {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-radius: 12px;
+            padding: 20px 24px 20px 40px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .detail-list li {
+            margin-bottom: 8px;
+        }
+
+        .detail-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Tech Details */
+        .tech-detail {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .tech-detail h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .tech-detail p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: rgba(255, 255, 255, 0.92);
+            border-radius: 16px;
+            padding: 24px 28px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.323 リリース</h1>
+                <p class="subtitle">実験的機能 Code Mode の導入と大規模なセキュリティ強化。約 300 項目に及ぶ大型リリース</p>
+                <p class="date">📅 2026-11-12 | ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 - キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point highlight">
+                    <div class="key-point-icon">⚡</div>
+                    <div class="key-point-content">
+                        <h3>目玉機能: Code Mode (実験的・オプトイン)</h3>
+                        <p>Claude が JavaScript コードを書いてツールを呼び出す新パラダイム。ループや条件分岐を含むコードとして複数のツール呼び出しをまとめて記述・実行できる</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧩</div>
+                    <div class="key-point-content">
+                        <h3>プラグインエコシステムの強化</h3>
+                        <p><code>plugin.json</code> の <code>engines["claude-code"]</code> によるバージョン範囲指定、<code>claude plugin validate</code> の TypeScript フック型チェックなどを追加</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>多数のセキュリティ修正</h3>
+                        <p>Bash 権限チェックやサンドボックスに関して、権限プロンプトの迂回を防ぐ修正を多数収録。早期のアップデートを推奨</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>認証・サインインの安定性改善</h3>
+                        <p>バックグラウンドセッションやマルチプロファイル環境でのサインイン混在を防ぐ修正を多数収録</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📈</div>
+                    <div class="key-point-content">
+                        <h3>約 300 項目の大型リリース</h3>
+                        <p>安定性・パフォーマンス改善や挙動変更も含み、日常利用の開発者からプラグイン開発者、組織の管理者まで影響の大きいリリース</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要機能・変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>⚡ Code Mode (実験的)</h3>
+                    <p>Claude が JavaScript を書いてツールを呼び出す。従来の 1 回ずつの呼び出しと異なり、複数のツール呼び出しをプログラムとして組み合わせられる。有効化と組織単位での無効化の手順は公式ドキュメントに記載</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🧩 プラグイン開発者向け強化</h3>
+                    <ul>
+                        <li><code>engines["claude-code"]</code> で対応バージョン範囲を宣言。範囲外ではインストール・更新・ロードされない</li>
+                        <li><code>claude plugin validate</code> が TypeScript フックを型チェック (<code>--strict</code> で失敗扱い)</li>
+                        <li>mod の <code>engine.create</code> フック検証を追加</li>
+                        <li>プラグインの <code>agent</code> 設定が非推奨に</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 セキュリティ・権限の修正</h3>
+                    <ul>
+                        <li><code>Bash(ls*)</code> など接尾ワイルドカード付き allow ルールの権限プロンプト省略を修正</li>
+                        <li><code>sudo</code> や <code>env</code> などラッパー経由のコマンドを deny / ask ルールが見逃す問題を修正</li>
+                        <li>サンドボックスのシンボリックリンク経由の書き込みを無効化</li>
+                        <li>シークレットを含むように見えるルールはセッション限りに</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🔑 認証・サインインの修正</h3>
+                    <ul>
+                        <li><code>/fork</code> や <code>--bg</code> で別のサインインへ移る問題を修正</li>
+                        <li>MCP ツールが <code>TOKEN_EXPIRED</code> で終了する代わりに再サインインを要求</li>
+                        <li><code>/login</code> と <code>claude setup-token</code> のエラー表示を改善</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🚀 安定性・パフォーマンス</h3>
+                    <ul>
+                        <li>巨大ファイル変更後のメモリ急増を修正</li>
+                        <li><code>/compact</code> 再実行時の未応答メッセージ喪失を修正</li>
+                        <li>多数のサブエージェント使用時のメモリ使用量を改善</li>
+                        <li>WebFetch の速度とメモリ使用量を改善</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>⚠️ 注意が必要な挙動変更</h3>
+                    <ul>
+                        <li>未知のモデル ID のコンテキストウィンドウ既定値が 200K から 1M に変更 (<code>CLAUDE_CODE_DISABLE_1M_CONTEXT=1</code> で維持)</li>
+                        <li>v1 MCP クライアントが削除 (互換モードとして動作)</li>
+                        <li>セッション間メッセージ上限が約 20 から 100,000 に拡大</li>
+                        <li>内部の ripgrep / git がトークンなしで実行され漏えいを防止</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細 - Code Mode の仕組み</h2>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">従来のツール呼び出しでは、Claude がツールを 1 回呼び出すたびにモデルとの往復が発生する。Code Mode では Claude が JavaScript コードを生成し、そのコード内から複数のツールを呼び出すため、ループ処理や中間結果の加工をコード側で完結できる。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Traditional["従来のツール呼び出し"]
+        direction LR
+        T1["🤖 Claude"] -->|"ツール呼び出し 1 回ずつ"| T2["🔧 ツール"]
+        T2 -->|"結果を都度返却"| T1
+    end
+
+    subgraph CodeMode["⚡ Code Mode 実験的オプトイン"]
+        C1["🤖 Claude"] -->|"JavaScript を生成"| C2["📜 実行環境"]
+        C2 -->|"コード内から複数回呼び出し"| C3["🔧 ツール群"]
+        C3 -->|"結果をコードで加工・集約"| C2
+        C2 -->|"最終結果のみ返却"| C1
+    end
+
+    Traditional -.->|"オプトインで切り替え"| CodeMode
+
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef model fill:#E8EAF6,stroke:#C5CAE9,stroke-width:2px,color:#283593
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef api fill:#FFE0B2,stroke:#FFCC80,stroke-width:2px,color:#5D4037
+
+    class Traditional,CodeMode layer
+    class T1,C1 model
+    class C2 process
+    class T2,C3 api
+                </pre>
+            </div>
+
+            <h3 class="section-subtitle">🧩 plugin.json のバージョン範囲指定</h3>
+            <p style="font-size: 14px; color: var(--text-secondary);">プラグインが対応する Claude Code のバージョン範囲を <code style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: rgba(212, 165, 116, 0.18); border-radius: 4px; padding: 1px 5px; color: #8a5a2b;">engines["claude-code"]</code> で宣言できる。npm の <code style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: rgba(212, 165, 116, 0.18); border-radius: 4px; padding: 1px 5px; color: #8a5a2b;">engines</code> フィールドに似たセマンティクスで、プラグインの互換性を宣言的に管理できる。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">plugin.json の engines 設定例</span>
+                </div>
+                <pre><code class="language-json">{
+  "name": "my-plugin",
+  "version": "1.2.0",
+  "engines": {
+    "claude-code": ">=2.1.323"
+  }
+}</code></pre>
+            </div>
+            <div class="callout">
+                <strong>動作:</strong> 範囲外の環境ではプラグインはインストール・更新・ロードされず、インストールと更新は範囲に収まる最新バージョンを自動的に選択する
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース - 開発者への影響</h2>
+            <div class="use-case">
+                <h4>👩‍💻 Claude Code を日常利用する開発者</h4>
+                <p>セキュリティ修正が多数含まれるため、早期のアップデートを推奨。Code Mode を試す場合は公式ドキュメント (https://code.claude.com/docs/en/code-mode) で有効化手順を確認する。<code>Bash(ls*)</code> のような接尾ワイルドカードや変数名を含む allow ルールの挙動が変わったため、保存済みの権限ルールが期待どおりに動作するか見直す</p>
+            </div>
+            <div class="use-case">
+                <h4>🧩 プラグイン開発者</h4>
+                <p><code>plugin.json</code> に <code>engines["claude-code"]</code> を追加して互換範囲を宣言し、<code>claude plugin validate --strict</code> で TypeScript フックの型エラーを確認する。非推奨になった <code>agent</code> 設定は、将来の削除に備えて移行を検討する</p>
+            </div>
+            <div class="use-case">
+                <h4>🏢 組織の管理者・他ベンダーモデル利用者</h4>
+                <p>Code Mode の組織単位での有効化・無効化を検討し、セキュリティ修正を適用する。1M 未満のコンテキストウィンドウを持つ未知のモデル ID を使う場合は <code>CLAUDE_CODE_DISABLE_1M_CONTEXT=1</code> の設定を検討する。v1 MCP クライアント利用者は、互換モード (<code>MCP_SDK_GENERATION=v1</code>) での動作確認のうえ通常の v2 への移行を推奨</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Code v2.1.323 は、ツール呼び出しの新パラダイムとなり得る <strong>Code Mode を実験的に導入</strong>しつつ、<strong>Bash 権限チェック・サンドボックス・認証まわりの大量の堅牢化</strong>を取り込んだ大型リリースである。プラグイン開発者には <strong>engines によるバージョン範囲指定</strong>と <strong>TypeScript フックの型チェック</strong>という実用的なツールが提供された。セキュリティ修正の比重が大きいため、すべての利用者に<strong>早期のアップデートを推奨</strong>する。Code Mode はオプトインの実験的機能であり、挙動の詳細は公式ドキュメントで確認したうえで試すことが望ましい</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連リンク:</strong> <a href="https://code.claude.com/docs/en/code-mode" target="_blank" rel="noopener noreferrer">Code Mode ドキュメント</a> | <a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a> | <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">claude-code リポジトリ</a></p>
+            <p style="margin-top: 8px;">このインフォグラフィックは reports/2026/2026-11-12-claude-code-v2-1-323.md を元に生成されました</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

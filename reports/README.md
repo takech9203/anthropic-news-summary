@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-11-12](2026/2026-11-12-self-hosted-managed-agents.md) - セルフホスト型 Claude Managed Agents の提供開始
+- [2026-11-12](2026/2026-11-12-claude-code-v2-1-323.md) - Claude Code v2.1.323 リリース: 実験的機能 Code Mode の導入と大規模なセキュリティ強化
 - [2026-11-10](2026/2026-11-10-ipo-roadshow-launch.md) - Anthropic、IPO ロードショーを開始 - 825,000,000 株を 1 株 70.00〜78.00 ドルで募集へ
 - [2026-11-10](2026/2026-11-10-claude-code-v2-1-322.md) - Claude Code v2.1.322 リリース
 - [2026-11-09](2026/2026-11-09-claude-fable-5-2-mythos-5-2.md) - Claude Fable 5.2 / Claude Mythos 5.2 発表: 高度な技術作業向け最上位モデルがコーディング・金融・科学で新基準を確立
