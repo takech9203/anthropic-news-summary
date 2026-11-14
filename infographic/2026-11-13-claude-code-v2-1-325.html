@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.325 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point.highlight {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE9CC 100%);
+            border: 2px solid rgba(212, 165, 116, 0.5);
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding-left: 18px;
+            margin-top: 8px;
+        }
+
+        .feature-card ul li {
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p code,
+        .feature-card p code,
+        .feature-card ul code,
+        .use-case p code,
+        .tech-detail p code,
+        .callout code,
+        .detail-list code,
+        .comparison-card code,
+        .action-list code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12.5px;
+            background: rgba(212, 165, 116, 0.18);
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        /* Highlight callout */
+        .callout {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE9CC 100%);
+            border: 2px solid rgba(245, 158, 11, 0.4);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .callout strong {
+            color: var(--anthropic-dark);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action list */
+        .action-list {
+            counter-reset: action;
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-list li {
+            counter-increment: action;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-list li::before {
+            content: counter(action);
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .action-list strong {
+            color: var(--anthropic-dark);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: rgba(255, 255, 255, 0.92);
+            border-radius: 16px;
+            padding: 24px 28px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.325 リリース</h1>
+                <p class="subtitle">サンドボックス動作の既定値変更を含む大規模メンテナンスリリース。約 140 項目のセキュリティ修正と堅牢化</p>
+                <p class="date">📅 2026-11-13 | ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 - キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point highlight">
+                    <div class="key-point-icon">🏖️</div>
+                    <div class="key-point-content">
+                        <h3>最重要: サンドボックスの既定動作が変更</h3>
+                        <p>サンドボックス化された Bash コマンドも既定で通常の権限フロー (allow / ask / deny) に従うようになった。従来のプロンプトなし実行を維持するには <code>sandbox.autoAllowBashIfSandboxed: true</code> の設定が必要</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔒</div>
+                    <div class="key-point-content">
+                        <h3>多数のセキュリティ修正</h3>
+                        <p>zstd 圧縮レスポンスのデコード、Bash 権限チェックのギャップ、deny / ask ルールの適用漏れ、サンドボックス保護の抜けなどを広範に修正。早期のアップデートを推奨</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🛡️</div>
+                    <div class="key-point-content">
+                        <h3>権限・信頼まわりの強化</h3>
+                        <p>信頼していないリポジトリでの読み取り専用 git コマンドの確認、スケジュールタスクや <code>/loop</code> でのスキル実行前確認など、保守的な方針へ変更</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">⚙️</div>
+                    <div class="key-point-content">
+                        <h3>MCP タスク・バックグラウンドタスクの改善</h3>
+                        <p>回答待ちタスクの <code>/tasks</code> への誘導、Esc での「後で回答」、入力中メッセージを妨げない質問表示など UX を多数改善</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">💻</div>
+                    <div class="key-point-content">
+                        <h3>VS Code 拡張の改善</h3>
+                        <p>Tab キーで受け入れられるプロンプトサジェストと、API キーを作成しないキーレス Console サインインが追加された</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Before/After -->
+        <section class="section">
+            <h2 class="section-title">Before / After - サンドボックスと権限フロー</h2>
+            <p class="section-lead">サンドボックスを「権限確認の代替」ではなく「権限確認に加えた防御層」として扱う方針が明確になった。</p>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (〜 v2.1.324)</h4>
+                    <p>サンドボックス内のコマンドは「隔離されているため安全」とみなされ、<strong>権限プロンプトなし</strong>で実行されていた</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.325 〜)</h4>
+                    <p>サンドボックス化の有無にかかわらず<strong>通常の権限フロー</strong> (allow / ask / deny ルールと確認プロンプト) が既定で適用される</p>
+                </div>
+            </div>
+            <div class="callout">
+                <strong>組織の管理者向け:</strong> 管理対象設定 (managed settings) でサンドボックスを有効にしている組織は、従来の動作を維持する場合、最上位の管理ソースに <code>sandbox.autoAllowBashIfSandboxed: true</code> を追加する必要がある
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔒 セキュリティ修正</h3>
+                    <ul>
+                        <li>zstd 圧縮レスポンスのデコードに関する問題を修正</li>
+                        <li>一部の複合コマンドが確認なしで実行され得た Bash 権限チェックのギャップを修正</li>
+                        <li>相対パスの deny / ask ルール (例: <code>Read(./.env)</code>) が <code>cd</code> 後に効かなくなる問題などを修正</li>
+                        <li>サンドボックスが起動するプログラムからサインイントークンや API キーを分離</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🏖️ サンドボックス動作の変更</h3>
+                    <ul>
+                        <li>サンドボックス内コマンドも既定で通常の権限フローに従う</li>
+                        <li>追加ディレクトリ内の <code>.claude</code> 配下 (設定、スキル、フックなど) への書き込みも拒否</li>
+                        <li>ワークツリーの設定・フックや共有 git フォルダの保護を強化</li>
+                        <li>クラウドセッションは <code>sandbox.failIfUnavailable</code> 設定時でも起動可能に</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ 権限・信頼まわりの強化</h3>
+                    <ul>
+                        <li>信頼していないリポジトリでは読み取り専用 git コマンドでも確認 (<code>--add-dir</code> 指定で回避)</li>
+                        <li>スケジュールタスクと <code>/loop</code> はスキル実行前に確認 (無人実行は <code>Skill(name)</code> を許可)</li>
+                        <li>組織外公開アーティファクトの確認スキップを修正</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>⚙️ MCP タスク・バックグラウンドタスク</h3>
+                    <ul>
+                        <li>回答待ちタスクを Claude が認識し <code>/tasks</code> へ誘導</li>
+                        <li>質問に Esc で「後で回答」。質問は <code>/tasks</code> に残る</li>
+                        <li>入力中のメッセージの上に質問が開かないように改善</li>
+                        <li>バックグラウンドセッションが別のサインインの API キーを使用 (課金) する問題を修正</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🧩 プラグイン関連</h3>
+                    <ul>
+                        <li>MCP バンドル (<code>.mcpb</code>、<code>.dxt</code>) の展開先変更で読み取り専用フォルダに対応</li>
+                        <li><code>pluginDigests</code> は非推奨に。<code>prependPlugins</code> / <code>appendPlugins</code> へ移行</li>
+                        <li>マーケットプレースの <code>ref</code> がコミット完全 ID のピン指定に対応</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>💻 VS Code 拡張の改善</h3>
+                    <ul>
+                        <li>Tab キーで受け入れるプロンプトサジェストを追加 (<code>promptSuggestionEnabled: false</code> で無効化)</li>
+                        <li>API キーを作成しないキーレス Console サインイン</li>
+                        <li>SSH / WSL / コンテナでの MCP サインイン用リダイレクト URL フィールドを追加</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細 - サンドボックスと権限フローの関係</h2>
+            <p class="section-lead">v2.1.325 からは、サンドボックス化の有無にかかわらず通常の権限フローが適用されるのが既定となる。<code>autoAllowBashIfSandboxed</code> を <code>true</code> にした場合のみ、従来どおりプロンプトなしでサンドボックス内実行される。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    Cmd(["👤 Bash コマンド実行要求"]) --> Sandboxed{"サンドボックス対象か"}
+    Sandboxed -->|"いいえ"| Flow["🔐 通常の権限フロー"]
+    Sandboxed -->|"はい"| AutoAllow{"autoAllowBashIfSandboxed<br/>は true か"}
+    AutoAllow -->|"true 従来の動作"| Run["⚙️ プロンプトなしで<br/>サンドボックス内実行"]
+    AutoAllow -->|"false 既定 v2.1.325 以降"| Flow
+    Flow --> Decision{"ルール判定"}
+    Decision -->|"allow"| Run
+    Decision -->|"ask"| Prompt["🙋 ユーザーに確認"]
+    Decision -->|"deny"| Deny["⛔ 拒否"]
+    Prompt -->|"承認"| Run
+
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+    classDef process fill:#FFFFFF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef error fill:#FFEBEE,stroke:#F44336,stroke-width:2px,color:#333333
+
+    class Cmd input
+    class Sandboxed,AutoAllow,Decision decision
+    class Run,Prompt process
+    class Flow internal
+    class Deny error
+                </pre>
+            </div>
+
+            <h3 class="section-subtitle">⚙️ 従来の動作を維持する設定例</h3>
+            <p class="section-lead">サンドボックス内のコマンドをプロンプトなしで実行し続けたい場合は、settings.json に以下を追加する。管理対象設定でサンドボックスを有効化している組織では、最上位の管理ソースに設定する。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings.json - サンドボックスの従来動作を維持</span>
+                </div>
+                <pre><code class="language-json">{
+  "sandbox": {
+    "autoAllowBashIfSandboxed": true
+  }
+}</code></pre>
+            </div>
+
+            <h3 class="section-subtitle">📝 そのほかの修正と改善</h3>
+            <ul class="feature-card" style="list-style: disc; padding: 20px 24px 20px 40px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.7;">
+                <li>サードパーティゲートウェイや Foundry 上のセッションが毎ターンコンテキスト長エラーで停止する問題を修正</li>
+                <li>正常終了しなかったセッションの再開時に直近のターンが失われる問題を修正</li>
+                <li>保存済みの <code>sonnet[1m]</code> モデル設定が無効な ID に書き換えられる問題を修正</li>
+                <li>Code Mode スクリプトが <code>EnterWorktree</code> のワークツリーを無視する問題など Code Mode 関連の複数の修正</li>
+                <li>出力トークン上限で打ち切られたサブエージェントは、より簡潔に全体の回答を再度求められるように改善</li>
+                <li>OpenTelemetry の <code>user_prompt</code> イベントの欠落を修正 (ツール実行中のメッセージは <code>delivery.mode: "mid_turn"</code> を持つ)</li>
+                <li>Windows のスタートアップ停滞や <code>/resume</code> のドライブレター大文字小文字の問題などプラットフォーム固有の修正</li>
+            </ul>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース - 開発者への影響</h2>
+            <div class="use-case">
+                <h4>🏖️ サンドボックスを有効にしている開発者・組織</h4>
+                <p>サンドボックス内コマンドが権限プロンプトを出すようになるため、既定動作の変更に直接影響を受ける。権限プロンプトが増えた場合はワークフローを確認のうえ、必要に応じて <code>sandbox.autoAllowBashIfSandboxed: true</code> を設定する。管理対象設定でサンドボックスを有効化している組織は、最上位の管理ソースへの設定追加を検討する</p>
+            </div>
+            <div class="use-case">
+                <h4>⏰ スケジュールタスクや /loop で自動実行している利用者</h4>
+                <p><code>allowed-tools</code> やフックを宣言するスキルの実行前に確認が求められるようになった。無人実行を維持するには <code>permissions.allow</code> に <code>Skill(name)</code> を追加する。信頼していないリポジトリで読み取り専用 git コマンドをプロンプトなしで実行するには、<code>additionalDirectories</code> 設定ではなく <code>--add-dir</code> で指定する</p>
+            </div>
+            <div class="use-case">
+                <h4>🧩 プラグイン開発者・マーケットプレース運営者</h4>
+                <p><code>.mcpb</code> の展開先変更により読み取り専用のプラグインフォルダでもロード可能になった。<code>pluginDigests</code> は非推奨となり無視されるため <code>prependPlugins</code> / <code>appendPlugins</code> へ移行する。マーケットプレースをコミット ID でピンする場合、v2.1.325 より前のクライアントではロードできない点に注意する</p>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <ol class="action-list">
+                <li><strong>アップデートの適用</strong>: セキュリティ修正が多数含まれるため、早期の更新を推奨</li>
+                <li><strong>サンドボックス設定の確認</strong>: 権限プロンプトが増えた場合は <code>sandbox.autoAllowBashIfSandboxed: true</code> の設定を検討する</li>
+                <li><strong>自動実行タスクの見直し</strong>: スケジュールタスクや <code>/loop</code> の無人実行には <code>permissions.allow</code> に <code>Skill(name)</code> を追加する</li>
+                <li><strong>プロジェクト外リポジトリの指定方法の変更</strong>: <code>additionalDirectories</code> 設定ではなく <code>--add-dir</code> で指定する</li>
+                <li><strong>Remote Control をサービス運用している場合</strong>: <code>claude remote-control</code> の終了ステータス変更 (自律停止で 4、登録不可で 69) に合わせて再起動条件を確認する</li>
+            </ol>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Code v2.1.325 は、新機能よりも堅牢化に軸足を置いた<strong>大規模メンテナンスリリース</strong>である。最大の変更点は<strong>サンドボックス化された Bash コマンドが既定で通常の権限フローに従う</strong>ようになったことで、サンドボックスを「権限確認の代替」ではなく「権限確認に加えた防御層」として扱う方針が明確になった。<strong>zstd デコードのセキュリティ修正</strong>や <strong>Bash 権限チェックのギャップ修正</strong>も含まれるため、すべての利用者に<strong>早期のアップデートを推奨</strong>する。サンドボックスや自動実行タスクを活用している環境では、プロンプト動作の変化に合わせた設定の見直しが必要になる</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連リンク:</strong> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.325" target="_blank" rel="noopener noreferrer">v2.1.325 リリースページ</a> | <a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a> | <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">claude-code リポジトリ</a></p>
+            <p style="margin-top: 8px;">このインフォグラフィックは reports/2026/2026-11-13-claude-code-v2-1-325.md を元に生成されました</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
