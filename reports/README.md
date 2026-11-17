@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-11-16](2026/2026-11-16-text-watermarking-older-models.md) - テキスト透かしの対象モデル拡大: Claude Opus 4.6 / Opus 4.5 / Sonnet 4.5 / Haiku 4.5 に適用
+- [2026-11-16](2026/2026-11-16-claude-code-v2-1-326.md) - Claude Code v2.1.326 リリース: Code Mode とエージェントチームの併用対応を含む約 370 項目の大規模アップデート
 - [2026-11-13](2026/2026-11-13-claude-code-v2-1-325.md) - Claude Code v2.1.325 リリース: サンドボックス動作の既定値変更を含む大規模メンテナンスリリース
 - [2026-11-12](2026/2026-11-12-self-hosted-managed-agents.md) - セルフホスト型 Claude Managed Agents の提供開始
 - [2026-11-12](2026/2026-11-12-claude-code-v2-1-323.md) - Claude Code v2.1.323 リリース: 実験的機能 Code Mode の導入と大規模なセキュリティ強化
