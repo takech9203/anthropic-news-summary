@@ -5,6 +5,8 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-11-17](2026/2026-11-17-linked-billing-beta.md) - Linked billing をベータ提供開始 - 顧客の Claude 組織によるアプリ API 使用料の支払いが可能に
+- [2026-11-17](2026/2026-11-17-claude-code-v2-1-327.md) - Claude Code v2.1.327 リリース: stdin からの MCP 登録と `/status` 診断強化を含む約 175 項目のアップデート
 - [2026-11-16](2026/2026-11-16-text-watermarking-older-models.md) - テキスト透かしの対象モデル拡大: Claude Opus 4.6 / Opus 4.5 / Sonnet 4.5 / Haiku 4.5 に適用
 - [2026-11-16](2026/2026-11-16-claude-code-v2-1-326.md) - Claude Code v2.1.326 リリース: Code Mode とエージェントチームの併用対応を含む約 370 項目の大規模アップデート
 - [2026-11-13](2026/2026-11-13-claude-code-v2-1-325.md) - Claude Code v2.1.325 リリース: サンドボックス動作の既定値変更を含む大規模メンテナンスリリース
