@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.329 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point.highlight {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE9CC 100%);
+            border: 2px solid rgba(212, 165, 116, 0.5);
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding-left: 18px;
+            margin-top: 8px;
+        }
+
+        .feature-card ul li {
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p code,
+        .feature-card p code,
+        .feature-card ul code,
+        .use-case p code,
+        .callout code,
+        .section-lead code,
+        .comparison-card code,
+        .fix-category li code,
+        .action-list code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12.5px;
+            background: rgba(212, 165, 116, 0.18);
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        /* Highlight callout */
+        .callout {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE9CC 100%);
+            border: 2px solid rgba(245, 158, 11, 0.4);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .callout strong {
+            color: var(--anthropic-dark);
+        }
+
+        /* Before/After Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            padding: 24px;
+            border-radius: 16px;
+        }
+
+        .comparison-card.before {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            border: 2px solid #F87171;
+        }
+
+        .comparison-card.after {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            border: 2px solid #34D399;
+        }
+
+        .comparison-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .comparison-card.before h4 {
+            color: #DC2626;
+        }
+
+        .comparison-card.after h4 {
+            color: #059669;
+        }
+
+        .comparison-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Fix categories */
+        .fix-category {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border: 1px solid rgba(212, 165, 116, 0.25);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+        }
+
+        .fix-category h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 6px;
+        }
+
+        .fix-category li {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            margin-left: 18px;
+            margin-bottom: 4px;
+        }
+
+        /* Action list */
+        .action-list {
+            counter-reset: action;
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-list li {
+            counter-increment: action;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-list li::before {
+            content: counter(action);
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .action-list strong {
+            color: var(--anthropic-dark);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: rgba(255, 255, 255, 0.92);
+            border-radius: 16px;
+            padding: 24px 28px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        .summary-box code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12.5px;
+            background: rgba(212, 165, 116, 0.25);
+            color: #E8C9A8;
+            border-radius: 4px;
+            padding: 1px 5px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.329</h1>
+                <p class="subtitle">/code-review のブランチ全体レビュー化と Code Mode の安定化を中心とした 130 項目のアップデート</p>
+                <p class="date">📅 2026-11-20 | ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 - キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point highlight">
+                    <div class="key-point-icon">🌿</div>
+                    <div class="key-point-content">
+                        <h3><code>/code-review</code> の動作変更 (重要)</h3>
+                        <p>ターゲット未指定時はブランチ全体をデフォルトブランチと比較してレビューするようになり、PR 番号指定時は <code>gh pr diff</code> で確実に対象の pull request を読むようになった。失敗時はレビューせず安全に停止する</p>
+                    </div>
+                </div>
+                <div class="key-point highlight">
+                    <div class="key-point-icon">⚙️</div>
+                    <div class="key-point-content">
+                        <h3>Code Mode の 20 項目超の修正・変更 (重要)</h3>
+                        <p>スクリプトの暴走ループや長大ファイル保持によるメモリ問題を解消。テレメトリ・機能フラグが無効な環境でも起動するようになり、フックはフェイルオープン化された (拒否が必要なら <code>"onFailure": "block"</code> を設定)</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🔑</div>
+                    <div class="key-point-content">
+                        <h3>macOS Keychain 起因の繰り返しサインアウトを修正</h3>
+                        <p>Keychain の読み取りはできるが保存ができない場合の繰り返しサインアウトを修正。ログイン更新時は <code>Claude Code-write-check</code> アイテムで書き込み可否をテストする</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">🧠</div>
+                    <div class="key-point-content">
+                        <h3>長時間セッションのメモリ使用量を大幅に改善</h3>
+                        <p>status line スクリプトのメモリ暴走、バックグラウンドシェルや Remote Control による以前の会話のメモリ保持、大きな MCP ツール結果を持つ長時間セッションのメモリ使用量などを広範に改善</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📋</div>
+                    <div class="key-point-content">
+                        <h3><code>/tasks</code> の統合表示とスケジュールタスクの強化</h3>
+                        <p>スケジュールタスク、<code>/loop</code> のウェイクアップ、ゴール、この会話のフォークが <code>/tasks</code> に統合表示され、x キーで個別に停止できる。以前のバージョンで保存したタスクの多くは再スケジュールが必要になる点に注意</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.329</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">130</div>
+                    <div class="stat-label">リリース項目数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">91</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">22</div>
+                    <div class="stat-label">挙動変更・削除</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">17</div>
+                    <div class="stat-label">VS Code 拡張の更新</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🌿 <code>/code-review</code> のブランチ全体レビュー化</h3>
+                    <ul>
+                        <li>ターゲット未指定時は現在のブランチ全体をデフォルトブランチと比較してレビュー。複数コミットのブランチで diff を見失う問題も修正</li>
+                        <li>PR 番号指定時は <code>gh pr diff</code> で取得し、読めない場合はその旨を report</li>
+                        <li><code>--fix</code> や PR URL 指定時は、<code>gh pr diff</code> が拒否・失敗したらレビューせず停止</li>
+                        <li>存在しない <code>~/.claude/CLAUDE.md</code> による権限プロンプトと、medium レビューの findings カードが "high" と表示される問題を修正</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>⚙️ Code Mode の大規模修正</h3>
+                    <ul>
+                        <li>スクリプトの暴走ループがメモリを使い尽くす問題を修正 (上限で停止)</li>
+                        <li>大きなテキストファイルの保持、サブエージェント起床ごとのメモリ増加を修正</li>
+                        <li>MCP フォームの回答待ち中に 10 分制限で停止する問題、2 分超の MCP 呼び出しが "moved to the background" を受け取る問題を修正</li>
+                        <li>256 MiB を超える行範囲の読み取りを拒否するようになった</li>
+                        <li>テレメトリ・機能フラグが無効でも起動するように変更 (無効化は managed settings で)</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 <code>/tasks</code> とスケジュールタスクの強化</h3>
+                    <ul>
+                        <li>スケジュールタスク・<code>/loop</code>・ゴール・フォークを <code>/tasks</code> に統合表示し、x キーで個別停止</li>
+                        <li>ヘッダー・フッターのバックグラウンドカウントを 1 つの数字に一本化</li>
+                        <li>'Exit and stop tasks' がこのセッションのスケジュールタスクも終了</li>
+                        <li>注意: 以前のバージョンで保存したタスクの多くは新しいセッションで再スケジュールが必要</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🔑 macOS Keychain 関連の修正</h3>
+                    <ul>
+                        <li>読み取り可・保存不可の Keychain による繰り返しサインアウトを修正</li>
+                        <li>ログイン更新時に <code>Claude Code-write-check</code> アイテムで書き込み可否をテスト</li>
+                        <li><code>claude doctor</code> がサンドボックス内でロック解除を勧める問題を修正</li>
+                        <li><code>/tui</code> などのインプレース再起動がログイン更新を短時間待つように</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🧠 メモリ使用量の改善</h3>
+                    <ul>
+                        <li>終端なく出力する status line スクリプトによるフリーズとギガバイト単位のメモリ使用を修正</li>
+                        <li>バックグラウンドシェルや Remote Control が以前の会話のメモリを保持する問題を修正</li>
+                        <li>多数のファイル編集・大きな MCP ツール結果を持つ長時間セッションのメモリを改善</li>
+                        <li><code>--resume</code> / <code>--continue</code> 後のメモリ使用量と、メモリ逼迫時の画面更新スキップを改善</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🏃 Self-hosted runner の修正と変更</h3>
+                    <ul>
+                        <li>Git LFS リポジトリでセットアップが失敗する問題を修正 (ポインターで開始し <code>git lfs pull</code> で取得)</li>
+                        <li>SSH ホストエイリアス・GitHub SSH 証明書・GHE.com の SSH ユーザーの git remote に対応</li>
+                        <li><code>--push-outcome-on-release</code> がブランチを削除してしまう問題を修正</li>
+                        <li>2 つ目のホスト名のクローンは <code>_repos/clones/&lt;host&gt;/</code> 配下に作成</li>
+                        <li><code>--repository-folder</code> が <code>--capacity 1</code> のとき base フォルダー内のほとんどのフォルダーを指定可能に</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>💻 VS Code 拡張の更新 (17 項目)</h3>
+                    <ul>
+                        <li>trust プロンプト辞退後に Review trust から再読み込みなしで再表示可能に</li>
+                        <li>トークン更新に 10〜30 秒かかると全ウィンドウでサインアウトされる問題を修正</li>
+                        <li>IME 変換中のキー入力が権限プロンプトの操作やダイアログ操作を引き起こす問題を修正</li>
+                        <li>組み込みツールの安全性チェックが確認を求める理由を表示</li>
+                        <li>切れたツール入出力のエディタータブ表示、diff タブの Accept ボタン残留などを修正</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>✨ そのほかの新機能</h3>
+                    <ul>
+                        <li>trust ダイアログにフックの宣言元を示す警告を追加。非対話ホストでは managed settings のフック読み込み失敗を会話内で警告</li>
+                        <li><code>/mcp</code> に "Server message" 行: 接続拒否するリモート HTTP MCP サーバーの JSON-RPC エラーを表示</li>
+                        <li><code>/status</code> に "Marketplace auto-update" 行: 自動更新されない managed マーケットプレイスと理由を表示</li>
+                        <li>OpenTelemetry のイベント・メトリクス有効時も Code Mode を有効化可能に</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="section-subtitle">🌿 <code>/code-review</code> のレビュー対象の変更</h3>
+            <p class="section-lead">ターゲット未指定時と PR 番号指定時の両方で、レビュー対象の決め方が見直された。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Before["従来の /code-review"]
+        direction LR
+        B1["📝 ターゲット未指定<br/>現在の diff をレビュー"]
+        B2["⚠️ PR 番号指定<br/>チェックアウト中の<br/>ブランチを見ることがある"]
+        B1 ~~~ B2
+    end
+
+    subgraph After["v2.1.329 の /code-review"]
+        direction LR
+        A1["🌿 ターゲット未指定<br/>ブランチ全体を<br/>デフォルトブランチと比較"]
+        A2["🔍 PR 番号指定<br/>gh pr diff で取得<br/>失敗時は停止"]
+        A1 ~~~ A2
+    end
+
+    Before -.->|"動作変更"| After
+
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef warning fill:#FFF3E0,stroke:#FF9800,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+
+    class Before,After layer
+    class B1 internal
+    class B2 warning
+    class A1,A2 input
+                </pre>
+            </div>
+
+            <h3 class="section-subtitle">🪝 Code Mode のフックのフェイルオープン化 - Before / After</h3>
+            <div class="comparison">
+                <div class="comparison-card before">
+                    <h4>Before (〜 v2.1.328)</h4>
+                    <p>エラーになった PreToolUse フックが、Code Mode のスクリプトのツール呼び出しを<strong>拒否していた</strong> (Code Mode 外と挙動が異なっていた)</p>
+                </div>
+                <div class="comparison-card after">
+                    <h4>After (v2.1.329 〜)</h4>
+                    <p>エラーになった PreToolUse フックは、Code Mode 外と同様にツール呼び出しを<strong>拒否しない</strong> (フェイルオープン)。失敗時に必ず拒否すべきフックには <code>"onFailure": "block"</code> を設定する</p>
+                </div>
+            </div>
+            <p class="section-lead" style="margin-top: 16px;">フックの失敗時に必ずブロックすべきセキュリティ用途のフックには、<code>"onFailure": "block"</code> を明示する。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings.json - フェイルクローズドなフック定義</span>
+                </div>
+                <pre><code class="language-json">{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/local/bin/security-check.sh",
+            "onFailure": "block"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+            </div>
+
+            <h3 class="section-subtitle">🔄 <code>max_tokens</code> エラーの自動リトライ削除への対応</h3>
+            <p class="section-lead">v2.1.326 で導入された、<code>max_tokens</code> エラーに記載された上限での自動リトライが削除された。出力トークン上限が小さいモデルをゲートウェイ経由で使っている場合は、環境変数で上限を明示する。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">ゲートウェイのモデルの出力上限に合わせて設定</span>
+                </div>
+                <pre><code class="language-bash"># ゲートウェイのモデルの出力上限に合わせて設定
+export CLAUDE_CODE_MAX_OUTPUT_TOKENS=8192</code></pre>
+            </div>
+        </section>
+
+        <!-- Fix categories -->
+        <section class="section">
+            <h2 class="section-title">カテゴリ別の修正・変更の要約</h2>
+            <div class="fix-category">
+                <h4>⚙️ Code Mode のスクリプト実行の修正</h4>
+                <ul>
+                    <li>Esc 後にスクリプトの完了済み編集と停止したコマンドが隠れ、終了時に失われる問題を修正</li>
+                    <li>数千回のツール呼び出し後にターミナルがフリーズする時間を大幅に短縮</li>
+                    <li><code>let x;</code> が前のスクリプトで <code>x</code> に与えた値を保持してしまう問題を修正</li>
+                    <li>引数不要のツールを引数なしで呼ぶとパラメータ不足エラーになる問題を修正</li>
+                    <li>4,096 を超えるツールがあるセッションで <code>tools</code> 経由のアクセスを失う問題を修正</li>
+                    <li>一部のツールのみを列挙する mod が Code Mode を黙って無効化する問題を修正 (無効化は managed settings で)</li>
+                    <li>自前の <code>log</code>、<code>preview</code>、<code>sleep</code> を宣言するスクリプトを拒否せず実行。MCP ツールのターン終了要求を待機スクリプトからの呼び出しでも尊重</li>
+                </ul>
+            </div>
+            <div class="fix-category">
+                <h4>🐛 注目のバグ修正 (抜粋)</h4>
+                <ul>
+                    <li><strong><code>~/.claude.json</code> の保全</strong>: 読み取れない状態のまま保存が走ると設定がデフォルトにリセットされることがある問題を修正</li>
+                    <li><strong><code>/terminal-setup</code> の安全化</strong>: VS Code の settings / keybindings ファイルを破損する問題と、Shift+Enter バインドを失いながら成功と報告する問題を修正</li>
+                    <li><strong>IDE diff の保全</strong>: 編集受け入れ時に末尾の改行や BOM が失われる問題を修正</li>
+                    <li><strong><code>/teleport</code></strong>: クラウドセッション選択時に開いている会話が置き換えられる問題を修正 (新しいセッションを開始し <code>/resume</code> で戻れる)</li>
+                    <li><strong>使用状況まわり</strong>: <code>/usage</code> の「オフ」誤表示、<code>/usage-credits</code> の再ログイン要求、<code>/model</code> が上限ブロックを伝えない問題を修正</li>
+                    <li><strong>MCP のファイル種別</strong>: <code>application/octet-stream</code> で送られる PDF・画像・Office ファイルが .bin として保存され読めなくなる問題を修正</li>
+                    <li><strong>auto mode</strong>: 作業ディレクトリ外や自分自身を指すシンボリックリンクの <code>rm</code> に手動承認を求める問題を修正</li>
+                    <li><strong>Opus 4.8 / Opus 5</strong>: ファイル送信が初回に失敗することがある問題を修正</li>
+                </ul>
+            </div>
+            <div class="fix-category">
+                <h4>🔄 そのほかの挙動変更と削除</h4>
+                <ul>
+                    <li><strong>auto mode の <code>git status</code> 削減</strong>: 実行頻度を下げ、大規模リポジトリの待ち時間を短縮。変更を破棄する git コマンドはワーキングツリーの確認までブロックされることがある</li>
+                    <li><strong>チームメイトペイン</strong>: 一部が /bin/sh 経由で起動し、シェルのスタートアップファイルを読まないことがある</li>
+                    <li><strong>macOS の computer use</strong>: 新しい安全ルールに更新され、一部のアクション拒否・アプリ制限・30 秒超のアプリ起動の打ち切りが適用される</li>
+                    <li><strong>Gateway の警告強化</strong>: <code>access_control.allow_cidrs</code> が空の間は毎回起動時に通知される</li>
+                    <li><strong><code>max_tokens</code> エラーの自動リトライ削除</strong>: 必要に応じて <code>CLAUDE_CODE_MAX_OUTPUT_TOKENS</code> を設定する</li>
+                    <li><strong>VS Code のコマンド出力</strong>: 隠し文字と制御シーケンスを記号として表示するため、一部言語のテキストが崩れて見えることがある</li>
+                    <li>Stop / SubagentStop フックの <code>background_tasks</code> で Monitor のスクリプトが <code>monitor</code> として列挙される</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース - 開発者への影響</h2>
+            <div class="use-case">
+                <h4>🌿 <code>/code-review</code> を CI やレビューフローで使う開発者</h4>
+                <p>ターゲット未指定時の対象が「現在の diff」から「ブランチ全体とデフォルトブランチの比較」に変わった。PR レビューは <code>gh pr diff</code> 経由となるため、<code>gh</code> CLI が利用できない環境では停止する点を確認する</p>
+            </div>
+            <div class="use-case">
+                <h4>🛡️ Code Mode とフックでポリシーを適用する組織</h4>
+                <p>フックがフェイルオープン化されたため、失敗時に必ず拒否すべき command / HTTP / MCP ツールフックには <code>"onFailure": "block"</code> を設定する。また「テレメトリ無効」などに依存して Code Mode を無効化していた場合は、managed settings での明示的な無効化に切り替える</p>
+            </div>
+            <div class="use-case">
+                <h4>🍎 macOS ユーザー・長時間セッションの利用者</h4>
+                <p>Keychain への書き込み不可による繰り返しサインアウトが解消され、<code>Claude Code-write-check</code> という Keychain アイテムが作られるようになる。長時間セッションやバックグラウンド処理のメモリ使用量も大幅に改善されるため、早期の更新が有効</p>
+            </div>
+            <div class="use-case">
+                <h4>🏃 Self-hosted runner の運用者・スケジュールタスクの利用者</h4>
+                <p>Git LFS・SSH エイリアス・ブランチ削除など運用に関わる修正が多い。複数ホストのクローン配置と <code>--repository-folder</code> の挙動変更にも注意する。以前のバージョンで保存したスケジュールタスクの多くは、新しいセッションで再スケジュールが必要になる</p>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <ol class="action-list">
+                <li><strong>アップデートの適用</strong>: メモリ使用量・認証・Code Mode の安定性に関わる修正が多いため、早期の更新を推奨する</li>
+                <li><strong>スケジュールタスクの再登録</strong>: 以前のバージョンで保存したスケジュールタスクが新しいセッションで動かない場合は、再スケジュールする</li>
+                <li><strong>Code Mode のフック構成の確認</strong>: フック失敗時に拒否が必要な command / HTTP / MCP ツールフックには <code>"onFailure": "block"</code> を設定する。Code Mode の無効化が「テレメトリ無効」などに依存していた場合は managed settings での明示的な無効化に切り替える</li>
+                <li><strong><code>/code-review</code> の運用確認</strong>: レビュー対象がブランチ全体に変わったことと、<code>gh pr diff</code> が失敗すると停止することを確認する</li>
+                <li><strong>ゲートウェイ利用者の設定確認</strong>: <code>max_tokens</code> エラーの自動リトライが削除されたため、必要に応じて <code>CLAUDE_CODE_MAX_OUTPUT_TOKENS</code> を設定する。<code>access_control.allow_cidrs</code> が空のゲートウェイは毎回起動時に通知が出る</li>
+            </ol>
+            <div class="callout">
+                <strong>移行ガイド (該当する場合):</strong> 一部のツールのみを列挙する mod で Code Mode を無効化していた場合、この方法では無効にならなくなったため managed settings で無効化する。チームメイトペインでシェルのスタートアップファイルに依存していた場合は、一部のペインが /bin/sh 経由で起動して環境変数や PATH の設定が読まれないことがあるため、必要な設定をセッション側で明示する
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Code v2.1.329 は、<strong><code>/code-review</code> をブランチ全体レビューと <code>gh pr diff</code> による確実な PR 取得へと刷新</strong>し、<strong>Code Mode のメモリ暴走・実行制御の問題を集中的に解消</strong>したリリースである。macOS Keychain 起因の繰り返しサインアウトの修正、status line スクリプトやバックグラウンド処理によるメモリ肥大の解消、<strong><code>/tasks</code> へのスケジュールタスク・<code>/loop</code>・フォークの統合</strong>など、日常利用の信頼性を底上げする修正が 130 項目にわたって含まれる。Code Mode の起動条件緩和とフックのフェイルオープン化は組織のポリシー運用に影響するため、managed settings と <strong><code>"onFailure": "block"</code></strong> による明示的な制御への移行を推奨する</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連リンク:</strong> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.329" target="_blank" rel="noopener noreferrer">v2.1.329 リリースページ</a> | <a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a> | <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">claude-code リポジトリ</a></p>
+            <p style="margin-top: 8px;">このインフォグラフィックは reports/2026/2026-11-20-claude-code-v2-1-329.md を元に生成されました</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
