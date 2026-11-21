@@ -5,7 +5,9 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-11-21](2026/2026-11-21-claude-code-v2-1-330.md) - Claude Code v2.1.330 リリース: Enterprise Admin Console 管理組織へのサインイン対応とチャート描画 mod「easel」を含む 142 項目のアップデート
 - [2026-11-20](2026/2026-11-20-claude-code-v2-1-329.md) - Claude Code v2.1.329 リリース: /code-review のブランチ全体レビュー化と Code Mode の安定化を中心とした 130 項目のアップデート
+- [2026-11-20](2026/2026-11-20-anthropic-ipo-close.md) - Anthropic、IPO のクロージングを発表 - 引受人オプション全額行使で計 1,127,000,000 株、同時私募と合わせグロス約 1,195 億ドルを調達
 - [2026-11-19](2026/2026-11-19-claude-code-v2-1-328.md) - Claude Code v2.1.328 リリース: auto mode のサードパーティプロバイダー対応と Code Mode の大規模修正を含む約 145 項目のアップデート
 - [2026-11-18](2026/2026-11-18-anthropic-prices-ipo.md) - Anthropic、IPO 価格を 1 株 83.00 ドルに決定 - 980,000,000 株を募集、11 月 19 日に Nasdaq で取引開始へ
 - [2026-11-17](2026/2026-11-17-linked-billing-beta.md) - Linked billing をベータ提供開始 - 顧客の Claude 組織によるアプリ API 使用料の支払いが可能に
