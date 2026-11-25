@@ -5,6 +5,7 @@ Anthropic の最新ニュースレポート一覧
 
 ## 2026
 
+- [2026-11-24](2026/2026-11-24-claude-code-v2-1-332.md) - Claude Code v2.1.332 リリース: MCP サーバー由来のスキル (ベータ) と大規模なフリーズ修正を含む 150 項目のアップデート
 - [2026-11-23](2026/2026-11-23-opus-4-5-deprecation-efs-beta.md) - Claude Opus 4.5 の非推奨化、Enterprise Frontier Safeguards ベータ提供開始、組織 Webhook のイベント追加
 - [2026-11-23](2026/2026-11-23-claude-code-v2-1-331.md) - Claude Code v2.1.331 リリース: 主要クラウドプラットフォームでの Code Mode 対応とプラグイン optionalDependencies を含む 134 項目のアップデート
 - [2026-11-21](2026/2026-11-21-claude-code-v2-1-330.md) - Claude Code v2.1.330 リリース: Enterprise Admin Console 管理組織へのサインイン対応とチャート描画 mod「easel」を含む 142 項目のアップデート

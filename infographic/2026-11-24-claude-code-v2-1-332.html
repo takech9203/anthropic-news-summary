@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code v2.1.332 リリース - Anthropic News Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            /* Anthropic Brand Colors */
+            --anthropic-coral: #D4A574;
+            --anthropic-dark: #1a1a2e;
+            --anthropic-light: #FFF8F0;
+            --anthropic-cream: #F5EDE4;
+
+            /* Semantic Colors */
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-muted: #6a6a7a;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+
+            /* Gradients */
+            --gradient-header: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            --gradient-accent: linear-gradient(135deg, #D4A574 0%, #E8C9A8 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: var(--anthropic-light);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-header);
+            color: white;
+            padding: 48px 32px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: var(--anthropic-coral);
+            color: var(--anthropic-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 12px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(212, 165, 116, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--anthropic-coral);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-lead {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: grid;
+            gap: 16px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--anthropic-cream);
+            border-radius: 12px;
+        }
+
+        .key-point.highlight {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE9CC 100%);
+            border: 2px solid rgba(212, 165, 116, 0.5);
+        }
+
+        .key-point-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .key-point-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--anthropic-cream) 100%);
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding-left: 18px;
+            margin-top: 8px;
+        }
+
+        .feature-card ul li {
+            margin-bottom: 6px;
+        }
+
+        .key-point-content p code,
+        .feature-card p code,
+        .feature-card ul code,
+        .use-case p code,
+        .callout code,
+        .section-lead code,
+        .comparison-card code,
+        .fix-category li code,
+        .action-list code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12.5px;
+            background: rgba(212, 165, 116, 0.18);
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #8a5a2b;
+            word-break: break-all;
+        }
+
+        /* Highlight callout */
+        .callout {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE9CC 100%);
+            border: 2px solid rgba(245, 158, 11, 0.4);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .callout strong {
+            color: var(--anthropic-dark);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--gradient-header);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--anthropic-coral);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Fix categories */
+        .fix-category {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border: 1px solid rgba(212, 165, 116, 0.25);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+        }
+
+        .fix-category h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--anthropic-dark);
+            margin-bottom: 6px;
+        }
+
+        .fix-category li {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            margin-left: 18px;
+            margin-bottom: 4px;
+        }
+
+        /* Action list */
+        .action-list {
+            counter-reset: action;
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .action-list li {
+            counter-increment: action;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .action-list li::before {
+            content: counter(action);
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            background: var(--gradient-accent);
+            color: var(--anthropic-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .action-list strong {
+            color: var(--anthropic-dark);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2d2d44;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-lang {
+            color: var(--anthropic-coral);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .code-title {
+            color: #a0a0b0;
+            font-size: 12px;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px !important;
+        }
+
+        /* Use Cases */
+        .use-case {
+            background: linear-gradient(135deg, var(--anthropic-cream) 0%, #FFF8F0 100%);
+            border-left: 4px solid var(--anthropic-coral);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .use-case h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--anthropic-dark);
+        }
+
+        .use-case p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Mermaid */
+        .mermaid-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 2px solid rgba(212, 165, 116, 0.2);
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: var(--gradient-header);
+            color: rgba(255, 255, 255, 0.92);
+            border-radius: 16px;
+            padding: 24px 28px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .summary-box strong {
+            color: var(--anthropic-coral);
+        }
+
+        .summary-box code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 12.5px;
+            background: rgba(212, 165, 116, 0.25);
+            color: #E8C9A8;
+            border-radius: 4px;
+            padding: 1px 5px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 24px 32px;
+            background: var(--anthropic-cream);
+            border-radius: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--anthropic-coral);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <span class="category-badge">Claude Code</span>
+                <h1>Claude Code v2.1.332</h1>
+                <p class="subtitle">MCP サーバー由来のスキル (ベータ) と大規模なフリーズ修正を含む 150 項目のアップデート</p>
+                <p class="date">📅 2026-11-24 | ソース: Claude Code Changelog</p>
+            </div>
+        </header>
+
+        <!-- Key Points -->
+        <section class="section">
+            <h2 class="section-title">概要 - キーポイント</h2>
+            <div class="key-points">
+                <div class="key-point highlight">
+                    <div class="key-point-icon">🔌</div>
+                    <div class="key-point-content">
+                        <h3>MCP サーバー由来のスキル (ベータ、新機能)</h3>
+                        <p>MCP サーバーが提供するスキルを利用できるようになった。これらのスキルはスラッシュメニューに <code>server:skill</code> 形式で表示され、MCP サーバーがツールだけでなくパッケージ化された手順 (スキル) も配布できるようになった</p>
+                    </div>
+                </div>
+                <div class="key-point highlight">
+                    <div class="key-point-icon">🪝</div>
+                    <div class="key-point-content">
+                        <h3><code>PreSkillShellCommand</code> フックイベント (新機能)</h3>
+                        <p>スキルやコマンドの読み込み時に実行されるインラインシェルコマンドを、読み込みの時点で拒否できる。組織でのスキル利用のガバナンスが強化される</p>
+                    </div>
+                </div>
+                <div class="key-point highlight">
+                    <div class="key-point-icon">🧊</div>
+                    <div class="key-point-content">
+                        <h3>フリーズ・ハング関連の大規模な修正 (重要)</h3>
+                        <p>名前付きパイプの読み取り、フックの暴走出力、MCP サーバーの標準出力フラッド、長い未分割文字列などに起因する多数のフリーズ・ハングが解消された</p>
+                    </div>
+                </div>
+                <div class="key-point highlight">
+                    <div class="key-point-icon">☁️</div>
+                    <div class="key-point-content">
+                        <h3>クラウドプロバイダーのモデルエイリアスとフォールバックの見直し (重要)</h3>
+                        <p>Microsoft Foundry のデフォルトモデルが Sonnet 5.5 に変更され、Foundry と Google Cloud の Agent Platform では <code>sonnet</code> / <code>opus</code> エイリアスの指す先が更新された。Amazon Bedrock の <code>sonnet</code> は Sonnet 4.5 のまま</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <div class="key-point-icon">📊</div>
+                    <div class="key-point-content">
+                        <h3>OpenTelemetry の <code>assistant_response</code> イベント (新機能)</h3>
+                        <p>レスポンスロギングが有効な場合、SendUserMessage や Cowork のメッセージツールを通じて Claude が送るテキストに対してイベントが記録される。デスクトップ Code タブの <code>service.name</code> は <code>claude-code-desktop</code> に変更された</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <h2 class="section-title">数字で見る v2.1.332</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">150</div>
+                    <div class="stat-label">リリース項目数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">11</div>
+                    <div class="stat-label">新機能</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">93</div>
+                    <div class="stat-label">バグ修正</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">19</div>
+                    <div class="stat-label">改善</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">27</div>
+                    <div class="stat-label">挙動変更</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">30</div>
+                    <div class="stat-label">VS Code 拡張の更新</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">主要な変更点</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔌 MCP サーバー由来のスキル (ベータ)</h3>
+                    <ul>
+                        <li>MCP サーバーが提供するスキルがスラッシュメニューに <code>server:skill</code> 形式で表示される。それ以外のスキルは従来どおりの名前を保つ</li>
+                        <li>MCP サーバーがツールだけでなく、パッケージ化された手順 (スキル) も配布できるようになり、エコシステムの拡張点が増えた</li>
+                        <li>Mac で computer use を有効にしている場合、<code>computer-use</code> が予約スキル名となり、同名の自作スキル・コマンドは読み込まれなくなった</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🪝 <code>PreSkillShellCommand</code> フック</h3>
+                    <ul>
+                        <li>スキル・コマンド読み込み時のインラインシェルコマンドを、読み込みの時点でポリシーにより拒否できる</li>
+                        <li>組織でのスキル利用のガバナンスが強化される</li>
+                        <li>注意: v2.1.331 以前では、このイベントを記述した設定ファイルがあると起動時にダイアログが開く</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🧊 フリーズ・ハングの修正</h3>
+                    <ul>
+                        <li>書き込み側のいない名前付きパイプで Read・@ メンション・コンパクションがハングする問題を修正 (読み取りは 20 秒後に失敗)</li>
+                        <li>フックの際限ない出力によるフリーズとメモリの暴走をほとんどのケースで修正。約 50,000 文字を超えるテキストは短縮される</li>
+                        <li>複数のワイルドカードを含む権限ルール・フック条件の照合によるフリーズを修正</li>
+                        <li>ローカル MCP サーバーの標準出力フラッドで Ctrl+C も効かなくなる問題を修正</li>
+                        <li>巻き戻し・セッション再開・<code>/stats</code> のフリーズ、自動コンパクションの連続失敗も修正</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>☁️ モデルエイリアスとフォールバック</h3>
+                    <ul>
+                        <li>Google Cloud の Agent Platform と Microsoft Foundry で <code>sonnet</code> が Sonnet 5.5 を指すように。Foundry の <code>opus</code> は Opus 5.5 を指す</li>
+                        <li>Foundry のデフォルトモデルが Sonnet 5.5 に変更。Claude Sonnet 4、Opus 4、Opus 4.1 は引退扱いに</li>
+                        <li>Bedrock Mantle では <code>sonnet</code> が Sonnet 5 を意味するようになった (Sonnet 5.5 ではない)</li>
+                        <li>ゲートウェイが独自の文言でモデルを拒否した場合でも、応答する古いモデルへステップダウンするようになった</li>
+                        <li><code>--model default</code> はモデルが利用できない場合にエラーで停止せず、古いモデルへ移動する</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 OpenTelemetry と監視</h3>
+                    <ul>
+                        <li><code>assistant_response</code> イベントを追加 (レスポンスロギング有効時)</li>
+                        <li>レスポンスロギング無効時、SendUserMessage / Cowork の送信テキストは長さのみが <code>tool_input</code> に記録される</li>
+                        <li>デスクトップ Code タブの <code>service.name</code> が <code>claude-code-desktop</code> に変更。旧名維持は <code>OTEL_SERVICE_NAME</code> で設定</li>
+                        <li>未有効の組み込みサーバーで失敗した <code>mcp_server_connection</code> イベントが毎回報告される問題を修正</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🔧 MCP サーバーと Code Mode の修正</h3>
+                    <ul>
+                        <li>SSE MCP サーバーのストリーム切断後のハング・全ツール呼び出し拒否を修正</li>
+                        <li>タスク ID が 128 文字超で失敗する問題を修正 (1,024 文字まで対応)</li>
+                        <li>Code Mode: 4,096 項目超のリスト入力が黙ってスキップされる問題と、10 分超のスクリプトで "Agent stalled" になる問題を修正</li>
+                        <li>MCP サーバーが多数のツールをリストする場合の起動時メモリ使用量を改善</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🎙️ 音声入力 (タップモード) の挙動変更</h3>
+                    <ul>
+                        <li>認識できる音声なしで 60 秒、上限 10 分までマイクを維持 (従来は 15 秒と 2 分)。VS Code 拡張も同様に延長</li>
+                        <li>停止後もテキストは未送信のまま保持され、次のタップで追記できる</li>
+                        <li>10,000 文字を超える音声入力テキストが失われる問題も修正</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>💻 VS Code 拡張の更新 (30 項目)</h3>
+                    <ul>
+                        <li>Windows 11 24H2 以降の VS Code 1.101 / 1.102 で、NTFS ドライブ上の会話のフォークやメモリの保存が失敗する問題を修正</li>
+                        <li>コンパクション要約が自分のプロンプトとして表示される問題を修正</li>
+                        <li>長い返信のストリーミング中のパフォーマンスとパネルを開く時間を改善</li>
+                        <li>スクリーンリーダーの読み上げや IME・ヘブライ語・アラビア語など国際化関連を修正</li>
+                        <li>Manage plugins の各行にインストール済みバージョンを表示</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>✨ そのほかの注目点</h3>
+                    <ul>
+                        <li><code>claude auth login</code> がログイン保存失敗時に <code>Login successful.</code> と報告する問題を修正 (終了コード 1 で確認点を表示)</li>
+                        <li>PreToolUse フックが確認を求める理由を Read・Grep・Glob・Edit・Write プロンプトに表示</li>
+                        <li>OAuth トークンのプレフィックスに <code>oat02-</code> が追加 (Self-hosted runner)</li>
+                        <li>EnterWorktree 後の CLAUDE.md の二重送信をほとんどのケースで修正</li>
+                        <li>macOS の computer use が新しい安全ルールに更新された</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Details -->
+        <section class="section">
+            <h2 class="section-title">技術詳細</h2>
+
+            <h3 class="section-subtitle">🔌 MCP サーバー由来のスキルの流れ</h3>
+            <p class="section-lead">MCP サーバーが提供するスキルはスラッシュメニューに <code>server:skill</code> 形式で表示され、読み込み時のインラインシェルコマンドは <code>PreSkillShellCommand</code> フックで制御できる。</p>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+flowchart TD
+    subgraph Servers["🔌 MCP サーバー"]
+        direction LR
+        SA["🗄️ server-a<br/>スキルを提供"]
+        SB["🌐 server-b<br/>スキルを提供"]
+        SA ~~~ SB
+    end
+
+    subgraph CC["💻 Claude Code"]
+        Menu["📋 スラッシュメニュー<br/>server:skill 形式で表示"]
+        Hook{"🪝 PreSkillShellCommand<br/>フック"}
+        Run["📦 スキル実行"]
+    end
+
+    SA --> Menu
+    SB --> Menu
+    Menu --> Hook
+    Hook -->|許可| Run
+    Hook -.->|拒否| Menu
+
+    classDef layer fill:none,stroke:#CCCCCC,stroke-width:2px,color:#666666
+    classDef input fill:#E9F7EC,stroke:#66BB6A,stroke-width:2px,color:#333333
+    classDef internal fill:#E8F1FF,stroke:#4A90E2,stroke-width:2px,color:#333333
+    classDef decision fill:#F3E5F5,stroke:#7B61FF,stroke-width:2px,color:#333333
+
+    class Servers,CC layer
+    class SA,SB input
+    class Menu,Run internal
+    class Hook decision
+                </pre>
+            </div>
+
+            <h3 class="section-subtitle">🏭 Microsoft Foundry のデフォルトモデル変更への対応</h3>
+            <p class="section-lead">Foundry のデフォルトモデルが Sonnet 5.5 になったため、未デプロイの場合は次のいずれかの対応が必要になる。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Foundry のデフォルトモデル変更への対応</span>
+                </div>
+                <pre><code class="language-bash"># 方法 1: claude-sonnet-5-5 を Foundry にデプロイする
+
+# 方法 2: デプロイ済みのモデルを環境変数で指定する
+export ANTHROPIC_DEFAULT_SONNET_MODEL=&lt;デプロイ済みのモデル名&gt;</code></pre>
+            </div>
+
+            <h3 class="section-subtitle">🌏 Agent Platform のリージョン変数</h3>
+            <p class="section-lead">Google Cloud の Agent Platform では、<code>sonnet</code> とバックグラウンドリクエストが新しいリージョン変数を参照する。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Bash</span>
+                    <span class="code-title">Sonnet 5.5 用のリージョン変数</span>
+                </div>
+                <pre><code class="language-bash"># Sonnet 5.5 用のリージョン変数を設定する
+export VERTEX_REGION_CLAUDE_5_5_SONNET=us-east5
+
+# 4_5 変数のみ設定されている場合、リクエストは
+# CLOUD_ML_REGION または us-east5 に送られる</code></pre>
+            </div>
+
+            <h3 class="section-subtitle">⚙️ 自動モード開始のオプトアウト</h3>
+            <p class="section-lead">Bedrock Mantle・Agent Platform・Foundry で Sonnet 5 / 5.5 に移行したセッションは、モードが未設定なら auto モードで開始するようになった。従来の動作を維持する場合は設定を追加する。</p>
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">JSON</span>
+                    <span class="code-title">settings - auto モード開始の無効化</span>
+                </div>
+                <pre><code class="language-json">{
+  "disableAutoMode": "disable"
+}</code></pre>
+            </div>
+            <div class="callout">
+                <strong>注意 (PreSkillShellCommand の導入):</strong> <code>PreSkillShellCommand</code> は v2.1.332 で追加されたフックイベントである。v2.1.331 以前のバージョンでは、このイベントを記述した設定ファイルがあると起動時にダイアログが開くため、バージョンを混在させて運用している組織では展開順序に注意する
+            </div>
+        </section>
+
+        <!-- Fix categories -->
+        <section class="section">
+            <h2 class="section-title">カテゴリ別の修正・変更の要約</h2>
+            <div class="fix-category">
+                <h4>☁️ フォールバック動作の修正</h4>
+                <ul>
+                    <li><code>--fallback-model</code> に <code>sonnet</code> などのファミリー名を指定した際、<code>availableModels</code> が古いバージョンしか許可していないと指定が失われる問題を修正</li>
+                    <li>強制される古いモデルのリストが Agent Platform と Foundry で先頭を拒否された際に失敗する問題を修正。新しい順に並んでいれば同ファミリーの次のモデルへ下がる</li>
+                    <li>Bedrock のサブエージェントが、親のリージョンにモデルのプロファイルがない場合に失敗する問題を修正。モデル自身のプロファイル (リージョン外も可) を使うようになった</li>
+                    <li>Bedrock Mantle で <code>sonnet</code> エイリアスが Haiku 4.5 に解決される問題を修正。Sonnet 5 が無効なアカウントではエラーになるため、先に有効化が必要</li>
+                </ul>
+            </div>
+            <div class="fix-category">
+                <h4>🧠 コンテキスト管理の修正</h4>
+                <ul>
+                    <li>自動コンパクションの連続失敗後にターンが "Prompt is too long" で終了する問題を修正</li>
+                    <li>要約が出力上限を超え続けてコンパクションが失敗する問題を修正 (3 回の切断後に短い要約を要求)</li>
+                    <li>リクエストサイズ制限のあるプロキシの背後で、すべてのメッセージと <code>/compact</code> が 413 で失敗する長い会話の回復を改善</li>
+                </ul>
+            </div>
+            <div class="fix-category">
+                <h4>🔧 そのほかの運用関連の修正</h4>
+                <ul>
+                    <li><code>/permissions</code> がツール名のない <code>rm -rf</code> のような、次回起動時にスキップされるルールを理由とともに拒否するようになった</li>
+                    <li>リセット済みの使用量上限が Remote Control・IDE・SDK クライアントに到達済みとして報告される問題を修正</li>
+                    <li>Remote Control セッションのプロセス再起動後に、ローカル MCP サーバーが新しいセッション ID を見る問題を修正</li>
+                    <li>圧縮レスポンスが切断・破損した場合のエラーが、生の "ZlibError fetching" ではなく平易な文言になった</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section">
+            <h2 class="section-title">ユースケース - 開発者への影響</h2>
+            <div class="use-case">
+                <h4>🔌 MCP サーバーの開発者・組織の管理者</h4>
+                <p>MCP サーバーがスキルを配布できるようになった (ベータ)。利用側はスラッシュメニューの <code>server:skill</code> 形式の項目として確認できる。組織の管理者・セキュリティ担当者は、<code>PreSkillShellCommand</code> フックでスキル読み込み時のインラインシェルコマンドをポリシーで拒否できるようになり、スキル利用のガバナンスを強化できる</p>
+            </div>
+            <div class="use-case">
+                <h4>☁️ サードパーティクラウドプロバイダーの利用者</h4>
+                <p>Microsoft Foundry ではデフォルトモデルが Sonnet 5.5 に変更され、Sonnet 4 / Opus 4 / Opus 4.1 が引退扱いになった。Google Cloud Agent Platform では <code>sonnet</code> エイリアスが Sonnet 5.5 を指し、<code>VERTEX_REGION_CLAUDE_5_5_SONNET</code> が参照される。Bedrock の <code>sonnet</code> は Sonnet 4.5 のまま変更なしだが、Bedrock Mantle では Sonnet 5 を意味するようになった</p>
+            </div>
+            <div class="use-case">
+                <h4>📊 監視・運用を担当する組織 (OpenTelemetry / Self-hosted runner)</h4>
+                <p>デスクトップ Code タブの <code>service.name</code> が <code>claude-code-desktop</code> に変わるため、<code>claude-code</code> をキーにしたフィルターの更新が必要になる場合がある。Self-hosted runner の運用者は、OAuth トークンのプレフィックスに <code>oat02-</code> が追加されたため、プロキシルールやログスクラバーの更新が必要になる場合がある</p>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="section">
+            <h2 class="section-title">必要なアクション</h2>
+            <ol class="action-list">
+                <li><strong>アップデートの適用</strong>: フリーズ・ハング・メモリに関わる修正が非常に多いため、早期の更新を推奨する</li>
+                <li><strong>Foundry のモデルデプロイ確認</strong>: デフォルトモデルが Sonnet 5.5 になったため、<code>claude-sonnet-5-5</code> のデプロイまたは <code>ANTHROPIC_DEFAULT_SONNET_MODEL</code> の設定を行う。Sonnet 4 / Opus 4 / Opus 4.1 へのピン止めは見直す</li>
+                <li><strong>Agent Platform のリージョン変数確認</strong>: <code>VERTEX_REGION_CLAUDE_4_5_SONNET</code> のみ設定している場合、<code>VERTEX_REGION_CLAUDE_5_5_SONNET</code> の追加を検討する</li>
+                <li><strong>OpenTelemetry フィルターの更新</strong>: <code>service.name</code> を <code>claude-code</code> で絞り込んでいる場合、<code>claude-code-desktop</code> を追加するか <code>OTEL_SERVICE_NAME</code> を設定する</li>
+                <li><strong>トークンマスキングルールの更新 (Self-hosted runner)</strong>: <code>oat01-</code> 固定のマッチングを使っている場合、<code>oat02-</code> にも対応させ、値全体をマスクする</li>
+                <li><strong><code>computer-use</code> という名前のスキル・コマンドの確認</strong>: Mac で computer use を使っている場合、同名の自作スキル・コマンドは読み込まれなくなるため、名前を変更する</li>
+            </ol>
+            <div class="callout">
+                <strong>移行ガイド (該当する場合):</strong> auto モードで開始させたくない場合、<code>disableAutoMode</code> を <code>"disable"</code> に設定して無効化できる。バージョン混在環境で <code>PreSkillShellCommand</code> を導入する場合はクライアントの更新を先行させる。SDK / <code>claude -p</code> でテキストを中継している場合、feature flags が取得されない環境では Opus 4.8 以降、ミッドターンのメッセージがユーザーのものとして扱われるため、中継テキストには <code>isSynthetic: true</code> を付ける
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2 class="section-title">まとめ</h2>
+            <div class="summary-box">
+                <p>Claude Code v2.1.332 は、<strong>MCP サーバー由来のスキル (ベータ)</strong> と <strong><code>PreSkillShellCommand</code> フック</strong>によってスキルエコシステムを拡張し、名前付きパイプ・フックの暴走出力・MCP サーバーの出力フラッドなどに起因する<strong>多数のフリーズ・ハングを解消</strong>した安定性重視のリリースである。Sonnet 5.5 / Opus 5.5 世代への移行を反映し、<strong>Microsoft Foundry のデフォルトモデル変更と旧モデルの引退</strong>、Google Cloud Agent Platform のエイリアス更新、Bedrock のフォールバック改善など、サードパーティプロバイダーのモデル解決も大きく整理された。OpenTelemetry の <code>service.name</code> 変更や OAuth トークンプレフィックスの追加など、監視・運用設定の更新が必要になる変更も含まれるため、該当する組織は事前の確認を推奨する</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>出典:</strong> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md</a></p>
+            <p><strong>関連リンク:</strong> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.332" target="_blank" rel="noopener noreferrer">v2.1.332 リリースページ</a> | <a href="https://code.claude.com/docs" target="_blank" rel="noopener noreferrer">Claude Code ドキュメント</a> | <a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener noreferrer">claude-code リポジトリ</a></p>
+            <p style="margin-top: 8px;">このインフォグラフィックは reports/2026/2026-11-24-claude-code-v2-1-332.md を元に生成されました</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#D4A574',
+                primaryTextColor: '#1a1a2e',
+                primaryBorderColor: '#D4A574',
+                lineColor: '#D4A574',
+                secondaryColor: '#F5F5F5',
+                tertiaryColor: '#FAFAFA',
+                background: '#FFFFFF',
+                mainBkg: '#FFF8F0',
+                nodeBorder: '#D4A574',
+                clusterBkg: '#FFF8F0',
+                clusterBorder: '#D4A574',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#1a1a2e'
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
